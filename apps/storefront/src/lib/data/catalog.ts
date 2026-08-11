@@ -49,6 +49,23 @@ export async function getProductByHandle(
   return products[0] ?? null
 }
 
+/** Fetch a single product by id (used by the customization engine routes). */
+export async function getProductById(
+  id: string,
+  countryCode?: string
+): Promise<HttpTypes.StoreProduct | null> {
+  const region = await getRegion(countryCode)
+  try {
+    const { product } = await medusa.store.product.retrieve(id, {
+      region_id: region?.id,
+      fields: PRODUCT_FIELDS,
+    })
+    return product ?? null
+  } catch {
+    return null
+  }
+}
+
 /** Category tree for navigation + category pages. */
 export async function listCategories(): Promise<HttpTypes.StoreProductCategory[]> {
   const { product_categories } = await medusa.store.category.list({
