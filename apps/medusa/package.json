@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "TEST_TYPE=unit jest --silent=false --runInBand --forceExit",
     "test:integration": "TEST_TYPE=integration:modules jest --silent=false --runInBand --forceExit --testPathPattern='src/modules'",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src"
   },
   "dependencies": {
     "@legacy-crafts/schemas": "workspace:*",

@@ -1,0 +1,136 @@
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import Link from "next/link"
+import { getCategoryByHandle, listProducts } from "@/lib/data/catalog"
+import { ProductCard } from "@/components/features/catalog/product-card"
+
+export const revalidate = 300
+
+type Props = {
+  params: Promise<{ slug: string[] }>
+  searchParams: Promise<{ page?: string; order?: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const handle = slug[slug.length - 1]
+  const category = await getCategoryByHandle(handle).catch(() => null)
+  if (!category) return { title: "Category" }
+  return {
+    title: category.name,
+    description: category.description ?? `Shop ${category.name} at Legacy Crafts.`,
+    alternates: { canonical: `/categories/${slug.join("/")}` },
+  }
+}
+
+const PAGE_SIZE = 12
+
+const SORT_OPTIONS = [
+  { label: "Newest", value: "-created_at" },
+  { label: "Price: Low to High", value: "variants.calculated_price" },
+  { label: "Price: High to Low", value: "-variants.calculated_price" },
+]
+
+export default async function CategoryPage({ params, searchParams }: Props) {
+  const { slug } = await params
+  const { page = "1", order = "-created_at" } = await searchParams
+  const handle = slug[slug.length - 1]
+
+  const category = await getCategoryByHandle(handle).catch(() => null)
+  if (!category) notFound()
+
+  const currentPage = Math.max(1, Number(page) || 1)
+  // Include descendant categories so a parent (e.g. Trophies) shows all products.
+  const categoryIds = [
+    category.id,
+    ...(category.category_children?.map((c) => c.id) ?? []),
+  ]
+  const { products, count } = await listProducts({
+    categoryIds,
+    limit: PAGE_SIZE,
+    offset: (currentPage - 1) * PAGE_SIZE,
+    order,
+  }).catch(() => ({ products: [], count: 0 }))
+
+  const totalPages = Math.max(1, Math.ceil(count / PAGE_SIZE))
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-10">
+      <nav aria-label="Breadcrumb" className="mb-2 text-sm text-muted-foreground">
+        <Link href="/" className="hover:text-foreground">
+          Home
+        </Link>{" "}
+        / <span className="text-foreground">{category.name}</span>
+      </nav>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-serif text-3xl font-semibold">{category.name}</h1>
+          {category.description && (
+            <p className="mt-1 max-w-2xl text-muted-foreground">{category.description}</p>
+          )}
+        </div>
+        <form className="flex items-center gap-2">
+          <label htmlFor="order" className="text-sm text-muted-foreground">
+            Sort
+          </label>
+          <select
+            id="order"
+            name="order"
+            defaultValue={order}
+            className="h-10 rounded-md border bg-card px-3 text-sm"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <button className="h-10 rounded-md border px-3 text-sm hover:bg-muted">Apply</button>
+        </form>
+      </div>
+
+      {/* Subcategory chips (FR-CAT-1 nesting) */}
+      {category.category_children?.length ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {category.category_children.map((child) => (
+            <Link
+              key={child.id}
+              href={`/categories/${child.handle}`}
+              className="rounded-full border px-3 py-1 text-xs hover:bg-muted"
+            >
+              {child.name}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
+      {products.length ? (
+        <>
+          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <Link
+                  key={n}
+                  href={`/categories/${slug.join("/")}?page=${n}&order=${order}`}
+                  className={`h-10 min-w-10 rounded-md border px-3 text-center leading-10 ${
+                    n === currentPage ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+                  }`}
+                >
+                  {n}
+                </Link>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <p className="mt-10 text-muted-foreground">No products in this category yet.</p>
+      )}
+    </div>
+  )
+}

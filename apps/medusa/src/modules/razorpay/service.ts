@@ -34,11 +34,10 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
   protected readonly options_: RazorpayOptions
   protected readonly logger_: Logger
 
-  constructor({ logger }: InjectedDependencies, options: RazorpayOptions) {
-    // @ts-expect-error — base ctor signature is loosely typed across versions
-    super(...arguments)
+  constructor(container: InjectedDependencies, options: RazorpayOptions) {
+    super(container, options)
     this.options_ = options
-    this.logger_ = logger
+    this.logger_ = container.logger
   }
 
   static validateOptions(options: Record<string, unknown>) {
