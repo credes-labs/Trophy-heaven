@@ -1,0 +1,297 @@
+openapi: 3.1.0
+info:
+  title: Legacy Crafts Custom API
+  version: 1.0.0
+  description: >
+    Custom endpoints layered on top of the Medusa v2 Store/Admin APIs for the
+    Legacy Crafts platform: designs, bulk orders, corporate accounts, production
+    workflow, and search. Core commerce endpoints (products, carts, orders,
+    customers, auth) follow the standard Medusa Store/Admin API. See
+    docs/kit/05-api-specification.md for the source specification.
+servers:
+  - url: http://localhost:9000
+    description: Local development
+tags:
+  - name: Designs
+  - name: Bulk Orders
+  - name: Corporate
+  - name: Production (Admin)
+  - name: Search
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    publishableKey:
+      type: apiKey
+      in: header
+      name: x-publishable-api-key
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  path: { type: string }
+                  issue: { type: string }
+    Design:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        mode: { type: string, enum: [2d, 3d] }
+        product_id: { type: string }
+        variant_id: { type: [string, "null"] }
+        state_json: { type: object }
+        preview_url: { type: [string, "null"] }
+        status: { type: string }
+        is_template: { type: boolean }
+    BulkOrder:
+      type: object
+      properties:
+        id: { type: string }
+        product_id: { type: string }
+        variant_id: { type: [string, "null"] }
+        po_number: { type: [string, "null"] }
+        status: { type: string, enum: [draft, uploaded, validated, confirmed, cancelled] }
+        total_items: { type: integer }
+    BulkOrderLine:
+      type: object
+      properties:
+        id: { type: string }
+        row_number: { type: integer }
+        name: { type: string }
+        designation: { type: [string, "null"] }
+        award_category: { type: [string, "null"] }
+        design_id: { type: [string, "null"] }
+        validation_errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              issue: { type: string }
+    CorporateProfile:
+      type: object
+      properties:
+        id: { type: string }
+        company_name: { type: string }
+        tax_id: { type: string }
+        credit_limit: { type: number }
+        payment_terms: { type: string, enum: [prepaid, net_30, net_60] }
+        is_verified: { type: boolean }
+    ProductionJob:
+      type: object
+      properties:
+        id: { type: string }
+        order_id: { type: string }
+        design_id: { type: string }
+        status: { type: string }
+        complexity: { type: string, enum: [simple, medium, complex] }
+        material: { type: string }
+        assigned_workshop: { type: [string, "null"] }
+security:
+  - publishableKey: []
+paths:
+  /store/designs:
+    post:
+      tags: [Designs]
+      summary: Create a design
+      security: [{ publishableKey: [], bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, mode, product_id, state_json]
+              properties:
+                name: { type: string }
+                mode: { type: string, enum: [2d, 3d] }
+                product_id: { type: string }
+                variant_id: { type: string }
+                state_json: { type: object }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { design: { $ref: "#/components/schemas/Design" } }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    get:
+      tags: [Designs]
+      summary: List the caller's designs
+      security: [{ publishableKey: [], bearerAuth: [] }]
+      responses:
+        "200": { description: OK }
+  /store/designs/{id}:
+    get:
+      tags: [Designs]
+      summary: Get a design (owner or via share_token)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: share_token, in: query, schema: { type: string } }
+      responses: { "200": { description: OK }, "404": { description: Not found } }
+    put:
+      tags: [Designs]
+      summary: Update a design (snapshots a revision)
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK }, "409": { description: Locked } }
+    delete:
+      tags: [Designs]
+      summary: Delete a design
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "204": { description: Deleted } }
+  /store/designs/{id}/preview:
+    post:
+      tags: [Designs]
+      summary: (Re)generate a preview
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /store/designs/{id}/clone:
+    post:
+      tags: [Designs]
+      summary: Clone a design or preset
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "201": { description: Created } }
+  /store/designs/{id}/share:
+    post:
+      tags: [Designs]
+      summary: Generate a view-only share link
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /store/bulk-orders:
+    post:
+      tags: [Bulk Orders]
+      summary: Create an empty bulk order
+      responses: { "201": { description: Created } }
+    get:
+      tags: [Bulk Orders]
+      summary: List the caller's bulk orders
+      responses: { "200": { description: OK } }
+  /store/bulk-orders/{id}:
+    get:
+      tags: [Bulk Orders]
+      summary: Bulk order details + lines
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /store/bulk-orders/{id}/upload:
+    post:
+      tags: [Bulk Orders]
+      summary: Re-validate uploaded rows (server-side)
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rows:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name: { type: string }
+                      designation: { type: string }
+                      award_category: { type: string }
+      responses:
+        "200": { description: OK }
+        "413": { description: Payload too large }
+        "422": { description: Unreadable }
+  /store/bulk-orders/{id}/confirm:
+    post:
+      tags: [Bulk Orders]
+      summary: Generate designs + build cart
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: OK }
+        "409": { description: Unresolved errors }
+  /store/corporate-profiles:
+    post: { tags: [Corporate], summary: Create a corporate profile, responses: { "201": { description: Created } } }
+    get: { tags: [Corporate], summary: List caller's profiles, responses: { "200": { description: OK } } }
+  /store/corporate-profiles/{id}:
+    get:
+      tags: [Corporate]
+      summary: Profile + team members
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /store/corporate-profiles/{id}/team-members:
+    post:
+      tags: [Corporate]
+      summary: Invite a team member
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "201": { description: Created }, "409": { description: Already a member } }
+  /store/corporate-profiles/{id}/orders:
+    get:
+      tags: [Corporate]
+      summary: Corporate order history
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /store/search:
+    get:
+      tags: [Search]
+      summary: Faceted product search
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: material, in: query, schema: { type: string } }
+        - { name: price_tier, in: query, schema: { type: string } }
+      responses: { "200": { description: OK } }
+  /store/orders/{id}/return-eligibility:
+    get:
+      tags: [Bulk Orders]
+      summary: Per-line RMA eligibility
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /admin/production-jobs:
+    get:
+      tags: [Production (Admin)]
+      summary: List production jobs
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: status, in: query, schema: { type: string } }
+        - { name: workshop, in: query, schema: { type: string } }
+        - { name: complexity, in: query, schema: { type: string } }
+        - { name: material, in: query, schema: { type: string } }
+      responses: { "200": { description: OK } }
+  /admin/production-jobs/{id}/status:
+    put:
+      tags: [Production (Admin)]
+      summary: Update job status (validated transition)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK }, "409": { description: Invalid transition } }
+  /admin/design-approvals/{id}/approve:
+    post:
+      tags: [Production (Admin)]
+      summary: Approve a design
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK } }
+  /admin/design-approvals/{id}/reject:
+    post:
+      tags: [Production (Admin)]
+      summary: Reject a design (feedback required)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: OK }, "400": { description: Feedback required } }
+  /hooks/payment/razorpay:
+    post:
+      tags: [Production (Admin)]
+      summary: Razorpay payment webhook (signature-verified, idempotent)
+      description: >
+        Handled by Medusa's payment webhook route, which calls the Razorpay
+        provider's getWebhookActionAndData for HMAC signature verification and
+        idempotent event handling.
+      responses: { "200": { description: Accepted }, "400": { description: Signature failure } }

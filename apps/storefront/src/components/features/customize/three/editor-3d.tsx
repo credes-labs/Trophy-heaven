@@ -9,6 +9,7 @@ import { Viewer3D } from "./viewer-3d"
 import { useCartStore } from "@/stores/cart-store"
 import { designApi, type DesignRecord } from "@/lib/design-client"
 import { ENGRAVING_FONTS } from "@/lib/fonts"
+import { isAllowedLogo, sanitizeSvg } from "@/lib/sanitize"
 import {
   TROPHY_BASES,
   MATERIAL_3D_OPTIONS,
@@ -60,11 +61,23 @@ export function Editor3D({
   async function onUploadLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    const url = await new Promise<string>((resolve) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.readAsDataURL(file)
-    })
+    if (!isAllowedLogo(file)) {
+      setErrors(["Unsupported file type. Upload a PNG, JPG, or SVG."])
+      e.target.value = ""
+      return
+    }
+    let url: string
+    if (file.type === "image/svg+xml") {
+      const raw = await file.text()
+      const clean = sanitizeSvg(raw)
+      url = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(clean)))}`
+    } else {
+      url = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
+    }
     patch({ logoUrl: url })
     e.target.value = ""
   }

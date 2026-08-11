@@ -19,6 +19,7 @@ import {
 import { ENGRAVING_FONTS, loadGoogleFont } from "@/lib/fonts"
 import { designApi, type DesignRecord } from "@/lib/design-client"
 import { track } from "@/lib/analytics"
+import { isAllowedLogo, sanitizeSvg } from "@/lib/sanitize"
 import { cn } from "@/lib/utils"
 
 type FabricObjectLike = FabricObject & { id?: string; text?: string; fontFamily?: string }
@@ -190,15 +191,27 @@ export function Editor2D({
     const canvas = getCanvas()
     const fabric = getFabric()
     if (!file || !canvas || !fabric) return
+    if (!isAllowedLogo(file)) {
+      setValidationErrors(["Unsupported file type. Upload a PNG, JPG, or SVG."])
+      return
+    }
     if (file.size > 5 * 1024 * 1024) {
       setValidationErrors(["Logo exceeds 5MB. Please upload a smaller file."])
       return
     }
-    const url = await new Promise<string>((resolve) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.readAsDataURL(file)
-    })
+    let url: string
+    if (file.type === "image/svg+xml") {
+      // Sanitize SVGs before use (strip scripts/handlers/external refs).
+      const raw = await file.text()
+      const clean = sanitizeSvg(raw)
+      url = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(clean)))}`
+    } else {
+      url = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
+    }
     const img = await fabric.FabricImage.fromURL(url, { crossOrigin: "anonymous" })
     const imgLike = img as FabricObjectLike & { width?: number }
     const naturalWidth = imgLike.width ?? 0
