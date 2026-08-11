@@ -48,6 +48,9 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2"
   },
+  "optionalDependencies": {
+    "@napi-rs/canvas": "^0.1.60"
+  },
   "engines": {
     "node": ">=20"
   }
