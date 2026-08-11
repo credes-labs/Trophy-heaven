@@ -1,0 +1,102 @@
+name: CI
+
+# Pipeline order per docs/kit/07-testing-strategy.md §7.6:
+# lint -> typecheck -> unit -> integration -> build -> (E2E / Lighthouse / axe on main+PR)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+
+jobs:
+  lint-typecheck-unit:
+    name: Lint · Typecheck · Unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Unit tests
+        run: pnpm test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint-typecheck-unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build all packages
+        run: pnpm build
+
+  integration:
+    name: Integration (Postgres · Redis · Meilisearch)
+    runs-on: ubuntu-latest
+    needs: lint-typecheck-unit
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: medusa
+          POSTGRES_PASSWORD: medusa
+          POSTGRES_DB: legacy_crafts_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U medusa" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Backend integration tests
+        run: pnpm --filter @legacy-crafts/medusa test:integration --if-present
+        env:
+          DATABASE_URL: postgres://medusa:medusa@localhost:5432/legacy_crafts_test
+          REDIS_URL: redis://localhost:6379
+
+  e2e:
+    name: E2E · Lighthouse · axe (smoke)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Playwright smoke + axe
+        run: pnpm --filter @legacy-crafts/storefront test:e2e --if-present

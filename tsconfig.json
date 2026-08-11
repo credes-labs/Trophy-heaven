@@ -1,0 +1,11 @@
+{
+  "extends": "./packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/schemas" },
+    { "path": "./packages/observability" }
+  ]
+}

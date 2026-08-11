@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+.next
+.medusa
+coverage
+pnpm-lock.yaml
+docs/kit

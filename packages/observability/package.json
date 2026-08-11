@@ -1,0 +1,31 @@
+{
+  "name": "@legacy-crafts/observability",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared structured logging (Pino) + error tracking (Sentry) helpers (see docs/kit/03 §3.8, NFR-9).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "pino": "^9.5.0"
+  },
+  "devDependencies": {
+    "@legacy-crafts/config": "workspace:*",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.8"
+  }
+}
