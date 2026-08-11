@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatMoney, isCustomizable } from "@/lib/format"
 import { useCartStore } from "@/stores/cart-store"
+import { track } from "@/lib/analytics"
 
 /**
  * Client PDP actions: variant/option selection, live price, add-to-cart, and —
@@ -35,6 +36,12 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
   async function handleAdd() {
     if (!activeVariant) return
     await addItem(activeVariant.id)
+    track("add_to_cart", {
+      item_id: product.id,
+      variant_id: activeVariant.id,
+      value: price?.calculated_amount,
+      currency: price?.currency_code,
+    })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }

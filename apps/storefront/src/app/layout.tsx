@@ -5,6 +5,8 @@ import { Providers } from "@/components/providers"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/features/cart/cart-drawer"
+import { Analytics } from "@/components/analytics"
+import { PWARegister } from "@/components/pwa-register"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" })
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" })
@@ -37,7 +39,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <Footer />
           <CartDrawer />
+          <PWARegister />
         </Providers>
+        <Analytics />
       </body>
     </html>
   )

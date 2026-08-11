@@ -18,6 +18,7 @@ import {
 } from "@/lib/design-2d"
 import { ENGRAVING_FONTS, loadGoogleFont } from "@/lib/fonts"
 import { designApi, type DesignRecord } from "@/lib/design-client"
+import { track } from "@/lib/analytics"
 import { cn } from "@/lib/utils"
 
 type FabricObjectLike = FabricObject & { id?: string; text?: string; fontFamily?: string }
@@ -159,8 +160,9 @@ export function Editor2D({
   }, [material, getCanvas, ready])
 
   useEffect(() => {
+    track("design_started", { mode: "2d", product_id: product.id })
     return () => reset()
-  }, [reset])
+  }, [reset, product.id])
 
   async function addText() {
     const canvas = getCanvas()
@@ -349,6 +351,7 @@ export function Editor2D({
       } catch {
         // preview is best-effort
       }
+      track("design_saved", { design_id: record.id, mode: "2d", product_id: product.id })
       setAddedMsg("Saved to your gallery")
       setTimeout(() => setAddedMsg(null), 2500)
       return record
@@ -366,6 +369,7 @@ export function Editor2D({
       preview_url: record.preview_url,
       customization_mode: "2d",
     })
+    track("design_added_to_cart", { design_id: record.id, mode: "2d", product_id: product.id })
     setAddedMsg("Added to cart with your design")
     setTimeout(() => setAddedMsg(null), 2500)
   }

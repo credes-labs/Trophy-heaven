@@ -43,6 +43,12 @@ export async function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <Link
+            href="/search"
+            className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            Search
+          </Link>
+          <Link
             href="/account"
             className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
           >
