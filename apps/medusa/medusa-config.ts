@@ -107,15 +107,42 @@ module.exports = defineConfig({
         ],
       },
     },
-    // ── Notifications: local (dev) → Resend/MSG91 wired in Phase 5 ───────────
+    // ── Notifications: Resend (email) + MSG91 (SMS) in prod, local in dev ─────
     {
       resolve: "@medusajs/medusa/notification",
       options: {
         providers: [
+          ...(process.env.RESEND_API_KEY
+            ? [
+                {
+                  resolve: "./src/modules/resend",
+                  id: "resend",
+                  options: {
+                    channels: ["email"],
+                    api_key: process.env.RESEND_API_KEY,
+                    from: process.env.RESEND_FROM || "Legacy Crafts <orders@legacycrafts.example>",
+                  },
+                },
+              ]
+            : []),
+          ...(process.env.MSG91_AUTH_KEY
+            ? [
+                {
+                  resolve: "./src/modules/msg91",
+                  id: "msg91",
+                  options: {
+                    channels: ["sms"],
+                    auth_key: process.env.MSG91_AUTH_KEY,
+                    sender_id: process.env.MSG91_SENDER_ID,
+                  },
+                },
+              ]
+            : []),
           {
+            // Always keep a local fallback so dev + unconfigured channels work.
             resolve: "@medusajs/medusa/notification-local",
             id: "local",
-            options: { channels: ["email", "sms"] },
+            options: { channels: ["email", "sms", "feed"] },
           },
         ],
       },
@@ -126,5 +153,7 @@ module.exports = defineConfig({
     // Phase 4: bulk orders + corporate accounts
     { resolve: "./src/modules/bulk-order" },
     { resolve: "./src/modules/corporate-account" },
+    // Phase 5: production workflow (jobs + design approvals)
+    { resolve: "./src/modules/production-workflow" },
   ],
 })

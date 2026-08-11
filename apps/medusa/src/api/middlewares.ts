@@ -50,5 +50,29 @@ export default defineMiddlewares({
       method: ["PUT", "POST", "DELETE"],
       middlewares: [requireCapability("corporate:manage")],
     },
+    // Production board is visible to designers + production managers + admins.
+    {
+      matcher: "/admin/production-jobs",
+      method: ["GET"],
+      middlewares: [requireCapability("production:view")],
+    },
+    // Mutating a job (status, shipping) requires `production:update`.
+    {
+      matcher: "/admin/production-jobs/*",
+      method: ["POST", "PUT"],
+      middlewares: [requireCapability("production:update")],
+    },
+    // Viewing the approvals queue needs `production:view`.
+    {
+      matcher: "/admin/design-approvals",
+      method: ["GET"],
+      middlewares: [requireCapability("production:view")],
+    },
+    // Approving/rejecting requires the `designs:approve` capability.
+    {
+      matcher: "/admin/design-approvals/*",
+      method: ["POST"],
+      middlewares: [requireCapability("designs:approve")],
+    },
   ],
 })
