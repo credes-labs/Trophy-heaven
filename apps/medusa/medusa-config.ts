@@ -123,5 +123,8 @@ module.exports = defineConfig({
     // ── Custom modules ────────────────────────────────────────────────────────
     // Phase 2: 2D/3D trophy customization (Design / DesignPreset / DesignRevision)
     { resolve: "./src/modules/trophy-customization" },
+    // Phase 4: bulk orders + corporate accounts
+    { resolve: "./src/modules/bulk-order" },
+    { resolve: "./src/modules/corporate-account" },
   ],
 })

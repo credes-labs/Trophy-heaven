@@ -1,5 +1,6 @@
 import { defineMiddlewares } from "@medusajs/framework/http"
 import type { MedusaRequest, MedusaResponse, MedusaNextFunction } from "@medusajs/framework/http"
+import { requireCapability } from "../lib/rbac"
 
 /**
  * Simple in-memory sliding-window rate limiter (NFR-4 / docs/kit/03 §3.7).
@@ -41,5 +42,13 @@ export default defineMiddlewares({
   routes: [
     { matcher: "/store/*", middlewares: [rateLimit({ windowMs: 60_000, max: 100 })] },
     { matcher: "/auth/*", middlewares: [rateLimit({ windowMs: 60_000, max: 20 })] },
+    // Bulk upload is heavier — tighten the window for the upload endpoint.
+    { matcher: "/store/bulk-orders/*/upload", middlewares: [rateLimit({ windowMs: 60_000, max: 10 })] },
+    // Admin corporate management requires the `corporate:manage` capability.
+    {
+      matcher: "/admin/corporate-profiles/*",
+      method: ["PUT", "POST", "DELETE"],
+      middlewares: [requireCapability("corporate:manage")],
+    },
   ],
 })
