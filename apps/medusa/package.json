@@ -1,0 +1,54 @@
+{
+  "name": "@legacy-crafts/medusa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Legacy Crafts commerce backend — Medusa v2.18 with custom modules (trophy-customization, production-workflow, bulk-order, corporate-account).",
+  "scripts": {
+    "build": "medusa build",
+    "dev": "medusa develop",
+    "start": "medusa start",
+    "seed": "medusa exec ./src/scripts/seed.ts",
+    "predeploy": "medusa db:migrate",
+    "typecheck": "tsc --noEmit",
+    "test": "TEST_TYPE=unit jest --silent=false --runInBand --forceExit",
+    "test:integration": "TEST_TYPE=integration:modules jest --silent=false --runInBand --forceExit --testPathPattern='src/modules'",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@legacy-crafts/schemas": "workspace:*",
+    "@medusajs/admin-sdk": "2.18.0",
+    "@medusajs/cli": "2.18.0",
+    "@medusajs/dashboard": "2.18.0",
+    "@medusajs/draft-order": "2.18.0",
+    "@medusajs/framework": "2.18.0",
+    "@medusajs/icons": "2.18.0",
+    "@medusajs/medusa": "2.18.0",
+    "@medusajs/ui": "^4.2.0",
+    "@mikro-orm/core": "6.6.14",
+    "@mikro-orm/knex": "6.6.14",
+    "@mikro-orm/migrations": "6.6.14",
+    "@mikro-orm/postgresql": "6.6.14",
+    "awilix": "^8.0.1",
+    "pg": "^8.13.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@medusajs/test-utils": "2.18.0",
+    "@mikro-orm/cli": "6.6.14",
+    "@swc/core": "1.5.7",
+    "@swc/jest": "^0.2.36",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.2.25",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

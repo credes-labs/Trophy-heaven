@@ -1,0 +1,124 @@
+import { loadEnv, defineConfig } from "@medusajs/framework/utils"
+
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
+
+const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379"
+const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
+/**
+ * Legacy Crafts Medusa v2.18 configuration.
+ *
+ * Core commerce modules (Product, Pricing, Inventory, Cart, Order, Customer,
+ * Payment, Fulfillment, Tax, Promotion, Auth, File, Notification) are enabled by
+ * default. Here we wire the Redis-backed cache / event bus / workflow engine
+ * (see docs/kit/03 §3.3, §3.4) plus providers and, per phase, custom modules.
+ *
+ * Custom business modules are added to `modules` in their respective phases:
+ *   - Phase 2: ./src/modules/trophy-customization
+ *   - Phase 4: ./src/modules/bulk-order, ./src/modules/corporate-account
+ *   - Phase 5: ./src/modules/production-workflow
+ *
+ * NOTE: the kit pins MikroORM 6.6.14 (CVE-2026-44680 patch) for production; the
+ * dependency here tracks the version verified with Medusa 2.18 — bump in a
+ * dedicated security PR once validated against the 2.18 migration set.
+ */
+module.exports = defineConfig({
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    redisUrl: REDIS_URL,
+    http: {
+      storeCors: process.env.STORE_CORS || "http://localhost:3000",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:9000",
+      authCors: process.env.AUTH_CORS || "http://localhost:3000,http://localhost:9000",
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    },
+  },
+  admin: {
+    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+  },
+  modules: [
+    // ── Redis-backed infrastructure (sessions, cart, reservations, pub/sub) ──
+    { resolve: "@medusajs/medusa/cache-redis", options: { redisUrl: REDIS_URL } },
+    { resolve: "@medusajs/medusa/event-bus-redis", options: { redisUrl: REDIS_URL } },
+    {
+      resolve: "@medusajs/medusa/workflow-engine-redis",
+      options: { redis: { url: REDIS_URL } },
+    },
+    // ── File storage: S3 / Cloudflare R2 in prod, local on-disk in dev ───────
+    {
+      resolve: "@medusajs/medusa/file",
+      options: {
+        providers: process.env.S3_ENDPOINT
+          ? [
+              {
+                resolve: "@medusajs/medusa/file-s3",
+                id: "s3",
+                options: {
+                  file_url: process.env.CDN_BASE_URL,
+                  access_key_id: process.env.S3_ACCESS_KEY_ID,
+                  secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+                  region: process.env.S3_REGION,
+                  bucket: process.env.S3_BUCKET,
+                  endpoint: process.env.S3_ENDPOINT,
+                  additional_client_config: { forcePathStyle: true },
+                },
+              },
+            ]
+          : [
+              {
+                resolve: "@medusajs/medusa/file-local",
+                id: "local",
+                options: { upload_dir: "static", backend_url: `${BACKEND_URL}/static` },
+              },
+            ],
+      },
+    },
+    // ── Payments: Razorpay (India, primary) + Stripe (international) ──────────
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          ...(process.env.RAZORPAY_KEY_ID
+            ? [
+                {
+                  resolve: "./src/modules/razorpay",
+                  id: "razorpay",
+                  options: {
+                    key_id: process.env.RAZORPAY_KEY_ID,
+                    key_secret: process.env.RAZORPAY_KEY_SECRET,
+                    webhook_secret: process.env.RAZORPAY_WEBHOOK_SECRET,
+                  },
+                },
+              ]
+            : []),
+          ...(process.env.STRIPE_SECRET_KEY
+            ? [
+                {
+                  resolve: "@medusajs/medusa/payment-stripe",
+                  id: "stripe",
+                  options: {
+                    apiKey: process.env.STRIPE_SECRET_KEY,
+                    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
+    },
+    // ── Notifications: local (dev) → Resend/MSG91 wired in Phase 5 ───────────
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: { channels: ["email", "sms"] },
+          },
+        ],
+      },
+    },
+  ],
+})
