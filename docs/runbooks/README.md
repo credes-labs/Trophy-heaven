@@ -5,34 +5,64 @@ Operational runbooks for the Legacy Crafts platform. See also
 
 ## Local development
 
+There are two supported paths. Prefer the host path on Cursor Cloud VMs (no Docker
+daemon). Prefer Compose on Docker-capable machines.
+
+### Host path (this VM / no Docker)
+
+Postgres 16 + Redis 7 are installed on the host. Meilisearch is a binary at
+`/usr/local/bin/meilisearch`. Apps run under `tmux`.
+
 ```bash
-# 1. Backing services (Postgres 18, Redis 7, Meilisearch v1)
+pnpm install
+make up            # migrate + seed + start meilisearch/medusa/storefront
+make reindex       # rebuild Meilisearch product index
+# make down        # stop tmux app sessions (leaves PG/Redis running)
+```
+
+URLs after `make up`:
+
+| Surface | URL |
+| --- | --- |
+| Storefront | http://localhost:3000 |
+| Medusa API | http://localhost:9000 |
+| Admin | http://localhost:9000/app |
+| Meilisearch | http://localhost:7700 |
+
+Dev admin: `admin@legacycrafts.test` / `LegacyCrafts!Dev1`
+
+Scripts: [`scripts/dev-up.sh`](../../scripts/dev-up.sh),
+[`scripts/dev-down.sh`](../../scripts/dev-down.sh),
+[`scripts/reindex-search.sh`](../../scripts/reindex-search.sh).
+
+### Docker path (portable IaC)
+
+```bash
+# Backing services only
 docker compose up -d
 
-# 2. Install workspace deps
-pnpm install
-
-# 3. Build shared schemas (consumed by both apps)
-pnpm --filter @legacy-crafts/schemas build
-
-# 4. Migrate + seed the backend
-cd apps/medusa
-npx medusa db:migrate
-npx medusa exec ./src/scripts/seed.ts
-pnpm dev            # Medusa on :9000 (admin at /app)
-
-# 5. Storefront
-cd ../storefront
-pnpm dev            # Next.js on :3000
+# Full stack (builds app images, migrates, seeds)
+export NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_…
+docker compose --profile apps up -d --build
 ```
+
+Compose profiles:
+
+- default: `postgres`, `redis`, `meilisearch`
+- `apps`: `medusa-init` (migrate+seed), `medusa`, `storefront`
+
+Dockerfiles: [`apps/medusa/Dockerfile`](../../apps/medusa/Dockerfile),
+[`apps/storefront/Dockerfile`](../../apps/storefront/Dockerfile).
+
+> Note: Postgres is pinned to **16** in Compose for parity with the host-installed
+> cluster on this VM. Bump to `postgres:18-alpine` when every environment is on 18.
 
 ## Search reindex
 
-If the Meilisearch index drifts from the catalog (e.g. after a bulk import):
-
 ```bash
-curl -X POST http://localhost:9000/admin/search/reindex \
-  -H "Authorization: Bearer <admin_jwt>"
+make reindex
+# or manually:
+# ./scripts/reindex-search.sh
 ```
 
 The `product.created/updated/deleted` subscriber keeps the index in sync in

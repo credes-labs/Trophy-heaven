@@ -5,10 +5,13 @@
 - **Storefront** — Next.js 16 (App Router, RSC + ISR). Deploy to a Node host or
   edge platform. Requires `NEXT_PUBLIC_MEDUSA_BACKEND_URL`,
   `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`, `NEXT_PUBLIC_BASE_URL`.
-- **Medusa backend** — Node 24, Postgres 18, Redis 7. Serves the Store/Admin API,
-  admin dashboard, and workflow engine.
+- **Medusa backend** — Node 24, Postgres 16 (local) / 18 (target), Redis 7. Serves
+  the Store/Admin API, admin dashboard, and workflow engine.
 - **Meilisearch v1** — product search index.
 - **Object storage** — Cloudflare R2 (S3-compatible) for design previews + media.
+
+Local bring-up: see [`docs/runbooks/README.md`](./runbooks/README.md) for the host
+path (`make up`) and the Docker Compose `--profile apps` path.
 
 ## Environment
 

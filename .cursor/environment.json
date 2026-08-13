@@ -1,0 +1,19 @@
+{
+  "name": "legacy-crafts",
+  "install": "pnpm install && pnpm --filter @legacy-crafts/schemas build",
+  "start": "bash scripts/dev-up.sh",
+  "terminals": [
+    {
+      "name": "meilisearch",
+      "command": "MEILI_ENV=development MEILI_MASTER_KEY=masterKey_dev_only_change_me meilisearch --db-path /workspace/.data/meilisearch --http-addr 127.0.0.1:7700"
+    },
+    {
+      "name": "medusa",
+      "command": "cd apps/medusa && pnpm dev"
+    },
+    {
+      "name": "storefront",
+      "command": "cd apps/storefront && pnpm dev"
+    }
+  ]
+}

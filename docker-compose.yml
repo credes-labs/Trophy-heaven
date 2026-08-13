@@ -1,14 +1,17 @@
-# Local development parity for the Legacy Crafts backing services.
-# Stack per docs/kit/00-index.md: PostgreSQL 18, Redis 7, Meilisearch v1.
+# Legacy Crafts local development stack.
 #
+# Default (backing services only — matches host-service path on this VM):
 #   docker compose up -d
 #
-# The Medusa backend (apps/medusa) and storefront (apps/storefront) run on the
-# host via `pnpm dev`, pointing at these services through .env.
+# Full stack (requires Docker Engine; not available on this Cursor VM):
+#   docker compose --profile apps up -d --build
+#
+# Postgres is pinned to 16 for parity with the host-installed cluster used here;
+# bump to postgres:18-alpine when every environment is on 18.
 
 services:
   postgres:
-    image: postgres:18-alpine
+    image: postgres:16-alpine
     container_name: legacy-crafts-postgres
     restart: unless-stopped
     environment:
@@ -56,6 +59,86 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  # One-shot migrate + seed. Runs once when the apps profile is enabled.
+  medusa-init:
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: apps/medusa/Dockerfile
+    container_name: legacy-crafts-medusa-init
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/legacy_crafts
+      REDIS_URL: redis://redis:6379
+      MEDUSA_BACKEND_URL: http://medusa:9000
+      JWT_SECRET: supersecret_dev_jwt
+      COOKIE_SECRET: supersecret_dev_cookie
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_API_KEY: masterKey_dev_only_change_me
+      STORE_CORS: http://localhost:3000
+      ADMIN_CORS: http://localhost:9000
+      AUTH_CORS: http://localhost:3000,http://localhost:9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    working_dir: /app/apps/medusa
+    command: ["sh", "-c", "npx medusa db:migrate && npx medusa exec ./src/scripts/seed.ts"]
+    restart: "no"
+
+  medusa:
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: apps/medusa/Dockerfile
+    container_name: legacy-crafts-medusa
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/legacy_crafts
+      REDIS_URL: redis://redis:6379
+      MEDUSA_BACKEND_URL: http://localhost:9000
+      JWT_SECRET: supersecret_dev_jwt
+      COOKIE_SECRET: supersecret_dev_cookie
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_API_KEY: masterKey_dev_only_change_me
+      STORE_CORS: http://localhost:3000
+      ADMIN_CORS: http://localhost:9000
+      AUTH_CORS: http://localhost:3000,http://localhost:9000
+    ports:
+      - "9000:9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+      medusa-init:
+        condition: service_completed_successfully
+
+  storefront:
+    profiles: ["apps"]
+    build:
+      context: .
+      dockerfile: apps/storefront/Dockerfile
+      args:
+        NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000
+        NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-}
+        NEXT_PUBLIC_BASE_URL: http://localhost:3000
+    container_name: legacy-crafts-storefront
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000
+      NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-}
+      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      medusa:
+        condition: service_healthy
 
 volumes:
   postgres_data:
