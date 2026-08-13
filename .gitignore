@@ -42,6 +42,10 @@ pnpm-debug.log*
 # runtime data (local service provisioning)
 .data/
 uploads/
+apps/medusa/static/
+
+# local validation screenshots dropped in the repo root
+/*.png
 
 # vercel
 .vercel
