@@ -14,6 +14,7 @@ type AuthState = {
     password: string
     first_name?: string
     last_name?: string
+    phone?: string
   }) => Promise<void>
   logout: () => Promise<void>
 }
@@ -45,12 +46,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  register: async ({ email, password, first_name, last_name }) => {
+  register: async ({ email, password, first_name, last_name, phone }) => {
     set({ loading: true })
     try {
       // 1. Obtain a registration token, 2. create the customer, 3. log in.
       await medusa.auth.register("customer", "emailpass", { email, password })
-      await medusa.store.customer.create({ email, first_name, last_name })
+      await medusa.store.customer.create({ email, first_name, last_name, phone })
       await medusa.auth.login("customer", "emailpass", { email, password })
       const { customer } = await medusa.store.customer.retrieve()
       set({ customer })

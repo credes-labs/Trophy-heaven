@@ -78,10 +78,15 @@ export const bulkApi = {
       method: "GET",
     }),
 
-  confirm: (id: string) =>
-    request<{ cart_id: string | null; line_item_ids: string[] }>(`/store/bulk-orders/${id}/confirm`, {
+  confirm: (id: string, input?: { payment_terms?: "prepaid" | "net_30" | "net_60" }) =>
+    request<{
+      cart_id: string | null
+      line_item_ids: string[]
+      payment_terms: "prepaid" | "net_30" | "net_60"
+      net_terms: boolean
+    }>(`/store/bulk-orders/${id}/confirm`, {
       method: "POST",
-      body: JSON.stringify({}),
+      body: JSON.stringify(input ?? {}),
     }),
 }
 

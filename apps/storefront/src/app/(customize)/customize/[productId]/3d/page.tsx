@@ -11,10 +11,13 @@ export const metadata: Metadata = {
 
 export default async function Customize3DPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ productId: string }>
+  searchParams: Promise<{ design?: string }>
 }) {
   const { productId } = await params
+  const { design } = await searchParams
   const product = await getProductById(productId)
   if (!product) notFound()
 
@@ -29,7 +32,7 @@ export default async function Customize3DPage({
           Rotate the trophy, switch materials, add engraving and your logo, then view it in AR.
         </p>
       </div>
-      <Editor3DLoader product={product} />
+      <Editor3DLoader product={product} designId={design} />
     </div>
   )
 }

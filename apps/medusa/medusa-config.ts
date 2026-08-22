@@ -155,5 +155,11 @@ module.exports = defineConfig({
     { resolve: "./src/modules/corporate-account" },
     // Phase 5: production workflow (jobs + design approvals)
     { resolve: "./src/modules/production-workflow" },
+    // Phase 6: content + engagement
+    { resolve: "./src/modules/blog" },
+    { resolve: "./src/modules/wishlist" },
+    { resolve: "./src/modules/reviews" },
+    // Webhook idempotency store (processed provider event ids)
+    { resolve: "./src/modules/webhook-events" },
   ],
 })

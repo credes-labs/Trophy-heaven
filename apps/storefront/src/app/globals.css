@@ -1,52 +1,370 @@
 @import "tailwindcss";
 
-/*
- * Legacy Crafts design tokens (docs/kit/10 §10.5). Tailwind v4 CSS-first @theme
- * with OKLCH colors. This file is the single source of truth for tokens until
- * the deferred Figma-driven UI/UX phase finalizes the palette.
- */
 @theme {
-  --color-background: oklch(0.99 0.005 95);
-  --color-foreground: oklch(0.2 0.02 60);
-  --color-card: oklch(1 0 0);
-  --color-muted: oklch(0.96 0.008 90);
-  --color-muted-foreground: oklch(0.5 0.02 70);
-  --color-border: oklch(0.9 0.01 85);
+  /* ── Brand Category Colors ── */
 
-  /* Brand: warm heritage gold + deep ink (trophies / craft) */
-  --color-primary: oklch(0.72 0.13 75);
+  --color-trophy: oklch(0.40 0.13 25);
+  --color-trophy-foreground: oklch(0.97 0.005 90);
+  --color-trophy-light: oklch(0.55 0.10 25);
+  --color-trophy-dark: oklch(0.30 0.11 25);
+
+  --color-furniture: oklch(0.20 0.02 260);
+  --color-furniture-light: oklch(0.35 0.03 260);
+  --color-furniture-dark: oklch(0.14 0.02 260);
+
+  --color-artwork: oklch(0.35 0.08 65);
+  --color-artwork-light: oklch(0.50 0.07 65);
+  --color-artwork-dark: oklch(0.25 0.08 65);
+
+  /* ── Neutral Palette ── */
+
+  --color-walnut: oklch(0.22 0.07 35);
+  --color-walnut-foreground: oklch(0.92 0.02 85);
+  --color-stone: oklch(0.57 0.03 80);
+  --color-cream: oklch(0.89 0.03 90);
+  --color-champagne: oklch(0.99 0.005 95);
+  --color-gold: oklch(0.72 0.10 80);
+  /* Darker gold for text on light surfaces — --color-gold only reaches ~2.4:1
+     on champagne; this passes WCAG AA (≥4.5:1) for small text. */
+  --color-gold-dark: oklch(0.50 0.09 78);
+
+  /* ── Semantic Colors ── */
+
+  --color-background: oklch(0.99 0.005 95);
+  --color-foreground: oklch(0.22 0.07 35);
+
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.22 0.07 35);
+
+  --color-muted: oklch(0.96 0.008 90);
+  --color-muted-foreground: oklch(0.50 0.02 70);
+
+  --color-border: oklch(0.90 0.01 85);
+  --color-ring: oklch(0.72 0.10 80);
+
+  --color-primary: oklch(0.72 0.10 80);
   --color-primary-foreground: oklch(0.22 0.02 60);
-  --color-accent: oklch(0.55 0.14 25);
+
+  --color-accent: oklch(0.40 0.13 25);
   --color-accent-foreground: oklch(0.99 0.005 95);
 
   --color-success: oklch(0.72 0.15 150);
-  --color-warning: oklch(0.8 0.15 85);
-  --color-destructive: oklch(0.58 0.2 25);
+  --color-success-foreground: oklch(0.99 0.005 95);
+
+  --color-warning: oklch(0.80 0.15 85);
+  --color-warning-foreground: oklch(0.22 0.07 35);
+
+  --color-destructive: oklch(0.55 0.20 27);
+  --color-destructive-foreground: oklch(0.99 0.005 95);
+
+  /* ── Typography ── */
+
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), "Playfair Display", ui-serif, Georgia, serif;
+  --font-display: var(--font-playfair), "Playfair Display", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  /* ── Fluid Type Scale ── */
+
+  --text-xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
+  --text-sm: clamp(0.8125rem, 0.775rem + 0.15vw, 0.875rem);
+  --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.125rem);
+  --text-xl: clamp(1.1875rem, 1.1rem + 0.4vw, 1.25rem);
+  --text-2xl: clamp(1.375rem, 1.2rem + 0.65vw, 1.5rem);
+  --text-3xl: clamp(1.625rem, 1.35rem + 1vw, 1.875rem);
+  --text-4xl: clamp(2rem, 1.6rem + 1.5vw, 2.25rem);
+  --text-5xl: clamp(2.5rem, 2rem + 2vw, 3rem);
+  --text-6xl: clamp(3rem, 2.25rem + 2.8vw, 3.75rem);
+  --text-hero: clamp(3.5rem, 2.5rem + 4vw, 5rem);
+
+  /* ── Spacing ── */
+
+  --spacing-section: clamp(4rem, 3rem + 4vw, 8rem);
+  --spacing-subsection: clamp(2rem, 1.5rem + 2vw, 4rem);
+
+  /* ── Radius ── */
 
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-full: 9999px;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  /* ── Shadows ── */
+
+  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.06), 0 2px 4px -2px oklch(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.08), 0 4px 6px -4px oklch(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.04);
+  --shadow-card: 0 1px 3px 0 oklch(0 0 0 / 0.04), 0 1px 2px -1px oklch(0 0 0 / 0.03);
+  --shadow-card-hover: 0 10px 20px -4px oklch(0 0 0 / 0.08), 0 4px 8px -4px oklch(0 0 0 / 0.03);
+
+  /* ── Transitions ── */
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 700ms;
 }
 
-:root {
-  color-scheme: light;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: oklch(0.72 0.10 80 / 0.25);
+    color: oklch(0.22 0.07 35);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: oklch(0.96 0.008 90);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.72 0.10 80 / 0.4);
+    border-radius: var(--radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.72 0.10 80 / 0.6);
+  }
+
+  @supports (scrollbar-color: auto) {
+    * {
+      scrollbar-color: oklch(0.72 0.10 80 / 0.4) oklch(0.96 0.008 90);
+      scrollbar-width: thin;
+    }
+  }
 }
 
-* {
-  border-color: var(--color-border);
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn var(--duration-normal) var(--ease-out-expo) both;
+  }
+
+  .animate-slide-up {
+    animation: slideUp var(--duration-slow) var(--ease-out-expo) both;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn var(--duration-normal) var(--ease-out-expo) both;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft var(--duration-slow) var(--ease-out-expo) both;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight var(--duration-slow) var(--ease-out-expo) both;
+  }
+
+  .parallax {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .touch-target {
+    position: relative;
+  }
+
+  .touch-target::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
-body {
-  background-color: var(--color-background);
+.blog-prose {
+  font-size: 1.125rem;
+  line-height: 1.7;
   color: var(--color-foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
 }
 
-/* Respect reduced motion (NFR-2 accessibility). */
+.blog-prose h1,
+.blog-prose h2,
+.blog-prose h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  color: var(--color-foreground);
+}
+
+.blog-prose h1 {
+  font-size: 2rem;
+}
+
+.blog-prose h2 {
+  font-size: 1.5rem;
+}
+
+.blog-prose h3 {
+  font-size: 1.25rem;
+}
+
+.blog-prose p {
+  margin: 1.1em 0;
+}
+
+.blog-prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-prose ul,
+.blog-prose ol {
+  margin: 1.1em 0;
+  padding-left: 1.4em;
+}
+
+.blog-prose li {
+  margin: 0.4em 0;
+}
+
+.blog-prose ul {
+  list-style: none;
+}
+
+.blog-prose ul > li {
+  position: relative;
+  padding-left: 0.35em;
+}
+
+.blog-prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: -1em;
+  top: 0.7em;
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 9999px;
+  background: var(--color-gold);
+}
+
+.blog-prose blockquote {
+  margin: 1.5em 0;
+  padding: 0.25em 0 0.25em 1.25em;
+  border-left: 3px solid var(--color-gold);
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-muted-foreground);
+}
+
+.blog-prose img {
+  display: block;
+  width: 100%;
+  margin: 2em 0;
+  border-radius: var(--radius-lg);
+}
+
+.blog-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-muted);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+.blog-prose pre {
+  margin: 1.5em 0;
+  padding: 1em 1.25em;
+  overflow-x: auto;
+  background: var(--color-muted);
+  border-radius: var(--radius-md);
+}
+
+.blog-prose pre code {
+  background: transparent;
+  padding: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -54,13 +372,15 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Minimum 44px touch targets on interactive controls (NFR-2). */
 @media (pointer: coarse) {
   button,
   a[role="button"],
+  [role="tab"],
+  [role="menuitem"],
   [data-touch-target] {
     min-height: 44px;
     min-width: 44px;

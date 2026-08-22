@@ -11,12 +11,12 @@ import { requireCapability } from "../lib/rbac"
 type Bucket = { count: number; resetAt: number }
 const buckets = new Map<string, Bucket>()
 
-function rateLimit(opts: { windowMs: number; max: number }) {
+function rateLimit(opts: { windowMs: number; max: number; key?: string; strict?: boolean }) {
   return (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
     const now = Date.now()
     const authed = Boolean((req.headers.authorization || req.headers.cookie) as string)
-    const key = `${req.ip ?? "anon"}:${authed ? "auth" : "anon"}`
-    const max = authed ? opts.max * 10 : opts.max
+    const key = `${req.ip ?? "anon"}:${authed ? "auth" : "anon"}:${opts.key ?? "global"}`
+    const max = authed && !opts.strict ? opts.max * 10 : opts.max
 
     let bucket = buckets.get(key)
     if (!bucket || bucket.resetAt < now) {
@@ -41,9 +41,28 @@ function rateLimit(opts: { windowMs: number; max: number }) {
 export default defineMiddlewares({
   routes: [
     { matcher: "/store/*", middlewares: [rateLimit({ windowMs: 60_000, max: 100 })] },
+    { matcher: "/admin/*", middlewares: [rateLimit({ windowMs: 60_000, max: 200 })] },
     { matcher: "/auth/*", middlewares: [rateLimit({ windowMs: 60_000, max: 20 })] },
+    // Write-sensitive endpoints get strict per-customer limits (no authed multiplier).
+    {
+      matcher: "/store/reviews",
+      method: ["POST"],
+      middlewares: [rateLimit({ windowMs: 60_000, max: 5, key: "reviews", strict: true })],
+    },
+    {
+      matcher: "/store/wishlist",
+      method: ["POST"],
+      middlewares: [rateLimit({ windowMs: 60_000, max: 30, key: "wishlist", strict: true })],
+    },
     // Bulk upload is heavier — tighten the window for the upload endpoint.
     { matcher: "/store/bulk-orders/*/upload", middlewares: [rateLimit({ windowMs: 60_000, max: 10 })] },
+    // Razorpay webhooks: preserve raw body for HMAC; no JWT (signature-verified).
+    {
+      matcher: "/webhooks/razorpay",
+      method: ["POST"],
+      bodyParser: { preserveRawBody: true },
+      middlewares: [rateLimit({ windowMs: 60_000, max: 1000 })],
+    },
     // Admin corporate management requires the `corporate:manage` capability.
     {
       matcher: "/admin/corporate-profiles/*",

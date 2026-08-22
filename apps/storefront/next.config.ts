@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.amazonaws.com" },
       { protocol: "http", hostname: backendHost },
       { protocol: "https", hostname: backendHost },
+      // Dev servers run on non-default ports, which remotePatterns does not
+      // match without an explicit port entry.
+      { protocol: "http", hostname: "localhost", port: "3000" },
+      { protocol: "http", hostname: "localhost", port: "9000" },
+      { protocol: "http", hostname: "127.0.0.1", port: "3000" },
+      { protocol: "http", hostname: "127.0.0.1", port: "9000" },
     ],
   },
   transpilePackages: ["@legacy-crafts/schemas"],

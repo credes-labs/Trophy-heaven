@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import type { HttpTypes } from "@medusajs/types"
 import { useCartStore, CART_ID_KEY } from "@/stores/cart-store"
@@ -10,47 +11,68 @@ import {
   setShippingMethod,
   initPayment,
   completeCart,
+  isNetTermsCart,
+  getCartPaymentMeta,
+  getRazorpaySessionData,
 } from "@/lib/data/checkout"
-import { Button } from "@/components/ui/button"
-import { formatMoney } from "@/lib/format"
+import { openCheckout, verifyRazorpayPayment } from "@/lib/razorpay"
+import { StepIndicator, type CheckoutStep } from "@/components/features/checkout/step-indicator"
+import { AddressForm, type AddressFormValues } from "@/components/features/checkout/address-form"
+import { DeliveryOptions } from "@/components/features/checkout/delivery-options"
+import { PaymentStep, type PaymentMethod } from "@/components/features/checkout/payment-step"
+import { ReviewStep, paymentMethodLabel } from "@/components/features/checkout/review-step"
+import { CheckoutSummary } from "@/components/features/checkout/checkout-summary"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
-type Step = "address" | "delivery" | "payment" | "review"
+const RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? ""
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, init } = useCartStore()
-  const [step, setStep] = useState<Step>("address")
+  const [step, setStep] = useState<CheckoutStep>("address")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [shippingOptions, setShippingOptions] = useState<HttpTypes.StoreCartShippingOption[]>([])
-  const [selectedOption, setSelectedOption] = useState<string>("")
+  const [selectedOption, setSelectedOption] = useState("")
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("razorpay")
 
   useEffect(() => {
     void init()
   }, [init])
 
   const currency = cart?.currency_code ?? "inr"
+  const netTerms = isNetTermsCart(cart)
+  const paymentMeta = getCartPaymentMeta(cart)
+  const razorpayEnabled = Boolean(RAZORPAY_KEY) && !netTerms
 
-  async function handleAddress(form: FormData) {
+  useEffect(() => {
+    if (netTerms) setPaymentMethod("net_terms")
+  }, [netTerms])
+
+  async function handleAddress(values: AddressFormValues) {
     if (!cart) return
     setBusy(true)
     setError(null)
     try {
-      await setAddresses(cart.id, {
-        email: String(form.get("email")),
+      const updated = await setAddresses(cart.id, {
+        email: values.email,
         shipping_address: {
-          first_name: String(form.get("first_name")),
-          last_name: String(form.get("last_name")),
-          address_1: String(form.get("address_1")),
-          city: String(form.get("city")),
-          postal_code: String(form.get("postal_code")),
-          country_code: String(form.get("country_code")).toLowerCase(),
-          phone: String(form.get("phone")),
+          first_name: values.first_name,
+          last_name: values.last_name,
+          address_1: values.address_1,
+          address_2: values.address_2,
+          city: values.city,
+          postal_code: values.postal_code,
+          country_code: values.country_code,
+          phone: values.phone,
         },
         same_as_billing: true,
       })
+      useCartStore.setState({ cart: updated })
       const options = await listShippingOptions(cart.id)
       setShippingOptions(options)
+      if (options[0]) setSelectedOption(options[0].id)
       setStep("delivery")
     } catch (e) {
       setError((e as Error).message)
@@ -64,8 +86,9 @@ export default function CheckoutPage() {
     setBusy(true)
     setError(null)
     try {
-      await setShippingMethod(cart.id, selectedOption)
-      await initPayment(cart.id)
+      const updated = await setShippingMethod(cart.id, selectedOption)
+      useCartStore.setState({ cart: updated })
+      await initPayment(cart.id, { netTerms: isNetTermsCart(updated) })
       setStep("payment")
     } catch (e) {
       setError((e as Error).message)
@@ -74,143 +97,180 @@ export default function CheckoutPage() {
     }
   }
 
+  async function finishOrder() {
+    if (!cart) return
+    const res = await completeCart(cart.id)
+    if (res.type === "order") {
+      localStorage.removeItem(CART_ID_KEY)
+      useCartStore.setState({ cart: null })
+      router.push(`/order/confirmed/${res.order.id}`)
+    } else {
+      setError("Payment could not be completed. Please retry.")
+    }
+  }
+
   async function handlePlaceOrder() {
     if (!cart) return
     setBusy(true)
     setError(null)
     try {
-      const res = await completeCart(cart.id)
-      if (res.type === "order") {
-        localStorage.removeItem(CART_ID_KEY)
-        useCartStore.setState({ cart: null })
-        router.push(`/order/confirmed/${res.order.id}`)
-      } else {
-        setError("Payment could not be completed. Please retry.")
+      if (razorpayEnabled && paymentMethod === "razorpay") {
+        const paymentCollection = await initPayment(cart.id, { netTerms: false })
+        const sessionData = getRazorpaySessionData(paymentCollection)
+        const latest = await useCartStore.getState().cart
+        // Prefer the amount stored on the Medusa payment session; fall back to
+        // the client-computed cart total only when the session lacks one.
+        const amountPaise =
+          sessionData.amountPaise ?? Math.round((latest?.total ?? cart.total ?? 0) * 100)
+        const addr = cart.shipping_address
+
+        const result = await openCheckout({
+          key: RAZORPAY_KEY,
+          amount: amountPaise,
+          currency: (currency || "INR").toUpperCase(),
+          name: "Legacy Crafts",
+          description: `Order ${cart.id}`,
+          order_id: sessionData.orderId,
+          prefill: {
+            email: cart.email ?? undefined,
+            contact: addr?.phone ?? undefined,
+            name: [addr?.first_name, addr?.last_name].filter(Boolean).join(" ") || undefined,
+          },
+          theme: { color: "#8A2D25" },
+          handler: (response) => {
+            void (async () => {
+              // Never complete the cart on an unverified Razorpay response.
+              const verified = await verifyRazorpayPayment(response)
+              if (!verified) {
+                setError(
+                  "Payment could not be verified. If money was debited, contact support with your payment reference."
+                )
+                return
+              }
+              await finishOrder()
+            })().finally(() => setBusy(false))
+          },
+          modal: {
+            ondismiss: () => {
+              setBusy(false)
+              setError("Payment cancelled. You can try again when ready.")
+            },
+          },
+        })
+
+        if (result.skipped) {
+          await finishOrder()
+          setBusy(false)
+        }
+        return
       }
+
+      await finishOrder()
+      setBusy(false)
     } catch (e) {
       setError((e as Error).message)
-    } finally {
       setBusy(false)
     }
   }
 
   if (!cart) {
-    return <div className="mx-auto max-w-2xl px-4 py-16 text-muted-foreground">Loading checkout…</div>
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-muted-foreground">Loading checkout…</div>
+    )
   }
+
+  if (!(cart.items?.length)) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <p className="text-muted-foreground">Your cart is empty.</p>
+        <Link href="/shop" className={cn(buttonVariants({ variant: "trophy", className: "mt-4" }))}>
+          Continue shopping
+        </Link>
+      </div>
+    )
+  }
+
+  const selectedShipping = shippingOptions.find((o) => o.id === selectedOption)
+  const shippingLabel = selectedShipping?.name ?? "Selected at delivery"
+  const payLabel = netTerms
+    ? `Corporate ${paymentMeta.payment_terms === "net_60" ? "Net 60" : "Net 30"}`
+    : paymentMethodLabel(paymentMethod, razorpayEnabled)
+
+  const netTermsLabel = netTerms
+    ? `Billed on ${paymentMeta.payment_terms === "net_60" ? "Net 60" : "Net 30"}${
+        paymentMeta.po_number ? ` · PO ${String(paymentMeta.po_number)}` : ""
+      }`
+    : null
 
   return (
     <div className="mx-auto grid max-w-5xl gap-10 px-4 py-10 lg:grid-cols-[1fr_320px]">
       <div>
         <h1 className="font-serif text-3xl font-semibold">Checkout</h1>
-        <ol className="mt-4 flex gap-2 text-xs text-muted-foreground">
-          {(["address", "delivery", "payment", "review"] as Step[]).map((s) => (
-            <li key={s} className={step === s ? "font-semibold text-accent" : ""}>
-              {s.charAt(0).toUpperCase() + s.slice(1)}
-            </li>
-          ))}
-        </ol>
+        <StepIndicator current={step} className="mt-6" />
 
         {error && (
-          <p className="mt-4 rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          <p className="mt-4 rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive" role="alert">
             {error}
           </p>
         )}
 
         {step === "address" && (
-          <form
-            action={handleAddress}
-            className="mt-6 grid grid-cols-2 gap-4"
-            aria-label="Shipping address"
-          >
-            <input name="email" type="email" required placeholder="Email" className="col-span-2 h-11 rounded-md border px-3" />
-            <input name="first_name" required placeholder="First name" className="h-11 rounded-md border px-3" />
-            <input name="last_name" required placeholder="Last name" className="h-11 rounded-md border px-3" />
-            <input name="address_1" required placeholder="Address" className="col-span-2 h-11 rounded-md border px-3" />
-            <input name="city" required placeholder="City" className="h-11 rounded-md border px-3" />
-            <input name="postal_code" required placeholder="Postal code" className="h-11 rounded-md border px-3" />
-            <input name="country_code" required defaultValue="in" placeholder="Country (e.g. in)" className="h-11 rounded-md border px-3" />
-            <input name="phone" placeholder="Phone" className="h-11 rounded-md border px-3" />
-            <Button type="submit" disabled={busy} className="col-span-2">
-              Continue to delivery
-            </Button>
-          </form>
+          <AddressForm
+            busy={busy}
+            onSubmit={handleAddress}
+            defaults={{
+              email: cart.email ?? undefined,
+              first_name: cart.shipping_address?.first_name ?? undefined,
+              last_name: cart.shipping_address?.last_name ?? undefined,
+              address_1: cart.shipping_address?.address_1 ?? undefined,
+              city: cart.shipping_address?.city ?? undefined,
+              postal_code: cart.shipping_address?.postal_code ?? undefined,
+              country_code: cart.shipping_address?.country_code ?? "in",
+              phone: cart.shipping_address?.phone ?? undefined,
+            }}
+          />
         )}
 
         {step === "delivery" && (
-          <div className="mt-6 space-y-3">
-            {shippingOptions.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No shipping options configured for this region yet.
-              </p>
-            )}
-            {shippingOptions.map((o) => (
-              <label
-                key={o.id}
-                className="flex cursor-pointer items-center justify-between rounded-md border p-4"
-              >
-                <span className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="ship"
-                    value={o.id}
-                    checked={selectedOption === o.id}
-                    onChange={() => setSelectedOption(o.id)}
-                  />
-                  {o.name}
-                </span>
-                <span className="text-sm">{formatMoney(o.amount ?? 0, currency)}</span>
-              </label>
-            ))}
-            <Button onClick={handleDelivery} disabled={busy || !selectedOption}>
-              Continue to payment
-            </Button>
-          </div>
+          <DeliveryOptions
+            options={shippingOptions}
+            selectedId={selectedOption}
+            onSelect={setSelectedOption}
+            currency={currency}
+            busy={busy}
+            onBack={() => setStep("address")}
+            onContinue={handleDelivery}
+          />
         )}
 
         {step === "payment" && (
-          <div className="mt-6 space-y-4">
-            <div className="rounded-md border p-4">
-              <p className="font-medium">Payment</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                India payments via Razorpay (UPI, cards, net banking). International via Stripe.
-                In test mode the system provider is used.
-              </p>
-            </div>
-            <Button onClick={() => setStep("review")} disabled={busy}>
-              Review order
-            </Button>
-          </div>
+          <PaymentStep
+            netTerms={netTerms}
+            paymentMeta={paymentMeta}
+            method={paymentMethod}
+            onMethodChange={setPaymentMethod}
+            razorpayEnabled={razorpayEnabled}
+            busy={busy}
+            onBack={() => setStep("delivery")}
+            onContinue={() => setStep("review")}
+          />
         )}
 
         {step === "review" && (
-          <div className="mt-6 space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Custom trophy orders are non-returnable. Please review your design and details.
-            </p>
-            <Button onClick={handlePlaceOrder} disabled={busy}>
-              {busy ? "Placing order…" : "Place order"}
-            </Button>
-          </div>
+          <ReviewStep
+            cart={cart}
+            currency={currency}
+            shippingLabel={shippingLabel}
+            paymentLabel={payLabel}
+            netTerms={netTerms}
+            busy={busy}
+            onBack={() => setStep("payment")}
+            onPlaceOrder={handlePlaceOrder}
+          />
         )}
       </div>
 
-      <aside className="h-fit rounded-lg border p-5">
-        <h2 className="font-medium">Summary</h2>
-        <ul className="mt-3 space-y-2 text-sm">
-          {(cart.items ?? []).map((i) => (
-            <li key={i.id} className="flex justify-between">
-              <span className="text-muted-foreground">
-                {i.product_title} × {i.quantity}
-              </span>
-              <span>{formatMoney((i.unit_price ?? 0) * (i.quantity ?? 1), currency)}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 flex justify-between border-t pt-3 font-semibold">
-          <span>Total</span>
-          <span>{formatMoney(cart.total ?? 0, currency)}</span>
-        </div>
-      </aside>
+      <CheckoutSummary cart={cart} currency={currency} netTermsLabel={netTermsLabel} />
     </div>
   )
 }

@@ -12,8 +12,14 @@ import {
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { Modules, ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
-import type { ExecArgs } from "@medusajs/framework/types"
+import type { CreateProductWorkflowInputDTO, ExecArgs } from "@medusajs/framework/types"
 import { generateSku } from "../lib/sku"
+
+// Medusa's default local file provider won't serve the storefront assets, so in
+// dev we point product imagery at the storefront origin (see
+// apps/storefront/public/images/manifest.json).
+const STOREFRONT_URL = process.env.STOREFRONT_URL ?? "http://localhost:3000"
+const productImage = (file: string) => `${STOREFRONT_URL}/images/products/${file}`
 
 /**
  * Seeds the Legacy Crafts catalog: regions (India/INR + International/USD), the
@@ -85,7 +91,9 @@ export default async function seed({ container }: ExecArgs) {
     entity: "stock_location",
     fields: ["id", "name"],
   })
-  let stockLocation = existingLocations.find((l: { name: string }) => l.name === "Legacy Crafts Workshop")
+  let stockLocation: { id: string; name: string } | undefined = existingLocations.find(
+    (l: { name: string }) => l.name === "Legacy Crafts Workshop"
+  )
   if (!stockLocation) {
     const { result: stockLocations } = await createStockLocationsWorkflow(container).run({
       input: {
@@ -98,6 +106,9 @@ export default async function seed({ container }: ExecArgs) {
       },
     })
     stockLocation = stockLocations[0]
+  }
+  if (!stockLocation) {
+    throw new Error("Failed to find or create the Legacy Crafts Workshop stock location.")
   }
 
   await linkSalesChannelsToStockLocationWorkflow(container)
@@ -282,14 +293,17 @@ export default async function seed({ container }: ExecArgs) {
     { label: 'XL (12")', token: "12IN" },
   ]
 
-  const productsToCreate = []
+  const productsToCreate: CreateProductWorkflowInputDTO[] = []
 
   if (!productTitles.has("Crystal Star Award")) {
     productsToCreate.push({
       title: "Crystal Star Award",
+      handle: "crystal-star-award",
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Crystal"], categoryByName["Corporate"]].filter(Boolean),
       description: "Fully customizable crystal star trophy with 2D + 3D preview.",
+      thumbnail: productImage("trophy-crystal-star.png"),
+      images: [{ url: productImage("trophy-crystal-star.png") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "full_3d",
@@ -306,8 +320,8 @@ export default async function seed({ container }: ExecArgs) {
         sku: generateSku({ category: "Crystal", shape: "Star", material: "Crystal", size: s.token }),
         options: { Size: s.label, Material: "Clear Crystal" },
         prices: [
-          { amount: 249900, currency_code: "inr" },
-          { amount: 3499, currency_code: "usd" },
+          { amount: 2499, currency_code: "inr" },
+          { amount: 34.99, currency_code: "usd" },
         ],
         manage_inventory: true,
       })),
@@ -317,9 +331,12 @@ export default async function seed({ container }: ExecArgs) {
   if (!productTitles.has("Engraved Wooden Plaque")) {
     productsToCreate.push({
       title: "Engraved Wooden Plaque",
+      handle: "engraved-wooden-plaque",
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Academic"]].filter(Boolean),
       description: "Text-engravable wooden plaque for academic awards.",
+      thumbnail: productImage("trophy-acrylic-plaque.png"),
+      images: [{ url: productImage("trophy-acrylic-plaque.png") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -344,9 +361,12 @@ export default async function seed({ container }: ExecArgs) {
   if (!productTitles.has("Oak Side Table")) {
     productsToCreate.push({
       title: "Oak Side Table",
+      handle: "oak-side-table",
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Tables"]].filter(Boolean),
       description: "Solid oak side table — a standard (non-customizable) catalog product.",
+      thumbnail: productImage("furniture-oak-table.png"),
+      images: [{ url: productImage("furniture-oak-table.png") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "oak" },
       options: [{ title: "Finish", values: ["Natural", "Walnut"] }],
@@ -363,11 +383,222 @@ export default async function seed({ container }: ExecArgs) {
     })
   }
 
+  if (!productTitles.has("Champion Metal Cup")) {
+    productsToCreate.push({
+      title: "Champion Metal Cup",
+      handle: "champion-metal-cup",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Metal"], categoryByName["Sports"]].filter(Boolean),
+      description: "Brass-and-gold metal cup trophy with warm highlights — engravable plate included.",
+      thumbnail: productImage("trophy-metal-cup.png"),
+      images: [{ url: productImage("trophy-metal-cup.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: {
+        customization_level: "text_only",
+        material: "brass",
+        occasion: "sports",
+        shape: "cup",
+      },
+      options: [{ title: "Size", values: [sizes[1].label, sizes[2].label, sizes[3].label] }],
+      variants: [sizes[1], sizes[2], sizes[3]].map((s) => ({
+        title: `Metal Cup — ${s.label}`,
+        sku: generateSku({ category: "Metal", shape: "Cup", material: "Brass", size: s.token }),
+        options: { Size: s.label },
+        prices: [
+          { amount: 1499, currency_code: "inr" },
+          { amount: 21.99, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
+  if (!productTitles.has("Acrylic Award Plaque")) {
+    productsToCreate.push({
+      title: "Acrylic Award Plaque",
+      handle: "acrylic-award-plaque",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Acrylic"], categoryByName["Corporate"]].filter(Boolean),
+      description: "Modern acrylic award plaque with subtle brass accents and custom engraving.",
+      thumbnail: productImage("trophy-acrylic-plaque.png"),
+      images: [{ url: productImage("trophy-acrylic-plaque.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: {
+        customization_level: "text_and_logo",
+        material: "acrylic",
+        occasion: "corporate",
+        shape: "plaque",
+      },
+      options: [{ title: "Size", values: [sizes[0].label, sizes[1].label, sizes[2].label] }],
+      variants: [sizes[0], sizes[1], sizes[2]].map((s) => ({
+        title: `Acrylic Plaque — ${s.label}`,
+        sku: generateSku({ category: "Acry", shape: "Plaque", material: "Acrylic", size: s.token }),
+        options: { Size: s.label },
+        prices: [
+          { amount: 599, currency_code: "inr" },
+          { amount: 8.99, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
+  if (!productTitles.has("Walnut Dining Chair")) {
+    productsToCreate.push({
+      title: "Walnut Dining Chair",
+      handle: "walnut-dining-chair",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Chairs"]].filter(Boolean),
+      description: "Walnut dining chair with refined joinery — built to outlive trends.",
+      thumbnail: productImage("furniture-walnut-chair.png"),
+      images: [{ url: productImage("furniture-walnut-chair.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: { customization_level: "none", material: "walnut" },
+      options: [{ title: "Finish", values: ["Natural", "Espresso"] }],
+      variants: ["Natural", "Espresso"].map((finish) => ({
+        title: `Walnut Dining Chair — ${finish}`,
+        sku: generateSku({ category: "Furn", shape: "Chair", material: "Walnut", size: finish }),
+        options: { Finish: finish },
+        prices: [
+          { amount: 8999, currency_code: "inr" },
+          { amount: 124, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
+  if (!productTitles.has("Teak Wall Shelf")) {
+    productsToCreate.push({
+      title: "Teak Wall Shelf",
+      handle: "teak-wall-shelf",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Shelves"]].filter(Boolean),
+      description: "Handcrafted teak wall shelf with a golden grain and invisible mounting.",
+      thumbnail: productImage("furniture-teak-shelf.png"),
+      images: [{ url: productImage("furniture-teak-shelf.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: { customization_level: "none", material: "teak" },
+      options: [{ title: "Length", values: ["60 cm", "90 cm"] }],
+      variants: ["60 cm", "90 cm"].map((length) => ({
+        title: `Teak Wall Shelf — ${length}`,
+        sku: generateSku({ category: "Furn", shape: "Shelf", material: "Teak", size: length }),
+        options: { Length: length },
+        prices: [
+          { amount: 4999, currency_code: "inr" },
+          { amount: 69, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
+  if (!productTitles.has("Handmade Ceramic Vase")) {
+    productsToCreate.push({
+      title: "Handmade Ceramic Vase",
+      handle: "handmade-ceramic-vase",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Vases"]].filter(Boolean),
+      description: "Hand-thrown ceramic vase with an artisan glaze — no two are alike.",
+      thumbnail: productImage("art-ceramic-vase.png"),
+      images: [{ url: productImage("art-ceramic-vase.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: { customization_level: "none", material: "ceramic" },
+      options: [{ title: "Size", values: ["Small", "Large"] }],
+      variants: ["Small", "Large"].map((size) => ({
+        title: `Ceramic Vase — ${size}`,
+        sku: generateSku({ category: "Deco", shape: "Vase", material: "Ceramic", size }),
+        options: { Size: size },
+        prices: [
+          { amount: 2499, currency_code: "inr" },
+          { amount: 34.99, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
+  if (!productTitles.has("Brass Table Lamp")) {
+    productsToCreate.push({
+      title: "Brass Table Lamp",
+      handle: "brass-table-lamp",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Lamps"]].filter(Boolean),
+      description: "Brass table lamp with a warm metallic patina, hand-polished in our workshop.",
+      thumbnail: productImage("art-brass-lamp.png"),
+      images: [{ url: productImage("art-brass-lamp.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: { customization_level: "none", material: "brass" },
+      options: [{ title: "Shade", values: ["Ivory Linen", "Charcoal Linen"] }],
+      variants: ["Ivory Linen", "Charcoal Linen"].map((shade) => ({
+        title: `Brass Table Lamp — ${shade}`,
+        sku: generateSku({ category: "Deco", shape: "Lamp", material: "Brass", size: shade }),
+        options: { Shade: shade },
+        prices: [
+          { amount: 3999, currency_code: "inr" },
+          { amount: 55, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
+  if (!productTitles.has("Handwoven Wall Textile")) {
+    productsToCreate.push({
+      title: "Handwoven Wall Textile",
+      handle: "handwoven-wall-textile",
+      status: ProductStatus.PUBLISHED,
+      category_ids: [categoryByName["Wall Art"]].filter(Boolean),
+      description: "Handwoven wall textile in olive and brass tones — a quiet statement piece.",
+      thumbnail: productImage("art-wall-textile.png"),
+      images: [{ url: productImage("art-wall-textile.png") }],
+      sales_channels: [{ id: defaultSalesChannel.id }],
+      metadata: { customization_level: "none", material: "cotton" },
+      options: [{ title: "Size", values: ["90 × 120 cm", "120 × 180 cm"] }],
+      variants: ["90 × 120 cm", "120 × 180 cm"].map((size) => ({
+        title: `Wall Textile — ${size}`,
+        sku: generateSku({ category: "Deco", shape: "Textile", material: "Cotton", size }),
+        options: { Size: size },
+        prices: [
+          { amount: 5999, currency_code: "inr" },
+          { amount: 83, currency_code: "usd" },
+        ],
+        manage_inventory: true,
+      })),
+    })
+  }
+
   if (productsToCreate.length) {
     await createProductsWorkflow(container).run({ input: { products: productsToCreate } })
     logger.info(`Created ${productsToCreate.length} sample product(s).`)
   } else {
     logger.info("Sample products already present; skipping product create.")
+  }
+
+  // ── Backfill imagery for products seeded before thumbnails were set ────────
+  const imageByTitle: Record<string, string> = {
+    "Crystal Star Award": "trophy-crystal-star.png",
+    "Engraved Wooden Plaque": "trophy-acrylic-plaque.png",
+    "Oak Side Table": "furniture-oak-table.png",
+    "Champion Metal Cup": "trophy-metal-cup.png",
+    "Acrylic Award Plaque": "trophy-acrylic-plaque.png",
+    "Walnut Dining Chair": "furniture-walnut-chair.png",
+    "Teak Wall Shelf": "furniture-teak-shelf.png",
+    "Handmade Ceramic Vase": "art-ceramic-vase.png",
+    "Brass Table Lamp": "art-brass-lamp.png",
+    "Handwoven Wall Textile": "art-wall-textile.png",
+  }
+  const productModule = container.resolve(Modules.PRODUCT)
+  const { data: seededProducts } = await query.graph({
+    entity: "product",
+    fields: ["id", "title", "thumbnail"],
+  })
+  for (const p of seededProducts as Array<{ id: string; title: string; thumbnail?: string | null }>) {
+    const file = imageByTitle[p.title]
+    if (!file || p.thumbnail) continue
+    const url = productImage(file)
+    await productModule.updateProducts(p.id, { thumbnail: url, images: [{ url }] })
+    logger.info(`Backfilled imagery for product: ${p.title}`)
   }
 
   // ── Inventory levels at the workshop (so manage_inventory variants sell) ────
@@ -419,6 +650,69 @@ export default async function seed({ container }: ExecArgs) {
     }
   }
   logger.info("Ensured products are linked to the default shipping profile.")
+
+  // ── Promotions (so coupon/promo flows work out of the box) ────────────────
+  // Promotions without a campaign stay `draft` in Medusa v2, so each code is
+  // created inside (or attached to) an active campaign window.
+  const promotionModule = container.resolve(Modules.PROMOTION)
+  const campaignWindow = {
+    name: "Legacy Offers",
+    campaign_identifier: "legacy-offers",
+    description: "Storewide Legacy Crafts offers",
+    starts_at: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    ends_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+  }
+  const seedPromotions = [
+    {
+      code: "WELCOME10",
+      type: "standard",
+      application_method: {
+        type: "percentage",
+        target_type: "order",
+        allocation: "across",
+        value: 10,
+      },
+    },
+    {
+      code: "LEGACY500",
+      type: "standard",
+      application_method: {
+        type: "fixed",
+        target_type: "order",
+        allocation: "across",
+        value: 500,
+        currency_code: "inr",
+      },
+    },
+  ] as const
+  for (const promo of seedPromotions) {
+    const [existing] = await promotionModule.listPromotions(
+      { code: promo.code },
+      { relations: ["campaign"] }
+    )
+    if (existing) {
+      if (!existing.campaign) {
+        let [campaign] = await promotionModule.listCampaigns({
+          campaign_identifier: [campaignWindow.campaign_identifier],
+        })
+        if (!campaign) {
+          campaign = await promotionModule.createCampaigns(campaignWindow as never)
+        }
+        await promotionModule.addPromotionsToCampaign({
+          id: campaign.id,
+          promotion_ids: [existing.id],
+        } as never)
+        logger.info(`Attached promotion to campaign: ${promo.code}`)
+      }
+      if (existing.status !== "active") {
+        await promotionModule.updatePromotions({ id: existing.id, status: "active" } as never)
+        logger.info(`Activated promotion: ${promo.code}`)
+      }
+      continue
+    }
+    await promotionModule.createPromotions({ ...promo, campaign: campaignWindow } as never)
+    logger.info(`Created promotion: ${promo.code}`)
+  }
 
   logger.info("Seed complete.")
 }

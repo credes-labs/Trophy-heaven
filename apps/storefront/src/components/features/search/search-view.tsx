@@ -71,7 +71,7 @@ export function SearchView() {
       {!available && (
         <p className="mt-4 rounded-md bg-muted p-3 text-sm text-muted-foreground">
           Live search is offline. Browse the{" "}
-          <Link href="/categories/trophies-awards" className="text-accent hover:underline">
+          <Link href="/shop" className="text-accent hover:underline">
             catalog
           </Link>{" "}
           instead.

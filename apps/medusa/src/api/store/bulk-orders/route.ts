@@ -2,6 +2,8 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { z } from "zod"
 import { BULK_ORDER } from "../../../modules/bulk-order"
 import type BulkOrderService from "../../../modules/bulk-order/service"
+import { CORPORATE_ACCOUNT } from "../../../modules/corporate-account"
+import type CorporateService from "../../../modules/corporate-account/service"
 import { getActorId } from "../../../lib/auth-context"
 
 const CreateBulkOrderSchema = z.object({
@@ -28,13 +30,35 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     })
   }
 
+  const corporateProfileId = parsed.data.corporate_profile_id ?? null
+  if (corporateProfileId) {
+    const corporate = req.scope.resolve<CorporateService>(CORPORATE_ACCOUNT)
+    const profile = await corporate.retrieveCorporateProfile(corporateProfileId).catch(() => null)
+    if (!profile) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Corporate profile not found." },
+      })
+    }
+    const members = await corporate.listTeamMembers({
+      corporate_profile_id: corporateProfileId,
+      customer_id: customerId,
+      status: "active",
+    })
+    const isOwner = profile.customer_id === customerId
+    if (!isOwner && members.length === 0) {
+      return res.status(403).json({
+        error: { code: "FORBIDDEN", message: "Not a member of this corporate account." },
+      })
+    }
+  }
+
   const service = req.scope.resolve<BulkOrderService>(BULK_ORDER)
   const bulk_order = await service.createBulkOrders({
     customer_id: customerId,
     product_id: parsed.data.product_id,
     variant_id: parsed.data.variant_id ?? null,
     po_number: parsed.data.po_number ?? null,
-    corporate_profile_id: parsed.data.corporate_profile_id ?? null,
+    corporate_profile_id: corporateProfileId,
     status: "draft",
     total_items: 0,
   })

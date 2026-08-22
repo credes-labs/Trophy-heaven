@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { getCategoryByHandle, listProducts } from "@/lib/data/catalog"
 import { ProductCard } from "@/components/features/catalog/product-card"
+import { categoryKeyFromHandle, CATEGORY_CONFIG } from "@/lib/category-config"
 
 export const revalidate = 300
 
@@ -11,9 +12,26 @@ type Props = {
   searchParams: Promise<{ page?: string; order?: string }>
 }
 
+/** Top-level Medusa handles → branded category routes */
+const TOP_LEVEL_REDIRECTS: Record<string, string> = {
+  trophies: "/trophies",
+  furniture: "/furniture",
+  "home-decor": "/artwork",
+  artwork: "/artwork",
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const handle = slug[slug.length - 1]
+  const key = categoryKeyFromHandle(handle)
+  if (slug.length === 1 && key) {
+    const config = CATEGORY_CONFIG[key]
+    return {
+      title: config.headline,
+      description: config.description,
+      alternates: { canonical: config.href },
+    }
+  }
   const category = await getCategoryByHandle(handle).catch(() => null)
   if (!category) return { title: "Category" }
   return {
@@ -31,16 +49,19 @@ const SORT_OPTIONS = [
   { label: "Price: High to Low", value: "-variants.calculated_price" },
 ]
 
-export default async function CategoryPage({ params, searchParams }: Props) {
+export default async function CategoryCatchAllPage({ params, searchParams }: Props) {
   const { slug } = await params
   const { page = "1", order = "-created_at" } = await searchParams
   const handle = slug[slug.length - 1]
+
+  if (slug.length === 1 && TOP_LEVEL_REDIRECTS[handle]) {
+    redirect(TOP_LEVEL_REDIRECTS[handle])
+  }
 
   const category = await getCategoryByHandle(handle).catch(() => null)
   if (!category) notFound()
 
   const currentPage = Math.max(1, Number(page) || 1)
-  // Include descendant categories so a parent (e.g. Trophies) shows all products.
   const categoryIds = [
     category.id,
     ...(category.category_children?.map((c) => c.id) ?? []),
@@ -53,6 +74,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   }).catch(() => ({ products: [], count: 0 }))
 
   const totalPages = Math.max(1, Math.ceil(count / PAGE_SIZE))
+  const accent = categoryKeyFromHandle(category.handle ?? handle)
+  const accentToken = accent ? CATEGORY_CONFIG[accent].accent : undefined
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -89,13 +112,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </form>
       </div>
 
-      {/* Subcategory chips (FR-CAT-1 nesting) */}
       {category.category_children?.length ? (
         <div className="mt-4 flex flex-wrap gap-2">
           {category.category_children.map((child) => (
             <Link
               key={child.id}
-              href={`/categories/${child.handle}`}
+              href={`/categories/${slug[0]}/${child.handle}`}
               className="rounded-full border px-3 py-1 text-xs hover:bg-muted"
             >
               {child.name}
@@ -108,7 +130,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         <>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} accent={accentToken} />
             ))}
           </div>
 

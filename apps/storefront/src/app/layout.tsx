@@ -1,44 +1,105 @@
 import type { Metadata } from "next"
-import { Inter, Fraunces } from "next/font/google"
+import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
+import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/features/cart/cart-drawer"
-import { Analytics } from "@/components/analytics"
+import { MobileNav } from "@/components/layout/mobile-nav"
 import { PWARegister } from "@/components/pwa-register"
+import { Analytics } from "@/components/analytics"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" })
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" })
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+})
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
   title: {
     default: "Legacy Crafts — Custom Trophies, Furniture & Home Decor",
-    template: "%s · Legacy Crafts",
+    template: "Legacy Crafts | %s",
   },
   description:
-    "Design custom trophies in 2D and 3D. Premium trophies, furniture, and home decor with real-time customization.",
-  openGraph: { type: "website", siteName: "Legacy Crafts" },
+    "Premium handcrafted trophies, bespoke furniture, and curated artwork. Designed and made in India with heritage craftsmanship.",
+  openGraph: {
+    type: "website",
+    siteName: "Legacy Crafts",
+    locale: "en_IN",
+    images: [{ url: "/images/hero/hero-workshop.png", width: 1200, height: 630 }],
+  },
+  twitter: { card: "summary_large_image" },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Legacy Crafts",
+    url: baseUrl,
+    logo: `${baseUrl}/icon.png`,
+    description:
+      "Premium handcrafted trophies, bespoke furniture, and curated artwork. Designed and made in India with heritage craftsmanship.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Bangalore",
+      addressRegion: "Karnataka",
+      addressCountry: "IN",
+    },
+  }
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Legacy Crafts",
+    url: baseUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${baseUrl}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  }
+
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="flex min-h-screen flex-col">
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <body className="font-sans bg-background text-foreground antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Providers>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-card focus:px-4 focus:py-2"
           >
             Skip to content
           </a>
+          <AnnouncementBar />
           <Header />
           <main id="main" className="flex-1">
             {children}
           </main>
           <Footer />
           <CartDrawer />
+          <MobileNav />
           <PWARegister />
         </Providers>
         <Analytics />

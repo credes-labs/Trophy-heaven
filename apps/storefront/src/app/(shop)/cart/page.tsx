@@ -1,95 +1,101 @@
 "use client"
 
+import { useEffect } from "react"
 import Link from "next/link"
+import { AnimatePresence } from "motion/react"
+import { ShoppingBag } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
-import { formatMoney } from "@/lib/format"
+import { CartItem } from "@/components/features/cart/cart-item"
+import { OrderSummary } from "@/components/features/cart/order-summary"
+import { CartRecommendations } from "@/components/features/cart/cart-recommendations"
 import { buttonVariants } from "@/components/ui/button"
+import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 export default function CartPage() {
-  const { cart, updateItem, removeItem } = useCartStore()
+  const { cart, init, updateItem, removeItem, itemCount } = useCartStore()
   const items = cart?.items ?? []
   const currency = cart?.currency_code ?? "inr"
+  const count = itemCount()
+  const total = cart?.total ?? cart?.item_subtotal ?? 0
+
+  useEffect(() => {
+    void init()
+  }, [init])
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="font-serif text-3xl font-semibold">Your cart</h1>
-      {items.length === 0 ? (
-        <div className="mt-8 rounded-lg border p-10 text-center">
-          <p className="text-muted-foreground">Your cart is empty.</p>
-          <Link href="/" className={cn(buttonVariants({ className: "mt-4" }))}>
-            Continue shopping
-          </Link>
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px]">
-          <ul className="divide-y rounded-lg border">
-            {items.map((item) => (
-              <li key={item.id} className="flex gap-4 p-4">
-                <div className="h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted">
-                  {(item.thumbnail || (item.metadata?.preview_url as string)) && (
-                    <img
-                      src={item.thumbnail || (item.metadata?.preview_url as string)}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium">{item.product_title}</p>
-                  <p className="text-sm text-muted-foreground">{item.variant_title}</p>
-                  {item.metadata?.design_id ? (
-                    <p className="mt-1 text-xs text-accent">Customized design attached</p>
-                  ) : null}
-                  <div className="mt-3 flex items-center gap-3">
-                    <input
-                      type="number"
-                      min={1}
-                      value={item.quantity}
-                      onChange={(e) => updateItem(item.id, Math.max(1, Number(e.target.value)))}
-                      className="h-9 w-16 rounded-md border px-2 text-sm"
-                      aria-label="Quantity"
-                    />
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="text-sm text-muted-foreground underline hover:text-destructive"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-                <div className="font-medium">
-                  {formatMoney((item.unit_price ?? 0) * (item.quantity ?? 1), currency)}
-                </div>
-              </li>
-            ))}
-          </ul>
+    <div className="mx-auto max-w-6xl px-4 pb-28 pt-10 md:pb-10">
+      <h1 className="font-serif text-3xl font-semibold">
+        Your cart{count > 0 ? ` (${count})` : ""}
+      </h1>
 
-          <aside className="h-fit rounded-lg border p-5">
-            <h2 className="font-medium">Order summary</h2>
-            <dl className="mt-4 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Subtotal</dt>
-                <dd>{formatMoney(cart?.item_subtotal ?? 0, currency)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Shipping</dt>
-                <dd>{formatMoney(cart?.shipping_total ?? 0, currency)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Tax</dt>
-                <dd>{formatMoney(cart?.tax_total ?? 0, currency)}</dd>
-              </div>
-              <div className="flex justify-between border-t pt-2 font-semibold">
-                <dt>Total</dt>
-                <dd>{formatMoney(cart?.total ?? 0, currency)}</dd>
-              </div>
-            </dl>
-            <Link href="/checkout" className={cn(buttonVariants({ className: "mt-5 w-full" }))}>
-              Proceed to checkout
+      {items.length === 0 ? (
+        <>
+          <div className="mt-10 flex flex-col items-center rounded-lg border border-dashed border-border px-6 py-16 text-center">
+            <ShoppingBag className="h-12 w-12 text-muted-foreground/50" aria-hidden />
+            <p className="mt-4 font-serif text-xl font-semibold">Your cart is empty</p>
+            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+              Explore trophies, furniture, and artwork to find something you love.
+            </p>
+            <Link href="/shop" className={cn(buttonVariants({ variant: "trophy", className: "mt-6" }))}>
+              Continue shopping
             </Link>
-          </aside>
-        </div>
+          </div>
+          <CartRecommendations items={[]} regionId={cart?.region_id} variant="popular" />
+        </>
+      ) : (
+        <>
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_340px]">
+            <ul className="divide-y divide-border rounded-lg border border-border px-4 sm:px-5">
+              <AnimatePresence initial={false} mode="popLayout">
+                {items.map((item) => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    currency={currency}
+                    onUpdate={updateItem}
+                    onRemove={removeItem}
+                  />
+                ))}
+              </AnimatePresence>
+            </ul>
+
+            <OrderSummary
+              subtotal={cart?.item_subtotal ?? 0}
+              shipping={cart?.shipping_total ?? 0}
+              tax={cart?.tax_total ?? 0}
+              discount={cart?.discount_total ?? 0}
+              total={total}
+              currency={currency}
+              itemCount={count}
+            />
+          </div>
+
+          <CartRecommendations items={items} regionId={cart?.region_id} variant="cross-sell" />
+
+          {/* Sticky mobile summary — sits above the h-16 bottom nav (z-50) */}
+          <div
+            className="fixed inset-x-0 z-40 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-md md:hidden"
+            style={{ bottom: "calc(4rem + env(safe-area-inset-bottom))" }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-muted-foreground">
+                  Total{count > 0 ? ` (${count} item${count === 1 ? "" : "s"})` : ""}
+                </p>
+                <p className="truncate text-sm font-semibold tabular-nums">
+                  {formatMoney(total, currency)}
+                </p>
+              </div>
+              <Link
+                href="/checkout"
+                className={cn(buttonVariants({ variant: "trophy", size: "sm" }), "shrink-0")}
+              >
+                Proceed to Checkout
+              </Link>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

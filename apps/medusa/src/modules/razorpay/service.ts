@@ -90,16 +90,60 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
   }
 
   async authorizePayment(input: { data?: Record<string, unknown> }) {
-    // Razorpay auto-captures or captures via webhook; treat verified order as authorized.
-    return {
-      status: PaymentSessionStatus.AUTHORIZED,
-      data: input.data ?? {},
+    // Verify with Razorpay before marking the session authorized: resolve the
+    // payment (by payment id, falling back to the order's payment list) and
+    // only authorize when Razorpay reports it authorized/captured.
+    const data = input.data ?? {}
+    if (!this.options_.key_id || !this.options_.key_secret) {
+      this.logger_.warn("Razorpay keys not configured — leaving payment pending")
+      return { status: PaymentSessionStatus.PENDING, data }
+    }
+
+    try {
+      let paymentId = (data.razorpay_payment_id as string) || ""
+      let payment: { id?: string; status?: string } | null = null
+
+      if (paymentId) {
+        payment = await this.request<{ id: string; status: string }>(`/payments/${paymentId}`)
+      } else {
+        const orderId = (data.razorpay_order_id as string) || ""
+        if (!orderId) {
+          return { status: PaymentSessionStatus.PENDING, data }
+        }
+        const list = await this.request<{ items?: Array<{ id: string; status: string }> }>(
+          `/orders/${orderId}/payments`
+        )
+        payment = list.items?.[0] ?? null
+        paymentId = payment?.id ?? ""
+      }
+
+      if (!payment) {
+        return { status: PaymentSessionStatus.PENDING, data }
+      }
+
+      const merged = { ...data, razorpay_payment_id: paymentId, razorpay_status: payment.status }
+      switch (payment.status) {
+        case "authorized":
+        case "captured":
+          return { status: PaymentSessionStatus.AUTHORIZED, data: merged }
+        case "failed":
+          return { status: PaymentSessionStatus.ERROR, data: merged }
+        default:
+          return { status: PaymentSessionStatus.PENDING, data: merged }
+      }
+    } catch (e) {
+      this.logger_.warn(`Razorpay authorizePayment verification failed: ${(e as Error).message}`)
+      return { status: PaymentSessionStatus.PENDING, data }
     }
   }
 
   async capturePayment(input: { data?: Record<string, unknown> }) {
     const paymentId = (input.data?.razorpay_payment_id as string) || ""
     if (!paymentId) {
+      return { data: input.data ?? {} }
+    }
+    if (input.data?.razorpay_status === "captured") {
+      // Verified as captured during authorization — capturing again would 400.
       return { data: input.data ?? {} }
     }
     const captured = await this.request<Record<string, unknown>>(
