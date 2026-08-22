@@ -1,75 +1,105 @@
 # Legacy Crafts
 
-Premium e-commerce for **custom trophies, furniture, and home decor**, with an in-browser **2D canvas editor** and **3D real-time simulator** for designing a trophy before purchase.
+Premium e-commerce for **custom trophies, artisanal furniture, and curated artwork** —
+"Furniture. Decor & More." A Next.js 16 storefront backed by Medusa v2, with Razorpay
+payments, an in-browser 2D/3D trophy customizer, corporate/bulk ordering, and a
+brand system derived directly from the Legacy Crafts identity deck.
 
-The full product/technical specification lives in [`docs/kit/`](docs/kit/00-index.md) (start with the index). This repository implements that spec.
+- Brand: walnut/cream/champagne base, gold accents (`#B89E6B`), category accents —
+  **burgundy `#8A2D25` = trophies**, **midnight blue `#191D26` = furniture**,
+  **olive/brass = artwork**
+- Type: Playfair Display (serif headlines) + Inter (body)
+- Live catalog seeded: 10 products, 6 blog posts, reviews, promotions (`WELCOME10`, `LEGACY500`)
 
 ## Stack
 
-| Layer | Choice |
-|-------|--------|
-| Storefront | Next.js 16 (App Router), React 19, Tailwind v4, shadcn/ui, Zustand 5, TanStack Query v5 |
-| Commerce backend | Medusa.js v2.18 (Node 24 LTS, MikroORM) |
-| 2D editor | Fabric.js 7 · 3D viewer: React Three Fiber 9 + drei + Three.js |
-| Data | PostgreSQL 18 · Redis 7 · Meilisearch v1 |
-| Storage/CDN | S3 / Cloudflare R2 + CDN · Cloudinary transforms |
-| Payments | Razorpay (India) + Stripe (international) |
+| Layer | Choice | Why |
+|-------|--------|-----|
+| Storefront | Next.js 16 (App Router), React 19, Tailwind v4, shadcn-style UI, Zustand 5, TanStack Query v5 | RSC-first catalog pages, ISR for SEO; client stores for cart/auth |
+| Commerce backend | Medusa.js v2.18 (Node 24, MikroORM) | Headless commerce with extensible modules; no second CMS needed |
+| CMS (blog) | Medusa `blog` module | One backend/DB/auth instead of adding Payload CMS (recorded decision) |
+| Payments | Razorpay (India) | INR-first market; HMAC-verified checkout + idempotent webhooks |
+| 2D/3D customizer | Fabric.js 7 · React Three Fiber 9 + Three.js | In-browser trophy design before purchase |
+| Data | PostgreSQL 18 · Redis 7 · Meilisearch v1 | Medusa defaults + search |
+| Testing | Vitest + Jest (unit), Playwright + axe-core (e2e/a11y) | WCAG AA enforced in e2e |
 
-See [docs/kit/13-constraints-and-assumptions.md](docs/kit/13-constraints-and-assumptions.md) for locked decisions.
+Locked product/technical decisions live in [`docs/kit/`](docs/kit/00-index.md);
+the design-system spec lives in [`.cursor/plans/`](.cursor/plans/00-master-plan.md).
 
 ## Monorepo layout
 
 ```
 legacy-crafts/
   apps/
-    storefront/                 # Next.js 16 App Router
-    medusa/                     # Medusa v2 backend + custom modules
+    storefront/            # Next.js 16 App Router (port 3000)
+    medusa/                # Medusa v2 backend + custom modules (port 9000)
   packages/
-    schemas/                    # shared Zod schemas (entities + 2D/3D design state)
-    observability/              # Pino logger + Sentry helpers
-    config/                     # shared tsconfig / eslint / prettier
-  docs/kit/                     # product + technical spec (source of truth)
-  docker-compose.yml            # local Postgres 18 + Redis 7 + Meilisearch v1
+    schemas/               # shared Zod schemas (entities + 2D/3D design state)
+    observability/         # Pino logger + Sentry helpers
+    config/                # shared tsconfig / eslint / prettier
+  docs/
+    kit/                   # product + technical spec (source of truth)
+    changes/               # 3-layer change log (see docs/changes/INDEX.md)
+  .cursor/plans/           # design-system + page/component spec + execution tracker
+  .agents/skills/          # installed agent skills (skills.sh)
+  docker-compose.yml       # Postgres 18 + Redis 7 + Meilisearch v1
 ```
 
-## Prerequisites
+## Quickstart
 
-- **Node.js 24 LTS** (`.nvmrc`), **pnpm 10+**
-- **Docker** for local backing services (or a local Postgres 18 / Redis 7 / Meilisearch v1)
-
-## Getting started
+Prereqs: **Node 24** (`.nvmrc`), **pnpm 10+**, **Docker**.
 
 ```bash
-# 1. Install deps
-pnpm install
-
-# 2. Start backing services (Postgres 18, Redis 7, Meilisearch v1)
-docker compose up -d
-
-# 3. Configure environment
-cp .env.example .env   # then fill in per-app secrets
-
-# 4. Build shared packages
-pnpm --filter @legacy-crafts/schemas build
-
-# 5. Run the apps (once scaffolded)
-pnpm dev
+pnpm install                                # 1. deps
+docker compose up -d                        # 2. Postgres/Redis/Meilisearch
+cp .env.example .env                        # 3. env (fill secrets; see below)
+pnpm --filter @legacy-crafts/schemas build  # 4. shared packages
+make migrate                                # 5. DB migrations
+make seed                                   # 6. catalog + content + promotions
+pnpm dev                                    # 7. storefront :3000 + medusa :9000
 ```
 
-## Workspace scripts
+Open http://localhost:3000 — seeded products, blog, reviews and promo codes are live.
 
-- `pnpm lint` — lint all packages
-- `pnpm typecheck` — TypeScript typecheck across the workspace
-- `pnpm test` — run unit tests (Vitest / Jest)
-- `pnpm build` — build all packages
+### Key environment variables
 
-## Implementation phases
+| Var | Where | Purpose |
+|-----|-------|---------|
+| `DATABASE_URL`, `REDIS_URL` | medusa | backing services |
+| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` / `RAZORPAY_WEBHOOK_SECRET` | medusa + storefront (server) | payment provider, signature verification, webhook HMAC |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` / `NEXT_PUBLIC_RAZORPAY_ENABLED` | storefront | checkout widget toggle |
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` / `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | storefront | store API access |
+| `NEXT_PUBLIC_BASE_URL` | storefront | absolute URLs (SEO, share links) |
+| `STOREFRONT_URL` | medusa | product image URLs in seeds |
 
-Built in the dependency order from [docs/kit/04-implementation-roadmap.md](docs/kit/04-implementation-roadmap.md):
+## Scripts
 
-1. **Foundation & core commerce** — catalog, cart, checkout, auth, orders, admin
-2. **2D customization engine** — Fabric.js editor + `TrophyCustomizationModule`
-3. **3D simulation & AR** — R3F viewer, PBR materials, WebXR
-4. **Corporate & bulk** — `BulkOrderModule` + `CorporateAccountModule`
-5. **Production & operations** — `ProductionWorkflowModule`, approvals, shipping, notifications
-6. **Scale & polish** — search, performance, SEO, analytics, PWA
+| Command | What |
+|---------|------|
+| `pnpm dev` | run all apps in dev |
+| `pnpm build` / `pnpm typecheck` / `pnpm lint` / `pnpm test` | workspace-wide gates (all green) |
+| `pnpm --filter @legacy-crafts/storefront test:e2e` | Playwright smoke + axe a11y (needs dev servers) |
+| `make up` / `make migrate` / `make seed` / `make reindex` | services + data ops |
+
+## Testing & quality gates
+
+- **72 unit tests** (schemas, storefront lib, medusa lib) — `pnpm -r test`
+- **22 e2e checks** (11 tests × chromium+mobile projects) incl. **axe WCAG2A/AA** on the
+  landing page — `apps/storefront/e2e/smoke.spec.ts`
+- Production build verified: `pnpm -r build`
+
+## Documentation map
+
+- [`docs/kit/`](docs/kit/00-index.md) — product & technical specification (source of truth)
+- [`.cursor/plans/`](.cursor/plans/00-master-plan.md) — brand/design-system spec, page & component
+  specs, backend schema/API plans, and `KIMI-EXECUTION-STATUS.md` (build log + deferred items)
+- [`docs/changes/INDEX.md`](docs/changes/INDEX.md) — **change log**: index + 3 layers of
+  increasing detail (milestones → work packages → deep technical entries)
+- [`AGENTS.md`](AGENTS.md) — the **AI readme**: conventions, gotchas, and rules for AI
+  agents (and humans) working in this repo — read it before changing anything
+
+## Deployment
+
+See [`docs/deployment.md`](docs/deployment.md). Payments run through Razorpay — set the
+three `RAZORPAY_*` secrets and register the webhook (`/webhooks/razorpay`) per
+[`.cursor/plans/backend/03-razorpay.md`](.cursor/plans/backend/03-razorpay.md).
