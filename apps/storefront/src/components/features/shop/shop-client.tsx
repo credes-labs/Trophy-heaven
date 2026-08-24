@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { HttpTypes } from "@medusajs/types"
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react"
-import { ProductCard } from "@/components/features/catalog/product-card"
+import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { ShopBreadcrumb } from "@/components/features/catalog/category-hero"
 import {
   FilterSidebar,
@@ -310,17 +310,20 @@ export function ShopClient({
   )
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <div className="bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
+      <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,4vw,3.5em)] pb-[clamp(3rem,6vw,5.5em)]">
       <ShopBreadcrumb />
-      <div className="mb-8">
-        <h1 className="font-serif text-4xl font-semibold">Shop All</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {loading || pending ? "Updating…" : `${count} product${count === 1 ? "" : "s"}`}
+      <div className="mb-[2.5em] mt-[1.5em] flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <h1 className="m-0 max-w-[20em] font-outfit text-[clamp(2rem,6vw,3.375em)] leading-[1.24] font-normal tracking-[-0.04em] text-[#131111]">
+          The collection
+        </h1>
+        <p className="m-0 font-outfit text-[clamp(1rem,2vw,1.25em)] leading-[1.4] tracking-[-0.03em] text-[rgba(19,17,17,0.6)]">
+          {loading || pending ? "Updating…" : `${count} piece${count === 1 ? "" : "s"}`}
         </p>
       </div>
 
-      <div className="flex gap-8">
-        <div className="hidden w-[220px] shrink-0 md:block">{filterPanel}</div>
+      <div className="flex flex-col gap-[2.5em] lg:flex-row lg:items-start lg:gap-[3.25em]">
+        <div className="hidden w-[14em] shrink-0 md:block">{filterPanel}</div>
 
         <div className="min-w-0 flex-1">
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -406,14 +409,14 @@ export function ShopClient({
           {loading && products.length === 0 ? (
             <div
               className={cn(
-                "grid gap-4",
+                "grid gap-x-[1.5em] gap-y-[2.625em]",
                 layout === "grid"
-                  ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                  ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
                   : "grid-cols-1"
               )}
             >
               {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="aspect-square w-full rounded-lg" />
+                <Skeleton key={i} className="aspect-[302/374] w-full rounded-[0.125em] bg-[#D9D9D9]" />
               ))}
             </div>
           ) : products.length === 0 ? (
@@ -430,18 +433,18 @@ export function ShopClient({
             <motion.div
               key={`${filterKey}|${layout}`}
               className={cn(
-                "grid gap-4",
+                "grid gap-x-[1.5em] gap-y-[2.625em]",
                 layout === "grid"
-                  ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                  ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
                   : "grid-cols-1"
               )}
               variants={staggerGrid}
               initial="hidden"
               animate="visible"
             >
-              {products.map((p) => (
+              {products.map((p, i) => (
                 <motion.div key={p.id} variants={fadeUp}>
-                  <ProductCard product={p} layout={layout} />
+                  <EditorialProductCard product={p} layout={layout} index={i} />
                 </motion.div>
               ))}
             </motion.div>
@@ -449,7 +452,12 @@ export function ShopClient({
 
           {canLoadMore && (
             <div className="mt-10 flex justify-center">
-              <Button variant="outline" loading={loading} onClick={loadMore}>
+              <Button
+                variant="outline"
+                loading={loading}
+                onClick={loadMore}
+                className="h-[3.875em] rounded-full border-[#131111] bg-[#131111] px-8 font-outfit text-[1em] tracking-[-0.02em] text-[#F2F1EF] uppercase hover:opacity-90"
+              >
                 Show more products ({remaining} remaining)
               </Button>
             </div>
@@ -475,6 +483,7 @@ export function ShopClient({
           </div>
         </SheetContent>
       </Sheet>
+      </div>
     </div>
   )
 }

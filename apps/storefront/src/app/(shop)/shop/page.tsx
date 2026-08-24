@@ -112,13 +112,15 @@ async function ShopContent() {
 
 function ShopFallback() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
-      <Skeleton className="mb-2 h-4 w-32" />
-      <Skeleton className="mb-8 h-10 w-48" />
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="aspect-square rounded-lg" />
-        ))}
+    <div className="bg-[#F2F1EF] font-outfit text-[#131111]">
+      <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,4vw,3.5em)] pb-[clamp(3rem,6vw,5.5em)]">
+        <Skeleton className="mb-4 h-4 w-32 bg-[#D9D9D9]" />
+        <Skeleton className="mb-10 h-12 w-64 bg-[#D9D9D9]" />
+        <div className="grid grid-cols-1 gap-x-[1.5em] gap-y-[2.625em] sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="aspect-[302/374] rounded-[0.125em] bg-[#D9D9D9]" />
+          ))}
+        </div>
       </div>
     </div>
   )
