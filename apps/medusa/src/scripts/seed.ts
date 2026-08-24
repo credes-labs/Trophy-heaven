@@ -3,6 +3,7 @@ import {
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
   createProductsWorkflow,
+  deleteProductsWorkflow,
   createRegionsWorkflow,
   createSalesChannelsWorkflow,
   createShippingOptionsWorkflow,
@@ -282,9 +283,21 @@ export default async function seed({ container }: ExecArgs) {
   // ── Sample products (skip if already seeded) ─────────────────────────────────
   const { data: existingProducts } = await query.graph({
     entity: "product",
-    fields: ["id", "title"],
+    fields: ["id", "title", "handle"],
+    pagination: { skip: 0, take: 500 },
   })
-  const productTitles = new Set(existingProducts.map((p: { title: string }) => p.title))
+  const bulkTrophyIds = existingProducts
+    .filter((p: { handle?: string | null }) => (p.handle ?? "").startsWith("catalog-trophy-"))
+    .map((p: { id: string }) => p.id)
+  if (bulkTrophyIds.length) {
+    await deleteProductsWorkflow(container).run({ input: { ids: bulkTrophyIds } })
+    logger.info(`Removed ${bulkTrophyIds.length} bulk catalog-trophy products (kept the four samples).`)
+  }
+  const productTitles = new Set(
+    existingProducts
+      .filter((p: { id: string }) => !bulkTrophyIds.includes(p.id))
+      .map((p: { title: string }) => p.title),
+  )
 
   const sizes = [
     { label: 'S (6")', token: "6IN" },
