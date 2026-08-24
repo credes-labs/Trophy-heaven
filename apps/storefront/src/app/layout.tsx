@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter, Outfit, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
 import { AnnouncementBar } from "@/components/layout/announcement-bar"
@@ -9,6 +9,7 @@ import { CartDrawer } from "@/components/features/cart/cart-drawer"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
+import { SiteChrome } from "@/components/layout/site-chrome"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,6 +26,13 @@ const playfair = Playfair_Display({
   display: "swap",
 })
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-outfit-family",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
   title: {
@@ -37,7 +45,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Legacy Crafts",
     locale: "en_IN",
-    images: [{ url: "/images/hero/hero-workshop.png", width: 1200, height: 630 }],
+    images: [{ url: "/images/hero/hero-workshop.jpg", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
 }
@@ -75,7 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${outfit.variable}`}>
       <body className="font-sans bg-background text-foreground antialiased">
         <script
           type="application/ld+json"
@@ -92,8 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             Skip to content
           </a>
-          <AnnouncementBar />
-          <Header />
+          <SiteChrome announcement={<AnnouncementBar />} header={<Header />} />
           <main id="main" className="flex-1">
             {children}
           </main>
