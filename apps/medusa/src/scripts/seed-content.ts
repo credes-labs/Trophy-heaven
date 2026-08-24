@@ -9,10 +9,10 @@ import type ReviewsService from "../modules/reviews/service"
 // apps/storefront/public/images/manifest.json).
 const STOREFRONT_URL = process.env.STOREFRONT_URL ?? "http://localhost:3000"
 const COVER_BY_CATEGORY: Record<string, string> = {
-  craftsmanship: `${STOREFRONT_URL}/images/blog/blog-craftsmanship.png`,
-  materials: `${STOREFRONT_URL}/images/blog/blog-materials.png`,
-  design: `${STOREFRONT_URL}/images/blog/blog-design.png`,
-  stories: `${STOREFRONT_URL}/images/blog/blog-design.png`,
+  craftsmanship: `${STOREFRONT_URL}/images/blog/blog-craftsmanship.jpg`,
+  materials: `${STOREFRONT_URL}/images/blog/blog-materials.jpg`,
+  design: `${STOREFRONT_URL}/images/blog/blog-design.jpg`,
+  stories: `${STOREFRONT_URL}/images/blog/blog-design.jpg`,
 }
 
 const CATEGORIES = [

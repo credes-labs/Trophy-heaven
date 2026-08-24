@@ -70,7 +70,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-trophy",
     badgeVariant: "trophy",
     buttonVariant: "trophy",
-    imageSrc: "/images/categories/cat-trophies.png",
+    imageSrc: "/images/categories/cat-trophies.jpg",
     imageAlt: "Crystal trophy on dark velvet with dramatic lighting",
   },
   furniture: {
@@ -102,7 +102,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-furniture",
     badgeVariant: "furniture",
     buttonVariant: "furniture",
-    imageSrc: "/images/categories/cat-furniture.png",
+    imageSrc: "/images/categories/cat-furniture.jpg",
     imageAlt: "Close-up of oak table wood grain with warm lighting",
   },
   artwork: {
@@ -133,7 +133,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-artwork",
     badgeVariant: "artwork",
     buttonVariant: "artwork",
-    imageSrc: "/images/categories/cat-artwork.png",
+    imageSrc: "/images/categories/cat-artwork.jpg",
     imageAlt: "Ceramic vase with dried botanicals and brass accents",
   },
 }
