@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 import { X } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/stores/cart-store"
 
 export function PromoCode() {
@@ -50,39 +48,42 @@ export function PromoCode() {
   }
 
   return (
-    <div className="space-y-2">
-      <p className="text-sm font-medium">Promo code</p>
+    <div className="min-w-0">
+      <p className="m-0 font-outfit text-[0.8125em] tracking-[-0.02em] text-[rgba(19,17,17,0.55)]">
+        Have a coupon? Enter your code.
+      </p>
 
       {applied.length > 0 && (
-        <ul className="space-y-1.5">
+        <ul className="mt-[0.6em] m-0 flex list-none flex-wrap gap-2 p-0">
           {applied.map((appliedCode) => (
             <li
               key={appliedCode}
-              className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-3 py-1.5"
+              className="flex items-center gap-2 border border-[#131111]/15 px-2.5 py-1"
             >
-              <span className="font-mono text-xs font-medium">{appliedCode}</span>
+              <span className="font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase">
+                {appliedCode}
+              </span>
               <button
                 type="button"
                 onClick={() => void handleRemove(appliedCode)}
                 disabled={busy}
                 aria-label={`Remove promo code ${appliedCode}`}
-                className="text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
+                className="text-[rgba(19,17,17,0.4)] transition-colors hover:text-[#131111] disabled:opacity-50"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-3 w-3" strokeWidth={1.5} />
               </button>
             </li>
           ))}
         </ul>
       )}
 
-      <div className="flex gap-2">
-        <Input
+      <div className="mt-[0.65em] flex min-w-0 items-end gap-[0.75em]">
+        <input
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="Enter code"
-          inputSize="sm"
-          className="flex-1"
-          aria-label="Promo code"
+          placeholder="Coupon code"
+          aria-label="Coupon code"
+          className="min-w-0 flex-1 border-0 border-b border-[#131111]/20 bg-transparent px-0 py-1.5 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] placeholder:text-[rgba(19,17,17,0.35)] focus-visible:border-[#131111] focus-visible:outline-none"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -90,13 +91,20 @@ export function PromoCode() {
             }
           }}
         />
-        <Button type="button" variant="outline" size="sm" loading={busy} onClick={handleApply}>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void handleApply()}
+          className="shrink-0 rounded-[0.125em] border border-[#131111] px-[1.1em] py-[0.45em] font-outfit text-[0.75em] tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 disabled:opacity-50"
+        >
           Apply
-        </Button>
+        </button>
       </div>
       {message && (
         <p
-          className={`text-xs ${message.type === "ok" ? "text-success" : "text-destructive"}`}
+          className={`mt-[0.5em] m-0 font-outfit text-[0.75em] ${
+            message.type === "ok" ? "text-[rgba(19,17,17,0.55)]" : "text-destructive"
+          }`}
           role="status"
         >
           {message.text}

@@ -2,10 +2,15 @@
 
 import Link from "next/link"
 import { motion } from "motion/react"
+import { X } from "lucide-react"
 import type { HttpTypes } from "@medusajs/types"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
+import { CartThumb } from "@/components/features/cart/cart-thumb"
 import { formatMoney } from "@/lib/format"
 import { fadeUp } from "@/lib/animations"
+
+const stepperClass =
+  "rounded-[0.125em] border-[#131111]/20 [&_button]:h-9 [&_button]:w-9 [&_button]:hover:bg-[#131111]/5 [&_span]:h-9 [&_span]:min-w-[2.25rem] [&_span]:border-[#131111]/20 [&_span]:font-outfit [&_span]:text-[0.875em]"
 
 export function CartItem({
   item,
@@ -19,8 +24,12 @@ export function CartItem({
   onRemove: (lineId: string) => void
 }) {
   const thumb = item.thumbnail || (item.metadata?.preview_url as string | undefined)
-  const lineTotal = (item.unit_price ?? 0) * (item.quantity ?? 1)
+  const unit = item.unit_price ?? 0
+  const lineTotal = item.subtotal ?? unit * (item.quantity ?? 1)
   const handle = (item as { product_handle?: string }).product_handle
+  const qty = item.quantity ?? 1
+  const variantLine = [item.variant_title, `x${qty}`].filter(Boolean).join(" / ")
+  const title = item.product_title ?? "Item"
 
   return (
     <motion.li
@@ -29,62 +38,68 @@ export function CartItem({
       initial="hidden"
       animate="visible"
       exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0, transition: { duration: 0.2 } }}
-      className="flex gap-4 overflow-hidden py-5 first:pt-0 last:pb-0"
+      className="cart-item-row overflow-hidden border-b border-[#131111]/12 py-[1.5em] first:pt-0"
     >
-      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted sm:h-28 sm:w-28">
-        {thumb ? (
-          // Raw <img> used intentionally (dynamic backend URLs; Next/Image domain config not required here).
-          <img src={thumb} alt="" className="h-full w-full object-cover" />
+      <button
+        type="button"
+        onClick={() => onRemove(item.id)}
+        aria-label={`Remove ${title} from cart`}
+        className="flex h-8 w-8 items-center justify-center text-[rgba(19,17,17,0.4)] transition-colors hover:text-[#131111]"
+      >
+        <X className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+      </button>
+
+      <CartThumb src={thumb} alt={title} className="h-[5.5em] w-[5.5em] sm:h-[6.25em] sm:w-[6.25em]" />
+
+      <div className="min-w-0">
+        {handle ? (
+          <Link
+            href={`/products/${handle}`}
+            className="font-outfit text-[0.9375em] leading-[1.35] font-medium tracking-[-0.02em] text-[#131111] no-underline hover:opacity-70"
+          >
+            {title}
+          </Link>
         ) : (
-          <div className="flex h-full items-center justify-center font-serif text-lg text-muted-foreground opacity-40">
-            LC
-          </div>
+          <p className="m-0 font-outfit text-[0.9375em] leading-[1.35] font-medium tracking-[-0.02em] text-[#131111]">
+            {title}
+          </p>
         )}
+        {variantLine ? (
+          <p className="mt-[0.25em] m-0 font-outfit text-[0.8125em] tracking-[-0.02em] text-[rgba(19,17,17,0.5)]">
+            {variantLine}
+          </p>
+        ) : null}
+        {item.metadata?.design_id ? (
+          <p className="mt-[0.35em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[rgba(19,17,17,0.55)]">
+            Customized design attached
+          </p>
+        ) : null}
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col sm:flex-row sm:justify-between sm:gap-4">
-        <div className="min-w-0">
-          {handle ? (
-            <Link href={`/products/${handle}`} className="font-medium hover:underline">
-              {item.product_title}
-            </Link>
-          ) : (
-            <p className="font-medium">{item.product_title}</p>
-          )}
-          {item.variant_title && (
-            <p className="mt-0.5 text-sm text-muted-foreground">{item.variant_title}</p>
-          )}
-          {item.metadata?.design_id ? (
-            <p className="mt-1 text-xs text-accent">Customized design attached</p>
-          ) : null}
+      <div className="cart-item-qty">
+        <QuantityStepper
+          value={qty}
+          onChange={(q) => onUpdate(item.id, q)}
+          min={1}
+          max={99}
+          className={stepperClass}
+        />
+      </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <QuantityStepper
-              value={item.quantity ?? 1}
-              onChange={(q) => onUpdate(item.id, q)}
-              min={1}
-              max={99}
-            />
-            <button
-              type="button"
-              onClick={() => onRemove(item.id)}
-              className="text-sm text-muted-foreground underline-offset-2 hover:text-destructive hover:underline"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-
-        <motion.p
-          key={lineTotal}
-          initial={{ opacity: 0.4, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.2 }}
-          className="mt-2 shrink-0 font-medium tabular-nums sm:mt-0 sm:text-right"
-        >
+      <motion.div
+        key={lineTotal}
+        initial={{ opacity: 0.4 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+        className="text-right sm:min-w-[6.5em]"
+      >
+        <p className="m-0 font-outfit text-[0.9375em] font-medium tracking-[-0.02em] text-[#131111] tabular-nums">
           {formatMoney(lineTotal, currency)}
-        </motion.p>
-      </div>
+        </p>
+        <p className="mt-[0.15em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[rgba(19,17,17,0.45)] tabular-nums">
+          {formatMoney(unit, currency)}
+        </p>
+      </motion.div>
     </motion.li>
   )
 }

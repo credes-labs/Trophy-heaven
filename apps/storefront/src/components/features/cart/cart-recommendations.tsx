@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import type { HttpTypes } from "@medusajs/types"
-import { ProductCard } from "@/components/features/catalog/product-card"
+import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { listProductsClient } from "@/lib/data/catalog"
 
@@ -91,21 +91,16 @@ export function CartRecommendations({
   if (!loading && products.length === 0) return null
 
   return (
-    <section aria-label={heading} className="mt-12">
-      <h2 className="font-serif text-2xl font-semibold">{heading}</h2>
-      <div className="-mx-4 mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+    <section aria-label={heading} className="mt-[4em]">
+      <h2 className="m-0 font-outfit text-[clamp(1.35rem,2.8vw,1.75em)] font-normal tracking-[0.08em] text-[#131111] uppercase">
+        {heading}
+      </h2>
+      <div className="cart-recs mt-[1.5em]">
         {loading
           ? Array.from({ length: LIMIT }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className="aspect-square w-[min(70vw,260px)] shrink-0 rounded-lg"
-              />
+              <Skeleton key={i} className="aspect-[302/374] w-full rounded-[0.125em] bg-[#D9D9D9]" />
             ))
-          : products.map((p) => (
-              <div key={p.id} className="w-[min(70vw,260px)] shrink-0 snap-start">
-                <ProductCard product={p} />
-              </div>
-            ))}
+          : products.map((p) => <EditorialProductCard key={p.id} product={p} />)}
       </div>
     </section>
   )

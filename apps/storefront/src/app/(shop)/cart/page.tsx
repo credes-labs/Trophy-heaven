@@ -2,101 +2,120 @@
 
 import { useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { AnimatePresence } from "motion/react"
-import { ShoppingBag } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { CartItem } from "@/components/features/cart/cart-item"
 import { OrderSummary } from "@/components/features/cart/order-summary"
+import { PromoCode } from "@/components/features/cart/promo-code"
 import { CartRecommendations } from "@/components/features/cart/cart-recommendations"
-import { buttonVariants } from "@/components/ui/button"
-import { formatMoney } from "@/lib/format"
-import { cn } from "@/lib/utils"
+import "./cart.css"
 
 export default function CartPage() {
-  const { cart, init, updateItem, removeItem, itemCount } = useCartStore()
+  const router = useRouter()
+  const cart = useCartStore((s) => s.cart)
+  const loading = useCartStore((s) => s.loading)
+  const init = useCartStore((s) => s.init)
+  const refresh = useCartStore((s) => s.refresh)
+  const updateItem = useCartStore((s) => s.updateItem)
+  const removeItem = useCartStore((s) => s.removeItem)
   const items = cart?.items ?? []
   const currency = cart?.currency_code ?? "inr"
-  const count = itemCount()
   const total = cart?.total ?? cart?.item_subtotal ?? 0
+  const empty = !loading && items.length === 0
 
   useEffect(() => {
     void init()
   }, [init])
 
+  function goBack() {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back()
+      return
+    }
+    router.push("/shop")
+  }
+
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-28 pt-10 md:pb-10">
-      <h1 className="font-serif text-3xl font-semibold">
-        Your cart{count > 0 ? ` (${count})` : ""}
-      </h1>
+    <div className="bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
+      <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,4vw,3.5em)] pb-[clamp(5rem,10vw,7em)]">
+        <button
+          type="button"
+          onClick={goBack}
+          className="font-outfit text-[0.8125em] tracking-[-0.02em] text-[rgba(19,17,17,0.5)] transition-colors hover:text-[#131111]"
+        >
+          &lt; Back
+        </button>
+        <h1 className="mt-[0.85em] m-0 font-outfit text-[clamp(2rem,4.5vw,3.25em)] leading-[1.1] font-light tracking-[0.08em] text-[#131111] uppercase">
+          Your cart
+        </h1>
 
-      {items.length === 0 ? (
-        <>
-          <div className="mt-10 flex flex-col items-center rounded-lg border border-dashed border-border px-6 py-16 text-center">
-            <ShoppingBag className="h-12 w-12 text-muted-foreground/50" aria-hidden />
-            <p className="mt-4 font-serif text-xl font-semibold">Your cart is empty</p>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-              Explore trophies, furniture, and artwork to find something you love.
+        {loading && items.length === 0 ? (
+          <p className="mt-[2em] font-outfit text-[0.875em] tracking-[-0.02em] text-[rgba(19,17,17,0.45)]">
+            Loading cart…
+          </p>
+        ) : empty ? (
+          <>
+            <p className="mt-[1.75em] max-w-[28em] font-outfit text-[0.9375em] leading-[1.55] font-light tracking-[-0.02em] text-[rgba(19,17,17,0.6)]">
+              Your cart is empty. Explore trophies, furniture, and artwork to find something you love.
             </p>
-            <Link href="/shop" className={cn(buttonVariants({ variant: "trophy", className: "mt-6" }))}>
-              Continue shopping
+            <Link
+              href="/shop"
+              className="mt-[1.5em] inline-block font-outfit text-[0.75em] tracking-[0.14em] text-[#131111] uppercase no-underline hover:opacity-70"
+            >
+              &lt; Continue shopping
             </Link>
-          </div>
-          <CartRecommendations items={[]} regionId={cart?.region_id} variant="popular" />
-        </>
-      ) : (
-        <>
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_340px]">
-            <ul className="divide-y divide-border rounded-lg border border-border px-4 sm:px-5">
-              <AnimatePresence initial={false} mode="popLayout">
-                {items.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    item={item}
-                    currency={currency}
-                    onUpdate={updateItem}
-                    onRemove={removeItem}
-                  />
-                ))}
-              </AnimatePresence>
-            </ul>
+            <CartRecommendations items={[]} regionId={cart?.region_id} variant="popular" />
+          </>
+        ) : (
+          <>
+            <div className="cart-layout mt-[2.25em]">
+              <div>
+                <ul className="m-0 list-none border-t border-[#131111]/12 p-0">
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {items.map((item) => (
+                      <CartItem
+                        key={item.id}
+                        item={item}
+                        currency={currency}
+                        onUpdate={updateItem}
+                        onRemove={removeItem}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </ul>
 
-            <OrderSummary
-              subtotal={cart?.item_subtotal ?? 0}
-              shipping={cart?.shipping_total ?? 0}
-              tax={cart?.tax_total ?? 0}
-              discount={cart?.discount_total ?? 0}
-              total={total}
-              currency={currency}
-              itemCount={count}
-            />
-          </div>
-
-          <CartRecommendations items={items} regionId={cart?.region_id} variant="cross-sell" />
-
-          {/* Sticky mobile summary — sits above the h-16 bottom nav (z-50) */}
-          <div
-            className="fixed inset-x-0 z-40 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-md md:hidden"
-            style={{ bottom: "calc(4rem + env(safe-area-inset-bottom))" }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs text-muted-foreground">
-                  Total{count > 0 ? ` (${count} item${count === 1 ? "" : "s"})` : ""}
-                </p>
-                <p className="truncate text-sm font-semibold tabular-nums">
-                  {formatMoney(total, currency)}
-                </p>
+                <div className="cart-coupon mt-[1.75em] border-t border-[#131111]/12 pt-[1.5em]">
+                  <div className="cart-coupon-row">
+                    <PromoCode />
+                    <button
+                      type="button"
+                      onClick={() => void refresh()}
+                      disabled={loading}
+                      className="flex items-center gap-2 self-end font-outfit text-[0.75em] tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 disabled:opacity-50"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+                      Update cart
+                    </button>
+                  </div>
+                </div>
               </div>
-              <Link
-                href="/checkout"
-                className={cn(buttonVariants({ variant: "trophy", size: "sm" }), "shrink-0")}
-              >
-                Proceed to Checkout
-              </Link>
+
+              <OrderSummary
+                subtotal={cart?.item_subtotal ?? 0}
+                shipping={cart?.shipping_total ?? 0}
+                tax={cart?.tax_total ?? 0}
+                discount={cart?.discount_total ?? 0}
+                total={total}
+                currency={currency}
+              />
             </div>
-          </div>
-        </>
-      )}
+
+            <CartRecommendations items={items} regionId={cart?.region_id} variant="cross-sell" />
+          </>
+        )}
+      </div>
     </div>
   )
 }
