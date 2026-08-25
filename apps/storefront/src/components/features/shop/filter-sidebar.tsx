@@ -1,17 +1,16 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { useEffect, useRef, useState, type ReactNode } from "react"
+import { ChevronDown } from "lucide-react"
 import { RangeSlider } from "@/components/ui/range-slider"
 import {
   CATEGORY_CONFIG,
   PRICE_RANGE,
   SHOP_MATERIALS,
-  SHOP_SORT_OPTIONS,
   type CategoryKey,
 } from "@/lib/category-config"
 import { cn } from "@/lib/utils"
+import { SHOP_CLEAR_LABEL } from "./constants"
 
 export type SubcategoryOption = {
   /** Medusa category handle (used in the URL) */
@@ -41,40 +40,81 @@ export type FilterSidebarProps = {
   onChange: (patch: Partial<ShopFilters>) => void
   onClear: () => void
   className?: string
-  showSort?: boolean
 }
 
-function FilterToggle({
+type AccordionId = "category" | "price" | "material" | "availability"
+
+function AccordionSection({
+  id,
   label,
-  checked,
-  onChange,
+  openId,
+  onToggle,
+  summary,
+  children,
 }: {
+  id: AccordionId
   label: string
-  checked: boolean
-  onChange: (next: boolean) => void
+  openId: AccordionId | null
+  onToggle: (id: AccordionId) => void
+  summary?: string | null
+  children: ReactNode
 }) {
+  const open = openId === id
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-2 text-sm">
-      <span>{label}</span>
+    <div className="border-b border-[#CDCDCD]">
       <button
         type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={label}
-        onClick={() => onChange(!checked)}
-        className={cn(
-          "relative h-5 w-9 shrink-0 rounded-full transition-colors",
-          checked ? "bg-accent" : "bg-muted"
-        )}
+        aria-expanded={open}
+        className="flex w-full cursor-pointer items-center justify-between gap-[1em] border-0 bg-transparent py-[1em] text-left"
+        onClick={() => onToggle(id)}
       >
-        <span
-          className={cn(
-            "absolute top-0.5 h-4 w-4 rounded-full bg-card shadow transition-transform",
-            checked ? "translate-x-4.5" : "translate-x-0.5"
-          )}
+        <span className="font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+          {summary ?? label}
+        </span>
+        <ChevronDown
+          aria-hidden
+          className={`size-[1.75em] shrink-0 text-[#C2C2C2] transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          strokeWidth={1.5}
         />
       </button>
-    </label>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-0 pt-0 pb-[1em]">{children}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function OptionButton({
+  label,
+  active,
+  count,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  count?: number
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex w-full cursor-pointer items-center justify-between gap-2 border-0 bg-transparent p-0 text-left font-outfit text-[1em] leading-[1.4] tracking-[-0.02em]",
+        active ? "text-[#131111]" : "text-[rgba(19,17,17,0.6)]"
+      )}
+      onClick={onClick}
+    >
+      <span>{label}</span>
+      {typeof count === "number" ? (
+        <span className="text-[0.875em] text-[rgba(19,17,17,0.4)]">({count})</span>
+      ) : null}
+    </button>
   )
 }
 
@@ -86,7 +126,6 @@ export function FilterSidebar({
   onChange,
   onClear,
   className,
-  showSort = true,
 }: FilterSidebarProps) {
   const hasActive =
     filters.category != null ||
@@ -95,18 +134,21 @@ export function FilterSidebar({
     filters.minPrice > PRICE_RANGE.min ||
     filters.maxPrice < PRICE_RANGE.max ||
     filters.inStock ||
-    filters.customizable ||
-    (filters.sort !== "newest" && filters.sort !== "")
+    filters.customizable
 
-  // Local slider state; committed to filters after a 300ms debounce.
+  const [openId, setOpenId] = useState<AccordionId | null>("category")
   const [range, setRange] = useState<[number, number]>([filters.minPrice, filters.maxPrice])
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
+
   useEffect(() => {
     setRange([filters.minPrice, filters.maxPrice])
   }, [filters.minPrice, filters.maxPrice])
-  useEffect(() => () => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-  }, [])
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    },
+    []
+  )
 
   function commitRange(next: [number, number]) {
     setRange(next)
@@ -116,193 +158,183 @@ export function FilterSidebar({
     }, 300)
   }
 
-  return (
-    <aside className={cn("space-y-8", className)}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Filters
-        </h2>
-        {hasActive && (
-          <button
-            type="button"
-            onClick={onClear}
-            className="text-xs font-medium text-accent hover:underline"
-          >
-            Clear all
-          </button>
-        )}
-      </div>
+  function toggle(id: AccordionId) {
+    setOpenId((current) => (current === id ? null : id))
+  }
 
-      <div>
-        <h3 className="mb-3 text-sm font-semibold">Category</h3>
-        <ul className="space-y-2">
-          {(Object.keys(CATEGORY_CONFIG) as CategoryKey[]).map((key) => {
-            const cat = CATEGORY_CONFIG[key]
-            const count = categoryCounts?.[key]
-            const children = subcategories?.[key] ?? []
-            const isSelected = filters.category === key
-            return (
-              <li key={key}>
-                <label className="flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="size-4 rounded border-border accent-accent"
-                    checked={isSelected}
-                    onChange={() =>
+  const categorySummary = filters.category ? CATEGORY_CONFIG[filters.category].label : null
+  const priceSummary =
+    filters.minPrice > PRICE_RANGE.min || filters.maxPrice < PRICE_RANGE.max
+      ? `₹${filters.minPrice.toLocaleString("en-IN")} – ₹${filters.maxPrice.toLocaleString("en-IN")}`
+      : null
+
+  return (
+    <aside className={cn("flex w-full flex-col gap-[2.625em] lg:w-[22.125em] lg:shrink-0", className)}>
+      <div className="flex flex-col">
+        <AccordionSection
+          id="category"
+          label="category"
+          summary={categorySummary}
+          openId={openId}
+          onToggle={toggle}
+        >
+          <ul className="m-0 flex list-none flex-col gap-[0.5em] p-0">
+            {(Object.keys(CATEGORY_CONFIG) as CategoryKey[]).map((key) => {
+              const cat = CATEGORY_CONFIG[key]
+              const children = subcategories?.[key] ?? []
+              const isSelected = filters.category === key
+              return (
+                <li key={key}>
+                  <OptionButton
+                    label={cat.label}
+                    active={isSelected}
+                    count={categoryCounts?.[key]}
+                    onClick={() =>
                       onChange({
                         category: isSelected ? null : key,
                         subcategory: null,
                       })
                     }
                   />
-                  <span className="flex-1">{cat.label}</span>
-                  {typeof count === "number" && (
-                    <span className="text-xs text-muted-foreground">{count}</span>
-                  )}
-                </label>
-                {isSelected && children.length > 0 && (
-                  <ul className="mt-2 space-y-2 border-l border-border pl-6">
-                    {children.map((child) => (
-                      <li key={child.id}>
-                        <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-                          <input
-                            type="checkbox"
-                            className="size-4 rounded border-border accent-accent"
-                            checked={filters.subcategory === child.handle}
-                            onChange={() =>
+                  {isSelected && children.length > 0 ? (
+                    <ul className="mt-[0.5em] ml-[0.75em] flex list-none flex-col gap-[0.35em] border-l border-[#CDCDCD] pl-[0.75em]">
+                      {children.map((child) => (
+                        <li key={child.id}>
+                          <OptionButton
+                            label={child.name}
+                            active={filters.subcategory === child.handle}
+                            onClick={() =>
                               onChange({
                                 subcategory:
                                   filters.subcategory === child.handle ? null : child.handle,
                               })
                             }
                           />
-                          <span className="flex-1">{child.name}</span>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-      </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </li>
+              )
+            })}
+          </ul>
+        </AccordionSection>
 
-      <div>
-        <h3 className="mb-3 text-sm font-semibold">Price</h3>
-        <RangeSlider
-          value={range}
-          onChange={commitRange}
-          min={PRICE_RANGE.min}
-          max={PRICE_RANGE.max}
-          step={100}
-          minGap={500}
-          formatValue={(v) => `₹${v.toLocaleString("en-IN")}`}
-          ariaLabelMin="Minimum price"
-          ariaLabelMax="Maximum price"
-        />
-        <div className="mt-3 flex items-center gap-2">
-          <Input
-            type="number"
-            inputSize="sm"
+        <AccordionSection
+          id="price"
+          label="price"
+          summary={priceSummary}
+          openId={openId}
+          onToggle={toggle}
+        >
+          <RangeSlider
+            value={range}
+            onChange={commitRange}
             min={PRICE_RANGE.min}
-            max={filters.maxPrice}
-            value={filters.minPrice}
-            aria-label="Minimum price"
-            onChange={(e) =>
-              onChange({ minPrice: Math.max(PRICE_RANGE.min, Number(e.target.value) || 0) })
-            }
-          />
-          <span className="text-muted-foreground">–</span>
-          <Input
-            type="number"
-            inputSize="sm"
-            min={filters.minPrice}
             max={PRICE_RANGE.max}
-            value={filters.maxPrice}
-            aria-label="Maximum price"
-            onChange={(e) =>
-              onChange({
-                maxPrice: Math.min(PRICE_RANGE.max, Number(e.target.value) || PRICE_RANGE.max),
-              })
-            }
+            step={100}
+            minGap={500}
+            formatValue={(v) => `₹${v.toLocaleString("en-IN")}`}
+            ariaLabelMin="Minimum price"
+            ariaLabelMax="Maximum price"
           />
-        </div>
-        <p className="mt-1.5 text-xs text-muted-foreground">
-          ₹{PRICE_RANGE.min.toLocaleString("en-IN")} — ₹{PRICE_RANGE.max.toLocaleString("en-IN")}
-        </p>
-      </div>
+          <div className="mt-[0.75em] flex items-center gap-[0.5em]">
+            <label className="sr-only" htmlFor="shop-min-price">
+              Minimum price
+            </label>
+            <input
+              id="shop-min-price"
+              type="number"
+              min={PRICE_RANGE.min}
+              max={filters.maxPrice}
+              value={filters.minPrice}
+              onChange={(e) =>
+                onChange({ minPrice: Math.max(PRICE_RANGE.min, Number(e.target.value) || 0) })
+              }
+              className="h-[2.5em] w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-[0.75em] font-outfit text-[0.875em] text-[#131111] outline-none"
+            />
+            <span className="text-[rgba(19,17,17,0.4)]">–</span>
+            <label className="sr-only" htmlFor="shop-max-price">
+              Maximum price
+            </label>
+            <input
+              id="shop-max-price"
+              type="number"
+              min={filters.minPrice}
+              max={PRICE_RANGE.max}
+              value={filters.maxPrice}
+              onChange={(e) =>
+                onChange({
+                  maxPrice: Math.min(PRICE_RANGE.max, Number(e.target.value) || PRICE_RANGE.max),
+                })
+              }
+              className="h-[2.5em] w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-[0.75em] font-outfit text-[0.875em] text-[#131111] outline-none"
+            />
+          </div>
+        </AccordionSection>
 
-      <div>
-        <h3 className="mb-3 text-sm font-semibold">Material</h3>
-        <ul className="space-y-2">
-          {SHOP_MATERIALS.map((mat) => {
-            const count = materialCounts?.[mat]
-            return (
+        <AccordionSection
+          id="material"
+          label="material"
+          summary={filters.material}
+          openId={openId}
+          onToggle={toggle}
+        >
+          <ul className="m-0 flex list-none flex-col gap-[0.5em] p-0">
+            {SHOP_MATERIALS.map((mat) => (
               <li key={mat}>
-                <label className="flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="size-4 rounded border-border accent-accent"
-                    checked={filters.material === mat}
-                    onChange={() =>
-                      onChange({ material: filters.material === mat ? null : mat })
-                    }
-                  />
-                  <span className="flex-1">{mat}</span>
-                  {typeof count === "number" && (
-                    <span className="text-xs text-muted-foreground">{count}</span>
-                  )}
-                </label>
+                <OptionButton
+                  label={mat}
+                  active={filters.material === mat}
+                  count={materialCounts?.[mat]}
+                  onClick={() => onChange({ material: filters.material === mat ? null : mat })}
+                />
               </li>
-            )
-          })}
-        </ul>
-      </div>
-
-      {/*
-        Rating filter (4★+/3★+) intentionally skipped: the store API exposes no
-        rating field on products, and /store/reviews only aggregates per
-        product_id — there is no bulk summary to filter a listing by without
-        one request per product. See .cursor/plans/pages/02-shop.md §Filters.
-      */}
-
-      <div className="space-y-3">
-        <FilterToggle
-          label="In stock only"
-          checked={filters.inStock}
-          onChange={(next) => onChange({ inStock: next })}
-        />
-        <FilterToggle
-          label="Customizable only"
-          checked={filters.customizable}
-          onChange={(next) => onChange({ customizable: next })}
-        />
-      </div>
-
-      {showSort && (
-        <div>
-          <h3 className="mb-3 text-sm font-semibold">Sort</h3>
-          <select
-            className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm"
-            value={filters.sort}
-            onChange={(e) => onChange({ sort: e.target.value })}
-            aria-label="Sort products"
-          >
-            {SHOP_SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
             ))}
-          </select>
-        </div>
-      )}
+          </ul>
+        </AccordionSection>
 
-      {hasActive && (
-        <Button variant="outline" size="sm" className="w-full" onClick={onClear}>
-          Clear all filters
-        </Button>
-      )}
+        <AccordionSection
+          id="availability"
+          label="availability"
+          summary={
+            filters.inStock || filters.customizable
+              ? [filters.inStock ? "In stock" : null, filters.customizable ? "Customizable" : null]
+                  .filter(Boolean)
+                  .join(" · ")
+              : null
+          }
+          openId={openId}
+          onToggle={toggle}
+        >
+          <ul className="m-0 flex list-none flex-col gap-[0.5em] p-0">
+            <li>
+              <OptionButton
+                label="In stock only"
+                active={filters.inStock}
+                onClick={() => onChange({ inStock: !filters.inStock })}
+              />
+            </li>
+            <li>
+              <OptionButton
+                label="Customizable only"
+                active={filters.customizable}
+                onClick={() => onChange({ customizable: !filters.customizable })}
+              />
+            </li>
+          </ul>
+        </AccordionSection>
+      </div>
+
+      <button
+        type="button"
+        disabled={!hasActive}
+        onClick={onClear}
+        className="inline-flex h-[3.875em] w-full cursor-pointer items-center justify-center gap-[1.25em] rounded-full border-0 bg-[#131111] px-[0.5em] font-outfit text-[1em] leading-[1.25em] font-light tracking-[-0.02em] text-[#F2F1EF] uppercase transition-opacity hover:opacity-90 disabled:cursor-default disabled:opacity-40"
+      >
+        <span className="size-[0.5em] shrink-0 rounded-full bg-[#F2F1EF]" aria-hidden />
+        {SHOP_CLEAR_LABEL}
+      </button>
     </aside>
   )
 }
