@@ -24,6 +24,14 @@ that matches how much you need to know.
 | 005 | [UX polish: shop, PDP, landing, cart](L3/005-ux-polish.md) | WP-05 |
 | 006 | [Auth, account & platform fixes](L3/006-auth-account-platform.md) | WP-06 |
 | 007 | [QA: accessibility, e2e, visual verification](L3/007-qa-verification.md) | WP-07 |
+| 008 | [Figma home hero](L3/008-figma-home-hero.md) | WP-09 |
+| 009 | [Figma home about](L3/009-figma-home-about.md) | WP-10 |
+| 010 | [Figma home products & categories](L3/010-figma-home-products-categories.md) | WP-11 |
+| 011 | [Figma home explore & footer](L3/011-figma-home-explore-footer.md) | WP-12 |
+| 012 | [Shared site nav + editorial shop](L3/012-shop-nav-editorial.md) | WP-13 |
+| 013 | [Four sample trophies for checkout](L3/013-trophy-catalog-seed.md) | WP-14 |
+| 014 | [Lossless storefront image optimization](L3/014-lossless-image-opt.md) | WP-15 |
+| 016 | [CI pipeline: build, integration, e2e](L3/016-ci-pipeline.md) | WP-17 |
 
 ## Rules for future changes (mandatory)
 

@@ -22,7 +22,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const initCart = useCartStore((s) => s.init)
 
   useEffect(() => {
-    void initCart()
+    void initCart().catch(() => {
+      /* init already swallows network errors */
+    })
   }, [initCart])
 
   return (

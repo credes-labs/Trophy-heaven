@@ -53,6 +53,8 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       const cart = await ensureCart(regionId)
       set({ cart })
+    } catch {
+      // Medusa down / network error — leave cart empty so the storefront still paints.
     } finally {
       set({ loading: false })
     }

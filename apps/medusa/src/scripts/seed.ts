@@ -3,6 +3,7 @@ import {
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
   createProductsWorkflow,
+  deleteProductsWorkflow,
   createRegionsWorkflow,
   createSalesChannelsWorkflow,
   createShippingOptionsWorkflow,
@@ -282,9 +283,21 @@ export default async function seed({ container }: ExecArgs) {
   // ── Sample products (skip if already seeded) ─────────────────────────────────
   const { data: existingProducts } = await query.graph({
     entity: "product",
-    fields: ["id", "title"],
+    fields: ["id", "title", "handle"],
+    pagination: { skip: 0, take: 500 },
   })
-  const productTitles = new Set(existingProducts.map((p: { title: string }) => p.title))
+  const bulkTrophyIds = existingProducts
+    .filter((p: { handle?: string | null }) => (p.handle ?? "").startsWith("catalog-trophy-"))
+    .map((p: { id: string }) => p.id)
+  if (bulkTrophyIds.length) {
+    await deleteProductsWorkflow(container).run({ input: { ids: bulkTrophyIds } })
+    logger.info(`Removed ${bulkTrophyIds.length} bulk catalog-trophy products (kept the four samples).`)
+  }
+  const productTitles = new Set(
+    existingProducts
+      .filter((p: { id: string }) => !bulkTrophyIds.includes(p.id))
+      .map((p: { title: string }) => p.title),
+  )
 
   const sizes = [
     { label: 'S (6")', token: "6IN" },
@@ -302,8 +315,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Crystal"], categoryByName["Corporate"]].filter(Boolean),
       description: "Fully customizable crystal star trophy with 2D + 3D preview.",
-      thumbnail: productImage("trophy-crystal-star.png"),
-      images: [{ url: productImage("trophy-crystal-star.png") }],
+      thumbnail: productImage("trophy-crystal-star.jpg"),
+      images: [{ url: productImage("trophy-crystal-star.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "full_3d",
@@ -335,8 +348,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Academic"]].filter(Boolean),
       description: "Text-engravable wooden plaque for academic awards.",
-      thumbnail: productImage("trophy-acrylic-plaque.png"),
-      images: [{ url: productImage("trophy-acrylic-plaque.png") }],
+      thumbnail: productImage("trophy-acrylic-plaque.jpg"),
+      images: [{ url: productImage("trophy-acrylic-plaque.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -365,8 +378,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Tables"]].filter(Boolean),
       description: "Solid oak side table — a standard (non-customizable) catalog product.",
-      thumbnail: productImage("furniture-oak-table.png"),
-      images: [{ url: productImage("furniture-oak-table.png") }],
+      thumbnail: productImage("furniture-oak-table.jpg"),
+      images: [{ url: productImage("furniture-oak-table.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "oak" },
       options: [{ title: "Finish", values: ["Natural", "Walnut"] }],
@@ -390,8 +403,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Metal"], categoryByName["Sports"]].filter(Boolean),
       description: "Brass-and-gold metal cup trophy with warm highlights — engravable plate included.",
-      thumbnail: productImage("trophy-metal-cup.png"),
-      images: [{ url: productImage("trophy-metal-cup.png") }],
+      thumbnail: productImage("trophy-metal-cup.jpg"),
+      images: [{ url: productImage("trophy-metal-cup.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -420,8 +433,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Acrylic"], categoryByName["Corporate"]].filter(Boolean),
       description: "Modern acrylic award plaque with subtle brass accents and custom engraving.",
-      thumbnail: productImage("trophy-acrylic-plaque.png"),
-      images: [{ url: productImage("trophy-acrylic-plaque.png") }],
+      thumbnail: productImage("trophy-acrylic-plaque.jpg"),
+      images: [{ url: productImage("trophy-acrylic-plaque.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_and_logo",
@@ -450,8 +463,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Chairs"]].filter(Boolean),
       description: "Walnut dining chair with refined joinery — built to outlive trends.",
-      thumbnail: productImage("furniture-walnut-chair.png"),
-      images: [{ url: productImage("furniture-walnut-chair.png") }],
+      thumbnail: productImage("furniture-walnut-chair.jpg"),
+      images: [{ url: productImage("furniture-walnut-chair.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "walnut" },
       options: [{ title: "Finish", values: ["Natural", "Espresso"] }],
@@ -475,8 +488,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Shelves"]].filter(Boolean),
       description: "Handcrafted teak wall shelf with a golden grain and invisible mounting.",
-      thumbnail: productImage("furniture-teak-shelf.png"),
-      images: [{ url: productImage("furniture-teak-shelf.png") }],
+      thumbnail: productImage("furniture-teak-shelf.jpg"),
+      images: [{ url: productImage("furniture-teak-shelf.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "teak" },
       options: [{ title: "Length", values: ["60 cm", "90 cm"] }],
@@ -500,8 +513,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Vases"]].filter(Boolean),
       description: "Hand-thrown ceramic vase with an artisan glaze — no two are alike.",
-      thumbnail: productImage("art-ceramic-vase.png"),
-      images: [{ url: productImage("art-ceramic-vase.png") }],
+      thumbnail: productImage("art-ceramic-vase.jpg"),
+      images: [{ url: productImage("art-ceramic-vase.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "ceramic" },
       options: [{ title: "Size", values: ["Small", "Large"] }],
@@ -525,8 +538,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Lamps"]].filter(Boolean),
       description: "Brass table lamp with a warm metallic patina, hand-polished in our workshop.",
-      thumbnail: productImage("art-brass-lamp.png"),
-      images: [{ url: productImage("art-brass-lamp.png") }],
+      thumbnail: productImage("art-brass-lamp.jpg"),
+      images: [{ url: productImage("art-brass-lamp.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "brass" },
       options: [{ title: "Shade", values: ["Ivory Linen", "Charcoal Linen"] }],
@@ -550,8 +563,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Wall Art"]].filter(Boolean),
       description: "Handwoven wall textile in olive and brass tones — a quiet statement piece.",
-      thumbnail: productImage("art-wall-textile.png"),
-      images: [{ url: productImage("art-wall-textile.png") }],
+      thumbnail: productImage("art-wall-textile.jpg"),
+      images: [{ url: productImage("art-wall-textile.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "cotton" },
       options: [{ title: "Size", values: ["90 × 120 cm", "120 × 180 cm"] }],
@@ -577,16 +590,16 @@ export default async function seed({ container }: ExecArgs) {
 
   // ── Backfill imagery for products seeded before thumbnails were set ────────
   const imageByTitle: Record<string, string> = {
-    "Crystal Star Award": "trophy-crystal-star.png",
-    "Engraved Wooden Plaque": "trophy-acrylic-plaque.png",
-    "Oak Side Table": "furniture-oak-table.png",
-    "Champion Metal Cup": "trophy-metal-cup.png",
-    "Acrylic Award Plaque": "trophy-acrylic-plaque.png",
-    "Walnut Dining Chair": "furniture-walnut-chair.png",
-    "Teak Wall Shelf": "furniture-teak-shelf.png",
-    "Handmade Ceramic Vase": "art-ceramic-vase.png",
-    "Brass Table Lamp": "art-brass-lamp.png",
-    "Handwoven Wall Textile": "art-wall-textile.png",
+    "Crystal Star Award": "trophy-crystal-star.jpg",
+    "Engraved Wooden Plaque": "trophy-acrylic-plaque.jpg",
+    "Oak Side Table": "furniture-oak-table.jpg",
+    "Champion Metal Cup": "trophy-metal-cup.jpg",
+    "Acrylic Award Plaque": "trophy-acrylic-plaque.jpg",
+    "Walnut Dining Chair": "furniture-walnut-chair.jpg",
+    "Teak Wall Shelf": "furniture-teak-shelf.jpg",
+    "Handmade Ceramic Vase": "art-ceramic-vase.jpg",
+    "Brass Table Lamp": "art-brass-lamp.jpg",
+    "Handwoven Wall Textile": "art-wall-textile.jpg",
   }
   const productModule = container.resolve(Modules.PRODUCT)
   const { data: seededProducts } = await query.graph({
@@ -710,8 +723,21 @@ export default async function seed({ container }: ExecArgs) {
       }
       continue
     }
-    await promotionModule.createPromotions({ ...promo, campaign: campaignWindow } as never)
-    logger.info(`Created promotion: ${promo.code}`)
+    let [campaign] = await promotionModule.listCampaigns({
+      campaign_identifier: [campaignWindow.campaign_identifier],
+    })
+    if (!campaign) {
+      campaign = await promotionModule.createCampaigns(campaignWindow as never)
+    }
+    try {
+      await promotionModule.createPromotions({
+        ...promo,
+        campaign_id: campaign.id,
+      } as never)
+      logger.info(`Created promotion: ${promo.code}`)
+    } catch {
+      logger.info(`Promotion already present: ${promo.code}`)
+    }
   }
 
   logger.info("Seed complete.")

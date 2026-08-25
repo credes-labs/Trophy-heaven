@@ -83,7 +83,7 @@ export function CraftsmanshipStory() {
           viewport={{ once: true, amount: 0.3 }}
         >
           <Image
-            src="/images/hero/hero-gallery.png"
+            src="/images/hero/hero-gallery.jpg"
             alt="Legacy Crafts gallery wall of handcrafted trophies, furniture, and artwork in warm light"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"

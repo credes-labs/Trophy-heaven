@@ -35,13 +35,13 @@ const FEATURED_PRODUCTS = [
   {
     name: "Heritage Gold Trophy",
     price: "₹2,499",
-    image: "/images/products/trophy-crystal-star.png",
+    image: "/images/products/trophy-crystal-star.jpg",
     href: "/trophies",
   },
   {
     name: "Artisan Walnut Table",
     price: "₹18,999",
-    image: "/images/products/furniture-oak-table.png",
+    image: "/images/products/furniture-oak-table.jpg",
     href: "/furniture",
   },
 ]

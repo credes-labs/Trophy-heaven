@@ -78,8 +78,8 @@ test.describe("storefront smoke", () => {
     for (const href of dead) {
       await expect(footer.locator(`a[href="${href}"]`)).toHaveCount(0)
     }
-    await expect(footer.getByRole("link", { name: "Trophies" })).toBeVisible()
-    await expect(footer.getByRole("link", { name: "All Products" })).toBeVisible()
+    await expect(footer.getByRole("link", { name: "Collection", exact: true })).toBeVisible()
+    await expect(footer.getByRole("link", { name: "About Us" })).toBeVisible()
   })
 
   test("login and forgot-password pages render", async ({ page }) => {

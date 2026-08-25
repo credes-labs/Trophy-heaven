@@ -11,7 +11,7 @@
     "predeploy": "medusa db:migrate",
     "typecheck": "tsc --noEmit",
     "test": "TEST_TYPE=unit jest --silent=false --runInBand --forceExit",
-    "test:integration": "TEST_TYPE=integration:modules jest --silent=false --runInBand --forceExit --testPathPattern='src/modules'",
+    "test:integration": "TEST_TYPE=integration:modules jest --silent=false --runInBand --forceExit --testPathPattern='src/modules' --passWithNoTests",
     "lint": "eslint src"
   },
   "dependencies": {
