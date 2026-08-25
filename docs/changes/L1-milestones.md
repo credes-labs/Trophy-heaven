@@ -3,6 +3,9 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-08-25 — CI build, integration, and e2e unblocked
+Catalog fetch no longer fails `next build` without Medusa; integration `--if-present` is a pnpm flag; e2e job builds the storefront and installs Chromium. → L2 WP-17 · [L3/016](L3/016-ci-pipeline.md)
+
 ## 2026-08-24 — Photo PNGs recoded to JPEG
 18 RGB photos (no alpha) converted to JPEG q=90/95 4:4:4; public assets 29.5 MB → 8.9 MB. PSNR ≥ 41.8 dB. → L2 WP-16 · [L3/015](L3/015-photo-png-to-jpeg.md)
 

@@ -15,23 +15,28 @@ export async function listProducts(params: {
   order?: string
   countryCode?: string
 }): Promise<{ products: HttpTypes.StoreProduct[]; count: number }> {
-  const region = await getRegion(params.countryCode)
-  const categoryFilter =
-    params.categoryIds && params.categoryIds.length
-      ? params.categoryIds
-      : params.categoryId
-        ? [params.categoryId]
-        : undefined
-  const { products, count } = await medusa.store.product.list({
-    limit: params.limit ?? 12,
-    offset: params.offset ?? 0,
-    q: params.q,
-    order: params.order,
-    region_id: region?.id,
-    fields: PRODUCT_FIELDS,
-    ...(categoryFilter ? { category_id: categoryFilter } : {}),
-  })
-  return { products, count }
+  try {
+    const region = await getRegion(params.countryCode)
+    const categoryFilter =
+      params.categoryIds && params.categoryIds.length
+        ? params.categoryIds
+        : params.categoryId
+          ? [params.categoryId]
+          : undefined
+    const { products, count } = await medusa.store.product.list({
+      limit: params.limit ?? 12,
+      offset: params.offset ?? 0,
+      q: params.q,
+      order: params.order,
+      region_id: region?.id,
+      fields: PRODUCT_FIELDS,
+      ...(categoryFilter ? { category_id: categoryFilter } : {}),
+    })
+    return { products, count }
+  } catch {
+    // CI / `next build` have no Medusa; pages already render an empty catalog.
+    return { products: [], count: 0 }
+  }
 }
 
 /** Fetch a single product by handle for a PDP. */

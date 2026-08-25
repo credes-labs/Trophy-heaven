@@ -31,7 +31,7 @@ that matches how much you need to know.
 | 012 | [Shared site nav + editorial shop](L3/012-shop-nav-editorial.md) | WP-13 |
 | 013 | [Four sample trophies for checkout](L3/013-trophy-catalog-seed.md) | WP-14 |
 | 014 | [Lossless storefront image optimization](L3/014-lossless-image-opt.md) | WP-15 |
-| 015 | [Photo PNGs recoded to high-quality JPEG](L3/015-photo-png-to-jpeg.md) | WP-16 |
+| 016 | [CI pipeline: build, integration, e2e](L3/016-ci-pipeline.md) | WP-17 |
 
 ## Rules for future changes (mandatory)
 

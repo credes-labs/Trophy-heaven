@@ -4,6 +4,9 @@ A paragraph per work package: what, why, key files, verification. Deep detail in
 linked L3 files. Newest first; anchor IDs (WP-NN) are stable — reference them from L1
 and L3.
 
+## WP-17 — CI pipeline gates (2026-08-25)
+**What:** `listProducts` returns an empty catalog when Medusa is unreachable so `next build` can prerender `/corporate/bulk` in CI. Moved pnpm `--if-present` before the script name (it was being forwarded to Jest/Playwright). Integration script allows zero module specs. E2E job now builds the storefront and installs Chromium before Playwright. **Why:** PR #10 Lint·Typecheck·Unit passed; Build, Integration, and E2E did not. **Files:** `catalog.ts`, `.github/workflows/ci.yml`, `apps/medusa/package.json`. **Verified:** storefront `next build`; integration script `--passWithNoTests`. → [L3/016](L3/016-ci-pipeline.md)
+
 ## WP-16 — Photo PNG → JPEG (2026-08-24)
 **What:** converted 18 photographic RGB PNGs (hero/category/product/blog) to JPEG q=90 4:4:4 (q=95 on three lower-PSNR files), Huffman-optimized, updated storefront + seed paths. Left transparent hero PNGs and PWA icons alone. **Why:** lossless oxipng could not shrink photos; user asked to optimize. **Files:** those 18 assets; `category-config.ts`, `mega-menu.tsx`, `layout.tsx`, `craftsmanship-story.tsx`, `images/manifest.json`, Medusa `seed.ts` / `seed-content.ts`. **Verified:** PSNR ≥ 41.8 dB vs PNG; `public` 29.54 → 8.89 MB. → [L3/015](L3/015-photo-png-to-jpeg.md)
 

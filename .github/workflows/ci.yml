@@ -63,8 +63,10 @@ jobs:
           POSTGRES_DB: legacy_crafts_test
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U medusa" --health-interval 5s
-          --health-timeout 5s --health-retries 10
+          --health-cmd "pg_isready -U medusa -d legacy_crafts_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
       redis:
         image: redis:7-alpine
         ports: ["6379:6379"]
@@ -80,7 +82,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Backend integration tests
-        run: pnpm --filter @legacy-crafts/medusa test:integration --if-present
+        run: pnpm --filter @legacy-crafts/medusa --if-present test:integration
         env:
           DATABASE_URL: postgres://medusa:medusa@localhost:5432/legacy_crafts_test
           REDIS_URL: redis://localhost:6379
@@ -98,5 +100,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Build storefront
+        run: pnpm schemas:build && pnpm --filter @legacy-crafts/storefront build
+      - name: Install Playwright Chromium
+        run: pnpm --filter @legacy-crafts/storefront exec playwright install --with-deps chromium
       - name: Playwright smoke + axe
-        run: pnpm --filter @legacy-crafts/storefront test:e2e --if-present
+        run: pnpm --filter @legacy-crafts/storefront --if-present test:e2e

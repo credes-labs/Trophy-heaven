@@ -139,7 +139,7 @@ export function SiteNav({ categories }: { categories?: NavCategory[] }) {
       <nav aria-label="Primary" className="flex items-start gap-10 lg:gap-16">
         <NavColumns categories={categories} />
         <div className="flex flex-col items-end gap-1">
-          <Link href="/search" className={siteNavItemClass}>
+          <Link href="/search" aria-label="Search" className={siteNavItemClass}>
             SEARCH
           </Link>
           <SiteCartControl className={siteNavItemClass} />
@@ -227,7 +227,7 @@ export function SiteNavMobile({ categories }: { categories?: NavCategory[] }) {
                   ) : null}
                 </div>
               ))}
-              <Link href="/search" onClick={() => setOpen(false)} className={siteNavItemClass}>
+              <Link href="/search" aria-label="Search" onClick={() => setOpen(false)} className={siteNavItemClass}>
                 SEARCH
               </Link>
               <SiteCartControl className={`${siteNavItemClass} text-left`} />
