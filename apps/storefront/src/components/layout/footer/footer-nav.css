@@ -1,0 +1,11 @@
+/* Outfit’s lowercase l is a single stem. At this display size it reads thinner
+   than the bowls in “egacy”. Thicken only that glyph, and only horizontally, so
+   the square terminals stay square (a stroke would round them and overflow). */
+.footer-wordmark-l {
+  font-weight: 700;
+  text-shadow:
+    0.02em 0 currentColor,
+    -0.02em 0 currentColor,
+    0.034em 0 currentColor,
+    -0.034em 0 currentColor;
+}

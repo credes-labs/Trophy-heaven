@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { FOOTER_NAV, FOOTER_WORDMARK } from "./constants"
+import "./footer-nav.css"
 
 const COLUMN_LEFT = ["left-[53.625em]", "left-[64.5625em]", "left-[75.9375em]"] as const
 
@@ -40,9 +41,10 @@ export function FooterNav() {
         <Link
           href="/"
           aria-label="Legacy home"
-          className="block font-outfit text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
+          className="footer-wordmark block font-outfit text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
         >
-          {FOOTER_WORDMARK}
+          <span className="footer-wordmark-l">{FOOTER_WORDMARK.slice(0, 1)}</span>
+          {FOOTER_WORDMARK.slice(1)}
         </Link>
       </div>
 
