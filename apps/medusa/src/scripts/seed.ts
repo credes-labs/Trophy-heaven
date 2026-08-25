@@ -379,7 +379,11 @@ export default async function seed({ container }: ExecArgs) {
       category_ids: [categoryByName["Tables"]].filter(Boolean),
       description: "Solid oak side table — a standard (non-customizable) catalog product.",
       thumbnail: productImage("furniture-oak-table.jpg"),
-      images: [{ url: productImage("furniture-oak-table.jpg") }],
+      images: [
+        { url: productImage("furniture-oak-table.jpg") },
+        { url: productImage("furniture-walnut-chair.jpg") },
+        { url: productImage("furniture-teak-shelf.jpg") },
+      ],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: { customization_level: "none", material: "oak" },
       options: [{ title: "Finish", values: ["Natural", "Walnut"] }],
@@ -404,7 +408,11 @@ export default async function seed({ container }: ExecArgs) {
       category_ids: [categoryByName["Metal"], categoryByName["Sports"]].filter(Boolean),
       description: "Brass-and-gold metal cup trophy with warm highlights — engravable plate included.",
       thumbnail: productImage("trophy-metal-cup.jpg"),
-      images: [{ url: productImage("trophy-metal-cup.jpg") }],
+      images: [
+        { url: productImage("trophy-metal-cup.jpg") },
+        { url: productImage("trophy-crystal-star.jpg") },
+        { url: productImage("trophy-acrylic-plaque.jpg") },
+      ],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -612,6 +620,41 @@ export default async function seed({ container }: ExecArgs) {
     const url = productImage(file)
     await productModule.updateProducts(p.id, { thumbnail: url, images: [{ url }] })
     logger.info(`Backfilled imagery for product: ${p.title}`)
+  }
+
+  // ── Multi-image PDP gallery (Champion Metal Cup, Oak Side Table) ───────────
+  const multiImageByTitle: Record<string, string[]> = {
+    "Champion Metal Cup": [
+      "trophy-metal-cup.jpg",
+      "trophy-crystal-star.jpg",
+      "trophy-acrylic-plaque.jpg",
+    ],
+    "Oak Side Table": [
+      "furniture-oak-table.jpg",
+      "furniture-walnut-chair.jpg",
+      "furniture-teak-shelf.jpg",
+    ],
+  }
+  const { data: galleryProducts } = await query.graph({
+    entity: "product",
+    fields: ["id", "title", "thumbnail", "images.id", "images.url"],
+  })
+  for (const p of galleryProducts as Array<{
+    id: string
+    title: string
+    thumbnail?: string | null
+    images?: Array<{ id: string; url: string }>
+  }>) {
+    const files = multiImageByTitle[p.title]
+    if (!files) continue
+    const imageCount = p.images?.length ?? 0
+    if (imageCount >= files.length) continue
+    const urls = files.map((file) => productImage(file))
+    await productModule.updateProducts(p.id, {
+      thumbnail: urls[0],
+      images: urls.map((url) => ({ url })),
+    })
+    logger.info(`Attached ${urls.length} gallery image(s) to: ${p.title}`)
   }
 
   // ── Inventory levels at the workshop (so manage_inventory variants sell) ────

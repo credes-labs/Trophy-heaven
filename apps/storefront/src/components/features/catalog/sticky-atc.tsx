@@ -44,18 +44,17 @@ export function StickyAtc({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: "spring", stiffness: 320, damping: 28 }}
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-md lg:hidden"
+          className="pdp-sticky"
         >
-          <div className="mx-auto flex max-w-7xl items-center gap-3">
+          <div className="mx-auto flex max-w-[90em] items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold tabular-nums">
+              <p className="m-0 truncate font-outfit text-[1em] tracking-[-0.02em] text-[#131111] tabular-nums">
                 {price != null ? formatMoney(price, currency) : "—"}
               </p>
             </div>
             <Button
-              variant="trophy"
               size="sm"
-              className="shrink-0"
+              className="pdp-atc min-h-0 min-w-0 shrink-0 px-4"
               disabled={disabled}
               loading={loading}
               onClick={onAdd}
