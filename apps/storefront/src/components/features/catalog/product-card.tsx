@@ -16,6 +16,7 @@ import {
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlist } from "@/hooks/use-wishlist"
 import { track } from "@/lib/analytics"
+import { cheapestInStockVariant } from "@/lib/product-filters"
 import { cn } from "@/lib/utils"
 
 function lowestPrice(product: HttpTypes.StoreProduct): {
@@ -40,7 +41,7 @@ function lowestPrice(product: HttpTypes.StoreProduct): {
 }
 
 function defaultVariantId(product: HttpTypes.StoreProduct): string | undefined {
-  return product.variants?.[0]?.id
+  return cheapestInStockVariant(product)?.id
 }
 
 function categoryLabel(
@@ -88,10 +89,14 @@ export function ProductCard({
 
   async function handleQuickAdd() {
     if (!variantId) return
-    await addItem(variantId, 1)
-    track("add_to_cart", { item_id: product.id, variant_id: variantId })
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1600)
+    try {
+      await addItem(variantId, 1)
+      track("add_to_cart", { item_id: product.id, variant_id: variantId })
+      setAdded(true)
+      setTimeout(() => setAdded(false), 1600)
+    } catch {
+      setAdded(false)
+    }
   }
 
   if (layout === "list") {

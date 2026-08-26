@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest"
 import type { HttpTypes } from "@medusajs/types"
 import {
+  cheapestInStockVariant,
+  cheapestPricedVariant,
   isCustomizableProduct,
   matchesMaterial,
   productInStock,
@@ -70,6 +72,45 @@ describe("productInStock", () => {
   })
   it("is false with no variants", () => {
     expect(productInStock(product({ variants: [] }))).toBe(false)
+  })
+})
+
+describe("cheapestInStockVariant", () => {
+  it("skips out-of-stock variants even when they are cheaper and first", () => {
+    const p = product({
+      variants: [
+        {
+          id: "var_oos",
+          manage_inventory: true,
+          allow_backorder: false,
+          inventory_quantity: 0,
+          calculated_price: { calculated_amount: 100 },
+        },
+        {
+          id: "var_ok",
+          manage_inventory: true,
+          allow_backorder: false,
+          inventory_quantity: 2,
+          calculated_price: { calculated_amount: 500 },
+        },
+      ] as HttpTypes.StoreProductVariant[],
+    })
+    expect(cheapestInStockVariant(p)?.id).toBe("var_ok")
+    expect(cheapestPricedVariant(p)?.id).toBe("var_oos")
+  })
+
+  it("returns undefined when every managed variant is out of stock", () => {
+    const p = product({
+      variants: [
+        {
+          id: "var_oos",
+          manage_inventory: true,
+          allow_backorder: false,
+          inventory_quantity: 0,
+        },
+      ] as HttpTypes.StoreProductVariant[],
+    })
+    expect(cheapestInStockVariant(p)).toBeUndefined()
   })
 })
 

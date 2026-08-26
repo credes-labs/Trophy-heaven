@@ -5,6 +5,7 @@ import {
   priceTier,
   PRODUCT_INDEX,
   getMeili,
+  lowestInrPrice,
   type ProductDoc,
 } from "../lib/meilisearch"
 
@@ -32,10 +33,16 @@ export default async function productIndexHandler({
     })
     .catch(() => null)
   if (!product) return
+  if (product.status && product.status !== "published") {
+    await meili.index(PRODUCT_INDEX).deleteDocument(product.id).catch(() => {})
+    return
+  }
 
-  const prices = ((product.variants?.[0] as unknown as { prices?: { currency_code: string; amount: number }[] })
-    ?.prices) ?? []
-  const price = prices.find((p) => p.currency_code === "inr")?.amount ?? prices[0]?.amount ?? 0
+  const price = lowestInrPrice(
+    (product.variants ?? []) as Array<{
+      prices?: Array<{ currency_code: string; amount: number }>
+    }>
+  )
 
   const doc: ProductDoc = {
     id: product.id,

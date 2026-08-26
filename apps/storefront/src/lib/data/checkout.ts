@@ -1,5 +1,6 @@
 import { medusa } from "../medusa"
 import type { HttpTypes } from "@medusajs/types"
+import { toSmallestUnit } from "../currency"
 
 /**
  * Checkout orchestration against Medusa's Store API (docs/kit/02 §2.4, §2.5).
@@ -54,9 +55,25 @@ export async function setShippingMethod(cartId: string, optionId: string) {
   return cart
 }
 
+export function isRazorpayEnabled(): boolean {
+  return (
+    Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) &&
+    process.env.NEXT_PUBLIC_RAZORPAY_ENABLED === "true"
+  )
+}
+
 export async function initPayment(cartId: string, opts?: { netTerms?: boolean }) {
   const { cart } = await medusa.store.cart.retrieve(cartId)
   const netTerms = opts?.netTerms ?? isNetTermsCart(cart)
+  if (!netTerms && isRazorpayEnabled()) {
+    const existing = cart.payment_collection?.payment_sessions?.find((s) =>
+      s.provider_id?.includes("razorpay")
+    )
+    const data = (existing?.data ?? {}) as Record<string, unknown>
+    if (typeof data.razorpay_order_id === "string" && data.razorpay_order_id) {
+      return cart.payment_collection
+    }
+  }
   const { payment_collection } = await medusa.store.payment.initiatePaymentSession(cart, {
     provider_id: pickProvider(netTerms),
   })
@@ -64,11 +81,8 @@ export async function initPayment(cartId: string, opts?: { netTerms?: boolean })
 }
 
 function pickProvider(netTerms = false): string {
-  // Net-terms: bill to corporate account — no Razorpay capture at checkout.
   if (netTerms) return "pp_system_default"
-  return process.env.NEXT_PUBLIC_RAZORPAY_ENABLED === "true"
-    ? "pp_razorpay_razorpay"
-    : "pp_system_default"
+  return isRazorpayEnabled() ? "pp_razorpay_razorpay" : "pp_system_default"
 }
 
 export type RazorpaySessionData = {
@@ -91,12 +105,16 @@ export function getRazorpaySessionData(
   const orderId =
     typeof data.razorpay_order_id === "string" ? data.razorpay_order_id : undefined
 
+  const currency =
+    (typeof data.currency_code === "string" && data.currency_code) ||
+    session?.currency_code ||
+    "inr"
+
   let amountPaise: number | undefined
-  if (typeof data.amount === "number") {
-    amountPaise = Math.round(data.amount)
+  if (typeof data.amount_paise === "number") {
+    amountPaise = Math.round(data.amount_paise)
   } else if (typeof session?.amount === "number") {
-    // Session amounts are major units (₹) — Razorpay expects paise.
-    amountPaise = Math.round(session.amount * 100)
+    amountPaise = toSmallestUnit(session.amount, currency)
   }
   return { orderId, amountPaise }
 }

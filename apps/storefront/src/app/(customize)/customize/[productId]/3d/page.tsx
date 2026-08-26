@@ -14,10 +14,10 @@ export default async function Customize3DPage({
   searchParams,
 }: {
   params: Promise<{ productId: string }>
-  searchParams: Promise<{ design?: string }>
+  searchParams: Promise<{ design?: string; variant?: string }>
 }) {
   const { productId } = await params
-  const { design } = await searchParams
+  const { design, variant } = await searchParams
   const product = await getProductById(productId)
   if (!product) notFound()
 
@@ -32,7 +32,7 @@ export default async function Customize3DPage({
           Rotate the trophy, switch materials, add engraving and your logo, then view it in AR.
         </p>
       </div>
-      <Editor3DLoader product={product} designId={design} />
+      <Editor3DLoader product={product} designId={design} preferredVariantId={variant} />
     </div>
   )
 }

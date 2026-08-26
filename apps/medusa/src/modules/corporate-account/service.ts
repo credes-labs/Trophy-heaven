@@ -1,4 +1,5 @@
 import { MedusaService } from "@medusajs/framework/utils"
+import crypto from "node:crypto"
 import { CorporateProfile, TeamMember } from "./models/corporate-profile"
 
 /**
@@ -25,6 +26,22 @@ class CorporateService extends MedusaService({
       email,
       role,
       status: "invited",
+      invite_token: crypto.randomBytes(24).toString("base64url"),
+    })
+  }
+
+  async acceptInvite(token: string, customerId: string) {
+    const [seat] = await this.listTeamMembers({ invite_token: token, status: "invited" }, { take: 1 })
+    if (!seat) {
+      const err = new Error("Invite is invalid or already used.") as Error & { code?: string }
+      err.code = "NOT_FOUND"
+      throw err
+    }
+    return this.updateTeamMembers({
+      id: seat.id,
+      customer_id: customerId,
+      status: "active",
+      invite_token: null,
     })
   }
 

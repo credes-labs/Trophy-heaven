@@ -11,6 +11,7 @@ import { CATEGORY_CONFIG, type CategoryKey } from "@/lib/category-config"
 import { SHOP_PAGE_SIZE } from "@/components/features/shop/constants"
 import { ShopClient, type ShopCategoryOption } from "@/components/features/shop/shop-client"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cheapestPricedVariant } from "@/lib/product-filters"
 
 export const revalidate = 300
 
@@ -67,7 +68,7 @@ async function ShopContent() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     itemListElement: productResult.products.slice(0, 10).map((p, i) => {
-      const price = p.variants?.[0]?.calculated_price
+      const price = cheapestPricedVariant(p)?.calculated_price
       return {
         "@type": "ListItem",
         position: i + 1,

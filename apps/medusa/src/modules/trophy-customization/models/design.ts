@@ -27,5 +27,6 @@ export const Design = model.define("design", {
     .default("draft"),
   is_template: model.boolean().default(false),
   share_token: model.text().nullable(),
+  owner_token: model.text().nullable(),
   complexity: model.enum(["simple", "medium", "complex"]).nullable(),
 })

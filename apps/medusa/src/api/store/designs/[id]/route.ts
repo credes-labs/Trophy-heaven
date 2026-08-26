@@ -4,8 +4,15 @@ import { TROPHY_CUSTOMIZATION } from "../../../../modules/trophy-customization"
 import type DesignService from "../../../../modules/trophy-customization/service"
 import { validateDesignState } from "../../../../lib/design-validation"
 import { getActorId } from "../../../../lib/auth-context"
+import { isDesignOwner, ownerTokenFromRequest } from "../../../../lib/design-ownership"
 
-const LOCKED_STATUSES = ["approved"]
+const LOCKED_STATUSES = ["approved", "submitted_for_review"]
+
+function clientDesign(design: Record<string, unknown>, includeOwnerToken: boolean) {
+  if (includeOwnerToken) return design
+  const { owner_token: _token, ...rest } = design
+  return rest
+}
 
 async function loadOwned(req: MedusaRequest, res: MedusaResponse) {
   const service = req.scope.resolve<DesignService>(TROPHY_CUSTOMIZATION)
@@ -17,8 +24,12 @@ async function loadOwned(req: MedusaRequest, res: MedusaResponse) {
   }
   const customerId = getActorId(req)
   const shareToken = (req.query.share_token as string) || req.headers["x-share-token"]
-  // Guest session designs (customer_id null) are owned by an unauthenticated caller.
-  const isOwner = design.customer_id === customerId
+  const isOwner = isDesignOwner({
+    customerId: design.customer_id,
+    actorId: customerId,
+    ownerToken: (design as { owner_token?: string | null }).owner_token,
+    presentedOwnerToken: ownerTokenFromRequest(req),
+  })
   const hasShare = design.share_token && design.share_token === shareToken
   if (!isOwner && !hasShare) {
     res.status(404).json({ error: { code: "NOT_FOUND", message: "Design not found." } })
@@ -31,7 +42,7 @@ async function loadOwned(req: MedusaRequest, res: MedusaResponse) {
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const ctx = await loadOwned(req, res)
   if (!ctx) return
-  res.json({ design: ctx.design })
+  res.json({ design: clientDesign(ctx.design as unknown as Record<string, unknown>, ctx.isOwner) })
 }
 
 const UpdateSchema = z.object({
@@ -80,7 +91,7 @@ export async function PUT(req: MedusaRequest, res: MedusaResponse) {
     ...rest,
     ...(state_json !== undefined ? { state_json: state_json as Record<string, unknown> } : {}),
   })
-  res.json({ design })
+  res.json({ design: clientDesign(design as unknown as Record<string, unknown>, true) })
 }
 
 /** DELETE /store/designs/:id — owner only. */

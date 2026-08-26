@@ -14,10 +14,10 @@ export default async function Customize2DPage({
   searchParams,
 }: {
   params: Promise<{ productId: string }>
-  searchParams: Promise<{ design?: string }>
+  searchParams: Promise<{ design?: string; variant?: string }>
 }) {
   const { productId } = await params
-  const { design } = await searchParams
+  const { design, variant } = await searchParams
   const product = await getProductById(productId)
   if (!product) notFound()
 
@@ -32,7 +32,7 @@ export default async function Customize2DPage({
           Add engraving text and your logo, pick a material finish, then save or add to cart.
         </p>
       </div>
-      <Editor2DLoader product={product} designId={design} />
+      <Editor2DLoader product={product} designId={design} preferredVariantId={variant} />
     </div>
   )
 }

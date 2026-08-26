@@ -3,6 +3,9 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-08-26 — Logic-layer critical and high integrity fixes
+Razorpay paise conversion, unpaid complete, guest design/corporate IDOR, cart transfer/stock, and production/search hardening. → L2 WP-23 · [L3/021](L3/021-logic-layer-critical-high.md)
+
 ## 2026-08-25 — Footer “legacy” L optically thickened
 Outfit’s lowercase l is a single stem; at the 242px wordmark it read thinner than the rest of the letters. First letter is now 700 with a horizontal thicken. → L2 WP-12
 

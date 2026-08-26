@@ -5,6 +5,7 @@ import {
   PaymentSessionStatus,
 } from "@medusajs/framework/utils"
 import type { Logger } from "@medusajs/framework/types"
+import { fromSmallestUnit, toSmallestUnit } from "../../lib/currency"
 
 type RazorpayOptions = {
   key_id: string
@@ -18,15 +19,31 @@ type InjectedDependencies = {
 
 const RAZORPAY_API = "https://api.razorpay.com/v1"
 
+type RazorpayPayment = {
+  id?: string
+  status?: string
+  amount?: number
+  currency?: string
+}
+
+function asNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value
+  if (typeof value === "string" && value.trim()) return Number(value)
+  if (value && typeof value === "object" && "numeric" in value) {
+    return Number((value as { numeric: unknown }).numeric)
+  }
+  return 0
+}
+
 /**
  * Razorpay payment provider (India — UPI, cards, net banking, wallets, EMI,
  * PayLater; see FR-PAY-1). Implements Medusa's payment-provider contract using
  * Razorpay's REST API. Webhook signature verification + idempotency are handled
- * by the store webhook route (see src/api/webhooks/razorpay) and
- * getWebhookActionAndData below (FR-PAY-8, R11).
+ * by the store webhook route (see src/api/webhooks/razorpay).
  *
- * Amounts are handled in the smallest currency unit (paise for INR), matching
- * both Medusa and Razorpay conventions.
+ * Medusa v2 session amounts are major units (₹). Razorpay Orders/Payments use
+ * the smallest currency unit (paise for INR) — same conversion Stripe's
+ * provider applies via getSmallestUnit.
  */
 class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
   static identifier = "razorpay"
@@ -73,26 +90,40 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
     amount: number
     currency_code: string
     context?: Record<string, unknown>
+    data?: Record<string, unknown>
   }) {
+    const currency = input.currency_code
+    const amountPaise = toSmallestUnit(asNumber(input.amount), currency)
+    const sessionId =
+      (typeof input.data?.session_id === "string" && input.data.session_id) ||
+      (typeof input.context?.session_id === "string" && input.context.session_id) ||
+      ""
+
     const order = await this.request<{ id: string; status: string }>("/orders", {
       method: "POST",
       body: JSON.stringify({
-        amount: Math.round(input.amount),
-        currency: input.currency_code.toUpperCase(),
-        notes: input.context ?? {},
+        amount: amountPaise,
+        currency: currency.toUpperCase(),
+        notes: {
+          medusa_session_id: sessionId,
+          ...(input.context ?? {}),
+        },
       }),
     })
 
     return {
       id: order.id,
-      data: { razorpay_order_id: order.id, status: order.status },
+      data: {
+        razorpay_order_id: order.id,
+        status: order.status,
+        amount_paise: amountPaise,
+        currency_code: currency,
+        medusa_session_id: sessionId,
+      },
     }
   }
 
   async authorizePayment(input: { data?: Record<string, unknown> }) {
-    // Verify with Razorpay before marking the session authorized: resolve the
-    // payment (by payment id, falling back to the order's payment list) and
-    // only authorize when Razorpay reports it authorized/captured.
     const data = input.data ?? {}
     if (!this.options_.key_id || !this.options_.key_secret) {
       this.logger_.warn("Razorpay keys not configured — leaving payment pending")
@@ -101,16 +132,16 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
 
     try {
       let paymentId = (data.razorpay_payment_id as string) || ""
-      let payment: { id?: string; status?: string } | null = null
+      let payment: RazorpayPayment | null = null
 
       if (paymentId) {
-        payment = await this.request<{ id: string; status: string }>(`/payments/${paymentId}`)
+        payment = await this.request<RazorpayPayment>(`/payments/${paymentId}`)
       } else {
         const orderId = (data.razorpay_order_id as string) || ""
         if (!orderId) {
           return { status: PaymentSessionStatus.PENDING, data }
         }
-        const list = await this.request<{ items?: Array<{ id: string; status: string }> }>(
+        const list = await this.request<{ items?: RazorpayPayment[] }>(
           `/orders/${orderId}/payments`
         )
         payment = list.items?.[0] ?? null
@@ -119,6 +150,17 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
 
       if (!payment) {
         return { status: PaymentSessionStatus.PENDING, data }
+      }
+
+      const expectedPaise = asNumber(data.amount_paise)
+      if (expectedPaise > 0 && asNumber(payment.amount) !== expectedPaise) {
+        this.logger_.warn(
+          `Razorpay amount mismatch: paid ${payment.amount} expected ${expectedPaise}`
+        )
+        return {
+          status: PaymentSessionStatus.ERROR,
+          data: { ...data, razorpay_payment_id: paymentId, razorpay_status: payment.status },
+        }
       }
 
       const merged = { ...data, razorpay_payment_id: paymentId, razorpay_status: payment.status }
@@ -137,20 +179,29 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
     }
   }
 
-  async capturePayment(input: { data?: Record<string, unknown> }) {
+  async capturePayment(input: { data?: Record<string, unknown>; amount?: number }) {
     const paymentId = (input.data?.razorpay_payment_id as string) || ""
     if (!paymentId) {
       return { data: input.data ?? {} }
     }
     if (input.data?.razorpay_status === "captured") {
-      // Verified as captured during authorization — capturing again would 400.
       return { data: input.data ?? {} }
     }
+    const currency = String(input.data?.currency_code ?? "inr")
+    const amountPaise =
+      asNumber(input.data?.amount_paise) ||
+      toSmallestUnit(asNumber(input.amount ?? input.data?.amount), currency)
     const captured = await this.request<Record<string, unknown>>(
       `/payments/${paymentId}/capture`,
-      { method: "POST", body: JSON.stringify({ amount: input.data?.amount }) }
+      {
+        method: "POST",
+        body: JSON.stringify({
+          amount: amountPaise,
+          currency: currency.toUpperCase(),
+        }),
+      }
     )
-    return { data: { ...(input.data ?? {}), captured } }
+    return { data: { ...(input.data ?? {}), captured, razorpay_status: "captured" } }
   }
 
   async cancelPayment(input: { data?: Record<string, unknown> }) {
@@ -166,9 +217,15 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
     if (!paymentId) {
       throw new Error("Cannot refund: missing razorpay_payment_id")
     }
+    const currency = String(input.data?.currency_code ?? "inr")
     const refund = await this.request<Record<string, unknown>>(
       `/payments/${paymentId}/refund`,
-      { method: "POST", body: JSON.stringify({ amount: Math.round(input.amount) }) }
+      {
+        method: "POST",
+        body: JSON.stringify({
+          amount: toSmallestUnit(asNumber(input.amount), currency),
+        }),
+      }
     )
     return { data: { ...(input.data ?? {}), refund } }
   }
@@ -206,7 +263,7 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
 
   /**
    * Verifies the webhook signature and maps the Razorpay event to a Medusa
-   * payment action. Idempotency (dedupe by event id) is enforced upstream.
+   * payment action. Amounts returned to Medusa are major units.
    */
   async getWebhookActionAndData(payload: {
     data: Record<string, unknown>
@@ -232,7 +289,8 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
       ((payload.data?.payload as Record<string, any>)?.payment?.entity as Record<string, any>) ||
       {}
 
-    const amount = Number(entity.amount ?? 0)
+    const currency = String(entity.currency ?? "INR")
+    const amount = fromSmallestUnit(Number(entity.amount ?? 0), currency)
     const sessionId = (entity.order_id as string) || ""
 
     switch (event) {

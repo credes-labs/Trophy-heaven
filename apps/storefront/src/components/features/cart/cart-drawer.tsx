@@ -17,6 +17,8 @@ export function CartDrawer() {
   const setDrawerOpen = useCartStore((s) => s.setDrawerOpen)
   const updateItem = useCartStore((s) => s.updateItem)
   const removeItem = useCartStore((s) => s.removeItem)
+  const loading = useCartStore((s) => s.loading)
+  const pendingLineIds = useCartStore((s) => s.pendingLineIds)
 
   useEffect(() => {
     if (!drawerOpen) return
@@ -102,6 +104,7 @@ export function CartDrawer() {
                           onChange={(q) => updateItem(item.id, q)}
                           min={1}
                           max={99}
+                          disabled={loading || pendingLineIds.includes(item.id)}
                           className={stepperClass}
                         />
                       </div>

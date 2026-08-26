@@ -9,7 +9,8 @@ describe("production routing", () => {
   it("allows valid transitions and rejects invalid ones", () => {
     expect(canTransition("queued", "in_production")).toBe(true)
     expect(canTransition("pending_design_approval", "completed")).toBe(false)
-    expect(canTransition("completed", "queued")).toBe(false)
+    expect(canTransition("on_hold", "in_production")).toBe(false)
+    expect(canTransition("on_hold", "queued")).toBe(true)
   })
 
   it("infers complexity from design state", () => {

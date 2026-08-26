@@ -28,6 +28,7 @@ export const DesignSchema = z
     status: DesignStatus.default("draft"),
     is_template: z.boolean().default(false),
     share_token: z.string().nullable(),
+    owner_token: z.string().nullable().optional(),
     complexity: z.enum(["simple", "medium", "complex"]).nullable(),
   })
   .merge(zTimestamps)

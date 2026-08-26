@@ -24,12 +24,14 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     id: job.id,
     tracking_number: shipment.tracking_number,
     shipping_carrier: shipment.carrier,
+    status: "completed",
+    completed_at: new Date(),
   })
 
   const eventBus = req.scope.resolve(Modules.EVENT_BUS)
   await eventBus.emit({
     name: "production.status_changed",
-    data: { job_id: job.id, order_id: job.order_id, status: "shipped" },
+    data: { job_id: job.id, order_id: job.order_id, status: "completed" },
   })
 
   res.json({ production_job, shipment })

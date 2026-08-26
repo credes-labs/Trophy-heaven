@@ -8,6 +8,7 @@ import { ProductTabs } from "@/components/features/catalog/product-tabs"
 import { RelatedProducts } from "@/components/features/catalog/related-products"
 import { CATEGORIES, hrefForCategoryHandle, type CategoryKey } from "@/lib/category-config"
 import { getReviewSummary } from "@/lib/reviews"
+import { cheapestPricedVariant } from "@/lib/product-filters"
 import "./pdp.css"
 
 export const revalidate = 300
@@ -106,7 +107,7 @@ export default async function ProductPage({ params }: Props) {
       .map((img) => ({ id: img.id, url: img.url, alt: product.title })),
   ]
 
-  const price = product.variants?.[0]?.calculated_price
+  const price = cheapestPricedVariant(product)?.calculated_price
   const reviewSummary = await getReviewSummary(product.id)
   const summary = reviewSummary && reviewSummary.count > 0 ? reviewSummary : null
 

@@ -33,22 +33,37 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   const reviewerId =
     (req as unknown as { auth_context?: { actor_id?: string } }).auth_context?.actor_id ?? null
-  const design_approval = await service.reject(
-    approval.id,
-    reviewerId,
-    parsed.data.feedback,
-    parsed.data.annotated_image_url
-  )
-  const design = await designs.updateDesigns({
-    id: approval.design_id,
-    status: "rejected_with_feedback",
-  })
+  try {
+    const design_approval = await service.reject(
+      approval.id,
+      reviewerId,
+      parsed.data.feedback,
+      parsed.data.annotated_image_url
+    )
+    const design = await designs.updateDesigns({
+      id: approval.design_id,
+      status: "rejected_with_feedback",
+    })
 
-  const eventBus = req.scope.resolve(Modules.EVENT_BUS)
-  await eventBus.emit({
-    name: "design.rejected",
-    data: { design_id: approval.design_id, feedback: parsed.data.feedback },
-  })
+    const jobs = await service.listProductionJobs({ design_id: approval.design_id })
+    for (const job of jobs) {
+      if (job.status !== "cancelled" && job.status !== "completed" && job.status !== "on_hold") {
+        await service.transition(job.id, "on_hold", { note: parsed.data.feedback, authorId: reviewerId }).catch(() => {})
+      }
+    }
 
-  res.json({ design_approval, design: { id: design.id, status: "rejected_with_feedback" } })
+    const eventBus = req.scope.resolve(Modules.EVENT_BUS)
+    await eventBus.emit({
+      name: "design.rejected",
+      data: { design_id: approval.design_id, feedback: parsed.data.feedback },
+    })
+
+    res.json({ design_approval, design: { id: design.id, status: "rejected_with_feedback" } })
+  } catch (e) {
+    const err = e as Error & { code?: string }
+    if (err.code === "CONFLICT") {
+      return res.status(409).json({ error: { code: "CONFLICT", message: err.message } })
+    }
+    throw e
+  }
 }

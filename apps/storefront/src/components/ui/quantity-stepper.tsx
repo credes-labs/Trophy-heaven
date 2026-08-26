@@ -9,6 +9,7 @@ export interface QuantityStepperProps extends Omit<React.HTMLAttributes<HTMLDivE
   min?: number
   max?: number
   step?: number
+  disabled?: boolean
 }
 
 export function QuantityStepper({
@@ -17,11 +18,12 @@ export function QuantityStepper({
   min = 0,
   max = Infinity,
   step = 1,
+  disabled = false,
   className,
   ...props
 }: QuantityStepperProps) {
-  const atMin = value <= min
-  const atMax = value >= max
+  const atMin = disabled || value <= min
+  const atMax = disabled || value >= max
 
   return (
     <div

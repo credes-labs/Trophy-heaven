@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { listProducts } from "@/lib/data/catalog"
 import { BulkOrderWizard } from "@/components/features/corporate/bulk-wizard"
+import { cheapestInStockVariant } from "@/lib/product-filters"
 
 export const metadata: Metadata = {
   title: "Start a bulk order",
@@ -13,7 +14,7 @@ export default async function BulkOrderPage() {
   const options = products.map((p) => ({
     id: p.id,
     title: p.title,
-    variantId: p.variants?.[0]?.id,
+    variantId: cheapestInStockVariant(p)?.id ?? p.variants?.[0]?.id,
   }))
 
   return (

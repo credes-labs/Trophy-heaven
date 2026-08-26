@@ -27,6 +27,12 @@ class ProductionWorkflowService extends MedusaService({
     complexity: Complexity
     material: string
   }) {
+    const existing = await this.listProductionJobs(
+      { order_line_item_id: input.order_line_item_id },
+      { take: 1 }
+    )
+    if (existing[0]) return existing[0]
+
     const workshop = routeWorkshop(input.complexity, input.material)
     const eta = new Date(Date.now() + slaDays(input.complexity) * 24 * 60 * 60 * 1000)
     return this.createProductionJobs({
@@ -85,6 +91,12 @@ class ProductionWorkflowService extends MedusaService({
 
   /** Approve a design review (API 05.3). */
   async approve(approvalId: string, reviewerId: string | null, note?: string) {
+    const approval = await this.retrieveDesignApproval(approvalId)
+    if (approval.status !== "pending") {
+      const err = new Error(`Approval is already ${approval.status}.`) as Error & { code?: string }
+      err.code = "CONFLICT"
+      throw err
+    }
     return this.updateDesignApprovals({
       id: approvalId,
       status: "approved",
@@ -101,6 +113,12 @@ class ProductionWorkflowService extends MedusaService({
     feedback: string,
     annotatedImageUrl?: string
   ) {
+    const approval = await this.retrieveDesignApproval(approvalId)
+    if (approval.status !== "pending") {
+      const err = new Error(`Approval is already ${approval.status}.`) as Error & { code?: string }
+      err.code = "CONFLICT"
+      throw err
+    }
     return this.updateDesignApprovals({
       id: approvalId,
       status: "rejected",

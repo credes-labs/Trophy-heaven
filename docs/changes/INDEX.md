@@ -37,6 +37,7 @@ that matches how much you need to know.
 | 018 | [Product page structure layout](L3/018-pdp-structure-layout.md) | WP-19 |
 | 019 | [Product page gallery and layout redo](L3/019-pdp-gallery-redo.md) | WP-21 |
 | 020 | [Cart page and sidebar cart](L3/020-cart-page-layout.md) | WP-20 |
+| 021 | [Logic-layer critical and high fixes](L3/021-logic-layer-critical-high.md) | WP-23 |
 
 ## Rules for future changes (mandatory)
 

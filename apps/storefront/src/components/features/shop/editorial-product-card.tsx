@@ -5,8 +5,7 @@ import Link from "next/link"
 import type { HttpTypes } from "@medusajs/types"
 import { formatMoney } from "@/lib/format"
 import { localizeImageUrl } from "@/lib/images"
-import { productPrice } from "@/lib/product-filters"
-import { cn } from "@/lib/utils"
+import { cheapestPricedVariant, productPrice } from "@/lib/product-filters"
 
 function productImage(product: HttpTypes.StoreProduct): { src: string; alt: string } | null {
   const src = product.thumbnail ?? product.images?.[0]?.url
@@ -18,7 +17,7 @@ function productImage(product: HttpTypes.StoreProduct): { src: string; alt: stri
 }
 
 function productCurrency(product: HttpTypes.StoreProduct): string {
-  return product.variants?.[0]?.calculated_price?.currency_code ?? "inr"
+  return cheapestPricedVariant(product)?.calculated_price?.currency_code ?? "inr"
 }
 
 export function EditorialProductCard({

@@ -2,9 +2,18 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { TROPHY_CUSTOMIZATION } from "../../../../../modules/trophy-customization"
 import type DesignService from "../../../../../modules/trophy-customization/service"
 import { getActorId } from "../../../../../lib/auth-context"
+import { isDesignOwner, ownerTokenFromRequest } from "../../../../../lib/design-ownership"
 
-function assertOwner(design: { customer_id: string | null }, req: MedusaRequest): boolean {
-  return design.customer_id === getActorId(req)
+function assertOwner(
+  design: { customer_id: string | null; owner_token?: string | null },
+  req: MedusaRequest
+): boolean {
+  return isDesignOwner({
+    customerId: design.customer_id,
+    actorId: getActorId(req),
+    ownerToken: design.owner_token,
+    presentedOwnerToken: ownerTokenFromRequest(req),
+  })
 }
 
 /** POST /store/designs/:id/share — generate a view-only share link. */

@@ -21,7 +21,8 @@ export const STATUS_TRANSITIONS: Record<ProductionJobStatus, ProductionJobStatus
   quality_check: ["packed", "in_production", "on_hold", "cancelled"],
   packed: ["completed", "on_hold"],
   completed: [],
-  on_hold: ["queued", "in_production", "cancelled"],
+  // Resume from hold cannot jump into production (that skipped design approval).
+  on_hold: ["pending_design_approval", "design_approved", "queued", "cancelled"],
   cancelled: [],
 }
 

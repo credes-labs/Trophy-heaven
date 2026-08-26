@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { getCartPaymentMeta, isNetTermsCart } from "./checkout"
+import { getCartPaymentMeta, getRazorpaySessionData, isNetTermsCart } from "./checkout"
 
 describe("net-terms cart helpers", () => {
   it("detects net terms from payment_terms metadata", () => {
@@ -37,5 +37,37 @@ describe("net-terms cart helpers", () => {
         metadata: { payment_terms: "net_60", po_number: "PO-9" },
       } as never)
     ).toEqual({ payment_terms: "net_60", po_number: "PO-9" })
+  })
+})
+
+describe("getRazorpaySessionData", () => {
+  it("converts Medusa major-unit session amounts to paise", () => {
+    expect(
+      getRazorpaySessionData({
+        payment_sessions: [
+          {
+            provider_id: "pp_razorpay_razorpay",
+            amount: 8999,
+            currency_code: "inr",
+            data: { razorpay_order_id: "order_1" },
+          },
+        ],
+      } as never)
+    ).toEqual({ orderId: "order_1", amountPaise: 899_900 })
+  })
+
+  it("prefers amount_paise from provider data over a major-unit data.amount", () => {
+    expect(
+      getRazorpaySessionData({
+        payment_sessions: [
+          {
+            provider_id: "pp_razorpay_razorpay",
+            amount: 8999,
+            currency_code: "inr",
+            data: { razorpay_order_id: "order_2", amount: 8999, amount_paise: 899_900 },
+          },
+        ],
+      } as never)
+    ).toEqual({ orderId: "order_2", amountPaise: 899_900 })
   })
 })

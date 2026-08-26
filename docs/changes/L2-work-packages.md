@@ -4,6 +4,9 @@ A paragraph per work package: what, why, key files, verification. Deep detail in
 linked L3 files. Newest first; anchor IDs (WP-NN) are stable — reference them from L1
 and L3.
 
+## WP-23 — Logic-layer critical and high fixes (2026-08-26)
+**What:** Closed the payment unit mismatch (Medusa ₹ → Razorpay paise), blocked unpaid `completeCart` when Razorpay is configured, issued guest `owner_token`s so `null === null` is not ownership, made clone/corporate/reviews/returns ID-safe, transferred guest carts on login, always create carts with a region, pick in-stock cheapest variants, and made bulk confirm / production jobs / search / rate-limit / seed amounts consistent with major units. **Why:** a logic audit found undercharge, unpaid orders, and several IDOR/integrity holes. **Files:** Razorpay provider + webhook; cart complete hook; design/corporate/reviews routes; storefront cart/auth/checkout; seed. **Verified:** Medusa unit specs + storefront vitest (currency, ownership, cart complete, product-filters, checkout). → [L3/021](L3/021-logic-layer-critical-high.md)
+
 ## WP-22 — Announcement bar walnut (2026-08-25)
 **What:** `AnnouncementBar` background is `#131111` with cream text instead of `bg-trophy`. **Why:** the burgundy strip clashed with the walnut header. **Files:** `announcement-bar.tsx`. **Verified:** browser on an inner page with the bar visible.
 

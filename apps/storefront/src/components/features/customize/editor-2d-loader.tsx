@@ -28,11 +28,13 @@ export function Editor2DLoader({
   product,
   initialDesign,
   designId,
+  preferredVariantId,
 }: {
   product: HttpTypes.StoreProduct
   initialDesign?: DesignRecord | null
   /** Saved design to resume (from /account/designs "Open"). Fetched client-side. */
   designId?: string
+  preferredVariantId?: string
 }) {
   const [design, setDesign] = useState<DesignRecord | null>(initialDesign ?? null)
   const [ready, setReady] = useState(!designId)
@@ -58,5 +60,5 @@ export function Editor2DLoader({
   }, [designId])
 
   if (!ready) return loadingFallback
-  return <Editor2D product={product} initialDesign={design} />
+  return <Editor2D product={product} initialDesign={design} preferredVariantId={preferredVariantId} />
 }

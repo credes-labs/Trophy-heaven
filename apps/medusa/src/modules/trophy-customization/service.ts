@@ -35,12 +35,14 @@ class DesignService extends MedusaService({
     sourceId: string
     fromPreset?: boolean
     customerId: string | null
+    ownerToken?: string | null
     name?: string
   }) {
     if (input.fromPreset) {
       const preset = await this.retrieveDesignPreset(input.sourceId)
       return this.createDesigns({
         customer_id: input.customerId,
+        owner_token: input.ownerToken ?? null,
         name: input.name ?? `${preset.name} (copy)`,
         mode: preset.mode === "both" ? "2d" : preset.mode,
         product_id: preset.base_product_id,
@@ -54,6 +56,7 @@ class DesignService extends MedusaService({
     const source = await this.retrieveDesign(input.sourceId)
     return this.createDesigns({
       customer_id: input.customerId,
+      owner_token: input.ownerToken ?? null,
       name: input.name ?? `${source.name} (copy)`,
       mode: source.mode,
       product_id: source.product_id,

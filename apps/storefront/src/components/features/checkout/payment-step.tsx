@@ -88,6 +88,7 @@ export function PaymentStep({
             </span>
           </label>
         </li>
+        {razorpayEnabled ? null : (
         <li>
           <label
             className={cn(
@@ -110,6 +111,7 @@ export function PaymentStep({
             </span>
           </label>
         </li>
+        )}
       </ul>
 
       <p className="text-xs text-muted-foreground">Your payment information is secure and encrypted.</p>

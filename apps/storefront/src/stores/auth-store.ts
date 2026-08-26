@@ -3,6 +3,7 @@
 import { create } from "zustand"
 import { medusa } from "@/lib/medusa"
 import type { HttpTypes } from "@medusajs/types"
+import { useCartStore } from "@/stores/cart-store"
 
 type AuthState = {
   customer: HttpTypes.StoreCustomer | null
@@ -41,6 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await medusa.auth.login("customer", "emailpass", { email, password })
       const { customer } = await medusa.store.customer.retrieve()
       set({ customer })
+      await useCartStore.getState().transferToCustomer()
     } finally {
       set({ loading: false })
     }
@@ -55,6 +57,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await medusa.auth.login("customer", "emailpass", { email, password })
       const { customer } = await medusa.store.customer.retrieve()
       set({ customer })
+      await useCartStore.getState().transferToCustomer()
     } finally {
       set({ loading: false })
     }

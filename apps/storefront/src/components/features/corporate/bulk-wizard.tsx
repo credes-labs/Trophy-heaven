@@ -11,7 +11,7 @@ import {
   type BulkOrderRecord,
   type CorporateProfileRecord,
 } from "@/lib/bulk-client"
-import { CART_ID_KEY, useCartStore } from "@/stores/cart-store"
+import { useCartStore } from "@/stores/cart-store"
 
 type ProductOption = { id: string; title: string; variantId?: string }
 
@@ -134,9 +134,8 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
     try {
       const res = await bulkApi.confirm(order.id, { payment_terms: paymentTerms })
       if (res.cart_id) {
-        localStorage.setItem(CART_ID_KEY, res.cart_id)
-        useCartStore.setState({ cart: null })
-        await useCartStore.getState().init()
+        const previous = useCartStore.getState().cart
+        await useCartStore.getState().adoptCart(res.cart_id, previous)
       }
       setConfirmResult({
         cart_id: res.cart_id,

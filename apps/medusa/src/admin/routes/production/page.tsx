@@ -23,15 +23,17 @@ const COLUMNS = [
   "completed",
 ] as const
 
+/** Mirrors `STATUS_TRANSITIONS` in lib/production-routing (H6). Packed → completed
+ * goes through the ship/label action so tracking is always set. */
 const NEXT: Record<string, string[]> = {
   pending_design_approval: ["on_hold", "cancelled"],
-  design_approved: ["queued"],
-  queued: ["in_production", "on_hold"],
-  in_production: ["quality_check", "on_hold"],
-  quality_check: ["packed", "in_production"],
-  packed: ["completed"],
+  design_approved: ["queued", "on_hold", "cancelled"],
+  queued: ["in_production", "on_hold", "cancelled"],
+  in_production: ["quality_check", "on_hold", "cancelled"],
+  quality_check: ["packed", "in_production", "on_hold", "cancelled"],
+  packed: ["on_hold"],
   completed: [],
-  on_hold: ["queued"],
+  on_hold: ["pending_design_approval", "design_approved", "queued", "cancelled"],
   cancelled: [],
 }
 

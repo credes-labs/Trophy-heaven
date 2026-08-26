@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { medusa } from "@/lib/medusa"
+import { getRegion } from "@/lib/regions"
 import type { HttpTypes } from "@medusajs/types"
 
 const CART_ID_KEY = "lc_cart_id"
@@ -9,10 +10,13 @@ const CART_ID_KEY = "lc_cart_id"
 type CartState = {
   cart: HttpTypes.StoreCart | null
   loading: boolean
+  pendingLineIds: string[]
   drawerOpen: boolean
   setDrawerOpen: (open: boolean) => void
   init: (regionId?: string) => Promise<void>
   refresh: () => Promise<void>
+  adoptCart: (cartId: string, mergeFrom?: HttpTypes.StoreCart | null) => Promise<void>
+  transferToCustomer: () => Promise<void>
   addItem: (variantId: string, quantity?: number, metadata?: Record<string, unknown>) => Promise<void>
   updateItem: (lineId: string, quantity: number) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
@@ -27,24 +31,58 @@ function appliedPromoCodes(cart: HttpTypes.StoreCart | null): string[] {
     .filter((code): code is string => Boolean(code))
 }
 
-async function ensureCart(regionId?: string): Promise<HttpTypes.StoreCart> {
-  const existingId = typeof window !== "undefined" ? localStorage.getItem(CART_ID_KEY) : null
-  if (existingId) {
-    try {
-      const { cart } = await medusa.store.cart.retrieve(existingId)
-      if (cart && !cart.completed_at) return cart
-    } catch {
-      // fall through to create a fresh cart
-    }
+let ensureCartInflight: Promise<HttpTypes.StoreCart> | null = null
+
+async function resolveRegionId(explicit?: string): Promise<string | undefined> {
+  if (explicit) return explicit
+  try {
+    const region = await getRegion()
+    return region?.id
+  } catch {
+    return undefined
   }
-  const { cart } = await medusa.store.cart.create(regionId ? { region_id: regionId } : {})
-  localStorage.setItem(CART_ID_KEY, cart.id)
-  return cart
+}
+
+async function ensureCart(regionId?: string): Promise<HttpTypes.StoreCart> {
+  if (!ensureCartInflight) {
+    ensureCartInflight = (async () => {
+      const resolvedRegion = await resolveRegionId(regionId)
+      const existingId = typeof window !== "undefined" ? localStorage.getItem(CART_ID_KEY) : null
+      if (existingId) {
+        try {
+          const { cart } = await medusa.store.cart.retrieve(existingId)
+          if (cart && !cart.completed_at) {
+            if (resolvedRegion && cart.region_id && cart.region_id !== resolvedRegion) {
+              const { cart: updated } = await medusa.store.cart.update(cart.id, {
+                region_id: resolvedRegion,
+              })
+              return updated
+            }
+            return cart
+          }
+        } catch {
+          // fall through to create a fresh cart
+        }
+      }
+      const { cart } = await medusa.store.cart.create(
+        resolvedRegion ? { region_id: resolvedRegion } : {}
+      )
+      localStorage.setItem(CART_ID_KEY, cart.id)
+      return cart
+    })()
+  }
+  const pending = ensureCartInflight
+  try {
+    return await pending
+  } finally {
+    if (ensureCartInflight === pending) ensureCartInflight = null
+  }
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
   cart: null,
   loading: false,
+  pendingLineIds: [],
   drawerOpen: false,
   setDrawerOpen: (open) => set({ drawerOpen: open }),
 
@@ -78,6 +116,43 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
+  adoptCart: async (cartId, mergeFrom) => {
+    set({ loading: true })
+    try {
+      localStorage.setItem(CART_ID_KEY, cartId)
+      ensureCartInflight = null
+      let { cart } = await medusa.store.cart.retrieve(cartId)
+      if (mergeFrom?.id && mergeFrom.id !== cartId) {
+        for (const item of mergeFrom.items ?? []) {
+          if (!item.variant_id) continue
+          const { cart: next } = await medusa.store.cart.createLineItem(cartId, {
+            variant_id: item.variant_id,
+            quantity: item.quantity ?? 1,
+            metadata: (item.metadata as Record<string, unknown> | undefined) ?? undefined,
+          })
+          cart = next
+        }
+      }
+      set({ cart })
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  transferToCustomer: async () => {
+    const id =
+      get().cart?.id ??
+      (typeof window !== "undefined" ? localStorage.getItem(CART_ID_KEY) : null)
+    if (!id) return
+    try {
+      const { cart } = await medusa.store.cart.transferCart(id)
+      set({ cart })
+      localStorage.setItem(CART_ID_KEY, cart.id)
+    } catch {
+      // Cart already belongs to this customer, or the guest cart is gone.
+    }
+  },
+
   addItem: async (variantId, quantity = 1, metadata) => {
     set({ loading: true })
     try {
@@ -96,12 +171,20 @@ export const useCartStore = create<CartState>((set, get) => ({
   updateItem: async (lineId, quantity) => {
     const current = get().cart
     if (!current) return
-    set({ loading: true })
+    set((s) => ({
+      loading: true,
+      pendingLineIds: s.pendingLineIds.includes(lineId)
+        ? s.pendingLineIds
+        : [...s.pendingLineIds, lineId],
+    }))
     try {
       const { cart } = await medusa.store.cart.updateLineItem(current.id, lineId, { quantity })
       set({ cart })
     } finally {
-      set({ loading: false })
+      set((s) => ({
+        loading: false,
+        pendingLineIds: s.pendingLineIds.filter((id) => id !== lineId),
+      }))
     }
   },
 

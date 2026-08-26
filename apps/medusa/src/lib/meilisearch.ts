@@ -45,9 +45,22 @@ export async function ensureProductIndex(): Promise<Index | null> {
   return index
 }
 
+export function meiliFilterValue(value: string): string {
+  return value.trim().replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+}
+
 export function priceTier(price: number): string {
   if (price < 1000) return "under_1000"
   if (price < 5000) return "1000_5000"
   if (price < 15000) return "5000_15000"
   return "15000_plus"
+}
+
+export function lowestInrPrice(
+  variants: Array<{ prices?: Array<{ currency_code: string; amount: number }> }>
+): number {
+  const amounts = variants.flatMap((variant) =>
+    (variant.prices ?? []).filter((p) => p.currency_code === "inr").map((p) => p.amount)
+  )
+  return amounts.length ? Math.min(...amounts) : 0
 }

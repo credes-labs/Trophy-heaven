@@ -21,5 +21,6 @@ export const TeamMember = model.define("team_member", {
   customer_id: model.text().nullable(),
   role: model.enum(["member", "manager"]).default("member"),
   status: model.enum(["invited", "active", "revoked"]).default("invited"),
+  invite_token: model.text().nullable(),
   corporate_profile: model.belongsTo(() => CorporateProfile, { mappedBy: "members" }),
 })

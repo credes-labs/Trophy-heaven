@@ -20,6 +20,7 @@ export default function CartPage() {
   const refresh = useCartStore((s) => s.refresh)
   const updateItem = useCartStore((s) => s.updateItem)
   const removeItem = useCartStore((s) => s.removeItem)
+  const pendingLineIds = useCartStore((s) => s.pendingLineIds)
   const items = cart?.items ?? []
   const currency = cart?.currency_code ?? "inr"
   const total = cart?.total ?? cart?.item_subtotal ?? 0
@@ -81,6 +82,7 @@ export default function CartPage() {
                         currency={currency}
                         onUpdate={updateItem}
                         onRemove={removeItem}
+                        busy={loading || pendingLineIds.includes(item.id)}
                       />
                     ))}
                   </AnimatePresence>

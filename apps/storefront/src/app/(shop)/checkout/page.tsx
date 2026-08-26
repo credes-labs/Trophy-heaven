@@ -14,6 +14,7 @@ import {
   isNetTermsCart,
   getCartPaymentMeta,
   getRazorpaySessionData,
+  isRazorpayEnabled,
 } from "@/lib/data/checkout"
 import { openCheckout, verifyRazorpayPayment } from "@/lib/razorpay"
 import { StepIndicator, type CheckoutStep } from "@/components/features/checkout/step-indicator"
@@ -44,7 +45,7 @@ export default function CheckoutPage() {
   const currency = cart?.currency_code ?? "inr"
   const netTerms = isNetTermsCart(cart)
   const paymentMeta = getCartPaymentMeta(cart)
-  const razorpayEnabled = Boolean(RAZORPAY_KEY) && !netTerms
+  const razorpayEnabled = isRazorpayEnabled() && !netTerms
 
   useEffect(() => {
     if (netTerms) setPaymentMethod("net_terms")
@@ -97,9 +98,8 @@ export default function CheckoutPage() {
     }
   }
 
-  async function finishOrder() {
-    if (!cart) return
-    const res = await completeCart(cart.id)
+  async function finishOrder(cartId: string) {
+    const res = await completeCart(cartId)
     if (res.type === "order") {
       localStorage.removeItem(CART_ID_KEY)
       useCartStore.setState({ cart: null })
@@ -111,15 +111,14 @@ export default function CheckoutPage() {
 
   async function handlePlaceOrder() {
     if (!cart) return
+    const cartId = cart.id
     setBusy(true)
     setError(null)
     try {
       if (razorpayEnabled && paymentMethod === "razorpay") {
-        const paymentCollection = await initPayment(cart.id, { netTerms: false })
+        const paymentCollection = await initPayment(cartId, { netTerms: false })
         const sessionData = getRazorpaySessionData(paymentCollection)
-        const latest = await useCartStore.getState().cart
-        // Prefer the amount stored on the Medusa payment session; fall back to
-        // the client-computed cart total only when the session lacks one.
+        const latest = useCartStore.getState().cart
         const amountPaise =
           sessionData.amountPaise ?? Math.round((latest?.total ?? cart.total ?? 0) * 100)
         const addr = cart.shipping_address
@@ -129,7 +128,7 @@ export default function CheckoutPage() {
           amount: amountPaise,
           currency: (currency || "INR").toUpperCase(),
           name: "Legacy Crafts",
-          description: `Order ${cart.id}`,
+          description: `Order ${cartId}`,
           order_id: sessionData.orderId,
           prefill: {
             email: cart.email ?? undefined,
@@ -139,7 +138,6 @@ export default function CheckoutPage() {
           theme: { color: "#8A2D25" },
           handler: (response) => {
             void (async () => {
-              // Never complete the cart on an unverified Razorpay response.
               const verified = await verifyRazorpayPayment(response)
               if (!verified) {
                 setError(
@@ -147,7 +145,7 @@ export default function CheckoutPage() {
                 )
                 return
               }
-              await finishOrder()
+              await finishOrder(cartId)
             })().finally(() => setBusy(false))
           },
           modal: {
@@ -159,13 +157,19 @@ export default function CheckoutPage() {
         })
 
         if (result.skipped) {
-          await finishOrder()
+          setError("Razorpay Checkout could not be opened. No order was placed.")
           setBusy(false)
         }
         return
       }
 
-      await finishOrder()
+      if (paymentMethod === "cod" && isRazorpayEnabled()) {
+        setError("Cash on delivery is not available. Please pay with Razorpay.")
+        setBusy(false)
+        return
+      }
+
+      await finishOrder(cartId)
       setBusy(false)
     } catch (e) {
       setError((e as Error).message)

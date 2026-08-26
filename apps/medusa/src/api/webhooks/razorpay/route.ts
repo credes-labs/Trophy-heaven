@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import crypto from "node:crypto"
 import { ContainerRegistrationKeys, Modules, PaymentActions } from "@medusajs/framework/utils"
+import { razorpayWebhookEventId } from "../../../lib/razorpay-webhook"
 import { WEBHOOK_EVENTS } from "../../../modules/webhook-events"
 import type WebhookEventsService from "../../../modules/webhook-events/service"
 
@@ -9,11 +10,13 @@ type RazorpayPaymentEntity = {
   order_id?: string
   amount?: number
   status?: string
+  notes?: Record<string, string> | string[]
 }
 
 type RazorpayWebhookBody = {
   event?: string
   id?: string
+  created_at?: number
   payload?: {
     payment?: { entity?: RazorpayPaymentEntity }
   }
@@ -44,8 +47,7 @@ function getRawBody(req: MedusaRequest): string {
  * POST /webhooks/razorpay — HMAC-verified payment event handler (FR-PAY-8).
  * No JWT auth; signature verified via RAZORPAY_WEBHOOK_SECRET. Processed event
  * ids are persisted in the webhook-events module so redeliveries are skipped.
- * Always answers 200 once the signature is valid — processing errors are
- * logged, not retried by Razorpay.
+ * Valid signatures that fail processing return 500 so Razorpay retries.
  */
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER)
@@ -69,7 +71,16 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   const body = (req.body ?? {}) as RazorpayWebhookBody
   const event = body.event || "unknown"
-  const eventId = body.id || ""
+  const headerEventId =
+    (req.headers["x-razorpay-event-id"] as string) ||
+    (req.headers["X-Razorpay-Event-Id"] as string) ||
+    ""
+  const eventId = razorpayWebhookEventId({
+    headerEventId,
+    event: body.event,
+    paymentId: body.payload?.payment?.entity?.id,
+    createdAt: body.created_at,
+  })
 
   // ── Idempotency: skip events we have already processed ─────────────────────
   const webhookEvents = req.scope.resolve<WebhookEventsService>(WEBHOOK_EVENTS)
@@ -90,6 +101,9 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     logger.error(
       `Razorpay webhook ${eventId} (${event}) failed to process: ${(e as Error).message}`
     )
+    return res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Webhook processing failed." },
+    })
   }
 
   res.status(200).json({ received: true })
@@ -118,16 +132,27 @@ async function processEvent(req: MedusaRequest, body: RazorpayWebhookBody, rawBo
     return
   }
 
-  // The provider maps session_id to the Razorpay order id (see
-  // modules/razorpay/service.ts getWebhookActionAndData) — resolve the Medusa
-  // payment session whose provider data carries that order id.
-  const sessions = await paymentModule.listPaymentSessions(
-    { provider_id: RAZORPAY_PROVIDER_ID },
-    { take: 100, order: { created_at: "DESC" } }
-  )
-  const session = sessions.find(
-    (s) => (s.data as Record<string, unknown> | null)?.razorpay_order_id === orderId
-  )
+  const notes = entity.notes
+  const medusaSessionId =
+    notes && !Array.isArray(notes)
+      ? notes.medusa_session_id || notes.session_id || ""
+      : ""
+
+  let session: Awaited<ReturnType<typeof paymentModule.listPaymentSessions>>[number] | undefined
+  if (medusaSessionId) {
+    const [hit] = await paymentModule.listPaymentSessions({ id: medusaSessionId }, { take: 1 })
+    session = hit
+  }
+  if (!session) {
+    const sessions = await paymentModule.listPaymentSessions(
+      { provider_id: RAZORPAY_PROVIDER_ID },
+      { take: 500, order: { created_at: "DESC" } }
+    )
+    session = sessions.find((s) => {
+      const data = (s.data ?? {}) as Record<string, unknown>
+      return data.razorpay_order_id === orderId || data.medusa_session_id === medusaSessionId
+    })
+  }
   if (!session) {
     logger.warn(`Razorpay webhook: no payment session found for order ${orderId}`)
     return
@@ -144,7 +169,7 @@ async function processEvent(req: MedusaRequest, body: RazorpayWebhookBody, rawBo
         data: {
           ...(session.data ?? {}),
           razorpay_payment_id: razorpayPaymentId,
-          amount: processed.data?.amount ?? session.amount,
+          razorpay_status: "captured",
         },
       })
 
@@ -161,7 +186,7 @@ async function processEvent(req: MedusaRequest, body: RazorpayWebhookBody, rawBo
       if (!authorized.captured_at) {
         await paymentModule.capturePayment({
           payment_id: authorized.id,
-          amount: processed.data?.amount,
+          amount: session.amount,
         })
       }
       logger.info(

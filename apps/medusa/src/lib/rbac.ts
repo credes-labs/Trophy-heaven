@@ -2,10 +2,9 @@ import { MedusaError } from "@medusajs/framework/utils"
 import type { MedusaRequest, MedusaResponse, MedusaNextFunction } from "@medusajs/framework/http"
 
 /**
- * RBAC roles per FR-AUTH-3 / docs/kit/03 §3.7. Beyond Medusa's built-in admin
- * user, Legacy Crafts distinguishes staff roles via a `role` field stored in the
- * user's metadata. Permissions are re-checked per request (no trust in stale
- * tokens after a role change).
+ * RBAC roles per FR-AUTH-3 / docs/kit/03 §3.7. Missing role is deny, not admin.
+ * Medusa dashboard users (`actor_type: "user"`) without an explicit LC role
+ * are treated as admin so the stock admin JWT keeps working.
  */
 export type StaffRole = "admin" | "designer" | "production_manager"
 
@@ -16,27 +15,38 @@ export const CAPABILITY_MATRIX: Record<string, StaffRole[]> = {
   "products:manage": ["admin"],
   "corporate:manage": ["admin"],
   "users:manage": ["admin"],
+  "content:manage": ["admin"],
+  "reviews:moderate": ["admin", "designer"],
+  "search:manage": ["admin"],
 }
 
-export function roleFromRequest(req: MedusaRequest): StaffRole {
-  const user = (req as unknown as { auth_context?: { app_metadata?: Record<string, unknown> } })
-    .auth_context
-  const role = (user?.app_metadata?.role as StaffRole) || "admin"
-  return role
+export type AuthContextLike = {
+  actor_id?: string
+  actor_type?: string
+  app_metadata?: Record<string, unknown>
 }
 
-/**
- * Express-style guard: `requireCapability("production:update")`. Attach to admin
- * routes that need a capability beyond generic authentication.
- */
+export function roleFromAuthContext(ctx?: AuthContextLike | null): StaffRole | null {
+  if (!ctx?.actor_id) return null
+  const raw = ctx.app_metadata?.role
+  if (raw === "admin" || raw === "designer" || raw === "production_manager") return raw
+  if (ctx.actor_type === "user") return "admin"
+  return null
+}
+
+export function roleFromRequest(req: MedusaRequest): StaffRole | null {
+  const user = (req as unknown as { auth_context?: AuthContextLike }).auth_context
+  return roleFromAuthContext(user)
+}
+
 export function requireCapability(capability: keyof typeof CAPABILITY_MATRIX) {
   return (req: MedusaRequest, _res: MedusaResponse, next: MedusaNextFunction) => {
     const allowed = CAPABILITY_MATRIX[capability] ?? []
     const role = roleFromRequest(req)
-    if (!allowed.includes(role)) {
+    if (!role || !allowed.includes(role)) {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
-        `Role "${role}" lacks capability "${capability}".`
+        `Role "${role ?? "none"}" lacks capability "${capability}".`
       )
     }
     next()

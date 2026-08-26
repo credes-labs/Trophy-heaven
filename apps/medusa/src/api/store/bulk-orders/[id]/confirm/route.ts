@@ -70,6 +70,15 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     netTerms = true
   }
 
+  if (bulk_order.status === "confirmed") {
+    return res.json({
+      cart_id: bulk_order.cart_id,
+      line_item_ids: [],
+      payment_terms: paymentTerms,
+      net_terms: netTerms,
+    })
+  }
+
   const lines = await bulkService.listBulkOrderLines(
     { bulk_order_id: bulk_order.id },
     { order: { row_number: "ASC" } }
@@ -87,6 +96,32 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
   if (lines.length === 0) {
     return res.status(409).json({ error: { code: "CONFLICT", message: "No rows to confirm." } })
+  }
+
+  if (netTerms && bulk_order.corporate_profile_id) {
+    const corporate = req.scope.resolve<CorporateService>(CORPORATE_ACCOUNT)
+    let estimate = 0
+    if (bulk_order.variant_id) {
+      const productModule = req.scope.resolve(Modules.PRODUCT)
+      const variant = await productModule
+        .retrieveProductVariant(bulk_order.variant_id, { relations: ["prices"] })
+        .catch(() => null)
+      const amounts = ((variant as { prices?: Array<{ currency_code: string; amount: number }> } | null)
+        ?.prices ?? [])
+        .filter((p) => p.currency_code === "inr")
+        .map((p) => p.amount)
+      const unit = amounts.length ? Math.min(...amounts) : 0
+      estimate = unit * lines.length
+    }
+    const credit = await corporate.assertWithinCreditLimit(
+      bulk_order.corporate_profile_id,
+      estimate
+    )
+    if (!credit.ok) {
+      return res.status(403).json({
+        error: { code: "CREDIT_LIMIT_EXCEEDED", message: credit.reason },
+      })
+    }
   }
 
   const previews = new PreviewGenerationService()
@@ -143,8 +178,9 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   let cartTotal = 0
   try {
     const regionModule = req.scope.resolve(Modules.REGION)
-    const regions = await regionModule.listRegions({}, { take: 1 })
-    const regionId = regions[0]?.id
+    const regions = await regionModule.listRegions({}, { take: 20 })
+    const regionId =
+      regions.find((r) => r.currency_code === "inr")?.id ?? regions[0]?.id
 
     if (bulk_order.variant_id && regionId) {
       const refreshed = await bulkService.listBulkOrderLines({ bulk_order_id: bulk_order.id })
@@ -183,8 +219,19 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         input: { id: result.id, metadata: cartMetadata },
       })
     }
-  } catch {
-    // Cart assembly is best-effort in environments without a full pricing setup.
+  } catch (e) {
+    return res.status(500).json({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: `Could not assemble cart: ${(e as Error).message}`,
+      },
+    })
+  }
+
+  if (!cartId) {
+    return res.status(500).json({
+      error: { code: "INTERNAL_ERROR", message: "Cart could not be created for this bulk order." },
+    })
   }
 
   if (netTerms && bulk_order.corporate_profile_id && cartId) {

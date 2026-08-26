@@ -7,6 +7,7 @@ import { PreviewGenerationService } from "../../../../../modules/trophy-customiz
 import { validateDesignState } from "../../../../../lib/design-validation"
 import { getActorId } from "../../../../../lib/auth-context"
 import type { Design2DState } from "@legacy-crafts/schemas"
+import { isDesignOwner, ownerTokenFromRequest } from "../../../../../lib/design-ownership"
 
 const PreviewSchema = z.object({
   format: z.literal("png").optional(),
@@ -29,7 +30,12 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   if (!design) {
     return res.status(404).json({ error: { code: "NOT_FOUND", message: "Design not found." } })
   }
-  const isOwner = design.customer_id === getActorId(req)
+  const isOwner = isDesignOwner({
+    customerId: design.customer_id,
+    actorId: getActorId(req),
+    ownerToken: (design as { owner_token?: string | null }).owner_token,
+    presentedOwnerToken: ownerTokenFromRequest(req),
+  })
   if (!isOwner) {
     return res.status(403).json({ error: { code: "FORBIDDEN", message: "Not the design owner." } })
   }

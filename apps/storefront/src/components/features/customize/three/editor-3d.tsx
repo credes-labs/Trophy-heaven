@@ -21,6 +21,8 @@ import {
 } from "@/lib/design-3d"
 import type { Design3DState } from "@legacy-crafts/schemas"
 import { cn } from "@/lib/utils"
+import { cheapestInStockVariant } from "@/lib/product-filters"
+import { cartLinePreviewUrl } from "@/lib/cart-line"
 
 const DEFAULT_VALUES: Editor3DValues = {
   baseModelId: TROPHY_BASES[0].id,
@@ -35,12 +37,16 @@ const DEFAULT_VALUES: Editor3DValues = {
 export function Editor3D({
   product,
   initialDesign,
+  preferredVariantId,
 }: {
   product: HttpTypes.StoreProduct
   initialDesign?: DesignRecord | null
+  preferredVariantId?: string
 }) {
   const addItem = useCartStore((s) => s.addItem)
-  const variantId = product.variants?.[0]?.id
+  const variantId =
+    product.variants?.find((v) => v.id === preferredVariantId)?.id ??
+    cheapestInStockVariant(product)?.id
 
   const [values, setValues] = useState<Editor3DValues>(() =>
     initialDesign?.state_json
@@ -118,7 +124,7 @@ export function Editor3D({
     await addItem(variantId, 1, {
       design_id: record.id,
       design_name: record.name,
-      preview_url: screenshot ?? record.preview_url,
+      preview_url: cartLinePreviewUrl(screenshot) ?? record.preview_url,
       customization_mode: "3d",
     })
     setMsg("Added to cart with your 3D design")

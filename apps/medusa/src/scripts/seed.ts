@@ -71,7 +71,7 @@ export default async function seed({ container }: ExecArgs) {
             name: "India",
             currency_code: "inr",
             countries: ["in"],
-            payment_providers: ["pp_system_default"],
+            payment_providers: ["pp_razorpay_razorpay", "pp_system_default"],
           },
           {
             name: "International",
@@ -86,6 +86,13 @@ export default async function seed({ container }: ExecArgs) {
   }
   const indiaRegion = regions.find((r) => r.currency_code === "inr") ?? regions[0]
   const intlRegion = regions.find((r) => r.currency_code === "usd") ?? regions[0]
+  try {
+    await regionModule.updateRegions(indiaRegion.id, {
+      payment_providers: ["pp_razorpay_razorpay", "pp_system_default"],
+    } as never)
+  } catch (e) {
+    logger.warn(`Could not attach Razorpay to India region: ${(e as Error).message}`)
+  }
 
   // ── Stock location + shipping profile ────────────────────────────────────────
   const { data: existingLocations } = await query.graph({
@@ -195,10 +202,10 @@ export default async function seed({ container }: ExecArgs) {
             code: "standard",
           },
           prices: [
-            { currency_code: "inr", amount: 9900 },
-            { currency_code: "usd", amount: 999 },
-            { region_id: indiaRegion.id, amount: 9900 },
-            { region_id: intlRegion.id, amount: 999 },
+            { currency_code: "inr", amount: 99 },
+            { currency_code: "usd", amount: 10 },
+            { region_id: indiaRegion.id, amount: 99 },
+            { region_id: intlRegion.id, amount: 10 },
           ],
           rules: [
             { attribute: "enabled_in_store", value: "true", operator: "eq" },
@@ -217,10 +224,10 @@ export default async function seed({ container }: ExecArgs) {
             code: "express",
           },
           prices: [
-            { currency_code: "inr", amount: 24900 },
-            { currency_code: "usd", amount: 1999 },
-            { region_id: indiaRegion.id, amount: 24900 },
-            { region_id: intlRegion.id, amount: 1999 },
+            { currency_code: "inr", amount: 249 },
+            { currency_code: "usd", amount: 20 },
+            { region_id: indiaRegion.id, amount: 249 },
+            { region_id: intlRegion.id, amount: 20 },
           ],
           rules: [
             { attribute: "enabled_in_store", value: "true", operator: "eq" },
@@ -363,7 +370,7 @@ export default async function seed({ container }: ExecArgs) {
         sku: generateSku({ category: "Acad", shape: "Plaque", material: "Wood", size: s.token }),
         options: { Size: s.label },
         prices: [
-          { amount: 89900, currency_code: "inr" },
+          { amount: 899, currency_code: "inr" },
           { amount: 1299, currency_code: "usd" },
         ],
         manage_inventory: true,
@@ -392,7 +399,7 @@ export default async function seed({ container }: ExecArgs) {
         sku: generateSku({ category: "Furn", shape: "Table", material: "Oak", size: finish }),
         options: { Finish: finish },
         prices: [
-          { amount: 1299900, currency_code: "inr" },
+          { amount: 12999, currency_code: "inr" },
           { amount: 17900, currency_code: "usd" },
         ],
         manage_inventory: true,
@@ -776,6 +783,7 @@ export default async function seed({ container }: ExecArgs) {
       await promotionModule.createPromotions({
         ...promo,
         campaign_id: campaign.id,
+        status: "active",
       } as never)
       logger.info(`Created promotion: ${promo.code}`)
     } catch {

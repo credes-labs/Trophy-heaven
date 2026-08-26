@@ -1,5 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { z } from "zod"
+import crypto from "node:crypto"
 import { TROPHY_CUSTOMIZATION } from "../../../modules/trophy-customization"
 import type DesignService from "../../../modules/trophy-customization/service"
 import { validateDesignState } from "../../../lib/design-validation"
@@ -35,6 +36,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   const service = req.scope.resolve<DesignService>(TROPHY_CUSTOMIZATION)
   const customerId = getActorId(req)
+  const ownerToken = customerId ? null : crypto.randomBytes(24).toString("base64url")
 
   const design = await service.createDesigns({
     name: parsed.data.name,
@@ -43,6 +45,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     variant_id: parsed.data.variant_id ?? null,
     state_json: parsed.data.state_json as Record<string, unknown>,
     customer_id: customerId,
+    owner_token: ownerToken,
     status: "draft",
     is_template: false,
   })

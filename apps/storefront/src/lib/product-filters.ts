@@ -53,6 +53,33 @@ export function productInStock(product: HttpTypes.StoreProduct): boolean {
   return variants.some(variantInStock)
 }
 
+function cheaperVariant(
+  a: HttpTypes.StoreProductVariant,
+  b: HttpTypes.StoreProductVariant
+): HttpTypes.StoreProductVariant {
+  const aAmount = a.calculated_price?.calculated_amount ?? Number.POSITIVE_INFINITY
+  const bAmount = b.calculated_price?.calculated_amount ?? Number.POSITIVE_INFINITY
+  return bAmount < aAmount ? b : a
+}
+
+/** Cheapest variant by calculated price, including out-of-stock SKUs (JSON-LD / display). */
+export function cheapestPricedVariant(
+  product: Pick<HttpTypes.StoreProduct, "variants">
+): HttpTypes.StoreProductVariant | undefined {
+  const variants = product.variants ?? []
+  if (!variants.length) return undefined
+  return variants.reduce(cheaperVariant)
+}
+
+/** Cheapest in-stock variant — used for ATC so we never default to variants[0] if it is OOS. */
+export function cheapestInStockVariant(
+  product: Pick<HttpTypes.StoreProduct, "variants">
+): HttpTypes.StoreProductVariant | undefined {
+  const inStock = (product.variants ?? []).filter(variantInStock)
+  if (!inStock.length) return undefined
+  return inStock.reduce(cheaperVariant)
+}
+
 export function isCustomizableProduct(product: HttpTypes.StoreProduct): boolean {
   return isCustomizable((product.metadata?.customization_level as string) ?? "none")
 }

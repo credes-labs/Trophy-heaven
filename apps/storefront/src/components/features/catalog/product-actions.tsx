@@ -12,7 +12,7 @@ import { ShareButtons } from "@/components/features/blog/share-buttons"
 import "../../../app/(shop)/products/[handle]/pdp.css"
 import { cn } from "@/lib/utils"
 import { formatMoney, isCustomizable } from "@/lib/format"
-import { variantInStock } from "@/lib/product-filters"
+import { cheapestInStockVariant, variantInStock } from "@/lib/product-filters"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlist } from "@/hooks/use-wishlist"
 import { track } from "@/lib/analytics"
@@ -57,12 +57,12 @@ export function ProductActions({
   const atcRef = useRef<HTMLDivElement>(null)
 
   const activeVariant = useMemo(() => {
-    if (!options.length) return variants[0]
+    if (!options.length) return cheapestInStockVariant(product) ?? variants[0]
     if (!options.every((o) => o.id && selected[o.id])) return undefined
     return variants.find((v) =>
       (v.options ?? []).every((o) => selected[o.option_id ?? ""] === o.value)
     )
-  }, [options, variants, selected])
+  }, [options, variants, selected, product])
 
   const outOfStockValues = useMemo(() => {
     const set = new Set<string>()
@@ -97,22 +97,26 @@ export function ProductActions({
       : null
   const level = (product.metadata?.customization_level as string) ?? "none"
   const customizable = isCustomizable(level)
-  const canAdd = Boolean(activeVariant)
+  const canAdd = Boolean(activeVariant && variantInStock(activeVariant))
   const lineTotal =
     price?.calculated_amount != null ? price.calculated_amount * quantity : null
 
   async function handleAdd() {
-    if (!activeVariant) return
-    await addItem(activeVariant.id, quantity)
-    track("add_to_cart", {
-      item_id: product.id,
-      variant_id: activeVariant.id,
-      value: price?.calculated_amount,
-      currency: price?.currency_code,
-      quantity,
-    })
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+    if (!activeVariant || !variantInStock(activeVariant)) return
+    try {
+      await addItem(activeVariant.id, quantity)
+      track("add_to_cart", {
+        item_id: product.id,
+        variant_id: activeVariant.id,
+        value: price?.calculated_amount,
+        currency: price?.currency_code,
+        quantity,
+      })
+      setAdded(true)
+      setTimeout(() => setAdded(false), 2000)
+    } catch {
+      setAdded(false)
+    }
   }
 
   return (
@@ -177,6 +181,7 @@ export function ProductActions({
           onChange={setQuantity}
           min={1}
           max={99}
+          disabled={loading}
           className="h-[2.75em] rounded-[0.125em] border-[#131111]/20 [&_button]:h-full [&_button]:w-[2.75em] [&_span]:h-full [&_span]:border-[#131111]/20"
         />
         <Button
@@ -186,7 +191,7 @@ export function ProductActions({
           className="pdp-atc"
           style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
         >
-          {added ? "Added" : canAdd ? "Add to cart" : "Select options"}
+          {added ? "Added" : canAdd ? "Add to cart" : activeVariant ? "Out of stock" : "Select options"}
         </Button>
         <button
           type="button"
@@ -210,7 +215,12 @@ export function ProductActions({
       </div>
 
       {customizable ? (
-        <Link href={`/customize/${product.id}${level === "full_3d" ? "/3d" : "/2d"}`} className="pdp-customize">
+        <Link
+          href={`/customize/${product.id}${level === "full_3d" ? "/3d" : "/2d"}${
+            activeVariant?.id ? `?variant=${encodeURIComponent(activeVariant.id)}` : ""
+          }`}
+          className="pdp-customize"
+        >
           Customize this design
         </Link>
       ) : null}

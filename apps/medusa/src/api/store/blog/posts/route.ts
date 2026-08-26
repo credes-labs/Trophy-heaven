@@ -1,23 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { z } from "zod"
 import { BLOG } from "../../../../modules/blog"
 import type BlogService from "../../../../modules/blog/service"
-
-const CreateSchema = z.object({
-  title: z.string().min(1).max(200),
-  slug: z.string().min(1).max(200),
-  content_md: z.string().min(1),
-  excerpt: z.string().max(500).nullable().optional(),
-  cover_image_url: z.string().url().nullable().optional(),
-  author_name: z.string().max(120).optional(),
-  author_avatar_url: z.string().url().nullable().optional(),
-  category_id: z.string().nullable().optional(),
-  tags: z.array(z.string()).optional(),
-  seo_title: z.string().max(200).nullable().optional(),
-  seo_description: z.string().max(500).nullable().optional(),
-  read_time_minutes: z.number().int().positive().optional(),
-  status: z.enum(["draft", "published", "archived"]).optional(),
-})
 
 /** GET /store/blog/posts — published posts with pagination + filters. */
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -32,30 +15,13 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   res.json(result)
 }
 
-/** POST /store/blog/posts — not used on storefront; returns method guidance. */
-export async function POST(req: MedusaRequest, res: MedusaResponse) {
-  // Storefront listing is public; creation is admin-only. Keep POST for API
-  // completeness when callers send authenticated CMS payloads via store proxy.
-  const parsed = CreateSchema.safeParse(req.body)
-  if (!parsed.success) {
-    return res.status(400).json({
-      error: {
-        code: "VALIDATION_ERROR",
-        message: "Invalid blog post payload.",
-        details: parsed.error.issues.map((i) => ({ path: i.path.join("."), issue: i.message })),
-      },
-    })
-  }
-
-  const service = req.scope.resolve<BlogService>(BLOG)
-  try {
-    const post = await service.createPost(parsed.data)
-    res.status(201).json({ post })
-  } catch (e) {
-    const err = e as Error & { code?: string }
-    if (err.code === "CONFLICT") {
-      return res.status(409).json({ error: { code: "CONFLICT", message: err.message } })
-    }
-    throw e
-  }
+/** POST /store/blog/posts — storefront is read-only; creation is admin-only. */
+export async function POST(_req: MedusaRequest, res: MedusaResponse) {
+  res.setHeader("Allow", "GET")
+  return res.status(405).json({
+    error: {
+      code: "METHOD_NOT_ALLOWED",
+      message: "Creating posts via the store API is not allowed. Use the admin blog routes.",
+    },
+  })
 }

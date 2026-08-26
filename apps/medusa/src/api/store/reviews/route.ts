@@ -1,8 +1,10 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { Modules } from "@medusajs/framework/utils"
 import { z } from "zod"
 import { REVIEWS } from "../../../modules/reviews"
 import type ReviewsService from "../../../modules/reviews/service"
 import { getActorId } from "../../../lib/auth-context"
+import { isSameNonNullId } from "../../../lib/design-ownership"
 
 const CreateSchema = z.object({
   product_id: z.string().min(1),
@@ -65,11 +67,37 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
 
   const service = req.scope.resolve<ReviewsService>(REVIEWS)
+  const existing = await service.listProductReviews(
+    { customer_id: customerId, product_id: parsed.data.product_id },
+    { take: 1 }
+  )
+  if (existing.length) {
+    return res.status(409).json({
+      error: { code: "CONFLICT", message: "You have already reviewed this product." },
+    })
+  }
+
+  let isVerified = false
+  if (parsed.data.order_id) {
+    const orderModule = req.scope.resolve(Modules.ORDER)
+    const order = await orderModule
+      .retrieveOrder(parsed.data.order_id, { relations: ["items"] })
+      .catch(() => null)
+    if (
+      order &&
+      isSameNonNullId(order.customer_id, customerId) &&
+      (order.items ?? []).some((item) => item.product_id === parsed.data.product_id)
+    ) {
+      isVerified = true
+    }
+  }
+
   try {
     const review = await service.create({
       ...parsed.data,
       customer_id: customerId,
-      is_verified_purchase: Boolean(parsed.data.order_id),
+      is_verified_purchase: isVerified,
+      order_id: isVerified ? parsed.data.order_id : null,
     })
     res.status(201).json({ review })
   } catch (e) {

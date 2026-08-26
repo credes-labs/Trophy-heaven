@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { CORPORATE_ACCOUNT } from "../../../../modules/corporate-account"
 import type CorporateService from "../../../../modules/corporate-account/service"
+import { canAccessCorporateProfile } from "../../../../lib/corporate-access"
 import { getActorId } from "../../../../lib/auth-context"
 
 /** GET /store/corporate-profiles/:id — profile + team members (API 05.4). */
@@ -13,11 +14,15 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const customerId = getActorId(req)
   const members = await service.listTeamMembers({ corporate_profile_id: corporate_profile.id })
-  const isOwner = corporate_profile.customer_id === customerId
-  const isMember = members.some((m) => m.customer_id === customerId)
-  if (!isOwner && !isMember) {
+  if (!canAccessCorporateProfile(corporate_profile, members, customerId)) {
     return res.status(403).json({ error: { code: "FORBIDDEN", message: "Not a member of this account." } })
   }
 
-  res.json({ corporate_profile, team_members: members })
+  res.json({
+    corporate_profile,
+    team_members: members.map((m) => {
+      const { invite_token: _t, ...rest } = m as typeof m & { invite_token?: string | null }
+      return rest
+    }),
+  })
 }

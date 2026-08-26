@@ -1,5 +1,5 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { getMeili, PRODUCT_INDEX, FACET_ATTRIBUTES } from "../../../lib/meilisearch"
+import { getMeili, PRODUCT_INDEX, FACET_ATTRIBUTES, meiliFilterValue } from "../../../lib/meilisearch"
 
 /**
  * GET /store/search — typo-tolerant faceted product search (FR-SRCH-2/3). Backed
@@ -19,8 +19,12 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   for (const attr of FACET_ATTRIBUTES) {
     const val = rest[attr]
     if (val) {
-      const values = val.split(",").map((v) => `${attr} = "${v.trim()}"`)
-      filters.push(`(${values.join(" OR ")})`)
+      const values = val
+        .split(",")
+        .map((v) => meiliFilterValue(v))
+        .filter(Boolean)
+        .map((v) => `${attr} = "${v}"`)
+      if (values.length) filters.push(`(${values.join(" OR ")})`)
     }
   }
 

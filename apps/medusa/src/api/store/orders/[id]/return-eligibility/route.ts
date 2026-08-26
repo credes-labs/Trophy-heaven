@@ -1,6 +1,7 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
 import { getActorId } from "../../../../../lib/auth-context"
+import { isSameNonNullId } from "../../../../../lib/design-ownership"
 import { evaluateReturnEligibility } from "../../../../../lib/returns-policy"
 
 /**
@@ -17,7 +18,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   }
 
   const customerId = getActorId(req)
-  if (order.customer_id && order.customer_id !== customerId) {
+  if (!isSameNonNullId(order.customer_id, customerId)) {
     return res.status(403).json({ error: { code: "FORBIDDEN", message: "Not your order." } })
   }
 

@@ -17,11 +17,13 @@ export function CartItem({
   currency,
   onUpdate,
   onRemove,
+  busy = false,
 }: {
   item: HttpTypes.StoreCartLineItem
   currency: string
   onUpdate: (lineId: string, quantity: number) => void
   onRemove: (lineId: string) => void
+  busy?: boolean
 }) {
   const thumb = item.thumbnail || (item.metadata?.preview_url as string | undefined)
   const unit = item.unit_price ?? 0
@@ -82,6 +84,7 @@ export function CartItem({
           onChange={(q) => onUpdate(item.id, q)}
           min={1}
           max={99}
+          disabled={busy}
           className={stepperClass}
         />
       </div>

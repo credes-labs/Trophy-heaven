@@ -24,12 +24,19 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   const reviewerId =
     (req as unknown as { auth_context?: { actor_id?: string } }).auth_context?.actor_id ?? null
-  const design_approval = await service.approve(approval.id, reviewerId, parsed.data.note)
-  const design = await designs.updateDesigns({ id: approval.design_id, status: "approved" })
+  try {
+    const design_approval = await service.approve(approval.id, reviewerId, parsed.data.note)
+    const design = await designs.updateDesigns({ id: approval.design_id, status: "approved" })
 
-  // Advance the production job(s) via the design.approved subscriber.
-  const eventBus = req.scope.resolve(Modules.EVENT_BUS)
-  await eventBus.emit({ name: "design.approved", data: { design_id: approval.design_id } })
+    const eventBus = req.scope.resolve(Modules.EVENT_BUS)
+    await eventBus.emit({ name: "design.approved", data: { design_id: approval.design_id } })
 
-  res.json({ design_approval, design: { id: design.id, status: "approved" } })
+    res.json({ design_approval, design: { id: design.id, status: "approved" } })
+  } catch (e) {
+    const err = e as Error & { code?: string }
+    if (err.code === "CONFLICT") {
+      return res.status(409).json({ error: { code: "CONFLICT", message: err.message } })
+    }
+    throw e
+  }
 }

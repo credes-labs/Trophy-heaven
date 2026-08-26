@@ -21,6 +21,7 @@ import { designApi, type DesignRecord } from "@/lib/design-client"
 import { track } from "@/lib/analytics"
 import { isAllowedLogo, sanitizeSvg } from "@/lib/sanitize"
 import { cn } from "@/lib/utils"
+import { cheapestInStockVariant } from "@/lib/product-filters"
 
 type FabricObjectLike = FabricObject & { id?: string; text?: string; fontFamily?: string }
 
@@ -38,9 +39,11 @@ function serialize(canvas: FabricCanvas): string {
 export function Editor2D({
   product,
   initialDesign,
+  preferredVariantId,
 }: {
   product: HttpTypes.StoreProduct
   initialDesign?: DesignRecord | null
+  preferredVariantId?: string
 }) {
   const { elRef, getCanvas, getFabric, ready } = useFabricCanvas()
   const {
@@ -71,7 +74,9 @@ export function Editor2D({
   const logoMetaRef = useRef<Record<string, { naturalWidth: number }>>({})
   const skipHistoryRef = useRef(false)
 
-  const variantId = product.variants?.[0]?.id
+  const variantId =
+    product.variants?.find((v) => v.id === preferredVariantId)?.id ??
+    cheapestInStockVariant(product)?.id
 
   const refreshLayers = useCallback(() => {
     const canvas = getCanvas()

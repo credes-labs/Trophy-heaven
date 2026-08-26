@@ -19,9 +19,13 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     )
 
     const now = new Date()
+    const currency =
+      typeof req.query.currency_code === "string" ? req.query.currency_code.toLowerCase() : "inr"
     const active = promotions.filter((p) => {
       if (!p.code || p.is_automatic) return false
       if (p.status && p.status !== "active") return false
+      const methodCurrency = p.application_method?.currency_code?.toLowerCase()
+      if (methodCurrency && methodCurrency !== currency) return false
       const startsAt = p.campaign?.starts_at ? new Date(p.campaign.starts_at) : null
       if (startsAt && startsAt > now) return false
       const endsAt = p.campaign?.ends_at ? new Date(p.campaign.ends_at) : null
