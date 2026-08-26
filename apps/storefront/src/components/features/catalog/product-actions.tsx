@@ -5,11 +5,11 @@ import Link from "next/link"
 import { Heart } from "lucide-react"
 import type { HttpTypes } from "@medusajs/types"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Tooltip } from "@/components/ui/tooltip"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { StickyAtc } from "@/components/features/catalog/sticky-atc"
 import { ShareButtons } from "@/components/features/blog/share-buttons"
+import "../../../app/(shop)/products/[handle]/pdp.css"
 import { cn } from "@/lib/utils"
 import { formatMoney, isCustomizable } from "@/lib/format"
 import { variantInStock } from "@/lib/product-filters"
@@ -17,18 +17,40 @@ import { useCartStore } from "@/stores/cart-store"
 import { useWishlist } from "@/hooks/use-wishlist"
 import { track } from "@/lib/analytics"
 
+function firstOptionSelection(
+  options: HttpTypes.StoreProductOption[],
+  variants: HttpTypes.StoreProductVariant[]
+): Record<string, string> {
+  const selected: Record<string, string> = {}
+  for (const option of options) {
+    if (!option.id) continue
+    const values = option.values ?? []
+    const preferred =
+      values.find((val) => {
+        const matching = variants.filter((v) =>
+          (v.options ?? []).some(
+            (o) => o.option_id === option.id && o.value === val.value
+          )
+        )
+        return matching.length === 0 || matching.some(variantInStock)
+      }) ?? values[0]
+    if (preferred?.value) selected[option.id] = preferred.value
+  }
+  return selected
+}
+
 export function ProductActions({
   product,
-  accent = "trophy",
 }: {
   product: HttpTypes.StoreProduct
-  accent?: "trophy" | "furniture" | "artwork"
 }) {
   const options = product.options ?? []
   const variants = product.variants ?? []
   const addItem = useCartStore((s) => s.addItem)
   const loading = useCartStore((s) => s.loading)
-  const [selected, setSelected] = useState<Record<string, string>>({})
+  const [selected, setSelected] = useState<Record<string, string>>(() =>
+    firstOptionSelection(options, variants)
+  )
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
   const { wishlisted, toggle: toggleWishlist, busy: wishlistBusy } = useWishlist(product.id)
@@ -36,14 +58,12 @@ export function ProductActions({
 
   const activeVariant = useMemo(() => {
     if (!options.length) return variants[0]
-    if (!options.every((o) => selected[o.id])) return undefined
+    if (!options.every((o) => o.id && selected[o.id])) return undefined
     return variants.find((v) =>
       (v.options ?? []).every((o) => selected[o.option_id ?? ""] === o.value)
     )
   }, [options, variants, selected])
 
-  // An option value is unavailable when every variant carrying it is out of
-  // stock (manage_inventory on, no backorders, zero stock).
   const outOfStockValues = useMemo(() => {
     const set = new Set<string>()
     for (const option of options) {
@@ -61,7 +81,8 @@ export function ProductActions({
     return set
   }, [options, variants])
 
-  const price = activeVariant?.calculated_price
+  const priced = activeVariant ?? variants[0]
+  const price = priced?.calculated_price
   const salePct =
     price?.original_amount != null &&
     price.calculated_amount != null &&
@@ -77,6 +98,8 @@ export function ProductActions({
   const level = (product.metadata?.customization_level as string) ?? "none"
   const customizable = isCustomizable(level)
   const canAdd = Boolean(activeVariant)
+  const lineTotal =
+    price?.calculated_amount != null ? price.calculated_amount * quantity : null
 
   async function handleAdd() {
     if (!activeVariant) return
@@ -93,124 +116,123 @@ export function ProductActions({
   }
 
   return (
-    <div className="space-y-6">
-      {options.map((option) => (
-        <div key={option.id}>
-          <p className="mb-2 text-sm font-medium">{option.title}</p>
-          <div className="flex flex-wrap gap-2">
-            {(option.values ?? []).map((val) => {
-              const isActive = selected[option.id] === val.value
-              const isOos = outOfStockValues.has(`${option.id}:${val.value}`)
-              return (
-                <button
-                  key={val.id}
-                  type="button"
-                  data-touch-target
-                  disabled={isOos}
-                  title={isOos ? "Out of stock" : undefined}
-                  onClick={() => setSelected((s) => ({ ...s, [option.id]: val.value }))}
-                  className={cn(
-                    "rounded-md border px-4 py-2 text-sm transition-colors",
-                    isActive
-                      ? cn(
-                          "text-foreground",
-                          accent === "trophy" && "border-trophy bg-trophy/10",
-                          accent === "furniture" && "border-furniture bg-furniture/10",
-                          accent === "artwork" && "border-artwork bg-artwork/10"
-                        )
-                      : "border-border hover:bg-muted",
-                    isOos &&
-                      "cursor-not-allowed border-dashed text-muted-foreground/60 line-through hover:bg-transparent"
-                  )}
-                >
-                  {val.value}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      ))}
-
+    <div className="flex flex-col gap-[1.5em]">
       <div>
-        <div className="flex items-center gap-3">
-          <p className="text-2xl font-semibold tabular-nums">
+        <div className="flex flex-wrap items-baseline gap-x-[0.75em] gap-y-[0.25em]">
+          <p className="pdp-price">
             {price
               ? formatMoney(price.calculated_amount ?? 0, price.currency_code ?? "inr")
               : options.length
                 ? "Select options"
                 : "—"}
           </p>
-          {salePct > 0 && price?.original_amount != null && (
-            <>
-              <span className="text-lg text-muted-foreground line-through tabular-nums">
-                {formatMoney(price.original_amount, price.currency_code ?? "inr")}
-              </span>
-              <Badge variant="sale">-{salePct}% OFF</Badge>
-            </>
-          )}
+          {salePct > 0 && price?.original_amount != null ? (
+            <span className="font-outfit text-[1em] text-[rgba(19,17,17,0.45)] line-through tabular-nums">
+              {formatMoney(price.original_amount, price.currency_code ?? "inr")}
+            </span>
+          ) : null}
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">Inclusive of all taxes</p>
-        {emiAmount != null && price && (
-          <p className="mt-1 text-xs text-muted-foreground">
+        <p className="pdp-price-meta">Inclusive of all taxes</p>
+      </div>
+
+      {options.length > 0 ? (
+        <div>
+          <p className="pdp-options-rule">
+            <span>Options</span>
+          </p>
+          <div className="mt-[1em] flex flex-col gap-[1.25em]">
+            {options.map((option) => (
+              <div key={option.id}>
+                <p className="mb-[0.6em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]">
+                  {option.title}
+                </p>
+                <div className="pdp-pills">
+                  {(option.values ?? []).map((val) => {
+                    const isActive = selected[option.id] === val.value
+                    const isOos = outOfStockValues.has(`${option.id}:${val.value}`)
+                    return (
+                      <button
+                        key={val.id}
+                        type="button"
+                        data-touch-target
+                        disabled={isOos}
+                        title={isOos ? "Out of stock" : undefined}
+                        onClick={() => setSelected((s) => ({ ...s, [option.id]: val.value }))}
+                        className={cn("pdp-pill", isActive && "is-active")}
+                      >
+                        {val.value}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <div ref={atcRef} className="pdp-buy-row">
+        <QuantityStepper
+          value={quantity}
+          onChange={setQuantity}
+          min={1}
+          max={99}
+          className="h-[2.75em] rounded-[0.125em] border-[#131111]/20 [&_button]:h-full [&_button]:w-[2.75em] [&_span]:h-full [&_span]:border-[#131111]/20"
+        />
+        <Button
+          onClick={handleAdd}
+          disabled={!canAdd || loading}
+          loading={loading}
+          className="pdp-atc"
+          style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
+        >
+          {added ? "Added" : canAdd ? "Add to cart" : "Select options"}
+        </Button>
+        <button
+          type="button"
+          onClick={() => void toggleWishlist()}
+          disabled={wishlistBusy}
+          aria-pressed={wishlisted}
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="pdp-wish"
+        >
+          <Heart
+            className={cn("size-[1.125em]", wishlisted && "fill-[#131111] text-[#131111]")}
+            strokeWidth={1.5}
+            aria-hidden
+          />
+        </button>
+        {lineTotal != null && quantity > 1 && price ? (
+          <p className="ml-auto m-0 w-full font-outfit text-[0.9375em] tracking-[-0.02em] text-[#131111] tabular-nums sm:w-auto">
+            {formatMoney(lineTotal, price.currency_code ?? "inr")}
+          </p>
+        ) : null}
+      </div>
+
+      {customizable ? (
+        <Link href={`/customize/${product.id}${level === "full_3d" ? "/3d" : "/2d"}`} className="pdp-customize">
+          Customize this design
+        </Link>
+      ) : null}
+
+      <ShareButtons
+        title={product.title}
+        slug=""
+        path={`/products/${product.handle}`}
+        className="[&_a]:rounded-[0.125em] [&_button]:rounded-[0.125em]"
+      />
+
+      <ul className="pdp-trust">
+        {activeVariant?.sku ? <li>SKU: {activeVariant.sku}</li> : null}
+        {emiAmount != null && price ? (
+          <li>
             <Tooltip content="No-cost EMI available on Razorpay at checkout" side="top">
               <span className="cursor-help underline decoration-dotted underline-offset-2">
                 EMI from {formatMoney(emiAmount, price.currency_code ?? "inr")}/mo
               </span>
             </Tooltip>
-          </p>
-        )}
-        {activeVariant?.sku && (
-          <p className="mt-1 text-xs text-muted-foreground">SKU: {activeVariant.sku}</p>
-        )}
-      </div>
-
-      <div>
-        <p className="mb-2 text-sm font-medium">Quantity</p>
-        <QuantityStepper value={quantity} onChange={setQuantity} min={1} max={99} />
-      </div>
-
-      <div ref={atcRef} className="flex flex-col gap-3 sm:flex-row">
-        {customizable && (
-          <Link
-            href={`/customize/${product.id}${level === "full_3d" ? "/3d" : "/2d"}`}
-            className={cn(
-              "flex flex-1 items-center justify-center rounded-md border border-border px-5 py-3 text-center text-sm font-medium transition-colors hover:bg-muted"
-            )}
-          >
-            Customize this design
-          </Link>
-        )}
-        <Button
-          onClick={handleAdd}
-          disabled={!canAdd || loading}
-          loading={loading}
-          variant={accent}
-          className="flex-1"
-        >
-          {added ? "Added ✓" : canAdd ? "Add to cart" : "Select options"}
-        </Button>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => void toggleWishlist()}
-          disabled={wishlistBusy}
-          aria-pressed={wishlisted}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-        >
-          <Heart
-            className={cn("h-4 w-4", wishlisted && "fill-trophy text-trophy")}
-            aria-hidden
-          />
-          {wishlisted ? "Saved" : "Wishlist"}
-        </Button>
-        <ShareButtons title={product.title} slug="" path={`/products/${product.handle}`} />
-      </div>
-
-      <ul className="space-y-2 text-xs text-muted-foreground">
+          </li>
+        ) : null}
         <li>Free shipping on orders above ₹5,000</li>
         <li>7-day easy returns on non-custom items</li>
         <li>Handmade in India · Secure checkout</li>
@@ -223,7 +245,7 @@ export function ProductActions({
         disabled={!canAdd || loading}
         loading={loading}
         onAdd={handleAdd}
-        label={added ? "Added ✓" : "Add to cart"}
+        label={added ? "Added" : "Add to cart"}
       />
     </div>
   )

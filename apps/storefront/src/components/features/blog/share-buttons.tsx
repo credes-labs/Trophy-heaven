@@ -9,11 +9,13 @@ export function ShareButtons({
   title,
   slug,
   path,
+  className,
 }: {
   title: string
   slug: string
   /** Absolute site path to share (defaults to the blog post URL). */
   path?: string
+  className?: string
 }) {
   const [copied, setCopied] = useState(false)
 
@@ -35,8 +37,10 @@ export function ShareButtons({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-muted-foreground">Share</span>
+    <div className={cn("flex flex-wrap items-center gap-2 font-outfit", className)}>
+      <span className="text-[0.75em] font-normal tracking-[0.08em] text-[rgba(19,17,17,0.5)] uppercase">
+        Share
+      </span>
       <a
         href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
         target="_blank"

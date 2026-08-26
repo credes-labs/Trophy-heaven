@@ -12,6 +12,7 @@ type CartState = {
   drawerOpen: boolean
   setDrawerOpen: (open: boolean) => void
   init: (regionId?: string) => Promise<void>
+  refresh: () => Promise<void>
   addItem: (variantId: string, quantity?: number, metadata?: Record<string, unknown>) => Promise<void>
   updateItem: (lineId: string, quantity: number) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
@@ -55,6 +56,23 @@ export const useCartStore = create<CartState>((set, get) => ({
       set({ cart })
     } catch {
       // Medusa down / network error — leave cart empty so the storefront still paints.
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  refresh: async () => {
+    const current = get().cart
+    const id =
+      current?.id ??
+      (typeof window !== "undefined" ? localStorage.getItem(CART_ID_KEY) : null)
+    if (!id) return
+    set({ loading: true })
+    try {
+      const { cart } = await medusa.store.cart.retrieve(id)
+      set({ cart })
+    } catch {
+      // Keep the last known cart if retrieve fails.
     } finally {
       set({ loading: false })
     }

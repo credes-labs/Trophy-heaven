@@ -1,23 +1,14 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Star } from "lucide-react"
 import { getProductByHandle, listProducts } from "@/lib/data/catalog"
 import { ProductActions } from "@/components/features/catalog/product-actions"
 import { ImageGallery } from "@/components/features/catalog/image-gallery"
 import { ProductTabs } from "@/components/features/catalog/product-tabs"
 import { RelatedProducts } from "@/components/features/catalog/related-products"
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Badge } from "@/components/ui/badge"
-import { CUSTOMIZATION_LABELS } from "@/lib/format"
 import { CATEGORIES, hrefForCategoryHandle, type CategoryKey } from "@/lib/category-config"
 import { getReviewSummary } from "@/lib/reviews"
-import { cn } from "@/lib/utils"
+import "./pdp.css"
 
 export const revalidate = 300
 
@@ -59,6 +50,16 @@ function resolveCategory(product: {
   }
 }
 
+function productExcerpt(description: string | null | undefined, maxChars = 220) {
+  if (!description) return null
+  const collapsed = description.replace(/\s+/g, " ").trim()
+  if (!collapsed) return null
+  if (collapsed.length <= maxChars) return collapsed
+  const clipped = collapsed.slice(0, maxChars)
+  const lastSpace = clipped.lastIndexOf(" ")
+  return `${clipped.slice(0, lastSpace > 140 ? lastSpace : maxChars)}…`
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params
   const product = await getProductByHandle(handle).catch(() => null)
@@ -80,7 +81,7 @@ export default async function ProductPage({ params }: Props) {
   if (!product) notFound()
 
   const category = resolveCategory(product)
-  const level = (product.metadata?.customization_level as string) ?? "none"
+  const excerpt = productExcerpt(product.description)
 
   const related = await listProducts({
     categoryId: category.categoryId,
@@ -105,7 +106,6 @@ export default async function ProductPage({ params }: Props) {
       .map((img) => ({ id: img.id, url: img.url, alt: product.title })),
   ]
 
-  const accent = category.accent as "trophy" | "furniture" | "artwork"
   const price = product.variants?.[0]?.calculated_price
   const reviewSummary = await getReviewSummary(product.id)
   const summary = reviewSummary && reviewSummary.count > 0 ? reviewSummary : null
@@ -156,83 +156,88 @@ export default async function ProductPage({ params }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 pb-24 lg:pb-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-
-      <Breadcrumb className="mb-6">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href={category.href}>{category.label}</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink active href={`/products/${handle}`}>
-              {product.title}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="grid gap-10 lg:grid-cols-2">
-        <ImageGallery
-          images={galleryImages}
-          title={product.title}
-          accentClass={category.borderClass}
+    <div className="pdp-page">
+      <div className="pdp-shell">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
 
-        <div>
-          <Badge variant={accent} className="mb-3">
-            {category.label}
-          </Badge>
-          <h1 className="font-serif text-2xl font-semibold md:text-3xl">{product.title}</h1>
-          {summary && (
-            <p className="mt-2 flex items-center gap-1.5 text-sm">
+        <nav aria-label="Breadcrumb">
+          <ol className="pdp-breadcrumb">
+            <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li>
+              <Link href={category.href}>{category.label}</Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li aria-current="page">
+              {product.title}
+            </li>
+          </ol>
+        </nav>
+
+        <div className="pdp-hero">
+          <div className="min-w-0">
+            <ImageGallery images={galleryImages} title={product.title} />
+          </div>
+
+          <div className="min-w-0">
+            <h1 className="pdp-title">{product.title}</h1>
+
+            <p className="pdp-rating">
               <span className="inline-flex items-center gap-0.5" aria-hidden>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={cn(
-                      "h-3.5 w-3.5",
-                      i < Math.round(summary.average_rating)
-                        ? "fill-gold text-gold"
-                        : "text-muted-foreground/40"
-                    )}
-                  />
-                ))}
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const filled = Boolean(summary && i < Math.round(summary.average_rating))
+                  return (
+                    <svg
+                      key={i}
+                      viewBox="0 0 24 24"
+                      className="h-3.5 w-3.5"
+                      fill={filled ? "#131111" : "none"}
+                      stroke="#131111"
+                      strokeWidth="1.5"
+                      strokeOpacity={filled ? 1 : 0.25}
+                      aria-hidden
+                    >
+                      <path d="M12 3.2 14.6 9l6.4.7-4.8 4.3 1.4 6.3L12 17.2 6.4 20.3l1.4-6.3L3 9.7 9.4 9z" />
+                    </svg>
+                  )
+                })}
               </span>
-              <span className="font-medium">{summary.average_rating.toFixed(1)}</span>
-              <span className="text-muted-foreground">
-                ({summary.count} review{summary.count === 1 ? "" : "s"})
-              </span>
+              {summary ? (
+                <a href="#reviews">
+                  {summary.count} Rating{summary.count === 1 ? "" : "s"}
+                  <span aria-hidden> | </span>
+                  Add your rating
+                </a>
+              ) : (
+                <a href="#reviews">Add your rating</a>
+              )}
             </p>
-          )}
-          <p className="mt-2 text-sm text-muted-foreground">
-            {CUSTOMIZATION_LABELS[level] ?? "Product"}
-          </p>
-          <div className="mt-8">
-            <ProductActions product={product} accent={accent} />
+
+            {excerpt ? <p className="pdp-excerpt">{excerpt}</p> : null}
+
+            <div className="mt-[1.5em]">
+              <ProductActions product={product} />
+            </div>
           </div>
         </div>
+
+        <ProductTabs product={product} />
+
+        <RelatedProducts
+          products={fallbackRelated}
+          categoryLabel={category.label}
+          categoryHref={category.href}
+        />
       </div>
-
-      <ProductTabs product={product} />
-
-      <RelatedProducts
-        products={fallbackRelated}
-        categoryLabel={category.label}
-        categoryHref={category.href}
-      />
     </div>
   )
 }

@@ -24,7 +24,7 @@ function productCurrency(product: HttpTypes.StoreProduct): string {
 export function EditorialProductCard({
   product,
   layout = "grid",
-  index = 0,
+  index: _index = 0,
 }: {
   product: HttpTypes.StoreProduct
   layout?: "grid" | "list"
@@ -72,10 +72,7 @@ export function EditorialProductCard({
   return (
     <Link
       href={href}
-      className={cn(
-        "group flex flex-col text-[#131111] no-underline motion-safe:animate-[slideUp_0.7s_cubic-bezier(0.16,1,0.3,1)_both]"
-      )}
-      style={{ animationDelay: `${index * 70}ms` }}
+      className="group flex flex-col text-[#131111] no-underline"
     >
       <div className="relative aspect-[302/374] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
         {image ? (
@@ -88,14 +85,14 @@ export function EditorialProductCard({
           />
         ) : null}
       </div>
-      <div className="mt-[1em] flex items-start justify-between gap-[0.75em] font-outfit text-[1em] leading-[1.4] font-light tracking-[-0.03em] text-[rgba(19,17,17,0.6)]">
-        <span>{category}</span>
-      </div>
-      <div className="mt-[0.5em] flex items-baseline justify-between gap-[0.75em]">
-        <h3 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+      <div className="mt-[1em] flex flex-col gap-[0.35em]">
+        <p className="m-0 font-outfit text-[0.75em] leading-[1.4] font-light tracking-[0.08em] text-[rgba(19,17,17,0.45)] uppercase">
+          {category}
+        </p>
+        <h3 className="m-0 font-outfit text-[1em] leading-[1.35] font-normal tracking-[0.06em] text-[#131111] uppercase">
           {product.title}
         </h3>
-        <p className="m-0 shrink-0 font-outfit text-[1em] leading-[1.25em] font-normal tracking-[-0.02em] text-[rgba(19,17,17,0.6)] uppercase">
+        <p className="m-0 font-outfit text-[0.9375em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111]">
           {price}
         </p>
       </div>

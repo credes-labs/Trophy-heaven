@@ -3,6 +3,30 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-08-25 — Footer “legacy” L optically thickened
+Outfit’s lowercase l is a single stem; at the 242px wordmark it read thinner than the rest of the letters. First letter is now 700 with a horizontal thicken. → L2 WP-12
+
+## 2026-08-25 — Sidebar cart shows shipping, tax, subtotal, total
+Drawer footer matches the full cart totals breakdown. → L2 WP-20 · [L3/020](L3/020-cart-page-layout.md)
+
+## 2026-08-25 — Announcement bar is walnut, not trophy burgundy
+The rotating top strip uses `#131111` / cream text so it sits flush with the header. → L2 WP-22
+
+## 2026-08-25 — Cart page + sidebar match screenshot structure
+Full cart is 2/3 items | 1/3 totals with coupon under the list. Drawer matches. Type and color stay the homepage Outfit/cream system. → L2 WP-20 · [L3/020](L3/020-cart-page-layout.md)
+
+## 2026-08-25 — PDP gallery redo + multi-image SKUs
+Page-local `pdp.css` plus three images on Champion Metal Cup and Oak Side Table so thumbs/arrows/01–03 can be checked against the screenshot structure. → L2 WP-21 · [L3/019](L3/019-pdp-gallery-redo.md)
+
+## 2026-08-25 — Product page matches screenshot structure
+PDP is breadcrumb + gallery | buy + centered tabs + 4-up related. Type and color stay the homepage Outfit/cream system. → L2 WP-19 · [L3/018](L3/018-pdp-structure-layout.md)
+
+## 2026-08-25 — Shop browse→filter reflow
+Filter layout puts the sidebar beside the banner/toolbar/grid. Toggle is a CSS reflow (hero first, then chrome) instead of stacked folds or a hard swap. → L2 WP-18 · [L3/017](L3/017-shop-browse-filter-layout.md)
+
+## 2026-08-25 — Shop browse vs filter-open layouts
+`/shop` default is hero + 4-column recent grid + testimonials + banner. **filter** opens sidebar + toolbar + 3-column grid in the same tree (clip/reflow, not a hard swap). Chrome stays the homepage Outfit/cream system. → L2 WP-18 · [L3/017](L3/017-shop-browse-filter-layout.md)
+
 ## 2026-08-25 — CI build, integration, and e2e unblocked
 Catalog fetch no longer fails `next build` without Medusa; integration `--if-present` is a pnpm flag; e2e job builds the storefront and installs Chromium. → L2 WP-17 · [L3/016](L3/016-ci-pipeline.md)
 
