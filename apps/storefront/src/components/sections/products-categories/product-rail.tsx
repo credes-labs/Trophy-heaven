@@ -148,11 +148,13 @@ export function ProductRail({ products }: Props) {
             dragElastic={0.12}
             dragConstraints={{ left: bound, right: 0 }}
             onDragStart={() => {
-              skipClick.current = true
               draggingRef.current = true
               setDragging(true)
             }}
-            onDrag={(_, info) => trackPointer(info.point.x, info.point.y)}
+            onDrag={(_, info) => {
+              if (Math.abs(info.offset.x) > 8) skipClick.current = true
+              trackPointer(info.point.x, info.point.y)
+            }}
             onDragEnd={(_, info) => {
               draggingRef.current = false
               setDragging(false)

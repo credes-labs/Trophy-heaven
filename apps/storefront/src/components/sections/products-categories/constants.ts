@@ -27,6 +27,22 @@ const IMG = {
   shelf: "/images/catalog/storage-shelf.jpg",
 } as const
 
+/** Medusa handles — seed creates these SKUs so homepage cards open a PDP. */
+const PDP = {
+  luno: "/products/luno-210-lounge-chair",
+  verra: "/products/verra-wooden-dining-table",
+  noir: "/products/noir-leather-armchair",
+  aura: "/products/aura-minimal-sideboard",
+  sola: "/products/sola-oval-coffee-table",
+  orbit: "/products/orbit-glass-side-table",
+  kino: "/products/kino-boucle-lounge",
+  halo: "/products/halo-walnut-shelf",
+  mara: "/products/mara-dining-chair",
+  nera: "/products/nera-dining-table",
+  pebble: "/products/pebble-coffee-table",
+  lumen: "/products/lumen-side-table",
+} as const
+
 export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
   "new-arrivals": [
     {
@@ -36,7 +52,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,980.00",
       image: IMG.lounge,
       alt: "Walnut lounge chair with oatmeal bouclé upholstery",
-      href: "/shop",
+      href: PDP.luno,
     },
     {
       id: "verra-dining",
@@ -45,7 +61,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 3,450.00",
       image: IMG.dining,
       alt: "Oval walnut dining table with gold-capped chairs",
-      href: "/shop",
+      href: PDP.verra,
     },
     {
       id: "noir-armchair",
@@ -54,7 +70,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 2,250.00",
       image: IMG.armchair,
       alt: "Walnut armchair with taupe bouclé cushions",
-      href: "/shop",
+      href: PDP.noir,
     },
     {
       id: "aura-sideboard",
@@ -63,7 +79,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,720.00",
       image: IMG.shelf,
       alt: "Lit walnut bookshelf with brass posts",
-      href: "/shop",
+      href: PDP.aura,
     },
     {
       id: "sola-coffee",
@@ -72,7 +88,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,280.00",
       image: IMG.coffee,
       alt: "Low oval wood coffee table with brass inlay",
-      href: "/shop",
+      href: PDP.sola,
     },
     {
       id: "orbit-side",
@@ -81,7 +97,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 890.00",
       image: IMG.side,
       alt: "Round fluted-glass side table with walnut legs",
-      href: "/shop",
+      href: PDP.orbit,
     },
     {
       id: "kino-lounge",
@@ -90,7 +106,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 2,140.00",
       image: IMG.lounge,
       alt: "Walnut lounge chair in a warm plaster interior",
-      href: "/shop",
+      href: PDP.kino,
     },
     {
       id: "halo-shelf",
@@ -99,7 +115,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,640.00",
       image: IMG.shelf,
       alt: "Four-tier walnut shelf with brass legs",
-      href: "/shop",
+      href: PDP.halo,
     },
     {
       id: "mara-chair",
@@ -108,7 +124,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 740.00",
       image: IMG.armchair,
       alt: "Dining armchair with brass-tipped legs",
-      href: "/shop",
+      href: PDP.mara,
     },
   ],
   bestsellers: [
@@ -119,7 +135,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,980.00",
       image: IMG.lounge,
       alt: "Walnut lounge chair with oatmeal bouclé upholstery",
-      href: "/shop",
+      href: PDP.luno,
     },
     {
       id: "bs-2",
@@ -128,7 +144,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 2,250.00",
       image: IMG.armchair,
       alt: "Walnut armchair with taupe bouclé cushions",
-      href: "/shop",
+      href: PDP.noir,
     },
     {
       id: "bs-3",
@@ -137,7 +153,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,280.00",
       image: IMG.coffee,
       alt: "Low oval wood coffee table with brass inlay",
-      href: "/shop",
+      href: PDP.sola,
     },
     {
       id: "bs-4",
@@ -146,7 +162,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 3,450.00",
       image: IMG.dining,
       alt: "Oval walnut dining table in an olive dining room",
-      href: "/shop",
+      href: PDP.verra,
     },
     {
       id: "bs-5",
@@ -155,7 +171,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 890.00",
       image: IMG.side,
       alt: "Round fluted-glass side table with walnut legs",
-      href: "/shop",
+      href: PDP.orbit,
     },
     {
       id: "bs-6",
@@ -164,7 +180,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,640.00",
       image: IMG.shelf,
       alt: "Lit walnut bookshelf with brass posts",
-      href: "/shop",
+      href: PDP.halo,
     },
     {
       id: "bs-7",
@@ -173,7 +189,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,720.00",
       image: IMG.shelf,
       alt: "Walnut storage cabinet with brass handles",
-      href: "/shop",
+      href: PDP.aura,
     },
     {
       id: "bs-8",
@@ -182,7 +198,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 2,140.00",
       image: IMG.lounge,
       alt: "Walnut lounge chair in a warm plaster interior",
-      href: "/shop",
+      href: PDP.kino,
     },
     {
       id: "bs-9",
@@ -191,7 +207,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 740.00",
       image: IMG.armchair,
       alt: "Dining armchair with brass-tipped legs",
-      href: "/shop",
+      href: PDP.mara,
     },
     {
       id: "bs-10",
@@ -200,7 +216,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 3,120.00",
       image: IMG.dining,
       alt: "Walnut dining table with gold-capped chairs",
-      href: "/shop",
+      href: PDP.nera,
     },
     {
       id: "bs-11",
@@ -209,7 +225,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,150.00",
       image: IMG.coffee,
       alt: "Sculptural wood coffee table on a navy rug",
-      href: "/shop",
+      href: PDP.pebble,
     },
     {
       id: "bs-12",
@@ -218,7 +234,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 640.00",
       image: IMG.side,
       alt: "Glass and walnut side table with olive branch",
-      href: "/shop",
+      href: PDP.lumen,
     },
   ],
   "on-sale": [
@@ -229,7 +245,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 890.00",
       image: IMG.side,
       alt: "Round fluted-glass side table with walnut legs",
-      href: "/shop",
+      href: PDP.orbit,
     },
     {
       id: "os-2",
@@ -238,7 +254,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 740.00",
       image: IMG.armchair,
       alt: "Dining armchair with brass-tipped legs",
-      href: "/shop",
+      href: PDP.mara,
     },
     {
       id: "os-3",
@@ -247,7 +263,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,150.00",
       image: IMG.coffee,
       alt: "Sculptural wood coffee table on a navy rug",
-      href: "/shop",
+      href: PDP.pebble,
     },
     {
       id: "os-4",
@@ -256,7 +272,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 1,640.00",
       image: IMG.shelf,
       alt: "Lit walnut bookshelf with brass posts",
-      href: "/shop",
+      href: PDP.halo,
     },
     {
       id: "os-5",
@@ -265,7 +281,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 2,140.00",
       image: IMG.lounge,
       alt: "Walnut lounge chair in a warm plaster interior",
-      href: "/shop",
+      href: PDP.kino,
     },
     {
       id: "os-6",
@@ -274,7 +290,7 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
       price: "$ 3,120.00",
       image: IMG.dining,
       alt: "Walnut dining table with gold-capped chairs",
-      href: "/shop",
+      href: PDP.nera,
     },
   ],
 }
