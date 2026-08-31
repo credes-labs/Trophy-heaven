@@ -42,8 +42,8 @@ async function cartItemCount(page: Page): Promise<number> {
 }
 
 async function addFirstProductToCart(page: Page): Promise<void> {
-  await page.goto("/products/champion-metal-cup")
-  await expect(page.getByRole("heading", { name: /champion metal cup/i })).toBeVisible({
+  await page.goto("/products/oak-side-table")
+  await expect(page.getByRole("heading", { name: /oak side table/i })).toBeVisible({
     timeout: 20_000,
   })
 
@@ -75,16 +75,37 @@ async function addFirstProductToCart(page: Page): Promise<void> {
   }
 }
 
-async function fillCheckoutAddress(page: Page, email: string): Promise<void> {
-  await page.getByLabel(/^Email$/i).fill(email)
+async function ensureCheckoutAuth(page: Page, email: string): Promise<void> {
+  const gate = page.getByRole("heading", { name: /sign in to continue/i })
+  if (!(await gate.isVisible().catch(() => false))) return
+  await page.getByRole("link", { name: /create an account/i }).click()
+  await expect(page).toHaveURL(/\/account\/register/)
   await page.getByLabel(/First name/i).fill("Asha")
   await page.getByLabel(/Last name/i).fill("Verma")
+  await page.getByLabel(/^Email$/i).fill(email)
+  await page.getByLabel(/^Password$/i).fill(PASSWORD)
+  await page.getByLabel(/Confirm password/i).fill(PASSWORD)
+  await page.getByRole("checkbox").check()
+  await page.getByRole("button", { name: /create account/i }).click()
+  await expect(page).toHaveURL(/\/checkout/, { timeout: 30_000 })
+  await expect(page.getByRole("heading", { name: /delivery address/i })).toBeVisible({
+    timeout: 20_000,
+  })
+}
+
+async function fillCheckoutAddress(page: Page, email: string): Promise<void> {
+  await ensureCheckoutAuth(page, email)
+  const addNew = page.getByRole("button", { name: /add a new address/i })
+  if (await addNew.isVisible().catch(() => false)) await addNew.click()
+  await page.getByLabel(/^Pincode/i).fill("400001")
+  await page.getByLabel(/^City/i).fill("Mumbai")
+  await page.getByLabel(/^State/i).fill("Maharashtra")
+  await page.getByLabel(/Flat, House no/i).fill("12 MG Road")
+  await page.getByLabel(/Apartment, Area/i).fill("Fort")
+  await page.getByLabel(/Full Name/i).fill("Asha Verma")
+  await page.getByLabel(/Email Address/i).fill(email)
   await page.getByLabel(/^Phone$/i).fill("9876543210")
-  await page.getByLabel(/^Address$/i).fill("12 MG Road")
-  await page.getByLabel(/^City$/i).fill("Mumbai")
-  await page.getByLabel(/PIN code/i).fill("400001")
-  await page.getByLabel(/Country code/i).fill("in")
-  await page.getByRole("button", { name: /continue to delivery/i }).click()
+  await page.getByRole("button", { name: /^continue$/i }).click()
 }
 
 async function logoutIfNeeded(page: Page): Promise<void> {
