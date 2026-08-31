@@ -42,7 +42,7 @@ export function useWishlist(productId: string) {
       const result = await wishlistApi.add({ product_id: productId, toggle: true })
       if (result.action) setWishlisted(result.action === "added")
     } catch (e) {
-      setWishlisted(!optimistic) // roll back optimistic state
+      setWishlisted(!optimistic)
       if ((e as { status?: number }).status === 401) {
         router.push("/account/login")
       }

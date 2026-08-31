@@ -1,16 +1,13 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import Link from "next/link"
 import type { HttpTypes } from "@medusajs/types"
-import { X } from "lucide-react"
+import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
+import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { medusa } from "@/lib/medusa"
 import { wishlistApi, type WishlistItemRecord } from "@/lib/wishlist"
-import { ProductCard } from "@/components/features/catalog/product-card"
-import { buttonVariants } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
 
 const PRODUCT_FIELDS =
   "*variants,*variants.calculated_price,*variants.options,*options,*options.values,*categories,*images,+metadata,+thumbnail"
@@ -18,6 +15,14 @@ const PRODUCT_FIELDS =
 type WishlistRow = {
   item: WishlistItemRecord
   product: HttpTypes.StoreProduct | null
+}
+
+function addedLabel(value: string) {
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    timeZone: "Asia/Kolkata",
+  }).format(new Date(value))
 }
 
 export default function WishlistPage() {
@@ -71,64 +76,66 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">
+    <div>
+      <header className="relative overflow-hidden">
+        <EditorialWatermark>saved</EditorialWatermark>
+        <EditorialEyebrow>Saved</EditorialEyebrow>
+        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
           Wishlist
-          {!loading && rows.length > 0 ? (
-            <span className="ml-2 text-lg font-normal text-muted-foreground">
-              ({rows.length})
-            </span>
-          ) : null}
         </h1>
-        <p className="mt-1 text-muted-foreground">Pieces you’ve saved for later.</p>
+        <p className="relative mt-[1em] m-0 max-w-[28em] font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+          {loading
+            ? "Pieces you’ve saved for later."
+            : rows.length > 0
+              ? `${rows.length} saved ${rows.length === 1 ? "piece" : "pieces"}.`
+              : "Pieces you’ve saved for later."}
+        </p>
       </header>
 
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-[2.5em] grid gap-[2em] sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-[3/4] w-full" />
+            <div
+              key={i}
+              className="aspect-[302/374] w-full rounded-[0.125em] bg-[#D9D9D9]"
+              aria-hidden
+            />
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-start gap-4 py-12">
-            <p className="text-muted-foreground">Your wishlist is empty.</p>
-            <Link href="/shop" className={cn(buttonVariants())}>
-              Explore the shop
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="mt-[2.5em]">
+          <p className="m-0 max-w-[28em] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+            Your wishlist is empty.
+          </p>
+          <div className="mt-[1.75em]">
+            <EditorialCtaLink href="/shop">Explore the shop</EditorialCtaLink>
+          </div>
+        </div>
       ) : (
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-[2.5em] m-0 grid list-none gap-[2em] p-0 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map(({ item, product }) => (
-            <li key={item.id} className="relative">
-              <button
-                type="button"
-                aria-label="Remove from wishlist"
-                disabled={removing === item.id}
-                onClick={() => void handleRemove(item.id)}
-                className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
-              >
-                <X className="h-4 w-4" />
-              </button>
+            <li key={item.id}>
               {product ? (
-                <ProductCard product={product} showWishlist={false} />
+                <EditorialProductCard product={product} />
               ) : (
-                <Card>
-                  <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                    Product unavailable
-                    <p className="mt-1 text-xs">{item.product_id}</p>
-                  </CardContent>
-                </Card>
+                <p className="m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+                  Product unavailable
+                </p>
               )}
-              <p className="mt-2 text-xs text-muted-foreground">
-                Added{" "}
-                {new Intl.DateTimeFormat("en-IN", {
-                  day: "numeric",
-                  month: "short",
-                }).format(new Date(item.added_at))}
-              </p>
+              <div className="mt-[0.75em] flex flex-wrap items-baseline gap-x-[1.25em] gap-y-[0.35em]">
+                <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                  Added {addedLabel(item.added_at)}
+                </p>
+                <button
+                  type="button"
+                  aria-label="Remove from wishlist"
+                  disabled={removing === item.id}
+                  onClick={() => void handleRemove(item.id)}
+                  className="cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em] disabled:opacity-50"
+                >
+                  {removing === item.id ? "Removing" : "Remove"}
+                </button>
+              </div>
             </li>
           ))}
         </ul>

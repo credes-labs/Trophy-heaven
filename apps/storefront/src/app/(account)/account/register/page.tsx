@@ -1,19 +1,26 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { Suspense, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { AuthAlert, AuthFrame } from "@/components/features/account/auth-frame"
+import {
+  EditorialCtaButton,
+  EditorialTextLink,
+  editorialFieldClass,
+  editorialLabelClass,
+} from "@/components/layout/editorial/editorial-cta"
+import { PasswordField } from "@/components/ui/password-field"
+import { safeReturnPath } from "@/lib/safe-return-path"
 import { useAuthStore } from "@/stores/auth-store"
-import { Logo } from "@/components/layout/logo"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter()
+  const params = useSearchParams()
+  const next = safeReturnPath(params.get("next"))
   const register = useAuthStore((s) => s.register)
   const loading = useAuthStore((s) => s.loading)
   const [error, setError] = useState<string | null>(null)
+  const loginHref = next ? `/account/login?next=${encodeURIComponent(next)}` : "/account/login"
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -37,98 +44,136 @@ export default function RegisterPage() {
         last_name: String(form.get("last_name")),
         phone: String(form.get("phone") || "") || undefined,
       })
-      router.push("/account")
+      router.push(next ?? "/account")
     } catch (err) {
       setError((err as Error).message || "Could not create account")
     }
   }
 
   return (
-    <div className="relative flex min-h-[70vh] items-center justify-center px-4 py-16">
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.72_0.10_80_/_0.12),_transparent_55%)]"
-        aria-hidden
-      />
-      <Card className="relative w-full max-w-md border-gold/20 shadow-lg" variant="elevated">
-        <CardHeader className="items-center text-center">
-          <Logo />
-          <CardTitle className="mt-4 font-serif text-2xl">Create account</CardTitle>
-          <CardDescription>Join Legacy Crafts for orders, designs, and wishlist.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <p className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </p>
-          )}
-          <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <Input name="first_name" label="First name" autoComplete="given-name" />
-              <Input name="last_name" label="Last name" autoComplete="family-name" />
-            </div>
-            <Input
-              name="email"
-              type="email"
-              required
-              label="Email"
-              autoComplete="email"
-              placeholder="you@example.com"
-            />
-            <Input
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              label="Password"
-              autoComplete="new-password"
-              placeholder="At least 8 characters"
-            />
-            <Input
-              name="confirm_password"
-              type="password"
-              required
-              minLength={8}
-              label="Confirm password"
-              autoComplete="new-password"
-            />
-            <Input
-              name="phone"
-              type="tel"
-              label="Phone (optional)"
-              autoComplete="tel"
-              placeholder="+91 98765 43210"
-            />
-            <label className="flex items-start gap-2.5 text-sm text-muted-foreground">
-              <input
-                type="checkbox"
-                name="terms"
-                className="mt-0.5 h-4 w-4 accent-gold"
-                required
-              />
-              <span>
-                I agree to the{" "}
-                <Link href="/terms" className="text-accent hover:underline">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="text-accent hover:underline">
-                  Privacy Policy
-                </Link>
-                .
-              </span>
+    <>
+      {error ? <AuthAlert>{error}</AuthAlert> : null}
+      <form onSubmit={(e) => void onSubmit(e)} className="space-y-[1.75em]">
+        <div className="grid grid-cols-1 gap-[1.75em] sm:grid-cols-2">
+          <div>
+            <label htmlFor="register-first-name" className={editorialLabelClass}>
+              First name
             </label>
-            <Button type="submit" disabled={loading} loading={loading} className="w-full" variant="accent">
-              {loading ? "Creating…" : "Create account"}
-            </Button>
-          </form>
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link href="/account/login" className="font-medium text-accent hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+            <input
+              id="register-first-name"
+              name="first_name"
+              autoComplete="given-name"
+              className={editorialFieldClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="register-last-name" className={editorialLabelClass}>
+              Last name
+            </label>
+            <input
+              id="register-last-name"
+              name="last_name"
+              autoComplete="family-name"
+              className={editorialFieldClass}
+            />
+          </div>
+        </div>
+        <div>
+          <label htmlFor="register-email" className={editorialLabelClass}>
+            Email
+          </label>
+          <input
+            id="register-email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="you@studio.in"
+            className={editorialFieldClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="register-password" className={editorialLabelClass}>
+            Password
+          </label>
+          <PasswordField
+            id="register-password"
+            name="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+            className={editorialFieldClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="register-confirm" className={editorialLabelClass}>
+            Confirm password
+          </label>
+          <PasswordField
+            id="register-confirm"
+            name="confirm_password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            className={editorialFieldClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="register-phone" className={editorialLabelClass}>
+            Phone (optional)
+          </label>
+          <input
+            id="register-phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="+91 98765 43210"
+            className={editorialFieldClass}
+          />
+        </div>
+        <label className="flex items-start gap-[0.75em] font-outfit text-[0.875em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
+          <input
+            type="checkbox"
+            name="terms"
+            required
+            className="mt-[0.2em] size-[0.875em] shrink-0 accent-[#131111]"
+          />
+          <span>
+            I agree to the{" "}
+            <EditorialTextLink href="/terms" className="text-[0.875em] normal-case">
+              Terms of Service
+            </EditorialTextLink>{" "}
+            and{" "}
+            <EditorialTextLink href="/privacy" className="text-[0.875em] normal-case">
+              Privacy Policy
+            </EditorialTextLink>
+            .
+          </span>
+        </label>
+        <EditorialCtaButton disabled={loading}>{loading ? "Creating" : "Create account"}</EditorialCtaButton>
+      </form>
+      <p className="mt-[2em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+        Already have an account?{" "}
+        <EditorialTextLink href={loginHref} className="text-[1em]">
+          Sign in
+        </EditorialTextLink>
+      </p>
+    </>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <AuthFrame
+      watermark="join"
+      eyebrow="Account"
+      title="Create account"
+      lede="Orders, saved designs, and a wishlist that follows you."
+    >
+      <Suspense fallback={null}>
+        <RegisterForm />
+      </Suspense>
+    </AuthFrame>
   )
 }
