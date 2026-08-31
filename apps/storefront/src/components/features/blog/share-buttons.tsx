@@ -1,9 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Check, Link2 } from "lucide-react"
 
 export function ShareButtons({
   title,
@@ -13,18 +11,16 @@ export function ShareButtons({
 }: {
   title: string
   slug: string
-  /** Absolute site path to share (defaults to the blog post URL). */
   path?: string
   className?: string
 }) {
   const [copied, setCopied] = useState(false)
-
-  // Deterministic URL (server === client) — reading window.location during
-  // render causes a hydration mismatch.
   const base = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
   const href = `${base}${path ?? `/blog/${slug}`}`
   const encodedUrl = encodeURIComponent(href)
   const encodedTitle = encodeURIComponent(title)
+  const linkClass =
+    "cursor-pointer border-0 bg-transparent p-0 font-outfit text-[1em] leading-[1.25em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em] transition-opacity hover:opacity-70"
 
   const copyLink = async () => {
     try {
@@ -37,30 +33,29 @@ export function ShareButtons({
   }
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-2 font-outfit", className)}>
-      <span className="text-[0.75em] font-normal tracking-[0.08em] text-[rgba(19,17,17,0.5)] uppercase">
+    <div className={cn("flex flex-wrap items-center gap-x-[1.5em] gap-y-[0.75em]", className)}>
+      <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
         Share
-      </span>
+      </p>
       <a
         href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        className={linkClass}
       >
-        X / Twitter
+        X
       </a>
       <a
         href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        className={linkClass}
       >
         WhatsApp
       </a>
-      <Button variant="outline" size="sm" onClick={copyLink} type="button">
-        {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+      <button type="button" onClick={() => void copyLink()} className={linkClass}>
         {copied ? "Copied" : "Copy link"}
-      </Button>
+      </button>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { localizeImageUrl } from "./images"
 import { BACKEND_URL, PUBLISHABLE_KEY } from "./medusa"
 
 export type BlogCategory = {
@@ -41,7 +42,22 @@ type ListPostsResult = {
   offset?: number
 }
 
+const JOURNAL_FALLBACK_COVERS = [
+  "/images/blog/blog-craftsmanship.jpg",
+  "/images/blog/blog-materials.jpg",
+  "/images/blog/blog-design.jpg",
+] as const
+
 const revalidate = { next: { revalidate: 120 } } as const
+
+/** Cover for cards/articles when Medusa has no image — brand JPEGs, stable per slug. */
+export function journalCoverSrc(post: Pick<BlogPost, "slug" | "cover_image_url">): string {
+  const uploaded = localizeImageUrl(post.cover_image_url)
+  if (uploaded) return uploaded
+  let n = 0
+  for (let i = 0; i < post.slug.length; i++) n += post.slug.charCodeAt(i)
+  return JOURNAL_FALLBACK_COVERS[n % JOURNAL_FALLBACK_COVERS.length]
+}
 
 function blogHeaders(): HeadersInit {
   return {
@@ -105,6 +121,7 @@ export function formatPostDate(value: string | null | undefined): string {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "Asia/Kolkata",
   }).format(new Date(value))
 }
 

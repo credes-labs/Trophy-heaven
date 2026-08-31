@@ -20,6 +20,7 @@ function SiteCartControl({ className }: { className?: string }) {
       onClick={() => setDrawerOpen(true)}
       aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
       className={className}
+      suppressHydrationWarning
     >
       CART ({count})
     </button>
@@ -50,7 +51,7 @@ function NavFlyout({
       <Link
         href={item.href}
         className={siteNavItemClass}
-        aria-expanded={hasMenu ? open : undefined}
+        aria-expanded={hasMenu ? (open ? "true" : "false") : undefined}
         aria-controls={hasMenu ? panelId : undefined}
         aria-haspopup={hasMenu ? "true" : undefined}
         onFocus={hasMenu ? onOpen : undefined}

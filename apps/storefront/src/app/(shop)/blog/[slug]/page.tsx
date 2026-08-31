@@ -10,19 +10,15 @@ import {
   categoryForPost,
   formatPostDate,
   addHeadingIds,
+  journalCoverSrc,
 } from "@/lib/blog"
 import { BlogCard } from "@/components/features/blog/blog-card"
 import { ShareButtons } from "@/components/features/blog/share-buttons"
-import { Newsletter } from "@/components/sections/newsletter"
-import { Badge } from "@/components/ui/badge"
-import { localizeImageUrl } from "@/lib/images"
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { JournalSubscribe } from "@/components/features/blog/journal-subscribe"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
+import { EditorialTextLink } from "@/components/layout/editorial/editorial-cta"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
 
 export const revalidate = 120
 
@@ -96,8 +92,12 @@ export default async function BlogPostPage({ params }: Props) {
       ).posts.filter((p) => p.id !== post.id).slice(0, 3)
     : []
 
+  const meta = [category?.name, date, post.read_time_minutes > 0 ? `${post.read_time_minutes} min` : null]
+    .filter(Boolean)
+    .join(" · ")
+
   return (
-    <article className="pb-16">
+    <article>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -106,152 +106,112 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink active>{post.title}</BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
 
-      <header className="mx-auto max-w-4xl px-4 pt-10 text-center sm:px-6 sm:pt-14">
-        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm text-muted-foreground">
-          {category && <Badge variant="gold">{category.name}</Badge>}
-          {date && <span>{date}</span>}
-          {date && post.read_time_minutes > 0 && <span aria-hidden>•</span>}
-          {post.read_time_minutes > 0 && <span>{post.read_time_minutes} min read</span>}
-        </div>
-        <h1 className="mt-5 font-serif text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
-          {post.title}
-        </h1>
-        <p className="mt-5 text-sm text-muted-foreground">
-          By <span className="font-medium text-foreground">{post.author_name}</span>
-        </p>
-      </header>
-
-      <div className="mx-auto mt-10 max-w-5xl px-4 sm:px-6">
-        {post.cover_image_url ? (
-          <div className="relative aspect-[21/9] overflow-hidden rounded-xl bg-muted">
-            <Image
-              src={localizeImageUrl(post.cover_image_url)}
-              alt={post.title}
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 1280px) 100vw, 1024px"
-            />
-          </div>
-        ) : (
-          <div
-            className="aspect-[21/9] rounded-xl bg-gradient-to-br from-walnut via-furniture to-artwork-dark"
-            aria-hidden
-          />
-        )}
-      </div>
-
-      <div className="mx-auto mt-12 max-w-7xl px-4 sm:px-6 lg:flex lg:justify-center lg:gap-12">
-        <div className="w-full max-w-[720px]">
-          <div className="blog-prose" dangerouslySetInnerHTML={{ __html: html }} />
-
-          <div className="mt-12 border-t border-border pt-8">
-            <ShareButtons title={post.title} slug={post.slug} />
-          </div>
-
-          <div className="mt-10 flex items-start gap-4 rounded-xl border border-border bg-muted/40 p-6">
-            {post.author_avatar_url ? (
-              <Image
-                src={post.author_avatar_url}
-                alt=""
-                width={48}
-                height={48}
-                className="h-12 w-12 shrink-0 rounded-full object-cover"
-              />
-            ) : (
-              <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gold/20 font-serif text-base font-semibold text-walnut"
-                aria-hidden
-              >
-                {post.author_name
-                  .split(/\s+/)
-                  .slice(0, 2)
-                  .map((part) => part[0]?.toUpperCase() ?? "")
-                  .join("")}
-              </div>
-            )}
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
-                Written by
-              </p>
-              <p className="mt-1 font-serif text-lg font-semibold text-foreground">
+      <EditorialShell>
+        <section className="relative overflow-hidden border-b border-[#131111]/10">
+          <EditorialFrame className="pb-[clamp(2.5rem,6vw,5em)]">
+            <EditorialTextLink href="/blog">← Journal</EditorialTextLink>
+            <div className="relative mt-[1.5em] max-w-[40em]">
+              <EditorialWatermark>story</EditorialWatermark>
+              <EditorialEyebrow>{category?.name ?? "Journal"}</EditorialEyebrow>
+              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+                {post.title}
+              </h1>
+              <p className="mt-[1.25em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
                 {post.author_name}
-              </p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                {post.author_name} writes for The Legacy Journal — stories of craft, material, and
-                design from the Legacy Crafts workshop.
+                {meta ? ` · ${meta}` : ""}
               </p>
             </div>
+          </EditorialFrame>
+        </section>
+
+        <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)]">
+          <div className="relative aspect-[21/9] overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
+            <Image
+              src={journalCoverSrc(post)}
+              alt=""
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="(max-width: 1280px) 100vw, 90em"
+            />
           </div>
         </div>
 
-        {toc.length > 1 && (
-          <aside className="hidden w-64 shrink-0 lg:block">
-            <nav className="sticky top-24" aria-label="Table of contents">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
-                On this page
-              </p>
-              <ul className="mt-4 space-y-2.5 border-l border-border">
-                {toc.map((entry) => (
-                  <li key={entry.id}>
-                    <a
-                      href={`#${entry.id}`}
-                      className={`-ml-px block border-l-2 border-transparent py-0.5 text-sm text-muted-foreground transition-colors hover:border-gold hover:text-foreground ${
-                        entry.level === 3 ? "pl-8" : "pl-4"
-                      }`}
-                    >
-                      {entry.text}
-                    </a>
-                  </li>
+        <EditorialFrame>
+          <div className="grid grid-cols-1 gap-[3em] lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <div className="blog-prose" dangerouslySetInnerHTML={{ __html: html }} />
+
+              <div className="mt-[2.5em] border-t border-[#CDCDCD] pt-[1.75em]">
+                <ShareButtons title={post.title} slug={post.slug} />
+              </div>
+
+              <div className="mt-[2.5em]">
+                <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                  Written by
+                </p>
+                <p className="mt-[0.5em] m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111]">
+                  {post.author_name}
+                </p>
+                <p className="mt-[0.5em] m-0 max-w-[32em] font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
+                  {post.author_name} writes for The Legacy Journal — stories of craft, material, and
+                  design from the workshop.
+                </p>
+              </div>
+            </div>
+
+            {toc.length > 1 ? (
+              <aside className="lg:col-span-4">
+                <nav className="sticky top-24" aria-label="On this page">
+                  <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                    Contents
+                  </p>
+                  <ul className="mt-[1em] m-0 flex list-none flex-col gap-[0.75em] p-0">
+                    {toc.map((entry) => (
+                      <li key={entry.id} className={entry.level === 3 ? "pl-[1em]" : undefined}>
+                        <a
+                          href={`#${entry.id}`}
+                          className="font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70 no-underline hover:text-[#131111]"
+                        >
+                          {entry.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </aside>
+            ) : null}
+          </div>
+
+          {related.length > 0 ? (
+            <section className="mt-[clamp(3em,6vw,5em)] border-t border-[#CDCDCD] pt-[clamp(2em,4vw,3.5em)]">
+              <div className="flex flex-wrap items-baseline justify-between gap-[1em]">
+                <h2 className="m-0 font-outfit text-[clamp(1.75em,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+                  Related
+                </h2>
+                {category ? (
+                  <Link
+                    href={`/blog?category=${category.slug}`}
+                    className="font-outfit text-[1.25em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em]"
+                  >
+                    More in {category.name} →
+                  </Link>
+                ) : null}
+              </div>
+              <div className="mt-[2em] grid gap-[2em] sm:grid-cols-2 lg:grid-cols-3">
+                {related.map((p) => (
+                  <BlogCard key={p.id} post={p} categories={categories} />
                 ))}
-              </ul>
-            </nav>
-          </aside>
-        )}
-      </div>
+              </div>
+            </section>
+          ) : null}
 
-      {related.length > 0 && (
-        <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="font-serif text-2xl font-semibold text-foreground">Related stories</h2>
-            {category && (
-              <Link
-                href={`/blog?category=${category.slug}`}
-                className="text-sm font-medium text-accent hover:underline"
-              >
-                More in {category.name}
-              </Link>
-            )}
+          <div className="mt-[clamp(3em,6vw,5em)]">
+            <JournalSubscribe />
           </div>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((p) => (
-              <BlogCard key={p.id} post={p} categories={categories} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <div className="mt-16">
-        <Newsletter />
-      </div>
+        </EditorialFrame>
+      </EditorialShell>
     </article>
   )
 }

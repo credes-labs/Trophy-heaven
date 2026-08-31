@@ -1,22 +1,22 @@
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialFrame } from "@/components/layout/editorial/editorial-shell"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
+
 export function BlogHero() {
   return (
-    <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-champagne via-background to-cream/40">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 20%, oklch(0.72 0.10 80 / 0.25), transparent 45%), radial-gradient(circle at 80% 60%, oklch(0.40 0.13 25 / 0.12), transparent 40%)",
-        }}
-      />
-      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">Journal</p>
-        <h1 className="mt-3 font-serif text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
-          The Legacy Journal
-        </h1>
-        <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-          Stories of craft, design, and material — from the workshop floor to the boardroom.
-        </p>
-      </div>
+    <section className="relative overflow-hidden border-b border-[#131111]/10">
+      <EditorialFrame className="pb-[clamp(2.5rem,6vw,5em)]">
+        <div className="relative max-w-[36em]">
+          <EditorialWatermark>journal</EditorialWatermark>
+          <EditorialEyebrow>The journal</EditorialEyebrow>
+          <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+            Stories from the workshop
+          </h1>
+          <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+            Craft, material, and the pieces we make — written plainly.
+          </p>
+        </div>
+      </EditorialFrame>
     </section>
   )
 }
