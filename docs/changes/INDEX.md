@@ -44,6 +44,7 @@ that matches how much you need to know.
 | 027 | [Addresses editorial add/edit](L3/027-addresses-editorial.md) | WP-29 |
 | 028 | [Homepage cards to Medusa PDPs](L3/028-homepage-pdp-links.md) | WP-30 |
 | 029 | [Retire leftover sample SKUs](L3/029-retire-sample-skus.md) | WP-31 |
+| 030 | [Vercel schemas prebuild](L3/030-vercel-schemas-build.md) | WP-32 |
 
 
 
