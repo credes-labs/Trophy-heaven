@@ -4,6 +4,9 @@ A paragraph per work package: what, why, key files, verification. Deep detail in
 linked L3 files. Newest first; anchor IDs (WP-NN) are stable — reference them from L1
 and L3.
 
+## WP-32 — Vercel schemas prebuild (2026-09-01)
+**What:** Storefront `build` runs `pnpm --filter @legacy-crafts/schemas build` before `next build`; `apps/storefront/vercel.json` sets the same command. **Why:** Vercel Root Directory is `apps/storefront`, so `pnpm run build` skipped the workspace `schemas:build` step and TypeScript could not resolve `@legacy-crafts/schemas`. **Files:** `apps/storefront/package.json`, `apps/storefront/vercel.json`. **Verified:** storefront typecheck after schemas build. → [L3/030](L3/030-vercel-schemas-build.md)
+
 ## WP-31 — Retire leftover sample SKUs (2026-08-31)
 **What:** Soft-delete six original seed products from Medusa and stop recreating them. Shop fallback, trophies CTA, and e2e handles now use remaining SKUs (Oak Side Table, Engraved Wooden Plaque, homepage furniture). **Why:** Those samples were leftover catalog noise next to the homepage furniture set. **Files:** `seed.ts`, shop/category fallbacks, e2e specs. **Verified:** seed delete + storefront typecheck. → [L3/029](L3/029-retire-sample-skus.md)
 

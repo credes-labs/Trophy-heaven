@@ -3,6 +3,9 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-09-01 — Vercel storefront build compiles shared schemas first
+`next build` on Vercel failed because `@legacy-crafts/schemas` had no `dist/`. Storefront build now compiles that package first. → L2 WP-32 · [L3/030](L3/030-vercel-schemas-build.md)
+
 ## 2026-08-31 — Retired six leftover sample SKUs from Medusa
 Crystal Star Award, Champion Metal Cup, Acrylic Award Plaque, Walnut Dining Chair, Teak Wall Shelf, and Handmade Ceramic Vase are deleted and no longer re-seeded. → L2 WP-31 · [L3/029](L3/029-retire-sample-skus.md)
 
