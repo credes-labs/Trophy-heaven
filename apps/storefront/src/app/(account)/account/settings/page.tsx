@@ -195,6 +195,7 @@ export default function SettingsPage() {
             <Input
               label="Current password"
               type="password"
+              reveal
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               autoComplete="current-password"
@@ -202,6 +203,7 @@ export default function SettingsPage() {
             <Input
               label="New password"
               type="password"
+              reveal
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               autoComplete="new-password"
@@ -210,6 +212,7 @@ export default function SettingsPage() {
             <Input
               label="Confirm new password"
               type="password"
+              reveal
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
