@@ -3,6 +3,30 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-08-31 — Retired six leftover sample SKUs from Medusa
+Crystal Star Award, Champion Metal Cup, Acrylic Award Plaque, Walnut Dining Chair, Teak Wall Shelf, and Handmade Ceramic Vase are deleted and no longer re-seeded. → L2 WP-31 · [L3/029](L3/029-retire-sample-skus.md)
+
+## 2026-08-31 — Homepage furniture cards open the matching PDP
+Product rail and Explore tiles link to `/products/[handle]`; those SKUs are seeded in Medusa. → L2 WP-30 · [L3/028](L3/028-homepage-pdp-links.md)
+
+## 2026-08-31 — Address edit panel matches checkout editorial
+The `/account/addresses` add/edit dialog is cream Outfit, PIN-first, Home/Work — not the old white card. → L2 WP-29 · [L3/027](L3/027-addresses-editorial.md)
+
+## 2026-08-31 — Addresses no longer logs you out; password fields have an eye
+Visiting `/account/addresses` no longer clears the session. Login, register, reset, checkout, and settings password fields can be revealed. → L2 WP-28 · [L3/026](L3/026-addresses-session-password-reveal.md)
+
+## 2026-08-31 — Checkout requires login; wishlist stays account-only
+Guests can add to cart. Checkout asks for sign-in, then saved or new addresses. Hearts and wishlist still require login. Payment stays open. → L2 WP-27 · [L3/025](L3/025-checkout-auth-wishlist.md)
+
+## 2026-08-31 — Login and wishlist match shop editorial
+Auth cards and gold account chrome replaced with Outfit / cream / watermark. Wishlist uses editorial tiles. → L2 WP-26 · [L3/024](L3/024-login-wishlist-editorial.md)
+
+## 2026-08-29 — Footer links go to real routes; journal matches shop
+Gift Cards / Best Sellers / invalid shop sort and duplicate About dumps replaced with category, journal, corporate, and terms URLs. Journal restyled to the editorial system. → L2 WP-25 · [L3/023](L3/023-footer-journal.md)
+
+## 2026-08-29 — Informational & support pages redesigned to homepage editorial system
+Replaced all 10 generic templates (`/about`, `/faq`, `/contact`, `/shipping-returns`, `/privacy`, `/terms`, `/corporate`, `/corporate/bulk`, `/offline`, `/api-docs`) with Outfit typography, fluid scaling, and rich editorial atelier layouts. → L2 WP-24 · [L3/022](L3/022-informational-pages-redesign.md)
+
 ## 2026-08-26 — Logic-layer critical and high integrity fixes
 Razorpay paise conversion, unpaid complete, guest design/corporate IDOR, cart transfer/stock, and production/search hardening. → L2 WP-23 · [L3/021](L3/021-logic-layer-critical-high.md)
 
