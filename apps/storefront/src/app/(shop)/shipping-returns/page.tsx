@@ -1,28 +1,31 @@
 import type { Metadata } from "next"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
 import { ShippingReturnsTabs } from "./shipping-returns-tabs"
 
 export const metadata: Metadata = {
   title: "Shipping & Returns",
-  description:
-    "Shipping tiers across India and our returns policy for Legacy Crafts orders.",
+  description: "Shipping tiers across India and our returns policy for Legacy Crafts orders.",
   alternates: { canonical: "/shipping-returns" },
 }
 
 export default function ShippingReturnsPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
-      <header className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">Policies</p>
-        <h1 className="mt-3 font-serif text-4xl font-semibold text-foreground sm:text-5xl">
-          Shipping & returns
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-          Clear timelines for delivery across India, and a straightforward returns process for
-          non-custom pieces.
-        </p>
-      </header>
-
-      <ShippingReturnsTabs />
-    </div>
+    <EditorialShell>
+      <EditorialFrame>
+        <div className="relative max-w-[36em]">
+          <EditorialWatermark>send</EditorialWatermark>
+          <EditorialEyebrow>Fulfillment</EditorialEyebrow>
+          <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+            Shipping & returns
+          </h1>
+          <p className="mt-[1.25em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+            Clear timelines across India, and a straightforward return for non-custom pieces.
+          </p>
+        </div>
+        <ShippingReturnsTabs />
+      </EditorialFrame>
+    </EditorialShell>
   )
 }

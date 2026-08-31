@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import * as XLSX from "xlsx"
-import { Button } from "@/components/ui/button"
+import {
+  EditorialCtaButton,
+  EditorialCtaLink,
+  EditorialTextLink,
+  editorialFieldClass,
+  editorialLabelClass,
+} from "@/components/layout/editorial/editorial-cta"
 import {
   bulkApi,
   corporateApi,
@@ -12,6 +18,7 @@ import {
   type CorporateProfileRecord,
 } from "@/lib/bulk-client"
 import { useCartStore } from "@/stores/cart-store"
+import { cn } from "@/lib/utils"
 
 type ProductOption = { id: string; title: string; variantId?: string }
 
@@ -154,49 +161,56 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
   const hasErrors = lines.some((l) => (l.validation_errors?.length ?? 0) > 0)
 
   return (
-    <div className="space-y-8">
-      <ol className="flex gap-4 text-sm">
+    <div>
+      <ol className="m-0 flex flex-wrap gap-x-[1.75em] gap-y-[0.5em] p-0">
         {["Order details", "Upload & preview", "Confirm"].map((label, i) => (
           <li
             key={label}
-            className={
-              step === i + 1 ? "font-semibold text-accent" : "text-muted-foreground"
-            }
+            className={cn(
+              "list-none font-outfit text-[0.875em] leading-[1.25em] tracking-[-0.02em] uppercase",
+              step === i + 1 ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#131111]/40"
+            )}
           >
-            {i + 1}. {label}
+            {String(i + 1).padStart(2, "0")} / {label}
           </li>
         ))}
       </ol>
 
-      {error && (
-        <p className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+      {error ? (
+        <p className="mt-[1.5em] m-0 font-outfit text-[0.875em] text-[#8A2D25]" role="alert">
           {error}
         </p>
-      )}
+      ) : null}
 
       {step === 1 && (
-        <div className="max-w-lg space-y-4">
-          {!profile && (
-            <p className="rounded-md border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+        <div className="mt-[2em] max-w-[32em] space-y-[1.75em]">
+          {!profile ? (
+            <p className="m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
               No corporate profile yet — prepaid checkout only.{" "}
-              <Link href="/account/corporate" className="text-accent underline">
+              <Link
+                href="/account/corporate"
+                className="text-[#131111] uppercase underline underline-offset-[0.15em]"
+              >
                 Create one
               </Link>{" "}
               to unlock net terms after verification.
             </p>
-          )}
-          {profile && !profile.is_verified && (
-            <p className="rounded-md border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+          ) : null}
+          {profile && !profile.is_verified ? (
+            <p className="m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
               {profile.company_name} is pending verification. Net terms unlock after an admin
               verifies the account.
             </p>
-          )}
+          ) : null}
           <div>
-            <label className="mb-1 block text-sm font-medium">Product</label>
+            <label htmlFor="bulk-product" className={editorialLabelClass}>
+              Product
+            </label>
             <select
+              id="bulk-product"
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className={editorialFieldClass}
             >
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -206,22 +220,26 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">
+            <label htmlFor="bulk-po" className={editorialLabelClass}>
               Purchase order number{paymentTerms !== "prepaid" ? " (required)" : " (optional)"}
             </label>
             <input
+              id="bulk-po"
               value={poNumber}
               onChange={(e) => setPoNumber(e.target.value)}
               placeholder="e.g. PO-2026-0042"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className={editorialFieldClass}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Payment terms</label>
+            <label htmlFor="bulk-terms" className={editorialLabelClass}>
+              Payment terms
+            </label>
             <select
+              id="bulk-terms"
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value as PaymentTerms)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className={editorialFieldClass}
             >
               {termsOptions.map((t) => (
                 <option key={t} value={t}>
@@ -229,65 +247,70 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
                 </option>
               ))}
             </select>
-            {paymentTerms !== "prepaid" && (
-              <p className="mt-1 text-xs text-muted-foreground">
+            {paymentTerms !== "prepaid" ? (
+              <p className="mt-[0.75em] m-0 font-outfit text-[0.875em] leading-[1.4] tracking-[-0.02em] text-[#131111]/55">
                 Billed to {profile?.company_name ?? "your corporate account"} against your credit
                 limit. PO number required.
               </p>
-            )}
+            ) : null}
           </div>
-          <Button onClick={startOrder} disabled={busy || !productId}>
-            {busy ? "Starting…" : "Continue"}
-          </Button>
+          <EditorialCtaButton type="button" disabled={busy || !productId} onClick={() => void startOrder()}>
+            {busy ? "Starting" : "Continue"}
+          </EditorialCtaButton>
         </div>
       )}
 
-      {step === 2 && order && (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-center gap-4 rounded-lg border border-dashed border-border p-6">
-            <label className="cursor-pointer rounded-md bg-accent px-5 py-3 text-sm font-medium text-accent-foreground hover:opacity-90">
-              {busy ? "Processing…" : "Upload .xlsx / .csv"}
+      {step === 2 && order ? (
+        <div className="mt-[2em]">
+          <div className="flex flex-wrap items-center gap-[1.5em] border-y border-[#CDCDCD] py-[1.75em]">
+            <label className="inline-flex h-[3.875em] w-[19.5em] max-w-full cursor-pointer items-center justify-center gap-[1.25em] rounded-full bg-[#131111] py-[0.625em] pr-[0.625em] pl-[0.5em] font-outfit text-[1em] leading-[1.25em] font-light tracking-[-0.02em] text-[#F2F1EF] uppercase">
+              <span className="size-[0.5em] shrink-0 rounded-full bg-[#F2F1EF]" aria-hidden />
+              {busy ? "Processing" : "Upload .xlsx / .csv"}
               <input type="file" accept=".xlsx,.xls,.csv" onChange={onFile} className="hidden" disabled={busy} />
             </label>
-            <p className="text-sm text-muted-foreground">
-              Columns: <code>name</code>, <code>designation</code>, <code>award_category</code>.
+            <p className="m-0 max-w-[28em] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+              Columns: name, designation, award_category.
             </p>
           </div>
 
-          {summary && (
-            <div className="flex gap-6 text-sm">
-              <span>Total rows: <strong>{summary.total}</strong></span>
-              <span className="text-success">Valid: <strong>{summary.valid}</strong></span>
-              <span className="text-destructive">With errors: <strong>{summary.invalid}</strong></span>
-            </div>
-          )}
+          {summary ? (
+            <p className="mt-[1.5em] m-0 flex flex-wrap gap-x-[1.75em] font-outfit text-[0.875em] tracking-[-0.02em] uppercase text-[#131111]/70">
+              <span>Total {summary.total}</span>
+              <span>Valid {summary.valid}</span>
+              <span className={summary.invalid > 0 ? "text-[#8A2D25]" : undefined}>
+                Errors {summary.invalid}
+              </span>
+            </p>
+          ) : null}
 
-          {lines.length > 0 && (
-            <div className="overflow-x-auto rounded-lg border border-border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted text-left">
-                  <tr>
-                    <th className="px-3 py-2">#</th>
-                    <th className="px-3 py-2">Name</th>
-                    <th className="px-3 py-2">Designation</th>
-                    <th className="px-3 py-2">Award</th>
-                    <th className="px-3 py-2">Status</th>
+          {lines.length > 0 ? (
+            <div className="mt-[1.5em] overflow-x-auto">
+              <table className="w-full border-y border-[#CDCDCD] text-left font-outfit text-[1em] tracking-[-0.02em]">
+                <thead>
+                  <tr className="border-b border-[#CDCDCD]">
+                    <th className="py-[0.85em] pr-[1em] font-normal uppercase">#</th>
+                    <th className="py-[0.85em] pr-[1em] font-normal uppercase">Name</th>
+                    <th className="py-[0.85em] pr-[1em] font-normal uppercase">Designation</th>
+                    <th className="py-[0.85em] pr-[1em] font-normal uppercase">Award</th>
+                    <th className="py-[0.85em] font-normal uppercase">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {lines.map((l) => {
                     const errs = l.validation_errors ?? []
                     return (
-                      <tr key={l.id} className="border-t border-border">
-                        <td className="px-3 py-2">{l.row_number}</td>
-                        <td className="px-3 py-2">{l.name || <span className="text-destructive">—</span>}</td>
-                        <td className="px-3 py-2">{l.designation ?? "—"}</td>
-                        <td className="px-3 py-2">{l.award_category ?? "—"}</td>
-                        <td className="px-3 py-2">
+                      <tr key={l.id} className="border-b border-[#CDCDCD]">
+                        <td className="py-[0.85em] pr-[1em]">{l.row_number}</td>
+                        <td className="py-[0.85em] pr-[1em]">
+                          {l.name || <span className="text-[#8A2D25]">—</span>}
+                        </td>
+                        <td className="py-[0.85em] pr-[1em]">{l.designation ?? "—"}</td>
+                        <td className="py-[0.85em] pr-[1em]">{l.award_category ?? "—"}</td>
+                        <td className="py-[0.85em]">
                           {errs.length === 0 ? (
-                            <span className="text-success">OK</span>
+                            <span>OK</span>
                           ) : (
-                            <span className="text-destructive">{errs.map((e) => e.issue).join("; ")}</span>
+                            <span className="text-[#8A2D25]">{errs.map((e) => e.issue).join("; ")}</span>
                           )}
                         </td>
                       </tr>
@@ -296,54 +319,48 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
                 </tbody>
               </table>
             </div>
-          )}
+          ) : null}
 
-          {lines.length > 0 && (
-            <div className="flex items-center gap-3">
-              <Button onClick={confirm} disabled={busy || hasErrors} variant="accent">
-                {busy ? "Generating…" : `Generate ${summary?.valid ?? 0} designs & add to cart`}
-              </Button>
-              {hasErrors && (
-                <span className="text-sm text-muted-foreground">Fix all errors before confirming.</span>
-              )}
+          {lines.length > 0 ? (
+            <div className="mt-[2em] flex flex-col items-start gap-[1em]">
+              <EditorialCtaButton type="button" disabled={busy || hasErrors} onClick={() => void confirm()}>
+                {busy ? "Generating" : "Generate designs"}
+              </EditorialCtaButton>
+              {hasErrors ? (
+                <p className="m-0 font-outfit text-[0.875em] text-[#131111]/55">
+                  Fix all errors before confirming.
+                </p>
+              ) : null}
             </div>
-          )}
+          ) : null}
         </div>
-      )}
+      ) : null}
 
-      {step === 3 && confirmResult && (
-        <div className="max-w-lg space-y-4 rounded-lg border border-border p-6">
-          <h2 className="font-serif text-2xl">Bulk order ready</h2>
-          <p className="text-sm text-muted-foreground">
+      {step === 3 && confirmResult ? (
+        <div className="mt-[2em] max-w-[32em]">
+          <h2 className="m-0 font-outfit text-[clamp(1.75rem,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+            Bulk order ready
+          </h2>
+          <p className="mt-[1em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
             {confirmResult.count > 0
               ? `${confirmResult.count} personalized designs were generated and added to your cart.`
               : "Your designs were generated. Review them in your gallery, then proceed to checkout."}
           </p>
-          {confirmResult.net_terms && (
-            <p className="rounded-md bg-muted/50 p-3 text-sm">
-              Payment:{" "}
-              <strong>
-                {confirmResult.payment_terms === "net_30" ? "Net 30" : "Net 60"}
-              </strong>{" "}
-              — billed to your corporate account (no prepaid gateway).
+          {confirmResult.net_terms ? (
+            <p className="mt-[1em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
+              Payment: {confirmResult.payment_terms === "net_30" ? "Net 30" : "Net 60"} — billed to
+              your corporate account (no prepaid gateway).
             </p>
-          )}
-          <div className="flex gap-3">
-            <Link
-              href="/checkout"
-              className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground hover:opacity-90"
-            >
+          ) : null}
+          <div className="mt-[1.75em] flex flex-col items-start gap-[1.25em]">
+            <EditorialCtaLink href="/checkout">
               {confirmResult.net_terms ? "Checkout on account" : "Go to checkout"}
-            </Link>
-            <Link href="/cart" className="rounded-md border px-5 py-2.5 text-sm hover:bg-muted">
-              Review cart
-            </Link>
-            <Link href="/account/corporate" className="rounded-md border px-5 py-2.5 text-sm hover:bg-muted">
-              Corporate dashboard
-            </Link>
+            </EditorialCtaLink>
+            <EditorialTextLink href="/cart">Review cart →</EditorialTextLink>
+            <EditorialTextLink href="/account/corporate">Corporate dashboard →</EditorialTextLink>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
