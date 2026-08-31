@@ -62,6 +62,10 @@ export function isRazorpayEnabled(): boolean {
   )
 }
 
+/**
+ * Payment route is left open: Razorpay / COD / corporate net-terms still
+ * initialize here. Do not stub or close this step.
+ */
 export async function initPayment(cartId: string, opts?: { netTerms?: boolean }) {
   const { cart } = await medusa.store.cart.retrieve(cartId)
   const netTerms = opts?.netTerms ?? isNetTermsCart(cart)

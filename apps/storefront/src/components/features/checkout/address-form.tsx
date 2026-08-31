@@ -1,124 +1,296 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { useEffect, useRef, useState, type ReactNode } from "react"
+import {
+  EditorialCtaButton,
+  editorialFieldClass,
+  editorialLabelClass,
+} from "@/components/layout/editorial/editorial-cta"
+import {
+  type AddressSaveAs,
+  type DeliveryAddressValues,
+} from "@/lib/checkout-address"
+import { isValidIndianPincode, lookupIndianPincode } from "@/lib/pincode"
+import { cn } from "@/lib/utils"
 
-export type AddressFormValues = {
-  email: string
-  first_name: string
-  last_name: string
-  address_1: string
-  address_2?: string
-  city: string
-  postal_code: string
-  country_code: string
-  phone: string
+function FieldLabel({
+  htmlFor,
+  children,
+  required,
+}: {
+  htmlFor: string
+  children: string
+  required?: boolean
+}) {
+  return (
+    <label htmlFor={htmlFor} className={editorialLabelClass}>
+      {children}
+      {required ? <span className="text-[#8A2D25]"> *</span> : null}
+    </label>
+  )
 }
 
 export function AddressForm({
   busy,
   onSubmit,
   defaults,
+  idPrefix = "checkout",
+  showEmail = true,
+  submitLabel = "Continue",
+  ariaLabel = "Add delivery address",
+  onCancel,
+  children,
+  className,
 }: {
   busy?: boolean
-  onSubmit: (values: AddressFormValues) => void | Promise<void>
-  defaults?: Partial<AddressFormValues>
+  onSubmit: (values: DeliveryAddressValues) => void | Promise<void>
+  defaults?: Partial<DeliveryAddressValues>
+  idPrefix?: string
+  showEmail?: boolean
+  submitLabel?: string
+  ariaLabel?: string
+  onCancel?: () => void
+  children?: ReactNode
+  className?: string
 }) {
+  const [postal, setPostal] = useState(defaults?.postal_code ?? "")
+  const [city, setCity] = useState(defaults?.city ?? "")
+  const [state, setState] = useState(defaults?.state ?? "")
+  const [saveAs, setSaveAs] = useState<AddressSaveAs>(defaults?.save_as ?? "Home")
+  const [lookupHint, setLookupHint] = useState<string | null>(null)
+  const skipLookup = useRef(Boolean(defaults?.city && defaults?.state))
+
+  useEffect(() => {
+    if (!isValidIndianPincode(postal)) {
+      setLookupHint(null)
+      return
+    }
+    if (skipLookup.current) {
+      skipLookup.current = false
+      return
+    }
+    let cancelled = false
+    setLookupHint("Looking up city and state…")
+    lookupIndianPincode(postal)
+      .then((place) => {
+        if (cancelled) return
+        if (!place) {
+          setLookupHint("Could not find that PIN. Enter city and state.")
+          return
+        }
+        setCity(place.city.toUpperCase())
+        setState(place.state.toUpperCase())
+        setLookupHint(null)
+      })
+      .catch(() => {
+        if (!cancelled) setLookupHint("Could not find that PIN. Enter city and state.")
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [postal])
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
     void onSubmit({
-      email: String(form.get("email") ?? ""),
-      first_name: String(form.get("first_name") ?? ""),
-      last_name: String(form.get("last_name") ?? ""),
+      email: showEmail ? String(form.get("email") ?? "") : (defaults?.email ?? ""),
+      full_name: String(form.get("full_name") ?? ""),
       address_1: String(form.get("address_1") ?? ""),
       address_2: String(form.get("address_2") ?? "") || undefined,
-      city: String(form.get("city") ?? ""),
-      postal_code: String(form.get("postal_code") ?? ""),
-      country_code: String(form.get("country_code") ?? "in").toLowerCase(),
-      phone: String(form.get("phone") ?? ""),
+      city: String(form.get("city") ?? city),
+      state: String(form.get("state") ?? state),
+      postal_code: String(form.get("postal_code") ?? postal),
+      phone: String(form.get("phone") ?? "") || undefined,
+      save_as: saveAs,
     })
   }
 
+  const pinId = `${idPrefix}-pincode`
+  const cityId = `${idPrefix}-city`
+  const stateId = `${idPrefix}-state`
+  const line1Id = `${idPrefix}-address-1`
+  const line2Id = `${idPrefix}-address-2`
+  const nameId = `${idPrefix}-full-name`
+  const emailId = `${idPrefix}-email`
+  const phoneId = `${idPrefix}-phone`
+
   return (
-    <form onSubmit={handleSubmit} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2" aria-label="Shipping address">
-      <div className="sm:col-span-2">
-        <Input
-          name="email"
-          type="email"
+    <form
+      onSubmit={handleSubmit}
+      className={cn("mt-[1.75em] space-y-[1.5em]", className)}
+      aria-label={ariaLabel}
+    >
+      <div>
+        <FieldLabel htmlFor={pinId} required>
+          Pincode
+        </FieldLabel>
+        <input
+          id={pinId}
+          name="postal_code"
           required
-          label="Email"
-          defaultValue={defaults?.email}
-          autoComplete="email"
+          inputMode="numeric"
+          autoComplete="postal-code"
+          maxLength={6}
+          value={postal}
+          onChange={(e) => setPostal(e.target.value.replace(/\D/g, "").slice(0, 6))}
+          className={editorialFieldClass}
         />
+        {lookupHint ? (
+          <p className="mt-[0.35em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#131111]/45">
+            {lookupHint}
+          </p>
+        ) : null}
       </div>
-      <Input
-        name="first_name"
-        required
-        label="First name"
-        defaultValue={defaults?.first_name}
-        autoComplete="given-name"
-      />
-      <Input
-        name="last_name"
-        required
-        label="Last name"
-        defaultValue={defaults?.last_name}
-        autoComplete="family-name"
-      />
-      <div className="sm:col-span-2">
-        <Input
-          name="phone"
-          label="Phone"
-          defaultValue={defaults?.phone}
-          autoComplete="tel"
-          placeholder="10-digit mobile"
-        />
+
+      <div className="grid grid-cols-1 gap-[1.5em] sm:grid-cols-2">
+        <div>
+          <FieldLabel htmlFor={cityId} required>
+            City
+          </FieldLabel>
+          <input
+            id={cityId}
+            name="city"
+            required
+            autoComplete="address-level2"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className={editorialFieldClass}
+          />
+        </div>
+        <div>
+          <FieldLabel htmlFor={stateId} required>
+            State
+          </FieldLabel>
+          <input
+            id={stateId}
+            name="state"
+            required
+            autoComplete="address-level1"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            className={editorialFieldClass}
+          />
+        </div>
       </div>
-      <div className="sm:col-span-2">
-        <Input
+
+      <div>
+        <FieldLabel htmlFor={line1Id} required>
+          Flat, House no.
+        </FieldLabel>
+        <input
+          id={line1Id}
           name="address_1"
           required
-          label="Address"
-          defaultValue={defaults?.address_1}
           autoComplete="address-line1"
+          defaultValue={defaults?.address_1}
+          className={editorialFieldClass}
         />
       </div>
-      <div className="sm:col-span-2">
-        <Input
+
+      <div>
+        <FieldLabel htmlFor={line2Id} required>
+          Apartment, Area, Sector, Village
+        </FieldLabel>
+        <input
+          id={line2Id}
           name="address_2"
-          label="Apartment, suite, etc. (optional)"
-          defaultValue={defaults?.address_2}
-          autoComplete="address-line2"
-        />
-      </div>
-      <Input
-        name="city"
-        required
-        label="City"
-        defaultValue={defaults?.city}
-        autoComplete="address-level2"
-      />
-      <Input
-        name="postal_code"
-        required
-        label="PIN code"
-        defaultValue={defaults?.postal_code}
-        autoComplete="postal-code"
-      />
-      <div className="sm:col-span-2">
-        <Input
-          name="country_code"
           required
-          label="Country code"
-          defaultValue={defaults?.country_code ?? "in"}
-          autoComplete="country"
+          autoComplete="address-line2"
+          defaultValue={defaults?.address_2}
+          className={editorialFieldClass}
         />
       </div>
-      <div className="sm:col-span-2 flex justify-end pt-2">
-        <Button type="submit" variant="trophy" loading={busy}>
-          Continue to delivery
-        </Button>
+
+      <div>
+        <FieldLabel htmlFor={nameId} required>
+          Full Name
+        </FieldLabel>
+        <input
+          id={nameId}
+          name="full_name"
+          required
+          autoComplete="name"
+          defaultValue={defaults?.full_name}
+          className={editorialFieldClass}
+        />
+      </div>
+
+      {showEmail ? (
+        <div>
+          <FieldLabel htmlFor={emailId} required>
+            Email Address
+          </FieldLabel>
+          <input
+            id={emailId}
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            defaultValue={defaults?.email}
+            className={editorialFieldClass}
+          />
+        </div>
+      ) : null}
+
+      <div>
+        <FieldLabel htmlFor={phoneId}>Phone</FieldLabel>
+        <input
+          id={phoneId}
+          name="phone"
+          type="tel"
+          autoComplete="tel"
+          placeholder="10-digit mobile"
+          defaultValue={defaults?.phone}
+          className={editorialFieldClass}
+        />
+      </div>
+
+      <fieldset className="m-0 border-0 p-0">
+        <legend className={cn(editorialLabelClass, "mb-[0.75em]")}>Save address as</legend>
+        <div className="flex flex-wrap gap-[0.75em]">
+          {(["Home", "Work"] as const).map((label) => {
+            const selected = saveAs === label
+            return (
+              <button
+                key={label}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setSaveAs(label)}
+                className={cn(
+                  "inline-flex cursor-pointer items-center gap-[0.6em] rounded-full border bg-transparent px-[1.1em] py-[0.55em] font-outfit text-[0.875em] tracking-[-0.02em] uppercase",
+                  selected
+                    ? "border-[#131111] text-[#131111]"
+                    : "border-[#CDCDCD] text-[#131111]/55"
+                )}
+              >
+                <span
+                  className={cn(
+                    "size-[0.7em] rounded-full border",
+                    selected ? "border-[#131111] bg-[#131111]" : "border-[#CDCDCD] bg-transparent"
+                  )}
+                  aria-hidden
+                />
+                {label}
+              </button>
+            )
+          })}
+        </div>
+      </fieldset>
+
+      {children}
+
+      <div className="flex flex-col items-start gap-[1em]">
+        <EditorialCtaButton disabled={busy}>{busy ? "Saving" : submitLabel}</EditorialCtaButton>
+        {onCancel ? (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em]"
+          >
+            Cancel
+          </button>
+        ) : null}
       </div>
     </form>
   )

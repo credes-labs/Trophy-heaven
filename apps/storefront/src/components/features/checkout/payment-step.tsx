@@ -6,6 +6,10 @@ import { cn } from "@/lib/utils"
 
 export type PaymentMethod = "razorpay" | "cod" | "net_terms"
 
+/**
+ * Payment route is left open — Razorpay, COD, and net-terms stay reachable
+ * after address + delivery. Do not gate or remove this step.
+ */
 export function PaymentStep({
   netTerms,
   paymentMeta,

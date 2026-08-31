@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import type { HttpTypes } from "@medusajs/types"
 import { useCartStore, CART_ID_KEY } from "@/stores/cart-store"
+import { useAuthStore } from "@/stores/auth-store"
+import { medusa } from "@/lib/medusa"
 import {
   setAddresses,
   listShippingOptions,
@@ -16,21 +17,25 @@ import {
   getRazorpaySessionData,
   isRazorpayEnabled,
 } from "@/lib/data/checkout"
+import { toCustomerAddressPayload, toCartShippingAddress, type DeliveryAddressValues } from "@/lib/checkout-address"
 import { openCheckout, verifyRazorpayPayment } from "@/lib/razorpay"
 import { StepIndicator, type CheckoutStep } from "@/components/features/checkout/step-indicator"
-import { AddressForm, type AddressFormValues } from "@/components/features/checkout/address-form"
+import { CheckoutAuthGate } from "@/components/features/checkout/checkout-auth-gate"
+import { CheckoutAddressStep } from "@/components/features/checkout/checkout-address-step"
 import { DeliveryOptions } from "@/components/features/checkout/delivery-options"
 import { PaymentStep, type PaymentMethod } from "@/components/features/checkout/payment-step"
 import { ReviewStep, paymentMethodLabel } from "@/components/features/checkout/review-step"
 import { CheckoutSummary } from "@/components/features/checkout/checkout-summary"
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
 
 const RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? ""
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, init } = useCartStore()
+  const { customer, loading: authLoading, loadCustomer } = useAuthStore()
   const [step, setStep] = useState<CheckoutStep>("address")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -42,6 +47,10 @@ export default function CheckoutPage() {
     void init()
   }, [init])
 
+  useEffect(() => {
+    void loadCustomer()
+  }, [loadCustomer])
+
   const currency = cart?.currency_code ?? "inr"
   const netTerms = isNetTermsCart(cart)
   const paymentMeta = getCartPaymentMeta(cart)
@@ -51,29 +60,27 @@ export default function CheckoutPage() {
     if (netTerms) setPaymentMethod("net_terms")
   }, [netTerms])
 
-  async function handleAddress(values: AddressFormValues) {
+  async function handleAddress(values: DeliveryAddressValues, options: { persist: boolean }) {
     if (!cart) return
     setBusy(true)
     setError(null)
     try {
+      const shipping = toCartShippingAddress(values)
+      if (options.persist) {
+        await medusa.store.customer.createAddress({
+          ...toCustomerAddressPayload(values),
+          is_default_shipping: false,
+        })
+      }
       const updated = await setAddresses(cart.id, {
         email: values.email,
-        shipping_address: {
-          first_name: values.first_name,
-          last_name: values.last_name,
-          address_1: values.address_1,
-          address_2: values.address_2,
-          city: values.city,
-          postal_code: values.postal_code,
-          country_code: values.country_code,
-          phone: values.phone,
-        },
+        shipping_address: shipping,
         same_as_billing: true,
       })
       useCartStore.setState({ cart: updated })
-      const options = await listShippingOptions(cart.id)
-      setShippingOptions(options)
-      if (options[0]) setSelectedOption(options[0].id)
+      const nextOptions = await listShippingOptions(cart.id)
+      setShippingOptions(nextOptions)
+      if (nextOptions[0]) setSelectedOption(nextOptions[0].id)
       setStep("delivery")
     } catch (e) {
       setError((e as Error).message)
@@ -177,20 +184,26 @@ export default function CheckoutPage() {
     }
   }
 
-  if (!cart) {
+  if (!cart || (authLoading && !customer)) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-muted-foreground">Loading checkout…</div>
+      <EditorialShell>
+        <EditorialFrame>
+          <p className="m-0 font-outfit text-[1em] text-[#131111]/70">Loading checkout…</p>
+        </EditorialFrame>
+      </EditorialShell>
     )
   }
 
   if (!(cart.items?.length)) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <p className="text-muted-foreground">Your cart is empty.</p>
-        <Link href="/shop" className={cn(buttonVariants({ variant: "trophy", className: "mt-4" }))}>
-          Continue shopping
-        </Link>
-      </div>
+      <EditorialShell>
+        <EditorialFrame className="text-center">
+          <p className="m-0 font-outfit text-[1.125em] text-[#131111]/70">Your cart is empty.</p>
+          <div className="mt-[1.75em] flex justify-center">
+            <EditorialCtaLink href="/shop">Continue shopping</EditorialCtaLink>
+          </div>
+        </EditorialFrame>
+      </EditorialShell>
     )
   }
 
@@ -207,74 +220,83 @@ export default function CheckoutPage() {
     : null
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-10 px-4 py-10 lg:grid-cols-[1fr_320px]">
-      <div>
-        <h1 className="font-serif text-3xl font-semibold">Checkout</h1>
-        <StepIndicator current={step} className="mt-6" />
+    <EditorialShell>
+      <EditorialFrame>
+        <div className="grid gap-[3em] lg:grid-cols-[1fr_20em]">
+          <div>
+            <EditorialEyebrow>Order</EditorialEyebrow>
+            <h1 className="m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+              Checkout
+            </h1>
 
-        {error && (
-          <p className="mt-4 rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive" role="alert">
-            {error}
-          </p>
-        )}
+            {!customer ? (
+              <CheckoutAuthGate />
+            ) : (
+              <>
+                <StepIndicator current={step} className="mt-[2em]" />
 
-        {step === "address" && (
-          <AddressForm
-            busy={busy}
-            onSubmit={handleAddress}
-            defaults={{
-              email: cart.email ?? undefined,
-              first_name: cart.shipping_address?.first_name ?? undefined,
-              last_name: cart.shipping_address?.last_name ?? undefined,
-              address_1: cart.shipping_address?.address_1 ?? undefined,
-              city: cart.shipping_address?.city ?? undefined,
-              postal_code: cart.shipping_address?.postal_code ?? undefined,
-              country_code: cart.shipping_address?.country_code ?? "in",
-              phone: cart.shipping_address?.phone ?? undefined,
-            }}
-          />
-        )}
+                {error ? (
+                  <p
+                    className="mt-[1.25em] m-0 font-outfit text-[0.875em] leading-[1.4] text-[#8A2D25]"
+                    role="alert"
+                  >
+                    {error}
+                  </p>
+                ) : null}
 
-        {step === "delivery" && (
-          <DeliveryOptions
-            options={shippingOptions}
-            selectedId={selectedOption}
-            onSelect={setSelectedOption}
-            currency={currency}
-            busy={busy}
-            onBack={() => setStep("address")}
-            onContinue={handleDelivery}
-          />
-        )}
+                {step === "address" && (
+                  <CheckoutAddressStep
+                    customerEmail={customer.email ?? cart.email ?? ""}
+                    busy={busy}
+                    onContinue={handleAddress}
+                  />
+                )}
 
-        {step === "payment" && (
-          <PaymentStep
-            netTerms={netTerms}
-            paymentMeta={paymentMeta}
-            method={paymentMethod}
-            onMethodChange={setPaymentMethod}
-            razorpayEnabled={razorpayEnabled}
-            busy={busy}
-            onBack={() => setStep("delivery")}
-            onContinue={() => setStep("review")}
-          />
-        )}
+                {step === "delivery" && (
+                  <DeliveryOptions
+                    options={shippingOptions}
+                    selectedId={selectedOption}
+                    onSelect={setSelectedOption}
+                    currency={currency}
+                    busy={busy}
+                    onBack={() => setStep("address")}
+                    onContinue={handleDelivery}
+                  />
+                )}
 
-        {step === "review" && (
-          <ReviewStep
-            cart={cart}
-            currency={currency}
-            shippingLabel={shippingLabel}
-            paymentLabel={payLabel}
-            netTerms={netTerms}
-            busy={busy}
-            onBack={() => setStep("payment")}
-            onPlaceOrder={handlePlaceOrder}
-          />
-        )}
-      </div>
+                {/* Payment route is left open — Razorpay / COD / net-terms still run below. */}
+                {step === "payment" && (
+                  <PaymentStep
+                    netTerms={netTerms}
+                    paymentMeta={paymentMeta}
+                    method={paymentMethod}
+                    onMethodChange={setPaymentMethod}
+                    razorpayEnabled={razorpayEnabled}
+                    busy={busy}
+                    onBack={() => setStep("delivery")}
+                    onContinue={() => setStep("review")}
+                  />
+                )}
 
-      <CheckoutSummary cart={cart} currency={currency} netTermsLabel={netTermsLabel} />
-    </div>
+                {step === "review" && (
+                  <ReviewStep
+                    cart={cart}
+                    currency={currency}
+                    shippingLabel={shippingLabel}
+                    paymentLabel={payLabel}
+                    netTerms={netTerms}
+                    busy={busy}
+                    onBack={() => setStep("payment")}
+                    onPlaceOrder={handlePlaceOrder}
+                  />
+                )}
+              </>
+            )}
+          </div>
+
+          <CheckoutSummary cart={cart} currency={currency} netTermsLabel={netTermsLabel} />
+        </div>
+      </EditorialFrame>
+    </EditorialShell>
   )
 }
