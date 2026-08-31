@@ -47,12 +47,10 @@ async function CategoryContent({ categoryKey }: { categoryKey: CategoryKey }) {
     order: "-created_at",
   }).catch(() => ({ products: [], count: 0 }))
 
-  // Trophies story CTA points at the customizer for the seeded flagship
-  // customizable trophy ("Crystal Star Award", customization_level: full_3d).
-  // Resolved server-side because the product id isn't stable across seeds.
+  // Trophies story CTA points at the remaining customizable plaque.
   let storyCtaHref: string | undefined
   if (categoryKey === "trophies") {
-    const flagship = await getProductByHandle("crystal-star-award").catch(() => null)
+    const flagship = await getProductByHandle("engraved-wooden-plaque").catch(() => null)
     if (flagship) storyCtaHref = `/customize/${flagship.id}/2d`
   }
 

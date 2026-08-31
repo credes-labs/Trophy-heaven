@@ -10,16 +10,16 @@ export const SHOP_CLEAR_LABEL = "clear filters"
 
 export const SHOP_FEATURED_FALLBACK = [
   {
-    title: "Walnut Dining Chair",
-    href: "/products/walnut-dining-chair",
-    image: "/images/catalog/seating-armchair.jpg",
-    alt: "Walnut armchair with cream upholstery in a plaster living room",
+    title: "Luno 210 lounge chair",
+    href: "/products/luno-210-lounge-chair",
+    image: "/images/catalog/seating-lounge.jpg",
+    alt: "Walnut lounge chair with oatmeal bouclé upholstery",
   },
   {
-    title: "Crystal Star Award",
-    href: "/products/crystal-star-award",
-    image: "/images/products/trophy-crystal-star.jpg",
-    alt: "Crystal star trophy on a dark studio surface",
+    title: "Brass Table Lamp",
+    href: "/products/brass-table-lamp",
+    image: "/images/products/art-brass-lamp.jpg",
+    alt: "Brass table lamp with warm metallic patina",
   },
 ] as const
 
