@@ -36,9 +36,9 @@ export const CATALOG_CHILDREN: SiteNavChild[] = [
 
 export const INFO_CHILDREN: SiteNavChild[] = [
   { label: "About us", href: "/about" },
-  { label: "Our story", href: "/about" },
-  { label: "Sustainability", href: "/about" },
-  { label: "Careers", href: "/about" },
+  { label: "Our story", href: "/about#story" },
+  { label: "Sustainability", href: "/about#sustainability" },
+  { label: "Careers", href: "/contact" },
 ]
 
 export const NEWS_CHILDREN: SiteNavChild[] = [
@@ -52,6 +52,7 @@ export const CONTACT_CHILDREN: SiteNavChild[] = [
   { label: "Shipping & delivery", href: "/shipping-returns" },
   { label: "Returns & exchanges", href: "/shipping-returns" },
   { label: "Privacy policy", href: "/privacy" },
+  { label: "Terms of service", href: "/terms" },
 ]
 
 export const FAVORITES_CHILDREN: SiteNavChild[] = [
@@ -70,10 +71,9 @@ export function collectionChildren(categories?: NavCategory[]): SiteNavChild[] {
 
   return [
     { label: "Shop all", href: "/shop" },
-    { label: "New arrivals", href: "/shop?sort=created_at" },
-    { label: "Best sellers", href: "/shop" },
+    { label: "New arrivals", href: "/shop?sort=newest" },
     ...departments,
-    { label: "Gift cards", href: "/shop" },
+    { label: "Corporate", href: "/corporate" },
   ]
 }
 

@@ -38,6 +38,14 @@ that matches how much you need to know.
 | 019 | [Product page gallery and layout redo](L3/019-pdp-gallery-redo.md) | WP-21 |
 | 020 | [Cart page and sidebar cart](L3/020-cart-page-layout.md) | WP-20 |
 | 021 | [Logic-layer critical and high fixes](L3/021-logic-layer-critical-high.md) | WP-23 |
+| 023 | [Footer destinations + journal editorial](L3/023-footer-journal.md) | WP-25 |
+| 024 | [Login + wishlist editorial](L3/024-login-wishlist-editorial.md) | WP-26 |
+| 025 | [Checkout auth and saved addresses](L3/025-checkout-auth-wishlist.md) | WP-27 |
+| 027 | [Addresses editorial add/edit](L3/027-addresses-editorial.md) | WP-29 |
+| 028 | [Homepage cards to Medusa PDPs](L3/028-homepage-pdp-links.md) | WP-30 |
+| 029 | [Retire leftover sample SKUs](L3/029-retire-sample-skus.md) | WP-31 |
+
+
 
 ## Rules for future changes (mandatory)
 

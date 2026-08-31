@@ -52,7 +52,7 @@
   autoplay+monograms, cart cross-sell+sticky mobile bar); 40 storefront tests green
 - ✅ ShareButtons hydration mismatch fixed (deterministic URL from base + path prop);
   PDP gallery localized; PDP verified visually with zero page errors
-- ✅ Category heroes now use the real category imagery (cat-trophies/furniture/artwork.png)
+- ✅ Category heroes now use the real category imagery
   with accent gradient overlays — verified visually; category pages show correct
   product counts (4/3/3)
 - ✅ Blog covers + article heroes localized (blog-card.tsx, blog/[slug]/page.tsx) —

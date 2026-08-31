@@ -33,10 +33,10 @@ const FURNITURE_SUBCATEGORIES = [
 
 const FEATURED_PRODUCTS = [
   {
-    name: "Heritage Gold Trophy",
+    name: "Brass Table Lamp",
     price: "₹2,499",
-    image: "/images/products/trophy-crystal-star.jpg",
-    href: "/trophies",
+    image: "/images/products/art-brass-lamp.jpg",
+    href: "/artwork",
   },
   {
     name: "Artisan Walnut Table",

@@ -60,7 +60,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
       ],
       ctaLabel: "Design Your Own Trophy",
       // Fallback; the category page overrides this with the resolved
-      // customizer link for the seeded "Crystal Star Award" product.
+      // customizer link for the seeded engraved wooden plaque.
       ctaHref: "/shop?category=trophies&customizable=1",
     },
     slug: "trophies",
@@ -70,8 +70,8 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-trophy",
     badgeVariant: "trophy",
     buttonVariant: "trophy",
-    imageSrc: "/images/categories/cat-trophies.jpg",
-    imageAlt: "Crystal trophy on dark velvet with dramatic lighting",
+    imageSrc: "/images/hero/hero-workshop.jpg",
+    imageAlt: "Master craftsman at work with timber and brass in the atelier",
   },
   furniture: {
     key: "furniture",

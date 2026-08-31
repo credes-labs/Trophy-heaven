@@ -37,7 +37,7 @@ function pdpAtc(page: Page) {
   return page.locator(".pdp-buy-row button.pdp-atc")
 }
 
-async function openPdp(page: Page, handle = "champion-metal-cup") {
+async function openPdp(page: Page, handle = "oak-side-table") {
   await page.goto(`/products/${handle}`, { waitUntil: "domcontentloaded" })
   await expect(page).toHaveURL(new RegExp(`/products/${handle}`))
   await expect(pdpAtc(page)).toBeVisible({ timeout: 20_000 })
@@ -112,7 +112,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
       await route.continue()
     })
 
-    await openPdp(page, "acrylic-award-plaque")
+    await openPdp(page, "oak-side-table")
     if (await pdpAtc(page).isDisabled()) {
       test.info().annotations.push({ type: "note", description: "ATC disabled" })
       return
@@ -132,7 +132,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
   })
 
   test("6. Customize link includes ?variant=", async ({ page }) => {
-    await openPdp(page, "champion-metal-cup")
+    await openPdp(page, "engraved-wooden-plaque")
     const href = await page.getByRole("link", { name: /customize this design/i }).getAttribute("href")
     if (!href?.includes("?variant=")) await shot(page, "fail-customize-missing-variant")
     expect(href).toMatch(/\/customize\/.+\?variant=[^&]+/)
@@ -154,7 +154,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
     await page.goto("/cart", { waitUntil: "domcontentloaded" })
     await expect(page.getByText(/your cart is empty/i).first()).toBeVisible({ timeout: 20_000 })
 
-    await openPdp(page, "handmade-ceramic-vase")
+    await openPdp(page, "brass-table-lamp")
     if (await pdpAtc(page).isDisabled()) {
       test.info().annotations.push({ type: "note", description: "ATC disabled" })
       return
@@ -169,7 +169,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
 
   test("9. Drawer stepper disabled while pending", async ({ page }) => {
     await clearCartStorage(page)
-    await openPdp(page, "teak-wall-shelf")
+    await openPdp(page, "halo-walnut-shelf")
     if (await pdpAtc(page).isDisabled()) {
       test.info().annotations.push({ type: "note", description: "ATC disabled" })
       return

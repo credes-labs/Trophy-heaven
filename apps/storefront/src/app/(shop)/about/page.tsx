@@ -1,128 +1,178 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
-import { Hammer, Landmark, Crosshair, Leaf } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
+import { EditorialCtaLink, EditorialTextLink } from "@/components/layout/editorial/editorial-cta"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
 
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Legacy Crafts is a Bangalore atelier crafting premium trophies, furniture, and artwork with Indian heritage craftsmanship.",
+    "Legacy is a Bangalore atelier crafting trophies, furniture, and artwork with Indian heritage craftsmanship.",
   alternates: { canonical: "/about" },
 }
 
-const VALUES = [
+const STATS = [
+  { value: "100%", caption: "Hand-finished before it leaves the workshop" },
+  { value: "40+", caption: "Guild artisans across timber, metal, and crystal" },
+  { value: "5k+", caption: "Honors and suites delivered across India" },
+] as const
+
+const DISCIPLINES = [
   {
-    icon: Hammer,
-    title: "Craft first",
-    description: "Every piece is shaped by hand — sanded, finished, and inspected before it leaves the workshop.",
+    title: "Trophies",
+    href: "/trophies",
+    image: "/images/hero/hero-workshop.jpg",
+    alt: "Workshop bench with timber and brass tools",
+    copy: "Brass, optical crystal, and seasoned timber for ceremonies that should last.",
   },
   {
-    icon: Landmark,
-    title: "Built to last",
-    description: "We design objects meant to be kept, gifted, and remembered — not discarded after a season.",
+    title: "Furniture",
+    href: "/furniture",
+    image: "/images/categories/cat-furniture.jpg",
+    alt: "Oak grain close-up",
+    copy: "Kiln-dried teak, oak, and walnut — pieces meant to be lived with, not replaced.",
   },
   {
-    icon: Crosshair,
-    title: "Precise form",
-    description: "Proportion, weight, and finish matter as much as material. Beauty without balance is incomplete.",
+    title: "Artwork",
+    href: "/artwork",
+    image: "/images/categories/cat-artwork.jpg",
+    alt: "Ceramic and brass still life",
+    copy: "Wall textiles, bronze, and studio ceramics chosen to quiet a room, not fill it.",
   },
-  {
-    icon: Leaf,
-    title: "Honest materials",
-    description: "Oak, walnut, brass, crystal — chosen for how they age, feel, and catch light over years of use.",
-  },
-]
+] as const
 
 export default function AboutPage() {
   return (
-    <div>
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-walnut via-furniture to-artwork-dark">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-30"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 15% 40%, oklch(0.72 0.10 80 / 0.35), transparent 40%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">Our story</p>
-          <h1 className="mt-3 max-w-2xl font-serif text-5xl font-semibold text-cream sm:text-6xl">
-            Legacy Crafts
-          </h1>
-          <p className="mt-5 max-w-xl text-lg text-walnut-foreground/80">
-            A Bangalore atelier where trophies, furniture, and artwork are made with patience —
-            for ceremonies, homes, and collections that deserve permanence.
+    <EditorialShell>
+      <section id="story" className="relative scroll-mt-[7rem] overflow-hidden border-b border-[#131111]/10">
+        <EditorialFrame className="pt-[clamp(2.5rem,6vw,5em)] pb-[clamp(2.5rem,6vw,5em)]">
+          <div className="grid items-center gap-[2.5em] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:min-h-[32em] lg:gap-16">
+            <div className="relative z-10 max-w-[32em]">
+              <EditorialWatermark>legacy</EditorialWatermark>
+              <EditorialEyebrow>What we do & about us</EditorialEyebrow>
+              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+                Crafted with intention. Built to last.
+              </h1>
+              <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]/70">
+                A Bangalore atelier where trophies, furniture, and artwork are made with patience —
+                for ceremonies, homes, and collections that deserve permanence.
+              </p>
+              <div className="mt-[2em]">
+                <EditorialTextLink href="/shop">Shop the collection →</EditorialTextLink>
+              </div>
+            </div>
+
+            <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
+              <Image
+                src="/images/about/about-legacy-atelier.jpg"
+                alt="Sculptural walnut sofa in a dark atelier"
+                fill
+                priority
+                sizes="(min-width: 1024px) 48em, 100vw"
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
+        </EditorialFrame>
+      </section>
+
+      <section className="border-b border-[#131111]/10">
+        <EditorialFrame className="pt-[clamp(2.5rem,5vw,4.25em)] pb-[clamp(2.5rem,5vw,4.25em)]">
+          <p className="m-0 font-outfit text-[clamp(0.875em,1.39vw,1.25em)] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+            //Legacy in numbers
           </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-          <div>
-            <h2 className="font-serif text-3xl font-semibold text-foreground">From workshop to stage</h2>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              Legacy Crafts began with a simple belief: recognition and living spaces deserve objects
-              with soul. We work with artisans across India — woodworkers, metal casters, crystal
-              cutters — to translate briefs into pieces that feel ceremonial without being loud.
-            </p>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              Whether you need a single desk award or a hundred custom trophies for a corporate
-              night, the same standards apply: clean silhouette, honest material, and a finish you
-              can feel with your eyes closed.
-            </p>
-          </div>
-          <div className="rounded-xl bg-muted/60 p-8 sm:p-10">
-            <h3 className="font-serif text-2xl font-semibold text-foreground">What we make</h3>
-            <ul className="mt-6 space-y-4 text-muted-foreground">
-              <li>
-                <span className="font-medium text-foreground">Trophies & awards</span> — metal,
-                crystal, and wood compositions for boards, sports, and milestones.
-              </li>
-              <li>
-                <span className="font-medium text-foreground">Furniture</span> — bespoke pieces with
-                warm timber and refined metal accents.
-              </li>
-              <li>
-                <span className="font-medium text-foreground">Artwork</span> — curated wall pieces
-                and sculptural accents for considered interiors.
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-champagne py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-center font-serif text-3xl font-semibold text-foreground">
-            What we stand for
-          </h2>
-          <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {VALUES.map(({ icon: Icon, title, description }) => (
-              <div key={title}>
-                <Icon className="h-10 w-10 text-gold" strokeWidth={1.25} aria-hidden />
-                <h3 className="mt-4 text-lg font-semibold text-foreground">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
+          <div className="mt-[2em] flex flex-wrap items-start justify-between gap-y-[1.25em] sm:flex-nowrap">
+            {STATS.map((stat, i) => (
+              <div key={stat.value} className="flex items-start">
+                {i > 0 ? (
+                  <span
+                    aria-hidden
+                    className="mx-[1.1em] hidden h-[6.375em] w-0 shrink-0 border-l-[0.125em] border-[#131111] lg:block"
+                    style={{ transform: "rotate(7deg)" }}
+                  />
+                ) : null}
+                <div className="flex w-[12em] flex-col gap-[0.375em]">
+                  <p className="m-0 font-outfit text-[clamp(2em,4.5vw,4.0625em)] leading-[1.1] font-normal tracking-[-0.03em] text-[#131111]">
+                    {stat.value}
+                  </p>
+                  <p className="m-0 font-outfit text-[0.875em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]">
+                    {stat.caption}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
-        </div>
+        </EditorialFrame>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-24">
-        <h2 className="font-serif text-3xl font-semibold text-foreground">Explore the collection</h2>
-        <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-          Browse trophies, furniture, and artwork — or start a custom brief with our team.
+      <section id="sustainability" className="scroll-mt-[7rem] border-b border-[#131111]/10">
+        <EditorialFrame className="pt-[clamp(2.5rem,5vw,4.25em)] pb-[clamp(2.5rem,5vw,4.25em)]">
+          <p className="m-0 font-outfit text-[clamp(0.875em,1.39vw,1.25em)] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+            //Materials
+          </p>
+          <div className="mt-[1.5em] grid grid-cols-1 gap-[2em] lg:grid-cols-12">
+            <h2 className="m-0 max-w-[12em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111] lg:col-span-5">
+              Built to last, not to replace
+            </h2>
+            <p className="m-0 max-w-[36em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70 lg:col-span-7">
+              Kiln-dried teak, oak, and walnut. Optical crystal and brass we can stand behind. Pieces
+              leave the workshop finished by hand so they can be lived with — not discarded next
+              season. Timber offcuts become samples; packing is sized to the piece, not the pallet.
+            </p>
+          </div>
+        </EditorialFrame>
+      </section>
+
+      <EditorialFrame>
+        <h2 className="m-0 max-w-[22em] font-outfit text-[clamp(1.75em,4vw,3.375em)] leading-[1.2] font-normal tracking-[-0.02em] text-[#131111]">
+          Three expressions of the same standard
+        </h2>
+        <div className="mt-[clamp(2em,4vw,3.75em)] grid grid-cols-1 gap-[2em] lg:grid-cols-3">
+          {DISCIPLINES.map((item) => (
+            <Link key={item.title} href={item.href} className="group block no-underline">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
+                <Image
+                  src={item.image}
+                  alt={item.alt}
+                  fill
+                  sizes="(min-width: 90rem) 27rem, 100vw"
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+              </div>
+              <h3 className="mt-[1em] m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+                {item.title}
+              </h3>
+              <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+                {item.copy}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </EditorialFrame>
+
+      <section className="relative mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3.5rem,8vw,7em)]">
+        <div className="relative aspect-[1360/664] w-full overflow-hidden rounded-[0.125em]">
+          <Image
+            src="/images/hero/hero-workshop.jpg"
+            alt="Artisan shaping timber in the atelier"
+            fill
+            sizes="(min-width: 90rem) 85rem, 100vw"
+            className="object-cover object-center"
+          />
+        </div>
+        <p className="pointer-events-none m-0 mt-[-0.2em] text-center font-outfit text-[clamp(1.85em,8.95vw,8.059em)] leading-[0.74] font-medium tracking-[-0.054em] text-[#131111]">
+          From workshop to stage
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/shop" className={cn(buttonVariants({ size: "lg" }))}>
-            Shop now
-          </Link>
-          <Link href="/contact" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
-            Talk to us
-          </Link>
+        <div className="mx-auto mt-[2em] flex max-w-[34em] flex-col items-center gap-[1.5em] text-center">
+          <p className="m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]">
+            Whether a single desk award or a hundred custom trophies, the same rules apply: clean
+            silhouette, honest material, and a finish you can feel with your eyes closed.
+          </p>
+          <EditorialCtaLink href="/contact">Commission a piece</EditorialCtaLink>
         </div>
       </section>
-    </div>
+    </EditorialShell>
   )
 }

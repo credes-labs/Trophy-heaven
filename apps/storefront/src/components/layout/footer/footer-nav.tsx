@@ -41,7 +41,7 @@ export function FooterNav() {
         <Link
           href="/"
           aria-label="Legacy home"
-          className="footer-wordmark block font-outfit text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
+          className="footer-wordmark relative z-0 inline-block max-w-full font-outfit text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
         >
           <span className="footer-wordmark-l">{FOOTER_WORDMARK.slice(0, 1)}</span>
           {FOOTER_WORDMARK.slice(1)}
@@ -55,7 +55,7 @@ export function FooterNav() {
         {FOOTER_NAV.map((column, index) => (
           <div
             key={column.title}
-            className={`lg:absolute lg:top-0 ${COLUMN_LEFT[index]}`}
+            className={`relative z-10 lg:absolute lg:top-0 ${COLUMN_LEFT[index]}`}
           >
             <NavColumn title={column.title} links={column.links} />
           </div>

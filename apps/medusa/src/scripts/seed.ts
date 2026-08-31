@@ -15,12 +15,23 @@ import {
 import { Modules, ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
 import type { CreateProductWorkflowInputDTO, ExecArgs } from "@medusajs/framework/types"
 import { generateSku } from "../lib/sku"
+import { homepageFurnitureProducts } from "./homepage-furniture"
 
 // Medusa's default local file provider won't serve the storefront assets, so in
 // dev we point product imagery at the storefront origin (see
 // apps/storefront/public/images/manifest.json).
 const STOREFRONT_URL = process.env.STOREFRONT_URL ?? "http://localhost:3000"
 const productImage = (file: string) => `${STOREFRONT_URL}/images/products/${file}`
+
+/** Soft-deleted on each seed so they do not return in admin / store. */
+const RETIRED_SAMPLE_HANDLES = new Set([
+  "crystal-star-award",
+  "champion-metal-cup",
+  "acrylic-award-plaque",
+  "walnut-dining-chair",
+  "teak-wall-shelf",
+  "handmade-ceramic-vase",
+])
 
 /**
  * Seeds the Legacy Crafts catalog: regions (India/INR + International/USD), the
@@ -293,17 +304,93 @@ export default async function seed({ container }: ExecArgs) {
     fields: ["id", "title", "handle"],
     pagination: { skip: 0, take: 500 },
   })
-  const bulkTrophyIds = existingProducts
-    .filter((p: { handle?: string | null }) => (p.handle ?? "").startsWith("catalog-trophy-"))
+  const retiredIds = existingProducts
+    .filter((p: { handle?: string | null }) => {
+      const handle = p.handle ?? ""
+      return handle.startsWith("catalog-trophy-") || RETIRED_SAMPLE_HANDLES.has(handle)
+    })
     .map((p: { id: string }) => p.id)
-  if (bulkTrophyIds.length) {
-    await deleteProductsWorkflow(container).run({ input: { ids: bulkTrophyIds } })
-    logger.info(`Removed ${bulkTrophyIds.length} bulk catalog-trophy products (kept the four samples).`)
+  if (retiredIds.length) {
+    const { data: retiredVariants } = await query.graph({
+      entity: "product_variant",
+      fields: ["id", "product_id"],
+      filters: { product_id: retiredIds },
+    })
+    const retiredVariantIds = (
+      retiredVariants as Array<{ id: string }>
+    ).map((variant) => variant.id)
+    const { data: invLinks } = retiredVariantIds.length
+      ? await query.graph({
+          entity: "product_variant_inventory_item",
+          fields: ["inventory_item_id", "variant_id"],
+          filters: { variant_id: retiredVariantIds },
+        })
+      : { data: [] }
+    const retiredInv = new Set(
+      (invLinks as Array<{ inventory_item_id: string }>).map(
+        (link) => link.inventory_item_id,
+      ),
+    )
+    const { data: reservations } = await query.graph({
+      entity: "reservation_item",
+      fields: ["id", "inventory_item_id"],
+    })
+    const reservationIds = (
+      reservations as Array<{ id: string; inventory_item_id: string }>
+    )
+      .filter((row) => retiredInv.has(row.inventory_item_id))
+      .map((row) => row.id)
+    if (reservationIds.length) {
+      const inventory = container.resolve(Modules.INVENTORY) as {
+        deleteReservationItems: (ids: string[]) => Promise<unknown>
+      }
+      await inventory.deleteReservationItems(reservationIds)
+      logger.info(`Cleared ${reservationIds.length} inventory reservation(s) on retired SKUs.`)
+    }
+    const { data: levels } = await query.graph({
+      entity: "inventory_level",
+      fields: ["id", "inventory_item_id", "location_id", "reserved_quantity"],
+    })
+    const inventory = container.resolve(Modules.INVENTORY) as {
+      updateInventoryLevels: (
+        updates: Array<{
+          id: string
+          inventory_item_id: string
+          location_id: string
+          reserved_quantity: number
+        }>,
+      ) => Promise<unknown>
+    }
+    const levelUpdates = (
+      levels as Array<{
+        id: string
+        inventory_item_id: string
+        location_id: string
+        reserved_quantity?: number
+      }>
+    )
+      .filter((level) => retiredInv.has(level.inventory_item_id) && (level.reserved_quantity ?? 0) > 0)
+      .map((level) => ({
+        id: level.id,
+        inventory_item_id: level.inventory_item_id,
+        location_id: level.location_id,
+        reserved_quantity: 0,
+      }))
+    if (levelUpdates.length) {
+      await inventory.updateInventoryLevels(levelUpdates)
+      logger.info(`Zeroed reserved quantity on ${levelUpdates.length} inventory level(s).`)
+    }
+    await deleteProductsWorkflow(container).run({ input: { ids: retiredIds } })
+    logger.info(`Removed ${retiredIds.length} retired catalog product(s).`)
   }
-  const productTitles = new Set(
-    existingProducts
-      .filter((p: { id: string }) => !bulkTrophyIds.includes(p.id))
-      .map((p: { title: string }) => p.title),
+  const liveProducts = existingProducts.filter(
+    (p: { id: string }) => !retiredIds.includes(p.id),
+  )
+  const productTitles = new Set(liveProducts.map((p: { title: string }) => p.title))
+  const productHandles = new Set(
+    liveProducts
+      .map((p: { handle?: string | null }) => p.handle)
+      .filter((handle: string | null | undefined): handle is string => Boolean(handle)),
   )
 
   const sizes = [
@@ -315,39 +402,6 @@ export default async function seed({ container }: ExecArgs) {
 
   const productsToCreate: CreateProductWorkflowInputDTO[] = []
 
-  if (!productTitles.has("Crystal Star Award")) {
-    productsToCreate.push({
-      title: "Crystal Star Award",
-      handle: "crystal-star-award",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Crystal"], categoryByName["Corporate"]].filter(Boolean),
-      description: "Fully customizable crystal star trophy with 2D + 3D preview.",
-      thumbnail: productImage("trophy-crystal-star.jpg"),
-      images: [{ url: productImage("trophy-crystal-star.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: {
-        customization_level: "full_3d",
-        material: "crystal",
-        occasion: "corporate",
-        shape: "star",
-      },
-      options: [
-        { title: "Size", values: sizes.map((s) => s.label) },
-        { title: "Material", values: ["Clear Crystal"] },
-      ],
-      variants: sizes.map((s) => ({
-        title: `Crystal Star — ${s.label}`,
-        sku: generateSku({ category: "Crystal", shape: "Star", material: "Crystal", size: s.token }),
-        options: { Size: s.label, Material: "Clear Crystal" },
-        prices: [
-          { amount: 2499, currency_code: "inr" },
-          { amount: 34.99, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
   if (!productTitles.has("Engraved Wooden Plaque")) {
     productsToCreate.push({
       title: "Engraved Wooden Plaque",
@@ -355,8 +409,8 @@ export default async function seed({ container }: ExecArgs) {
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Academic"]].filter(Boolean),
       description: "Text-engravable wooden plaque for academic awards.",
-      thumbnail: productImage("trophy-acrylic-plaque.jpg"),
-      images: [{ url: productImage("trophy-acrylic-plaque.jpg") }],
+      thumbnail: productImage("furniture-oak-table.jpg"),
+      images: [{ url: productImage("furniture-oak-table.jpg") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -401,145 +455,6 @@ export default async function seed({ container }: ExecArgs) {
         prices: [
           { amount: 12999, currency_code: "inr" },
           { amount: 17900, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  if (!productTitles.has("Champion Metal Cup")) {
-    productsToCreate.push({
-      title: "Champion Metal Cup",
-      handle: "champion-metal-cup",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Metal"], categoryByName["Sports"]].filter(Boolean),
-      description: "Brass-and-gold metal cup trophy with warm highlights — engravable plate included.",
-      thumbnail: productImage("trophy-metal-cup.jpg"),
-      images: [
-        { url: productImage("trophy-metal-cup.jpg") },
-        { url: productImage("trophy-crystal-star.jpg") },
-        { url: productImage("trophy-acrylic-plaque.jpg") },
-      ],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: {
-        customization_level: "text_only",
-        material: "brass",
-        occasion: "sports",
-        shape: "cup",
-      },
-      options: [{ title: "Size", values: [sizes[1].label, sizes[2].label, sizes[3].label] }],
-      variants: [sizes[1], sizes[2], sizes[3]].map((s) => ({
-        title: `Metal Cup — ${s.label}`,
-        sku: generateSku({ category: "Metal", shape: "Cup", material: "Brass", size: s.token }),
-        options: { Size: s.label },
-        prices: [
-          { amount: 1499, currency_code: "inr" },
-          { amount: 21.99, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  if (!productTitles.has("Acrylic Award Plaque")) {
-    productsToCreate.push({
-      title: "Acrylic Award Plaque",
-      handle: "acrylic-award-plaque",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Acrylic"], categoryByName["Corporate"]].filter(Boolean),
-      description: "Modern acrylic award plaque with subtle brass accents and custom engraving.",
-      thumbnail: productImage("trophy-acrylic-plaque.jpg"),
-      images: [{ url: productImage("trophy-acrylic-plaque.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: {
-        customization_level: "text_and_logo",
-        material: "acrylic",
-        occasion: "corporate",
-        shape: "plaque",
-      },
-      options: [{ title: "Size", values: [sizes[0].label, sizes[1].label, sizes[2].label] }],
-      variants: [sizes[0], sizes[1], sizes[2]].map((s) => ({
-        title: `Acrylic Plaque — ${s.label}`,
-        sku: generateSku({ category: "Acry", shape: "Plaque", material: "Acrylic", size: s.token }),
-        options: { Size: s.label },
-        prices: [
-          { amount: 599, currency_code: "inr" },
-          { amount: 8.99, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  if (!productTitles.has("Walnut Dining Chair")) {
-    productsToCreate.push({
-      title: "Walnut Dining Chair",
-      handle: "walnut-dining-chair",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Chairs"]].filter(Boolean),
-      description: "Walnut dining chair with refined joinery — built to outlive trends.",
-      thumbnail: productImage("furniture-walnut-chair.jpg"),
-      images: [{ url: productImage("furniture-walnut-chair.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: { customization_level: "none", material: "walnut" },
-      options: [{ title: "Finish", values: ["Natural", "Espresso"] }],
-      variants: ["Natural", "Espresso"].map((finish) => ({
-        title: `Walnut Dining Chair — ${finish}`,
-        sku: generateSku({ category: "Furn", shape: "Chair", material: "Walnut", size: finish }),
-        options: { Finish: finish },
-        prices: [
-          { amount: 8999, currency_code: "inr" },
-          { amount: 124, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  if (!productTitles.has("Teak Wall Shelf")) {
-    productsToCreate.push({
-      title: "Teak Wall Shelf",
-      handle: "teak-wall-shelf",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Shelves"]].filter(Boolean),
-      description: "Handcrafted teak wall shelf with a golden grain and invisible mounting.",
-      thumbnail: productImage("furniture-teak-shelf.jpg"),
-      images: [{ url: productImage("furniture-teak-shelf.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: { customization_level: "none", material: "teak" },
-      options: [{ title: "Length", values: ["60 cm", "90 cm"] }],
-      variants: ["60 cm", "90 cm"].map((length) => ({
-        title: `Teak Wall Shelf — ${length}`,
-        sku: generateSku({ category: "Furn", shape: "Shelf", material: "Teak", size: length }),
-        options: { Length: length },
-        prices: [
-          { amount: 4999, currency_code: "inr" },
-          { amount: 69, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  if (!productTitles.has("Handmade Ceramic Vase")) {
-    productsToCreate.push({
-      title: "Handmade Ceramic Vase",
-      handle: "handmade-ceramic-vase",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Vases"]].filter(Boolean),
-      description: "Hand-thrown ceramic vase with an artisan glaze — no two are alike.",
-      thumbnail: productImage("art-ceramic-vase.jpg"),
-      images: [{ url: productImage("art-ceramic-vase.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: { customization_level: "none", material: "ceramic" },
-      options: [{ title: "Size", values: ["Small", "Large"] }],
-      variants: ["Small", "Large"].map((size) => ({
-        title: `Ceramic Vase — ${size}`,
-        sku: generateSku({ category: "Deco", shape: "Vase", material: "Ceramic", size }),
-        options: { Size: size },
-        prices: [
-          { amount: 2499, currency_code: "inr" },
-          { amount: 34.99, currency_code: "usd" },
         ],
         manage_inventory: true,
       })),
@@ -596,6 +511,17 @@ export default async function seed({ container }: ExecArgs) {
     })
   }
 
+  const homepageFurniture = homepageFurnitureProducts({
+    salesChannelId: defaultSalesChannel.id,
+    categoryByName,
+    storefrontUrl: STOREFRONT_URL,
+  }).filter(
+    (product) =>
+      !productTitles.has(product.title) &&
+      !(product.handle && productHandles.has(product.handle)),
+  )
+  productsToCreate.push(...homepageFurniture)
+
   if (productsToCreate.length) {
     await createProductsWorkflow(container).run({ input: { products: productsToCreate } })
     logger.info(`Created ${productsToCreate.length} sample product(s).`)
@@ -605,14 +531,8 @@ export default async function seed({ container }: ExecArgs) {
 
   // ── Backfill imagery for products seeded before thumbnails were set ────────
   const imageByTitle: Record<string, string> = {
-    "Crystal Star Award": "trophy-crystal-star.jpg",
-    "Engraved Wooden Plaque": "trophy-acrylic-plaque.jpg",
+    "Engraved Wooden Plaque": "furniture-oak-table.jpg",
     "Oak Side Table": "furniture-oak-table.jpg",
-    "Champion Metal Cup": "trophy-metal-cup.jpg",
-    "Acrylic Award Plaque": "trophy-acrylic-plaque.jpg",
-    "Walnut Dining Chair": "furniture-walnut-chair.jpg",
-    "Teak Wall Shelf": "furniture-teak-shelf.jpg",
-    "Handmade Ceramic Vase": "art-ceramic-vase.jpg",
     "Brass Table Lamp": "art-brass-lamp.jpg",
     "Handwoven Wall Textile": "art-wall-textile.jpg",
   }
@@ -629,13 +549,8 @@ export default async function seed({ container }: ExecArgs) {
     logger.info(`Backfilled imagery for product: ${p.title}`)
   }
 
-  // ── Multi-image PDP gallery (Champion Metal Cup, Oak Side Table) ───────────
+  // ── Multi-image PDP gallery (Oak Side Table) ───────────
   const multiImageByTitle: Record<string, string[]> = {
-    "Champion Metal Cup": [
-      "trophy-metal-cup.jpg",
-      "trophy-crystal-star.jpg",
-      "trophy-acrylic-plaque.jpg",
-    ],
     "Oak Side Table": [
       "furniture-oak-table.jpg",
       "furniture-walnut-chair.jpg",

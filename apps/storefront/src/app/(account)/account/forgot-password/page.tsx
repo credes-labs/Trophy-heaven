@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { AuthAlert, AuthFrame } from "@/components/features/account/auth-frame"
+import {
+  EditorialCtaButton,
+  EditorialTextLink,
+  editorialFieldClass,
+  editorialLabelClass,
+} from "@/components/layout/editorial/editorial-cta"
 import { medusa } from "@/lib/medusa"
-import { Logo } from "@/components/layout/logo"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
@@ -31,61 +33,47 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="relative flex min-h-[70vh] items-center justify-center px-4 py-16">
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_oklch(0.72_0.10_80_/_0.12),_transparent_55%)]"
-        aria-hidden
-      />
-      <Card className="relative w-full max-w-md border-gold/20 shadow-lg" variant="elevated">
-        <CardHeader className="items-center text-center">
-          <Logo />
-          <CardTitle className="mt-4 font-serif text-2xl">Reset your password</CardTitle>
-          <CardDescription>
-            We will email you a secure link to set a new password.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {sent ? (
-            <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">
-              If an account exists for that email, a reset link is on its way. The link
-              expires shortly — check your inbox and spam folder.
-            </p>
-          ) : (
-            <>
-              {error && (
-                <p className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
-              )}
-              <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
-                <Input
-                  name="email"
-                  type="email"
-                  required
-                  label="Email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                />
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  loading={loading}
-                  className="w-full"
-                  variant="accent"
-                >
-                  Send reset link
-                </Button>
-              </form>
-            </>
-          )}
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Remembered it?{" "}
-            <Link href="/account/login" className="font-medium text-accent hover:underline">
-              Back to sign in
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    <AuthFrame
+      watermark="reset"
+      eyebrow="Account"
+      title="Reset your password"
+      lede="We will email a secure link to set a new password."
+    >
+      {sent ? (
+        <AuthAlert tone="ok">
+          If an account exists for that email, a reset link is on its way. The link expires shortly —
+          check your inbox and spam folder.
+        </AuthAlert>
+      ) : (
+        <>
+          {error ? <AuthAlert>{error}</AuthAlert> : null}
+          <form onSubmit={(e) => void onSubmit(e)} className="space-y-[1.75em]">
+            <div>
+              <label htmlFor="forgot-email" className={editorialLabelClass}>
+                Email
+              </label>
+              <input
+                id="forgot-email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@studio.in"
+                className={editorialFieldClass}
+              />
+            </div>
+            <EditorialCtaButton disabled={loading}>
+              {loading ? "Sending" : "Send reset link"}
+            </EditorialCtaButton>
+          </form>
+        </>
+      )}
+      <p className="mt-[2em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+        Remembered it?{" "}
+        <EditorialTextLink href="/account/login" className="text-[1em]">
+          Back to sign in
+        </EditorialTextLink>
+      </p>
+    </AuthFrame>
   )
 }

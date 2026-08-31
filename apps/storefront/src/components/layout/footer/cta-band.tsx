@@ -27,7 +27,7 @@ export function CtaBand() {
         </div>
       </div>
 
-      <div className="lg:absolute lg:inset-x-0 lg:top-[15.875em] lg:h-[20em]">
+      <div className="pointer-events-none lg:absolute lg:inset-x-0 lg:top-[15.875em] lg:h-[20em]">
         <PolaroidStrip />
       </div>
     </section>

@@ -1,6 +1,9 @@
+"use client"
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
+import { PasswordRevealToggle } from "@/components/ui/password-field"
 
 const inputVariants = cva(
   "flex w-full rounded-md border bg-transparent px-3 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
@@ -27,6 +30,8 @@ export interface InputProps
   ref?: React.Ref<HTMLInputElement>
   label?: string
   error?: string
+  /** Show a toggle to reveal a password field. */
+  reveal?: boolean
 }
 
 export function Input({
@@ -37,10 +42,14 @@ export function Input({
   error,
   id,
   ref,
+  reveal,
+  type,
   ...props
 }: InputProps) {
   const inputId = id || React.useId()
   const resolvedVariant = error ? "error" : variant
+  const [visible, setVisible] = React.useState(false)
+  const resolvedType = reveal ? (visible ? "text" : "password") : type
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -49,15 +58,28 @@ export function Input({
           {label}
         </label>
       )}
-      <input
-        ref={ref}
-        id={inputId}
-        data-variant={resolvedVariant}
-        aria-invalid={resolvedVariant === "error" || undefined}
-        aria-describedby={error ? `${inputId}-error` : undefined}
-        className={cn(inputVariants({ variant: resolvedVariant, inputSize, className }))}
-        {...props}
-      />
+      <div className={reveal ? "relative" : undefined}>
+        <input
+          ref={ref}
+          id={inputId}
+          type={resolvedType}
+          data-variant={resolvedVariant}
+          aria-invalid={resolvedVariant === "error" || undefined}
+          aria-describedby={error ? `${inputId}-error` : undefined}
+          className={cn(
+            inputVariants({ variant: resolvedVariant, inputSize, className }),
+            reveal && "pr-10"
+          )}
+          {...props}
+        />
+        {reveal ? (
+          <PasswordRevealToggle
+            visible={visible}
+            onToggle={() => setVisible((v) => !v)}
+            className="absolute inset-y-0 right-0 w-10 text-muted-foreground hover:text-foreground"
+          />
+        ) : null}
+      </div>
       {error && (
         <p id={`${inputId}-error`} className="text-xs text-destructive" role="alert">
           {error}

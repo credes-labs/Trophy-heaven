@@ -15,20 +15,20 @@ export const FOOTER_NAV = [
     title: "Shop",
     links: [
       { label: "Collection", href: "/shop" },
-      { label: "New Arrivals", href: "/shop?sort=created_at" },
-      { label: "Best Sellers", href: "/shop" },
-      { label: "Categories", href: "/#products" },
-      { label: "Gift Cards", href: "/shop" },
+      { label: "New Arrivals", href: "/shop?sort=newest" },
+      { label: "Trophies", href: "/trophies" },
+      { label: "Furniture", href: "/furniture" },
+      { label: "Artwork", href: "/artwork" },
     ],
   },
   {
     title: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Our Story", href: "/about" },
-      { label: "Sustainability", href: "/about" },
-      { label: "Careers", href: "/about" },
-      { label: "Press", href: "/blog" },
+      { label: "Our Story", href: "/about#story" },
+      { label: "Sustainability", href: "/about#sustainability" },
+      { label: "Journal", href: "/blog" },
+      { label: "Corporate", href: "/corporate" },
     ],
   },
   {
@@ -36,9 +36,9 @@ export const FOOTER_NAV = [
     links: [
       { label: "Contact Us", href: "/contact" },
       { label: "FAQs", href: "/faq" },
-      { label: "Shipping & Delivery", href: "/shipping-returns" },
-      { label: "Returns & Exchanges", href: "/shipping-returns" },
+      { label: "Shipping & Returns", href: "/shipping-returns" },
       { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
     ],
   },
 ] as const

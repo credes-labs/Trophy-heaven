@@ -3,6 +3,10 @@
 import { create } from "zustand"
 import { medusa } from "@/lib/medusa"
 import type { HttpTypes } from "@medusajs/types"
+import {
+  httpStatusFromError,
+  shouldClearSessionOnRetrieveFailure,
+} from "@/lib/auth-session"
 import { useCartStore } from "@/stores/cart-store"
 
 type AuthState = {
@@ -20,17 +24,22 @@ type AuthState = {
   logout: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   customer: null,
   loading: false,
 
   loadCustomer: async () => {
-    set({ loading: true })
+    const existing = get().customer
+    if (!existing) set({ loading: true })
     try {
       const { customer } = await medusa.store.customer.retrieve()
       set({ customer })
-    } catch {
-      set({ customer: null })
+    } catch (err) {
+      if (
+        shouldClearSessionOnRetrieveFailure(Boolean(get().customer), httpStatusFromError(err))
+      ) {
+        set({ customer: null })
+      }
     } finally {
       set({ loading: false })
     }

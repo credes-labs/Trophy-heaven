@@ -1,10 +1,8 @@
 import type { Metadata } from "next"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
+import { EditorialTextLink } from "@/components/layout/editorial/editorial-cta"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -12,64 +10,104 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
 }
 
-// NOTE: brand-voiced final copy, but not a substitute for legal advice —
-// have counsel review against the DPDP Act 2023 before production launch.
 const SECTIONS = [
   {
+    id: "collection",
     title: "Information we collect",
-    body: "We collect the details you give us when you shop with Legacy Crafts: your name, email address, phone number, shipping and billing addresses, and order history. If you use our customization studio, we also store the designs, artwork, and engraving text you upload or create. When you contact us, we keep those messages so we can help you. Payment card and UPI details are processed directly by Razorpay, our payment partner — we never see or store your full card number on our servers.",
+    body: "We collect the details you give us when you shop: name, email, phone, shipping and billing addresses, and order history. Customization stores designs, artwork, and engraving text you create. Payment card and UPI details are processed by Razorpay — we never store your full card number.",
   },
   {
+    id: "use",
     title: "How we use information",
-    body: "We use your information to process and deliver orders, produce GST invoices, provide customer support, and send transactional updates about your orders by email and SMS. With your consent, we may also send you stories, product launches, and offers from The Legacy Journal — every marketing message includes an unsubscribe link. We use aggregated, de-identified browsing data to understand how the store is used and to improve it. We do not sell your personal information to anyone.",
+    body: "We use your information to process and deliver orders, produce GST invoices, provide support, and send transactional updates. With your consent we may send The Legacy Journal — every marketing message includes an unsubscribe link. We do not sell personal information.",
   },
   {
+    id: "cookies",
     title: "Cookies & analytics",
-    body: "We use essential cookies to keep your cart, session, and sign-in working. Where analytics cookies are enabled, they help us understand traffic patterns and improve the storefront; these are used in aggregate and not to profile you for third-party advertising. You can control or delete non-essential cookies through your browser settings — the store will continue to work with only essential cookies.",
+    body: "Essential cookies keep your cart, session, and sign-in working. Analytics, where enabled, are used in aggregate. You can control non-essential cookies in the browser — the store works with essential cookies only.",
   },
   {
+    id: "payments",
     title: "Payments",
-    body: "Online payments are processed by Razorpay over an encrypted connection. Razorpay handles your card, UPI, and netbanking credentials under its own PCI-DSS-compliant privacy practices. We receive only a payment confirmation, the amount, and the last few details needed to reconcile your order and issue refunds to the original payment method.",
+    body: "Online payments are processed by Razorpay over an encrypted connection. We receive a confirmation, the amount, and the details needed to reconcile your order and issue refunds.",
   },
   {
+    id: "sharing",
     title: "Sharing",
-    body: "We share personal data only with the service providers who help us operate: payment processing (Razorpay), courier and logistics partners (to deliver your order), email and messaging providers, and our accounting stack for GST invoicing and statutory filings. These providers may process data only on our instructions and for the services they provide to us. We may also disclose information where required by law, regulation, or a valid legal process.",
+    body: "We share data only with providers who operate the store: Razorpay, couriers, email, and accounting for GST. We may also disclose information where required by law.",
   },
   {
+    id: "retention",
     title: "Retention & security",
-    body: "Order and invoice records are retained for the periods required under Indian tax and company law; account and design data is kept while your account is active. We apply reasonable technical and organizational measures — encryption in transit, access controls, and least-privilege access — to protect personal data. No method of transmission or storage is completely secure, but we work hard to protect your information and will notify you of any breach that affects you, as required by law.",
+    body: "Order and invoice records are kept for the periods required under Indian tax law. Account and design data is kept while your account is active. Encryption in transit and access controls apply; no method of storage is perfectly secure.",
   },
   {
+    id: "rights",
     title: "Your rights",
-    body: "Under the Digital Personal Data Protection Act, 2023 and other applicable law, you may request access to, correction of, or erasure of your personal data, and you may withdraw consent for marketing at any time. To exercise these rights, write to privacy@legacycrafts.com or hello@legacycrafts.com. We will respond within a reasonable period and always within the timelines required by law.",
+    body: "Under the Digital Personal Data Protection Act, 2023 you may request access, correction, or erasure, and withdraw marketing consent. Write to privacy@legacycrafts.com or hello@legacycrafts.com.",
   },
   {
+    id: "contact",
     title: "Contact & grievance",
-    body: "Legacy Crafts, Indiranagar, Bangalore 560038, India. Email: hello@legacycrafts.com. Phone: +91 80 1234 5678. If you have a concern about how your data is handled, please write to us first — our grievance officer will acknowledge your concern and work with you to resolve it.",
+    body: "Legacy Crafts, Indiranagar, Bangalore 560038, India. Email: hello@legacycrafts.com. Phone: +91 80 1234 5678.",
   },
-]
+] as const
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">Legal</p>
-        <h1 className="mt-3 font-serif text-4xl font-semibold text-foreground">Privacy Policy</h1>
-        <p className="mt-3 text-sm text-muted-foreground">Last updated: 15 August 2026</p>
-        <p className="mt-4 text-muted-foreground">
-          Your trust matters to us. This policy explains what we collect, why, and the choices you
-          have — in plain language.
-        </p>
-      </header>
+    <EditorialShell>
+      <EditorialFrame>
+        <div className="relative max-w-[40em]">
+          <EditorialWatermark>legal</EditorialWatermark>
+          <EditorialEyebrow>Privacy</EditorialEyebrow>
+          <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+            Privacy policy
+          </h1>
+          <p className="mt-[1em] m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111]/55 uppercase">
+            Last updated 15 August 2026
+          </p>
+          <p className="mt-[1.25em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+            What we collect, why, and the choices you have — in plain language.
+          </p>
+        </div>
 
-      <Accordion type="single" defaultValue={["privacy-0"]} className="mt-10">
-        {SECTIONS.map((section, i) => (
-          <AccordionItem key={section.title} value={`privacy-${i}`}>
-            <AccordionTrigger className="text-left font-medium">{section.title}</AccordionTrigger>
-            <AccordionContent className="leading-relaxed">{section.body}</AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </div>
+        <div className="mt-[clamp(2.5em,5vw,4.5em)] grid grid-cols-1 gap-[4em] lg:grid-cols-12">
+          <div className="divide-y divide-[#CDCDCD] border-y border-[#CDCDCD] lg:col-span-8">
+            {SECTIONS.map((section, i) => (
+              <article key={section.id} id={section.id} className="scroll-mt-28 py-[2em]">
+                <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+                  {String(i + 1).padStart(2, "0")} / {section.title}
+                </h2>
+                <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.6] tracking-[-0.02em] text-[#131111]/70">
+                  {section.body}
+                </p>
+              </article>
+            ))}
+          </div>
+          <aside className="lg:col-span-4">
+            <nav aria-label="On this page" className="lg:sticky lg:top-28">
+              <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111] uppercase">
+                Contents
+              </p>
+              <ul className="mt-[1em] flex flex-col gap-[0.75em]">
+                {SECTIONS.map((s) => (
+                  <li key={s.id}>
+                    <a
+                      href={`#${s.id}`}
+                      className="font-outfit text-[1em] leading-[1.4] tracking-[-0.01em] text-[#131111]/70 no-underline hover:text-[#131111]"
+                    >
+                      {s.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-[2em]">
+                <EditorialTextLink href="/terms">Terms of service →</EditorialTextLink>
+              </div>
+            </nav>
+          </aside>
+        </div>
+      </EditorialFrame>
+    </EditorialShell>
   )
 }

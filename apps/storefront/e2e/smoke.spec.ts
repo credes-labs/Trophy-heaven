@@ -80,6 +80,11 @@ test.describe("storefront smoke", () => {
     }
     await expect(footer.getByRole("link", { name: "Collection", exact: true })).toBeVisible()
     await expect(footer.getByRole("link", { name: "About Us" })).toBeVisible()
+    await expect(footer.getByRole("link", { name: "Terms of Service" })).toHaveAttribute("href", "/terms")
+    await expect(footer.getByRole("link", { name: "New Arrivals" })).toHaveAttribute(
+      "href",
+      "/shop?sort=newest"
+    )
   })
 
   test("login and forgot-password pages render", async ({ page }) => {
