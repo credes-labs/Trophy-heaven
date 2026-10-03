@@ -19,16 +19,16 @@ const TROPHY_SUBCATEGORIES = [
   { label: "Sports Trophies", href: "/categories/trophies/sports" },
   { label: "Corporate Awards", href: "/categories/trophies/corporate" },
   { label: "Academic Awards", href: "/categories/trophies/academic" },
-  { label: "Custom Trophies", href: "/categories/trophies/custom" },
-  { label: "Medals & Plaques", href: "/categories/trophies/medals" },
+  { label: "Memorial", href: "/categories/trophies/memorial" },
+  { label: "Crystal", href: "/categories/trophies/crystal" },
 ]
 
 const FURNITURE_SUBCATEGORIES = [
   { label: "Tables", href: "/categories/furniture/tables" },
   { label: "Chairs", href: "/categories/furniture/chairs" },
-  { label: "Shelves & Storage", href: "/categories/furniture/shelves" },
-  { label: "Desks", href: "/categories/furniture/desks" },
-  { label: "Custom Furniture", href: "/categories/furniture/custom" },
+  { label: "Shelves", href: "/categories/furniture/shelves" },
+  { label: "Cabinets", href: "/categories/furniture/cabinets" },
+  { label: "Stools", href: "/categories/furniture/stools" },
 ]
 
 const FEATURED_PRODUCTS = [

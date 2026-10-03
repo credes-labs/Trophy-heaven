@@ -3,6 +3,15 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-03 — Vercel production hardening for revised storefront
+Canonical site URL + Medusa-down resilience so `/` renders on Vercel without localhost metadata. → L2 WP-35 · [L3/032](L3/032-vercel-production-hardening.md)
+
+## 2026-10-03 — Homepage becomes three-discipline Legacy Crafts + sitemap pages
+Homepage grew from 4 to 14 sections (INR, customizer-led), with copy deck and 14 new routes for browse-to-order. → L2 WP-34 · [L3/031](L3/031-homepage-sitemap.md)
+
+## 2026-10-03 — pnpm 10 allowlist for dependency install scripts
+Fresh installs skipped esbuild, SWC, and canvas postinstalls, so native binaries never built. `pnpm-workspace.yaml` now allows those builds. → L2 WP-33
+
 ## 2026-09-01 — Vercel storefront build compiles shared schemas first
 `next build` on Vercel failed because `@legacy-crafts/schemas` had no `dist/`. Storefront build now compiles that package first. → L2 WP-32 · [L3/030](L3/030-vercel-schemas-build.md)
 

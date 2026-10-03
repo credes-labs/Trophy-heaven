@@ -1,5 +1,6 @@
 import Image from "next/image"
 
+import { FilmWatermark } from "@/components/sections/_editorial"
 import { ABOUT_FILM_TITLE } from "./constants"
 
 function PlayGlyph() {
@@ -28,9 +29,7 @@ export function AboutFeature() {
           <PlayGlyph />
         </div>
       </div>
-      <p className="pointer-events-none absolute right-0 bottom-0 left-0 m-0 translate-y-[8%] text-center font-outfit text-[clamp(1.85em,8.95vw,8.059em)] leading-[0.74] font-medium tracking-[-0.054em] text-[#F2F1EF] lg:translate-y-[18%] lg:whitespace-nowrap">
-        {ABOUT_FILM_TITLE}
-      </p>
+      <FilmWatermark>{ABOUT_FILM_TITLE}</FilmWatermark>
     </div>
   )
 }

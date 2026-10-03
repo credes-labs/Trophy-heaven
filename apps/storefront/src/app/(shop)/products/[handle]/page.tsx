@@ -10,10 +10,11 @@ import { CATEGORIES, hrefForCategoryHandle, type CategoryKey } from "@/lib/categ
 import { getReviewSummary } from "@/lib/reviews"
 import { cheapestPricedVariant } from "@/lib/product-filters"
 import "./pdp.css"
+import { getSiteUrl } from "@/lib/site-url"
 
 export const revalidate = 300
 
-const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
+const BASE_URL = getSiteUrl()
 
 type Props = { params: Promise<{ handle: string }> }
 

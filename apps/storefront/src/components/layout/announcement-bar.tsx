@@ -2,12 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { X } from "lucide-react"
-
-const MESSAGES = [
-  "Free shipping on orders above ₹5,000",
-  "Handcrafted with love in India",
-  "Custom trophies in 7 days",
-]
+import { ANNOUNCEMENT_MESSAGES } from "@/lib/brand-facts"
 
 const STORAGE_KEY = "lc_announcement_dismissed"
 const ROTATE_INTERVAL = 4000
@@ -27,7 +22,7 @@ export function AnnouncementBar() {
     const timer = setInterval(() => {
       setIsTransitioning(true)
       setTimeout(() => {
-        setActiveIndex((prev) => (prev + 1) % MESSAGES.length)
+        setActiveIndex((prev) => (prev + 1) % ANNOUNCEMENT_MESSAGES.length)
         setIsTransitioning(false)
       }, 300)
     }, ROTATE_INTERVAL)
@@ -48,7 +43,7 @@ export function AnnouncementBar() {
           isTransitioning ? "opacity-0" : "opacity-100"
         }`}
       >
-        {MESSAGES[activeIndex]}
+        {ANNOUNCEMENT_MESSAGES[activeIndex]}
       </p>
       <button
         type="button"

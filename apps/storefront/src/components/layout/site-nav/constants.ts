@@ -24,33 +24,37 @@ const DEFAULT_DEPARTMENTS: SiteNavChild[] = [
 ]
 
 export const CATALOG_CHILDREN: SiteNavChild[] = [
-  { label: "Seating", href: "/shop?category=furniture" },
-  { label: "Storage", href: "/shop?category=furniture" },
-  { label: "Bedroom", href: "/shop?category=furniture" },
-  { label: "Outdoor", href: "/shop?category=furniture" },
-  { label: "Tables", href: "/shop?category=furniture" },
+  { label: "Chairs", href: "/shop?category=furniture&sub=chairs" },
+  { label: "Tables", href: "/shop?category=furniture&sub=tables" },
+  { label: "Shelves", href: "/shop?category=furniture&sub=shelves" },
+  { label: "Cabinets", href: "/shop?category=furniture&sub=cabinets" },
+  { label: "Stools", href: "/shop?category=furniture&sub=stools" },
   { label: "Trophies", href: "/trophies" },
   { label: "Furniture", href: "/furniture" },
   { label: "Artwork", href: "/artwork" },
+  { label: "Design studio", href: "/customize" },
 ]
 
 export const INFO_CHILDREN: SiteNavChild[] = [
   { label: "About us", href: "/about" },
   { label: "Our story", href: "/about#story" },
   { label: "Sustainability", href: "/about#sustainability" },
-  { label: "Careers", href: "/contact" },
+  { label: "Careers", href: "/careers" },
+  { label: "Trade", href: "/trade" },
 ]
 
 export const NEWS_CHILDREN: SiteNavChild[] = [
   { label: "Journal", href: "/blog" },
-  { label: "Press", href: "/blog" },
+  { label: "Press", href: "/press" },
 ]
 
 export const CONTACT_CHILDREN: SiteNavChild[] = [
   { label: "Contact us", href: "/contact" },
   { label: "FAQs", href: "/faq" },
+  { label: "Track order", href: "/track" },
   { label: "Shipping & delivery", href: "/shipping-returns" },
-  { label: "Returns & exchanges", href: "/shipping-returns" },
+  { label: "Returns & exchanges", href: "/returns" },
+  { label: "Guides", href: "/guides/care" },
   { label: "Privacy policy", href: "/privacy" },
   { label: "Terms of service", href: "/terms" },
 ]

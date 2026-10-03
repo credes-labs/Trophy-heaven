@@ -1,3 +1,12 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+# pnpm 10 skips dependency install scripts unless they are approved.
+allowBuilds:
+  "@medusajs/telemetry": true
+  "@swc/core": true
+  canvas: true
+  esbuild: true
+  msgpackr-extract: true
+  protobufjs: true

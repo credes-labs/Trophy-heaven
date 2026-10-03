@@ -11,15 +11,24 @@ let cachedRegions: HttpTypes.StoreRegion[] | null = null
 
 export async function listRegions(): Promise<HttpTypes.StoreRegion[]> {
   if (cachedRegions) return cachedRegions
-  const { regions } = await medusa.store.region.list()
-  cachedRegions = regions
-  return regions
+  try {
+    const { regions } = await medusa.store.region.list()
+    cachedRegions = regions
+    return regions
+  } catch {
+    // Vercel / CI builds have no Medusa; callers treat empty as "no region".
+    return []
+  }
 }
 
 export async function getRegion(countryCode = DEFAULT_COUNTRY): Promise<HttpTypes.StoreRegion | undefined> {
-  const regions = await listRegions()
-  const match = regions.find((r) =>
-    r.countries?.some((c) => c.iso_2?.toLowerCase() === countryCode.toLowerCase())
-  )
-  return match ?? regions[0]
+  try {
+    const regions = await listRegions()
+    const match = regions.find((r) =>
+      r.countries?.some((c) => c.iso_2?.toLowerCase() === countryCode.toLowerCase())
+    )
+    return match ?? regions[0]
+  } catch {
+    return undefined
+  }
 }

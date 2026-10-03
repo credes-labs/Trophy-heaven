@@ -10,6 +10,7 @@ import { MobileNav } from "@/components/layout/mobile-nav"
 import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
 import { SiteChrome } from "@/components/layout/site-chrome"
+import { getSiteUrl } from "@/lib/site-url"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,8 +34,10 @@ const outfit = Outfit({
   display: "swap",
 })
 
+const siteUrl = getSiteUrl()
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Legacy Crafts — Custom Trophies, Furniture & Home Decor",
     template: "Legacy Crafts | %s",
@@ -48,10 +51,11 @@ export const metadata: Metadata = {
     images: [{ url: "/images/hero/hero-workshop.jpg", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
+  robots: process.env.VERCEL_ENV === "preview" ? { index: false, follow: false } : undefined,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
+  const baseUrl = getSiteUrl()
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",

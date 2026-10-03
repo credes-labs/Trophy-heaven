@@ -20,6 +20,22 @@ real keys). Payments (Razorpay/Stripe), shipping (ShipRocket/Delhivery),
 notifications (Resend/MSG91), search (Meilisearch), and storage (R2) all activate
 only when their env vars are present, so partial configs degrade gracefully.
 
+### Vercel storefront (current)
+
+Root Directory: `apps/storefront`. Build/install come from `apps/storefront/vercel.json`.
+
+Set at least:
+
+| Variable | Example |
+|----------|---------|
+| `NEXT_PUBLIC_BASE_URL` | `https://legacy-crafts.vercel.app` |
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | Public Medusa URL (required for catalog/cart) |
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Store publishable key from Medusa |
+| `NEXT_PUBLIC_DEFAULT_REGION` | `in` |
+
+Without a public Medusa, marketing pages still render; catalog rails stay empty.
+When Medusa is live, add the Vercel origin to Medusa `STORE_CORS` and `AUTH_CORS`.
+
 ## Release steps
 
 1. `pnpm install --frozen-lockfile`

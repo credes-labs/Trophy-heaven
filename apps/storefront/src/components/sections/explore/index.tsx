@@ -14,9 +14,9 @@ import { ExploreHero } from "./explore-hero"
 import { ExploreToolbar } from "./explore-toolbar"
 
 function matchesPrice(amount: number, option: string) {
-  if (option === "Under $500") return amount < 500
-  if (option === "$500 – $1,000") return amount >= 500 && amount <= 1000
-  return amount > 1000
+  if (option === "Under ₹50,000") return amount < 50_000
+  if (option === "₹50,000 – ₹1,00,000") return amount >= 50_000 && amount <= 100_000
+  return amount > 100_000
 }
 
 function matchesRating(rating: number, option: string) {
@@ -29,6 +29,7 @@ export function ExploreSection() {
   const [sortOpen, setSortOpen] = useState(false)
   const [sort, setSort] = useState<ExploreSortId>("featured")
   const [selected, setSelected] = useState<Partial<Record<ExploreFilterId, string>>>({})
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   const products = useMemo(() => {
     const filtered = EXPLORE_PRODUCTS.filter((item) => {
@@ -46,6 +47,22 @@ export function ExploreSection() {
     if (sort === "rating") ordered.sort((a, b) => b.rating - a.rating)
     return ordered
   }, [selected, sort])
+
+  const filterProps = {
+    openId: openFilter,
+    selected,
+    onToggle: (id: ExploreFilterId) => setOpenFilter((current) => (current === id ? null : id)),
+    onSelect: (id: ExploreFilterId, value: string) => {
+      setSelected((current) => ({
+        ...current,
+        [id]: current[id] === value ? undefined : value,
+      }))
+    },
+    onClear: () => {
+      setSelected({})
+      setOpenFilter(null)
+    },
+  }
 
   return (
     <section
@@ -65,29 +82,43 @@ export function ExploreSection() {
             setSort(id)
             setSortOpen(false)
           }}
+          onOpenFilters={() => setSheetOpen(true)}
+          filterCount={Object.values(selected).filter(Boolean).length}
         />
 
         <div className="mt-[2.5em] flex flex-col gap-[2.5em] lg:flex-row lg:items-start lg:gap-[3.25em]">
-          <ExploreFilters
-            openId={openFilter}
-            selected={selected}
-            onToggle={(id) => setOpenFilter((current) => (current === id ? null : id))}
-            onSelect={(id, value) => {
-              setSelected((current) => ({
-                ...current,
-                [id]: current[id] === value ? undefined : value,
-              }))
-            }}
-            onClear={() => {
-              setSelected({})
-              setOpenFilter(null)
-            }}
-          />
+          <div className="hidden lg:block">
+            <ExploreFilters {...filterProps} />
+          </div>
           <div className="min-w-0 flex-1">
             <ExploreGrid products={products} />
           </div>
         </div>
       </div>
+
+      {sheetOpen ? (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filters">
+          <button
+            type="button"
+            className="absolute inset-0 border-0 bg-[#131111]/40"
+            aria-label="Close filters"
+            onClick={() => setSheetOpen(false)}
+          />
+          <div className="absolute inset-x-0 bottom-0 max-h-[85svh] overflow-y-auto rounded-t-[1em] bg-[#F2F1EF] px-[1.25em] pt-[1em] pb-[max(1.5em,env(safe-area-inset-bottom))]">
+            <div className="mb-[1em] flex items-center justify-between">
+              <p className="m-0 font-outfit text-[1.25em] uppercase tracking-wide">Filters</p>
+              <button
+                type="button"
+                className="min-h-11 border-0 bg-transparent px-2 font-outfit text-[1em] uppercase"
+                onClick={() => setSheetOpen(false)}
+              >
+                Done
+              </button>
+            </div>
+            <ExploreFilters {...filterProps} />
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

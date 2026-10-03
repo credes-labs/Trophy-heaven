@@ -4,6 +4,15 @@ A paragraph per work package: what, why, key files, verification. Deep detail in
 linked L3 files. Newest first; anchor IDs (WP-NN) are stable — reference them from L1
 and L3.
 
+## WP-35 — Vercel production hardening (2026-10-03)
+**What:** Added `getSiteUrl()` (Vercel URL fallbacks), hardened catalog/region fetches against a missing Medusa, and set monorepo `installCommand` in `vercel.json`. **Why:** Live `legacy-crafts.vercel.app` 404'd `/` with localhost OG/JSON-LD; uncommitted homepage rewrite needed a safe production ship. **Files:** `lib/site-url.ts`, `lib/data/catalog.ts`, `lib/regions.ts`, `layout.tsx`, `vercel.json`. **Verified:** storefront typecheck. → [L3/032](L3/032-vercel-production-hardening.md)
+
+## WP-34 — Homepage sections, copy deck, and sitemap (2026-10-03)
+**What:** Rewrote `/` as Legacy Crafts three-discipline (INR, customizer-led) with 14 sections; added `brand-facts.ts`, editorial primitives, copy deck, and scaffolded `/customize`, `/corporate/quote`, `/track`, `/returns`, `/gift-cards`, `/press`, `/careers`, `/trade`, `/guides/*`, `/sitemap`, `/shared/design/[id]`, plus not-found/error/loading/OG. **Why:** Homepage sold furniture-only USD "Legacy" and omitted the kit differentiator; many linked routes 404'd. **Files:** `app/page.tsx`, `sections/*`, `lib/brand-facts.ts`, `docs/content/homepage-copy.md`, new `(shop)/*` pages. **Verified:** storefront typecheck, lint, 64 unit tests, production build (50 routes). → [L3/031](L3/031-homepage-sitemap.md)
+
+## WP-33 — pnpm 10 dependency build allowlist (2026-10-03)
+**What:** `pnpm-workspace.yaml` sets `allowBuilds` for `@medusajs/telemetry`, `@swc/core`, `canvas`, `esbuild`, `msgpackr-extract`, and `protobufjs`. **Why:** pnpm 10 ignores dependency lifecycle scripts unless approved, so a fresh `pnpm install` left esbuild and SWC without their native binaries. **Files:** `pnpm-workspace.yaml`. **Verified:** `pnpm install` ran those postinstall scripts to completion.
+
 ## WP-32 — Vercel schemas prebuild (2026-09-01)
 **What:** Storefront `build` runs `pnpm --filter @legacy-crafts/schemas build` before `next build`; `apps/storefront/vercel.json` sets the same command. **Why:** Vercel Root Directory is `apps/storefront`, so `pnpm run build` skipped the workspace `schemas:build` step and TypeScript could not resolve `@legacy-crafts/schemas`. **Files:** `apps/storefront/package.json`, `apps/storefront/vercel.json`. **Verified:** storefront typecheck after schemas build. → [L3/030](L3/030-vercel-schemas-build.md)
 

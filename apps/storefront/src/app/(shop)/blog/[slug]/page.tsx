@@ -19,10 +19,11 @@ import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebro
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { EditorialTextLink } from "@/components/layout/editorial/editorial-cta"
 import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
+import { getSiteUrl } from "@/lib/site-url"
 
 export const revalidate = 120
 
-const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
+const BASE_URL = getSiteUrl()
 
 type Props = { params: Promise<{ slug: string }> }
 

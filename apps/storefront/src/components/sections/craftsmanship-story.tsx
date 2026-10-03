@@ -6,12 +6,9 @@ import { motion } from "motion/react"
 import { buttonVariants } from "@/components/ui/button"
 import { fadeUp, slideInRight, staggerContainer } from "@/lib/animations"
 import { cn } from "@/lib/utils"
+import { BRAND, BRAND_STATS } from "@/lib/brand-facts"
 
-const STATS = [
-  { value: "15+", label: "Years" },
-  { value: "500+", label: "Products" },
-  { value: "10,000+", label: "Customers" },
-]
+const STATS = BRAND_STATS.map((s) => ({ value: s.value, label: s.caption }))
 
 export function CraftsmanshipStory() {
   return (
@@ -37,7 +34,7 @@ export function CraftsmanshipStory() {
             Where Tradition Meets Modern Design
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-5 text-base text-muted-foreground">
-            For over a decade, Legacy Crafts has partnered with artisans across India to create
+            Since {BRAND.foundedYear}, {BRAND.name} has partnered with artisans across India to create
             objects of lasting beauty — trophies that celebrate achievement, furniture that anchors
             a home, and artwork that tells a story.
           </motion.p>

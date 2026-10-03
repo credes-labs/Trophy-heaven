@@ -44,14 +44,18 @@ export async function getProductByHandle(
   handle: string,
   countryCode?: string
 ): Promise<HttpTypes.StoreProduct | null> {
-  const region = await getRegion(countryCode)
-  const { products } = await medusa.store.product.list({
-    handle,
-    region_id: region?.id,
-    fields: PRODUCT_FIELDS,
-    limit: 1,
-  })
-  return products[0] ?? null
+  try {
+    const region = await getRegion(countryCode)
+    const { products } = await medusa.store.product.list({
+      handle,
+      region_id: region?.id,
+      fields: PRODUCT_FIELDS,
+      limit: 1,
+    })
+    return products[0] ?? null
+  } catch {
+    return null
+  }
 }
 
 /** Fetch a single product by id (used by the customization engine routes). */
@@ -76,40 +80,56 @@ export async function countProductsByCategory(
   categoryIdsByKey: Record<string, string[]>,
   countryCode?: string
 ): Promise<Record<string, number>> {
-  const region = await getRegion(countryCode)
-  const entries = await Promise.all(
-    Object.entries(categoryIdsByKey).map(async ([key, ids]) => {
-      if (!ids.length) return [key, 0] as const
-      const { count } = await medusa.store.product.list({
-        category_id: ids,
-        region_id: region?.id,
-        fields: "id",
-        limit: 1,
+  try {
+    const region = await getRegion(countryCode)
+    const entries = await Promise.all(
+      Object.entries(categoryIdsByKey).map(async ([key, ids]) => {
+        if (!ids.length) return [key, 0] as const
+        try {
+          const { count } = await medusa.store.product.list({
+            category_id: ids,
+            region_id: region?.id,
+            fields: "id",
+            limit: 1,
+          })
+          return [key, count] as const
+        } catch {
+          return [key, 0] as const
+        }
       })
-      return [key, count] as const
-    })
-  )
-  return Object.fromEntries(entries)
+    )
+    return Object.fromEntries(entries)
+  } catch {
+    return Object.fromEntries(Object.keys(categoryIdsByKey).map((key) => [key, 0]))
+  }
 }
 
 /** Category tree for navigation + category pages. */
 export async function listCategories(): Promise<HttpTypes.StoreProductCategory[]> {
-  const { product_categories } = await medusa.store.category.list({
-    fields: "id,name,handle,parent_category_id,*category_children",
-    limit: 100,
-  })
-  return product_categories
+  try {
+    const { product_categories } = await medusa.store.category.list({
+      fields: "id,name,handle,parent_category_id,*category_children",
+      limit: 100,
+    })
+    return product_categories
+  } catch {
+    return []
+  }
 }
 
 export async function getCategoryByHandle(
   handle: string
 ): Promise<HttpTypes.StoreProductCategory | null> {
-  const { product_categories } = await medusa.store.category.list({
-    handle,
-    fields: "id,name,handle,description,parent_category_id,*category_children",
-    limit: 1,
-  })
-  return product_categories[0] ?? null
+  try {
+    const { product_categories } = await medusa.store.category.list({
+      handle,
+      fields: "id,name,handle,description,parent_category_id,*category_children",
+      limit: 1,
+    })
+    return product_categories[0] ?? null
+  } catch {
+    return null
+  }
 }
 
 /** Collect a category id plus all direct children (for parent PLPs). */

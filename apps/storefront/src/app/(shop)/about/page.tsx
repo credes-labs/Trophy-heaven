@@ -5,19 +5,16 @@ import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebro
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { EditorialCtaLink, EditorialTextLink } from "@/components/layout/editorial/editorial-cta"
 import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
+import { BRAND, BRAND_STATS } from "@/lib/brand-facts"
 
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Legacy is a Bangalore atelier crafting trophies, furniture, and artwork with Indian heritage craftsmanship.",
+    "Legacy Crafts is a Bengaluru atelier crafting trophies, furniture, and artwork with Indian heritage craftsmanship.",
   alternates: { canonical: "/about" },
 }
 
-const STATS = [
-  { value: "100%", caption: "Hand-finished before it leaves the workshop" },
-  { value: "40+", caption: "Guild artisans across timber, metal, and crystal" },
-  { value: "5k+", caption: "Honors and suites delivered across India" },
-] as const
+const STATS = BRAND_STATS
 
 const DISCIPLINES = [
   {
@@ -56,7 +53,7 @@ export default function AboutPage() {
                 Crafted with intention. Built to last.
               </h1>
               <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]/70">
-                A Bangalore atelier where trophies, furniture, and artwork are made with patience —
+                A {BRAND.city} atelier where trophies, furniture, and artwork are made with patience —
                 for ceremonies, homes, and collections that deserve permanence.
               </p>
               <div className="mt-[2em]">

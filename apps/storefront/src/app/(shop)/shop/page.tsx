@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { getSiteUrl } from "@/lib/site-url"
 import { Suspense } from "react"
 import {
   countProductsByCategory,
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/shop" },
 }
 
-const BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
+const BASE_URL = getSiteUrl()
 
 async function resolveShopCategories(): Promise<ShopCategoryOption[]> {
   const all = await listCategories().catch(() => [])

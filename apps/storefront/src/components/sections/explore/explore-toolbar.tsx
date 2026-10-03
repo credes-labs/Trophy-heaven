@@ -12,29 +12,43 @@ type Props = {
   sortOpen: boolean
   onToggleSort: () => void
   onSort: (id: ExploreSortId) => void
+  onOpenFilters?: () => void
+  filterCount?: number
 }
 
-export function ExploreToolbar({ sort, sortOpen, onToggleSort, onSort }: Props) {
+export function ExploreToolbar({
+  sort,
+  sortOpen,
+  onToggleSort,
+  onSort,
+  onOpenFilters,
+  filterCount = 0,
+}: Props) {
   const active = EXPLORE_SORTS.find((item) => item.id === sort)
 
   return (
     <div className="mt-[2.6875em] flex items-center justify-between gap-4">
-      <p className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+      <button
+        type="button"
+        className="m-0 min-h-11 cursor-pointer border-0 bg-transparent p-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase lg:pointer-events-none"
+        onClick={onOpenFilters}
+      >
         {EXPLORE_FILTER_LABEL}
-      </p>
+        {filterCount > 0 ? ` (${filterCount})` : ""}
+      </button>
 
       <div className="relative">
         <button
           type="button"
           aria-expanded={sortOpen}
           aria-haspopup="listbox"
-          className="flex cursor-pointer items-center gap-[0.75em] border-0 bg-transparent p-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase"
+          className="flex min-h-11 cursor-pointer items-center gap-[0.75em] border-0 bg-transparent p-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase"
           onClick={onToggleSort}
         >
           {EXPLORE_SORT_LABEL}
           <ChevronDown
             aria-hidden
-            className={`size-[1.75em] text-[#9C9C9C] transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`}
+            className={`size-[1.75em] text-[#9C9C9C] transition-transform duration-300 motion-reduce:transition-none ${sortOpen ? "rotate-180" : ""}`}
             strokeWidth={1.5}
           />
         </button>

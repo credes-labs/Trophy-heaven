@@ -45,6 +45,8 @@ that matches how much you need to know.
 | 028 | [Homepage cards to Medusa PDPs](L3/028-homepage-pdp-links.md) | WP-30 |
 | 029 | [Retire leftover sample SKUs](L3/029-retire-sample-skus.md) | WP-31 |
 | 030 | [Vercel schemas prebuild](L3/030-vercel-schemas-build.md) | WP-32 |
+| 031 | [Homepage sections, copy deck, and sitemap](L3/031-homepage-sitemap.md) | WP-34 |
+| 032 | [Vercel production hardening](L3/032-vercel-production-hardening.md) | WP-35 |
 
 
 

@@ -4,8 +4,8 @@ import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
 /**
- * The Figma home hero includes its own overlay nav, so the global announcement
- * bar and sticky header stay off `/` to avoid a double chrome.
+ * Homepage keeps its own overlay nav in the hero, so the sticky header stays
+ * off `/`. The announcement bar is shown on every route including home.
  */
 export function SiteChrome({
   announcement,
@@ -15,12 +15,12 @@ export function SiteChrome({
   header: ReactNode
 }) {
   const pathname = usePathname()
-  if (pathname === "/") return null
+  const isHome = pathname === "/"
 
   return (
     <>
       {announcement}
-      {header}
+      {isHome ? null : header}
     </>
   )
 }

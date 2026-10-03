@@ -1,11 +1,11 @@
 /** Figma CTA & Footer copy. Sizes live as em on the footer so they scale. */
 
-export const FOOTER_HEADLINE = "Bring Bold Design Into Your Home"
+export const FOOTER_HEADLINE = "Begin with a single piece."
 
 export const FOOTER_BODY =
-  "Legacy’s furniture inspires and transforms your living space. Curate your dream space today."
+  "A trophy for Friday's ceremony, or a table you will still own in 2050. Both start the same way."
 
-export const FOOTER_CTA_LABEL = "Shop the Collection"
+export const FOOTER_CTA_LABEL = "Shop the collection"
 export const FOOTER_CTA_HREF = "/shop"
 
 export const FOOTER_WORDMARK = "legacy"
@@ -19,6 +19,7 @@ export const FOOTER_NAV = [
       { label: "Trophies", href: "/trophies" },
       { label: "Furniture", href: "/furniture" },
       { label: "Artwork", href: "/artwork" },
+      { label: "Design studio", href: "/customize" },
     ],
   },
   {
@@ -28,7 +29,10 @@ export const FOOTER_NAV = [
       { label: "Our Story", href: "/about#story" },
       { label: "Sustainability", href: "/about#sustainability" },
       { label: "Journal", href: "/blog" },
+      { label: "Press", href: "/press" },
+      { label: "Careers", href: "/careers" },
       { label: "Corporate", href: "/corporate" },
+      { label: "Trade", href: "/trade" },
     ],
   },
   {
@@ -36,7 +40,12 @@ export const FOOTER_NAV = [
     links: [
       { label: "Contact Us", href: "/contact" },
       { label: "FAQs", href: "/faq" },
+      { label: "Track order", href: "/track" },
       { label: "Shipping & Returns", href: "/shipping-returns" },
+      { label: "Start a return", href: "/returns" },
+      { label: "Guides", href: "/guides/care" },
+      { label: "Gift cards", href: "/gift-cards" },
+      { label: "Sitemap", href: "/sitemap" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
     ],

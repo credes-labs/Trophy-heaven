@@ -1,16 +1,20 @@
-import Link from "next/link"
+import { PillCta } from "@/components/sections/_editorial"
+import { HERO_CTA, HERO_CTA_HREF, HERO_CTA_SECONDARY, HERO_CTA_SECONDARY_HREF } from "./constants"
 
-import { HERO_CTA } from "./constants"
-
-/** Pill CTA — Frame 2147239202. Sits bottom-right, separate from the copy. */
+/** Dual CTAs — primary design studio, secondary shop. Full-width on mobile. */
 export function HeroCta() {
   return (
-    <Link
-      href="/shop"
-      className="inline-flex h-[52px] shrink-0 items-center justify-center gap-3 rounded-full bg-white py-4 pr-[26px] pl-6 font-outfit text-[16px] leading-5 font-normal tracking-wide text-[#131111] uppercase transition-opacity hover:opacity-90"
-    >
-      <span className="size-2 shrink-0 rounded-full bg-[#131111]" aria-hidden />
-      {HERO_CTA}
-    </Link>
+    <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+      <PillCta href={HERO_CTA_SECONDARY_HREF} variant="light">
+        {HERO_CTA_SECONDARY}
+      </PillCta>
+      <PillCta
+        href={HERO_CTA_HREF}
+        variant="light"
+        className="bg-transparent text-[#FCFBF8] ring-1 ring-[#FCFBF8]/40 hover:bg-white/10 [&_span]:bg-[#FCFBF8]"
+      >
+        {HERO_CTA}
+      </PillCta>
+    </div>
   )
 }

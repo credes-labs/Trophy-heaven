@@ -15,7 +15,7 @@ export function ShareButtons({
   className?: string
 }) {
   const [copied, setCopied] = useState(false)
-  const base = (process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
+  const base = (typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000").replace(/\/$/, "")
   const href = `${base}${path ?? `/blog/${slug}`}`
   const encodedUrl = encodeURIComponent(href)
   const encodedTitle = encodeURIComponent(title)
