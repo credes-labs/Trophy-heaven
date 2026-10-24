@@ -26,31 +26,31 @@ export function OrderSummary({
 
   return (
     <aside className="cart-totals">
-      <h2 className="m-0 border-b border-[#131111]/15 pb-[0.65em] font-outfit text-[1.125em] font-normal tracking-[0.14em] text-[#131111] uppercase">
+      <h2 className="m-0 border-b border-[#131111]/15 pb-[0.65em] font-outfit text-[1.125em] font-normal tracking-[0.14em] text-balance text-[#131111] uppercase">
         Cart totals
       </h2>
 
       <dl className="mt-[1.35em] space-y-[0.85em] font-outfit text-[0.875em] tracking-[-0.02em]">
         <div className="flex items-start justify-between gap-4">
-          <dt className="text-[rgba(19,17,17,0.55)]">Shipping (3–5 business days)</dt>
+          <dt className="text-[#6B635C]">Shipping (3–5 business days)</dt>
           <dd className="m-0 shrink-0 tabular-nums text-[#131111]">{shippingValue}</dd>
         </div>
         <div className="flex items-start justify-between gap-4">
-          <dt className="text-[rgba(19,17,17,0.55)]">TAX (estimated)</dt>
+          <dt className="text-[#6B635C]">TAX (estimated)</dt>
           <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
             {formatMoney(tax ?? 0, currency)}
           </dd>
         </div>
         {discount != null && discount > 0 ? (
           <div className="flex items-start justify-between gap-4">
-            <dt className="text-[rgba(19,17,17,0.55)]">Discount</dt>
+            <dt className="text-[#6B635C]">Discount</dt>
             <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
               −{formatMoney(discount, currency)}
             </dd>
           </div>
         ) : null}
         <div className="flex items-start justify-between gap-4">
-          <dt className="text-[rgba(19,17,17,0.55)]">Subtotal</dt>
+          <dt className="text-[#6B635C]">Subtotal</dt>
           <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
             {formatMoney(subtotal, currency)}
           </dd>
@@ -71,7 +71,7 @@ export function OrderSummary({
       </Link>
       <Link
         href="/shop"
-        className="mt-[1em] block text-center font-outfit text-[0.75em] tracking-[0.14em] text-[rgba(19,17,17,0.55)] uppercase no-underline transition-colors hover:text-[#131111]"
+        className="mt-[1em] block text-center font-outfit text-[0.75em] tracking-[0.14em] text-[#6B635C] uppercase no-underline transition-colors hover:text-[#131111]"
       >
         &lt; Continue shopping
       </Link>

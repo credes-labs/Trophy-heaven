@@ -312,7 +312,7 @@ export function ShopClient({
     ) : products.length === 0 ? (
       <div className="border border-dashed border-[#131111]/20 py-16 text-center">
         <p className="font-outfit text-[1.25em] tracking-[-0.02em]">No products match your filters</p>
-        <p className="mt-1 font-outfit text-[0.9375em] text-[rgba(19,17,17,0.6)]">
+        <p className="mt-1 font-outfit text-[0.9375em] text-[#6B635C] text-pretty">
           Try adjusting or clearing filters.
         </p>
         <button
@@ -409,7 +409,7 @@ export function ShopClient({
                       type="button"
                       disabled={loading}
                       onClick={loadMore}
-                      className="cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.8125em] tracking-[0.2em] text-[#131111]/45 uppercase disabled:opacity-50"
+                      className="cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.8125em] tracking-[0.2em] text-[#6B635C] uppercase disabled:opacity-50"
                     >
                       ‹ {SHOP_LOAD_MORE} ›
                     </button>
@@ -429,7 +429,7 @@ export function ShopClient({
             </div>
 
             {pending || loading ? (
-              <p className="mt-4 m-0 text-center font-outfit text-[0.875em] tracking-[-0.02em] text-[rgba(19,17,17,0.5)]">
+              <p className="mt-4 m-0 text-center font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
                 Updating…
               </p>
             ) : null}

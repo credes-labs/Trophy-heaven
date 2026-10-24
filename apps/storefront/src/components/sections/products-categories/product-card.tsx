@@ -28,7 +28,7 @@ export function ProductCard({ product, pressed = false }: Props) {
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.08]"
         />
       </div>
-      <p className="m-0 min-h-[2.5em] font-outfit text-[1em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+      <p className="m-0 min-h-[2.5em] font-outfit text-[1em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase tabular-nums">
         / {product.name} — {product.status} {product.price}
       </p>
     </Link>

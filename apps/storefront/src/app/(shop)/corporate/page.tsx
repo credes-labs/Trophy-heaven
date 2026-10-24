@@ -31,7 +31,7 @@ export default function CorporatePage() {
             <div className="relative z-10 max-w-[34em]">
               <EditorialWatermark>honor</EditorialWatermark>
               <EditorialEyebrow>Corporate</EditorialEyebrow>
-              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
                 Bulk honors, handled as one brief
               </h1>
               <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
@@ -57,13 +57,13 @@ export default function CorporatePage() {
       </section>
 
       <EditorialFrame>
-        <h2 className="m-0 max-w-[18em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+        <h2 className="m-0 max-w-[18em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">
           Built for annual ceremonies and quiet programs alike
         </h2>
         <div className="mt-[clamp(2em,4vw,3.5em)] grid grid-cols-1 gap-x-[3em] gap-y-[2.25em] sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((item) => (
             <div key={item.title}>
-              <h3 className="m-0 font-outfit text-[1.25em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+              <h3 className="m-0 font-outfit text-[1.25em] leading-[1.25em] font-light tracking-[-0.02em] text-balance text-[#131111] uppercase">
                 {item.title}
               </h3>
               <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">

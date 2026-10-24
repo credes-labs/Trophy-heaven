@@ -24,8 +24,8 @@ export default function PressPage() {
       <EditorialFrame>
         <ul className="m-0 grid list-none gap-[1.5em] p-0 lg:grid-cols-2">
           <li className="border border-[#131111]/10 p-[1.5em]">
-            <h2 className="m-0 font-outfit text-[1.25em] font-normal text-[#131111]">Brand kit</h2>
-            <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.45] text-[#131111]/7">
+            <h2 className="m-0 font-outfit text-[1.25em] font-normal text-balance text-[#131111]">Brand kit</h2>
+            <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.45] text-[#6B635C]">
               Logo, monogram, and colour guidance for editors and partners.
             </p>
             <Link href="/contact" className="mt-[1em] inline-block font-outfit text-[0.875em] uppercase underline text-[#131111]">
@@ -33,8 +33,8 @@ export default function PressPage() {
             </Link>
           </li>
           <li className="border border-[#131111]/10 p-[1.5em]">
-            <h2 className="m-0 font-outfit text-[1.25em] font-normal text-[#131111]">Journal</h2>
-            <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.45] text-[#131111]/7">
+            <h2 className="m-0 font-outfit text-[1.25em] font-normal text-balance text-[#131111]">Journal</h2>
+            <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.45] text-[#6B635C]">
               Workshop notes and material stories from the bench.
             </p>
             <Link href="/blog" className="mt-[1em] inline-block font-outfit text-[0.875em] uppercase underline text-[#131111]">

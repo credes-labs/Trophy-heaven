@@ -23,7 +23,7 @@ export default function GiftCardsPage() {
         <EditorialCtaLink href="/contact">Enquire about gift cards</EditorialCtaLink>
       </SimplePageHero>
       <EditorialFrame>
-        <p className="m-0 font-outfit text-[1em] leading-[1.5] text-[#131111]/7 max-w-[36em]">
+        <p className="m-0 font-outfit text-[1em] leading-[1.5] text-[#6B635C] max-w-[36em]">
           Digital gift cards are fulfilled by email. Physical cards can be included with a workshop
           visit or couriered with a handwritten note. Checkout purchase goes live once payment
           productisation ships — until then, write to us and we will issue one by hand.
@@ -32,7 +32,7 @@ export default function GiftCardsPage() {
           {AMOUNTS.map((amount) => (
             <li
               key={amount}
-              className="border border-[#131111]/15 px-[1.25em] py-[0.75em] font-outfit text-[1em] text-[#131111]"
+              className="border border-[#131111]/15 px-[1.25em] py-[0.75em] font-outfit text-[1em] text-[#131111] tabular-nums"
             >
               {amount}
             </li>

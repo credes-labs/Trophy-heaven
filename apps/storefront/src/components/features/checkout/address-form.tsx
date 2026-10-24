@@ -13,6 +13,11 @@ import {
 import { isValidIndianPincode, lookupIndianPincode } from "@/lib/pincode"
 import { cn } from "@/lib/utils"
 
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-[#131111]",
+)
+
 function FieldLabel({
   htmlFor,
   children,
@@ -134,10 +139,10 @@ export function AddressForm({
           maxLength={6}
           value={postal}
           onChange={(e) => setPostal(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          className={editorialFieldClass}
+          className={fieldClass}
         />
         {lookupHint ? (
-          <p className="mt-[0.35em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#131111]/45">
+          <p className="mt-[0.35em] m-0 max-w-[68ch] font-outfit text-[0.75em] tracking-[-0.02em] text-pretty text-[#6B635C]">
             {lookupHint}
           </p>
         ) : null}
@@ -155,7 +160,7 @@ export function AddressForm({
             autoComplete="address-level2"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -169,7 +174,7 @@ export function AddressForm({
             autoComplete="address-level1"
             value={state}
             onChange={(e) => setState(e.target.value)}
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
       </div>
@@ -184,7 +189,7 @@ export function AddressForm({
           required
           autoComplete="address-line1"
           defaultValue={defaults?.address_1}
-          className={editorialFieldClass}
+          className={fieldClass}
         />
       </div>
 
@@ -198,7 +203,7 @@ export function AddressForm({
           required
           autoComplete="address-line2"
           defaultValue={defaults?.address_2}
-          className={editorialFieldClass}
+          className={fieldClass}
         />
       </div>
 
@@ -212,7 +217,7 @@ export function AddressForm({
           required
           autoComplete="name"
           defaultValue={defaults?.full_name}
-          className={editorialFieldClass}
+          className={fieldClass}
         />
       </div>
 
@@ -228,7 +233,7 @@ export function AddressForm({
             required
             autoComplete="email"
             defaultValue={defaults?.email}
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
       ) : null}
@@ -242,7 +247,7 @@ export function AddressForm({
           autoComplete="tel"
           placeholder="10-digit mobile"
           defaultValue={defaults?.phone}
-          className={editorialFieldClass}
+          className={fieldClass}
         />
       </div>
 
@@ -261,7 +266,7 @@ export function AddressForm({
                   "inline-flex cursor-pointer items-center gap-[0.6em] rounded-full border bg-transparent px-[1.1em] py-[0.55em] font-outfit text-[0.875em] tracking-[-0.02em] uppercase",
                   selected
                     ? "border-[#131111] text-[#131111]"
-                    : "border-[#CDCDCD] text-[#131111]/55"
+                    : "border-[#CDCDCD] text-[#6B635C]"
                 )}
               >
                 <span

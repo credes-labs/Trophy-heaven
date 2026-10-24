@@ -65,10 +65,10 @@ export default function TermsPage() {
         <div className="relative max-w-[40em]">
           <EditorialWatermark>legal</EditorialWatermark>
           <EditorialEyebrow>Terms</EditorialEyebrow>
-          <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+          <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
             Terms of service
           </h1>
-          <p className="mt-[1em] m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111]/55 uppercase">
+          <p className="mt-[1em] m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#6B635C] uppercase">
             Last updated 15 August 2026
           </p>
           <p className="mt-[1.25em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
@@ -80,10 +80,10 @@ export default function TermsPage() {
           <div className="divide-y divide-[#CDCDCD] border-y border-[#CDCDCD] lg:col-span-8">
             {SECTIONS.map((section, i) => (
               <article key={section.id} id={section.id} className="scroll-mt-28 py-[2em]">
-                <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+                <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-balance text-[#131111] uppercase">
                   {String(i + 1).padStart(2, "0")} / {section.title}
                 </h2>
-                <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.6] tracking-[-0.02em] text-[#131111]/70">
+                <p className="mt-[0.75em] m-0 max-w-[68ch] font-outfit text-[1em] leading-[1.6] tracking-[-0.02em] text-pretty text-[#131111]/70">
                   {section.body}
                 </p>
               </article>

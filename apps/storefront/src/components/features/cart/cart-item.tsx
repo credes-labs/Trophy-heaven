@@ -46,7 +46,7 @@ export function CartItem({
         type="button"
         onClick={() => onRemove(item.id)}
         aria-label={`Remove ${title} from cart`}
-        className="flex h-8 w-8 items-center justify-center text-[rgba(19,17,17,0.4)] transition-colors hover:text-[#131111]"
+        className="flex h-8 w-8 items-center justify-center text-[#6B635C] transition-colors hover:text-[#131111]"
       >
         <X className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
       </button>
@@ -67,12 +67,12 @@ export function CartItem({
           </p>
         )}
         {variantLine ? (
-          <p className="mt-[0.25em] m-0 font-outfit text-[0.8125em] tracking-[-0.02em] text-[rgba(19,17,17,0.5)]">
+          <p className="mt-[0.25em] m-0 font-outfit text-[0.8125em] tracking-[-0.02em] text-[#6B635C]">
             {variantLine}
           </p>
         ) : null}
         {item.metadata?.design_id ? (
-          <p className="mt-[0.35em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[rgba(19,17,17,0.55)]">
+          <p className="mt-[0.35em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C]">
             Customized design attached
           </p>
         ) : null}
@@ -99,7 +99,7 @@ export function CartItem({
         <p className="m-0 font-outfit text-[0.9375em] font-medium tracking-[-0.02em] text-[#131111] tabular-nums">
           {formatMoney(lineTotal, currency)}
         </p>
-        <p className="mt-[0.15em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[rgba(19,17,17,0.45)] tabular-nums">
+        <p className="mt-[0.15em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C] tabular-nums">
           {formatMoney(unit, currency)}
         </p>
       </motion.div>

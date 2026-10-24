@@ -24,10 +24,10 @@ export function ExploreCard({ product, index }: { product: ExploreProduct; index
         <span className="shrink-0 text-right">{product.reviewsLabel}</span>
       </div>
       <div className="mt-[0.5em] flex items-baseline justify-between gap-[0.75em]">
-        <h3 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+        <h3 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-balance text-[#131111] uppercase">
           {product.name}
         </h3>
-        <p className="m-0 shrink-0 font-outfit text-[1em] leading-[1.25em] font-normal tracking-[-0.02em] text-[rgba(19,17,17,0.6)] uppercase">
+        <p className="m-0 shrink-0 font-outfit text-[1em] leading-[1.25em] font-normal tracking-[-0.02em] text-[rgba(19,17,17,0.6)] uppercase tabular-nums">
           {product.price}
         </p>
       </div>

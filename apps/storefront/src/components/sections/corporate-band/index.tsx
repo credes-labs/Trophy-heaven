@@ -16,11 +16,11 @@ export function CorporateBandSection() {
         <div className="lg:col-span-6">
           <h2
             id="organisations-heading"
-            className="m-0 max-w-[14em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+            className="m-0 max-w-[14em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
           >
             Two hundred awards. One brief.
           </h2>
-          <p className="mt-[1.25em] m-0 max-w-[34em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]/7">
+          <p className="mt-[1.25em] m-0 max-w-[34em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#6B635C]">
             Send a spreadsheet of names and we return a single proof, one GST invoice, and dispatch
             split across your venues.
           </p>

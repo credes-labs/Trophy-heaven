@@ -32,17 +32,17 @@ export function SignupSection() {
         <SectionEyebrow className="justify-center">stay close</SectionEyebrow>
         <h2
           id="signup-heading"
-          className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+          className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
         >
           A letter, not a blast.
         </h2>
-        <p className="mt-[1em] m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]/7">
+        <p className="mt-[1em] m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#6B635C]">
           New pieces, workshop notes, and the occasional honest word about materials. Once or twice
           a month.
         </p>
 
         {submitted ? (
-          <p className="mt-[2em] m-0 font-outfit text-[1.125em] text-[#131111]" role="status">
+          <p className="mt-[2em] m-0 font-outfit text-[1.125em] text-pretty text-[#131111]" role="status">
             Thanks — you&apos;re on the list.
           </p>
         ) : (
@@ -60,7 +60,7 @@ export function SignupSection() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Your email address"
-              className="h-12 w-full flex-1 border-0 border-b border-[#131111]/25 bg-transparent px-0 font-outfit text-[1em] text-[#131111] placeholder:text-[#131111]/4 focus:border-[#131111] focus:outline-none"
+              className="h-12 w-full flex-1 border-0 border-b border-[#131111]/25 bg-transparent px-0 font-outfit text-[1em] text-[#131111] placeholder:text-[#6B635C] focus:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             />
             <button
               type="submit"
@@ -72,11 +72,11 @@ export function SignupSection() {
           </form>
         )}
         {error ? (
-          <p className="mt-3 m-0 font-outfit text-sm text-[#8A2D25]" role="alert">
+          <p className="mt-3 m-0 font-outfit text-sm text-pretty text-[#8A2D25]" role="alert">
             {error}
           </p>
         ) : null}
-        <p className="mt-[1em] m-0 font-outfit text-[0.8125em] text-[#131111]/5">
+        <p className="mt-[1em] m-0 font-outfit text-[0.8125em] text-pretty text-[#6B635C]">
           Unsubscribe anytime.
         </p>
       </div>

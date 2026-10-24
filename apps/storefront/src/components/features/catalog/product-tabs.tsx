@@ -24,7 +24,7 @@ function SpecRows({ metadata }: { metadata: Record<string, unknown> | null | und
           key={key}
           className={`grid grid-cols-2 gap-4 px-[1em] py-[0.85em] font-outfit text-[0.9375em] tracking-[-0.02em] ${i % 2 === 0 ? "bg-[#131111]/[0.03]" : ""}`}
         >
-          <dt className="font-normal capitalize text-[rgba(19,17,17,0.5)]">
+          <dt className="font-normal capitalize text-[#6B635C]">
             {key.replace(/_/g, " ")}
           </dt>
           <dd className="m-0 text-[#131111]">{String(value)}</dd>
@@ -74,7 +74,7 @@ export function ProductTabs({ product }: { product: HttpTypes.StoreProduct }) {
             <TabsContent value="description" className="pdp-tab-body">
               {product.description ? (
                 <div className="pdp-prose">
-                  <p className="m-0 whitespace-pre-wrap">{product.description}</p>
+                  <p className="m-0 whitespace-pre-wrap text-pretty">{product.description}</p>
                 </div>
               ) : (
                 <p className="pdp-muted">No description yet.</p>

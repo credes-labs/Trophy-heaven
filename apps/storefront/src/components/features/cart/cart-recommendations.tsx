@@ -92,7 +92,7 @@ export function CartRecommendations({
 
   return (
     <section aria-label={heading} className="mt-[4em]">
-      <h2 className="m-0 font-outfit text-[clamp(1.35rem,2.8vw,1.75em)] font-normal tracking-[0.08em] text-[#131111] uppercase">
+      <h2 className="m-0 font-outfit text-[clamp(1.35rem,2.8vw,1.75em)] font-normal tracking-[0.08em] text-balance text-[#131111] uppercase">
         {heading}
       </h2>
       <div className="cart-recs mt-[1.5em]">

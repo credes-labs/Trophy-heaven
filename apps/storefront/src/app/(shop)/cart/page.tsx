@@ -44,21 +44,21 @@ export default function CartPage() {
         <button
           type="button"
           onClick={goBack}
-          className="font-outfit text-[0.8125em] tracking-[-0.02em] text-[rgba(19,17,17,0.5)] transition-colors hover:text-[#131111]"
+          className="font-outfit text-[0.8125em] tracking-[-0.02em] text-[#6B635C] transition-colors hover:text-[#131111]"
         >
           &lt; Back
         </button>
-        <h1 className="mt-[0.85em] m-0 font-outfit text-[clamp(2rem,4.5vw,3.25em)] leading-[1.1] font-light tracking-[0.08em] text-[#131111] uppercase">
+        <h1 className="mt-[0.85em] m-0 font-outfit text-[clamp(2rem,4.5vw,3.25em)] leading-[1.1] font-light tracking-[0.08em] text-balance text-[#131111] uppercase">
           Your cart
         </h1>
 
         {loading && items.length === 0 ? (
-          <p className="mt-[2em] font-outfit text-[0.875em] tracking-[-0.02em] text-[rgba(19,17,17,0.45)]">
+          <p className="mt-[2em] font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
             Loading cart…
           </p>
         ) : empty ? (
           <>
-            <p className="mt-[1.75em] max-w-[28em] font-outfit text-[0.9375em] leading-[1.55] font-light tracking-[-0.02em] text-[rgba(19,17,17,0.6)]">
+            <p className="mt-[1.75em] max-w-[28em] font-outfit text-[0.9375em] leading-[1.55] font-light tracking-[-0.02em] text-pretty text-[#6B635C]">
               Your cart is empty. Explore trophies, furniture, and artwork to find something you love.
             </p>
             <Link

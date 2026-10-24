@@ -15,11 +15,11 @@ export function CustomizerSection() {
         <div>
           <h2
             id="design-studio-heading"
-            className="m-0 max-w-[16em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#F2F1EF]"
+            className="m-0 max-w-[16em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#F2F1EF]"
           >
             See it before you commission it.
           </h2>
-          <p className="mt-[1.25em] m-0 max-w-[36em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#F2F1EF]/75">
+          <p className="mt-[1.25em] m-0 max-w-[36em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#F2F1EF]/75">
             Set the plate, choose the metal, place the logo, and read the engraving back at actual
             size. Our 2D and 3D studio renders your trophy as it will be made — so the first one you
             hold is the one you approved.
@@ -39,7 +39,7 @@ export function CustomizerSection() {
               <p className="m-0 font-outfit text-[1em] font-normal tracking-[-0.02em] text-[#F2F1EF]">
                 {item.title}
               </p>
-              <p className="mt-[0.5em] m-0 font-outfit text-[0.875em] leading-[1.4] text-[#F2F1EF]/65">
+              <p className="mt-[0.5em] m-0 font-outfit text-[0.875em] leading-[1.4] text-pretty text-[#F2F1EF]/65">
                 {item.body}
               </p>
             </li>

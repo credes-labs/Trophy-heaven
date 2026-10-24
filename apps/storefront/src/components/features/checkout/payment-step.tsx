@@ -32,10 +32,10 @@ export function PaymentStep({
   if (netTerms) {
     return (
       <div className="mt-6 space-y-4">
-        <h2 className="font-medium">Corporate billing</h2>
+        <h2 className="text-balance font-medium">Corporate billing</h2>
         <div className="rounded-lg border border-trophy/30 bg-trophy/5 p-5">
           <p className="font-medium">Pay on account</p>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 max-w-[68ch] text-pretty text-sm text-muted-foreground">
             This order will be billed on{" "}
             <strong className="text-foreground">
               {paymentMeta.payment_terms === "net_60" ? "Net 60" : "Net 30"}
@@ -63,7 +63,7 @@ export function PaymentStep({
 
   return (
     <div className="mt-6 space-y-4">
-      <h2 className="font-medium">Payment method</h2>
+      <h2 className="text-balance font-medium">Payment method</h2>
 
       <ul className="space-y-3">
         <li>
@@ -118,7 +118,7 @@ export function PaymentStep({
         )}
       </ul>
 
-      <p className="text-xs text-muted-foreground">Your payment information is secure and encrypted.</p>
+      <p className="max-w-[68ch] text-pretty text-xs text-muted-foreground">Your payment information is secure and encrypted.</p>
 
       <div className="flex justify-between pt-2">
         <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>

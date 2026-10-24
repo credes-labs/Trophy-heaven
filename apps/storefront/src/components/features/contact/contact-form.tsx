@@ -3,6 +3,12 @@
 import { useState, useTransition } from "react"
 import { EditorialCtaButton, editorialFieldClass, editorialLabelClass } from "@/components/layout/editorial/editorial-cta"
 import { sendContactMessage } from "@/lib/forms"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 const SUBJECTS = [
   "General inquiry",
@@ -45,7 +51,7 @@ export function ContactForm() {
   if (sent) {
     return (
       <div>
-        <h2 className="m-0 font-outfit text-[clamp(1.75rem,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+        <h2 className="m-0 font-outfit text-[clamp(1.75rem,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">
           Message received
         </h2>
         <p className="mt-[1em] m-0 max-w-[28em] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
@@ -54,7 +60,7 @@ export function ContactForm() {
         <button
           type="button"
           onClick={() => setSent(false)}
-          className="mt-[1.75em] cursor-pointer border-0 bg-transparent p-0 font-outfit text-[1.25em] leading-[1.25em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em]"
+          className="mt-[1.75em] cursor-pointer border-0 bg-transparent p-0 font-outfit text-[1.25em] leading-[1.25em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
         >
           Send another
         </button>
@@ -75,7 +81,7 @@ export function ContactForm() {
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder="Your name"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -89,7 +95,7 @@ export function ContactForm() {
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             placeholder="you@studio.in"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
       </div>
@@ -105,7 +111,7 @@ export function ContactForm() {
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
             placeholder="+91"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -116,7 +122,7 @@ export function ContactForm() {
             id="contact-subject"
             value={form.subject}
             onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
-            className={editorialFieldClass}
+            className={fieldClass}
           >
             {SUBJECTS.map((s) => (
               <option key={s} value={s}>
@@ -138,7 +144,7 @@ export function ContactForm() {
           value={form.message}
           onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
           placeholder="Quantities, timelines, or links to artwork…"
-          className={`${editorialFieldClass} h-auto min-h-[8em] resize-y py-[0.75em]`}
+          className={cn(fieldClass, "h-auto min-h-[8em] resize-y py-[0.75em]")}
         />
       </div>
 

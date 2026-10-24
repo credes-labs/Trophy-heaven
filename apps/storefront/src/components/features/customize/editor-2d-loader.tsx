@@ -11,7 +11,7 @@ const Editor2D = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-muted-foreground">
+      <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[#6B635C]">
         Loading the design studio…
       </div>
     ),
@@ -19,7 +19,7 @@ const Editor2D = dynamic(
 )
 
 const loadingFallback = (
-  <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-muted-foreground">
+  <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[#6B635C]">
     Loading the design studio…
   </div>
 )

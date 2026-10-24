@@ -225,7 +225,7 @@ export default function CheckoutPage() {
         <div className="grid gap-[3em] lg:grid-cols-[1fr_20em]">
           <div>
             <EditorialEyebrow>Order</EditorialEyebrow>
-            <h1 className="m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+            <h1 className="m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
               Checkout
             </h1>
 
@@ -237,7 +237,7 @@ export default function CheckoutPage() {
 
                 {error ? (
                   <p
-                    className="mt-[1.25em] m-0 font-outfit text-[0.875em] leading-[1.4] text-[#8A2D25]"
+                    className="mt-[1.25em] m-0 max-w-[68ch] font-outfit text-[0.875em] leading-[1.4] text-pretty text-[#8A2D25]"
                     role="alert"
                   >
                     {error}

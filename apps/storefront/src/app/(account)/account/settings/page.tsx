@@ -3,10 +3,22 @@
 import { useEffect, useState } from "react"
 import { medusa } from "@/lib/medusa"
 import { useAuthStore } from "@/stores/auth-store"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+import {
+  EditorialCtaButton,
+  editorialFieldClass,
+  editorialLabelClass,
+} from "@/components/layout/editorial/editorial-cta"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
+import { PasswordField } from "@/components/ui/password-field"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
 type NotifPrefs = {
   orderUpdates: boolean
@@ -136,102 +148,155 @@ export default function SettingsPage() {
   if (!customer) return null
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-muted-foreground">Profile, security, and notifications.</p>
+    <div>
+      <header className="relative overflow-hidden">
+        <EditorialWatermark>settings</EditorialWatermark>
+        <EditorialEyebrow>Account</EditorialEyebrow>
+        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
+          Settings
+        </h1>
+        <p className="relative mt-[1em] m-0 max-w-[28em] font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+          Profile, security, and notifications.
+        </p>
       </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Profile</CardTitle>
-          <CardDescription>How we address you on invoices and shipping labels.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={(e) => void saveProfile(e)} className="grid gap-4 sm:grid-cols-2">
-            <Input
-              label="First name"
+      <section className="mt-[2.5em] max-w-[36em] border-t border-[#CDCDCD] pt-[2em]">
+        <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
+          Profile
+        </h2>
+        <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
+          How we address you on invoices and shipping labels.
+        </p>
+        <form onSubmit={(e) => void saveProfile(e)} className="mt-[1.5em] grid gap-[1.5em] sm:grid-cols-2">
+          <div>
+            <label htmlFor="settings-first" className={editorialLabelClass}>
+              First name
+            </label>
+            <input
+              id="settings-first"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               autoComplete="given-name"
+              className={fieldClass}
             />
-            <Input
-              label="Last name"
+          </div>
+          <div>
+            <label htmlFor="settings-last" className={editorialLabelClass}>
+              Last name
+            </label>
+            <input
+              id="settings-last"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               autoComplete="family-name"
+              className={fieldClass}
             />
-            <div className="sm:col-span-2">
-              <Input label="Email" value={customer.email ?? ""} disabled />
-            </div>
-            <div className="sm:col-span-2">
-              <Input
-                label="Phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                autoComplete="tel"
-              />
-            </div>
-            {profileMsg && <p className="text-sm text-success sm:col-span-2">{profileMsg}</p>}
-            {profileError && (
-              <p className="text-sm text-destructive sm:col-span-2">{profileError}</p>
-            )}
-            <div className="sm:col-span-2">
-              <Button type="submit" loading={saving}>
-                Save profile
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="settings-email" className={editorialLabelClass}>
+              Email
+            </label>
+            <input id="settings-email" value={customer.email ?? ""} disabled className={fieldClass} />
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="settings-phone" className={editorialLabelClass}>
+              Phone
+            </label>
+            <input
+              id="settings-phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+              className={fieldClass}
+            />
+          </div>
+          {profileMsg ? (
+            <p className="m-0 font-outfit text-[0.875em] text-[#131111] sm:col-span-2" role="status">
+              {profileMsg}
+            </p>
+          ) : null}
+          {profileError ? (
+            <p className="m-0 font-outfit text-[0.875em] text-[#8A2D25] sm:col-span-2" role="alert">
+              {profileError}
+            </p>
+          ) : null}
+          <div className="sm:col-span-2">
+            <EditorialCtaButton type="submit" disabled={saving} className={focusRing}>
+              {saving ? "Saving" : "Save profile"}
+            </EditorialCtaButton>
+          </div>
+        </form>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Password</CardTitle>
-          <CardDescription>Update your sign-in password.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={(e) => void handlePasswordChange(e)} className="grid max-w-md gap-4">
-            <Input
-              label="Current password"
-              type="password"
-              reveal
+      <section className="mt-[2.5em] max-w-[28em] border-t border-[#CDCDCD] pt-[2em]">
+        <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
+          Password
+        </h2>
+        <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
+          Update your sign-in password.
+        </p>
+        <form onSubmit={(e) => void handlePasswordChange(e)} className="mt-[1.5em] grid gap-[1.5em]">
+          <div>
+            <label htmlFor="settings-current" className={editorialLabelClass}>
+              Current password
+            </label>
+            <PasswordField
+              id="settings-current"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               autoComplete="current-password"
+              className={fieldClass}
             />
-            <Input
-              label="New password"
-              type="password"
-              reveal
+          </div>
+          <div>
+            <label htmlFor="settings-new" className={editorialLabelClass}>
+              New password
+            </label>
+            <PasswordField
+              id="settings-new"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               autoComplete="new-password"
               minLength={8}
+              className={fieldClass}
             />
-            <Input
-              label="Confirm new password"
-              type="password"
-              reveal
+          </div>
+          <div>
+            <label htmlFor="settings-confirm" className={editorialLabelClass}>
+              Confirm new password
+            </label>
+            <PasswordField
+              id="settings-confirm"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
+              className={fieldClass}
             />
-            {passwordMsg && <p className="text-sm text-success">{passwordMsg}</p>}
-            {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
-            <Button type="submit" variant="outline" loading={savingPassword}>
-              Update password
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+          {passwordMsg ? (
+            <p className="m-0 font-outfit text-[0.875em] text-[#131111]" role="status">
+              {passwordMsg}
+            </p>
+          ) : null}
+          {passwordError ? (
+            <p className="m-0 font-outfit text-[0.875em] text-[#8A2D25]" role="alert">
+              {passwordError}
+            </p>
+          ) : null}
+          <EditorialCtaButton type="submit" disabled={savingPassword} className={focusRing}>
+            {savingPassword ? "Updating" : "Update password"}
+          </EditorialCtaButton>
+        </form>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Notifications</CardTitle>
-          <CardDescription>Preferences are stored in this browser for now.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <section className="mt-[2.5em] max-w-[28em] border-t border-[#CDCDCD] pt-[2em]">
+        <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
+          Notifications
+        </h2>
+        <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
+          Preferences are stored in this browser for now.
+        </p>
+        <div className="mt-[1.25em] space-y-[1em]">
           {(
             [
               ["orderUpdates", "Order updates"],
@@ -239,40 +304,44 @@ export default function SettingsPage() {
               ["newsletter", "Newsletter"],
             ] as const
           ).map(([key, label]) => (
-            <label key={key} className="flex items-center justify-between gap-4 text-sm">
-              <span>{label}</span>
+            <div key={key} className="flex items-center justify-between gap-[1em]">
+              <span className="font-outfit text-[1em] tracking-[-0.02em] text-[#131111]">{label}</span>
               <button
                 type="button"
                 role="switch"
                 aria-checked={notifs[key]}
+                aria-label={label}
                 onClick={() => toggleNotif(key)}
-                className={`relative h-6 w-11 rounded-full transition-colors ${
-                  notifs[key] ? "bg-gold" : "bg-muted"
+                className={`relative h-6 w-11 cursor-pointer rounded-full border-0 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] ${
+                  notifs[key] ? "bg-[#131111]" : "bg-[#E4DDD2]"
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-card shadow transition-transform ${
+                  className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-[#F2F1EF] transition-transform ${
                     notifs[key] ? "translate-x-5" : ""
                   }`}
                 />
               </button>
-            </label>
+            </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card className="border-destructive/30">
-        <CardHeader>
-          <CardTitle className="text-lg text-destructive">Danger zone</CardTitle>
-          <CardDescription>Account deletion is not available in the storefront yet.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Separator className="mb-4" />
-          <Button variant="outline" disabled className="border-destructive/40 text-destructive">
-            Delete account
-          </Button>
-        </CardContent>
-      </Card>
+      <section className="mt-[2.5em] max-w-[28em] border-t border-[#CDCDCD] pt-[2em]">
+        <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#8A2D25]">
+          Danger zone
+        </h2>
+        <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
+          Account deletion is not available in the storefront yet.
+        </p>
+        <button
+          type="button"
+          disabled
+          className="mt-[1.25em] cursor-not-allowed border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#8A2D25] uppercase underline underline-offset-[0.15em] opacity-50"
+        >
+          Delete account
+        </button>
+      </section>
     </div>
   )
 }

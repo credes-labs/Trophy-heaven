@@ -112,11 +112,11 @@ export default async function BlogPage({ searchParams }: Props) {
                     Previous
                   </Link>
                 ) : (
-                  <span className="font-outfit text-[1.25em] tracking-[-0.02em] text-[#131111]/30 uppercase">
+                  <span className="font-outfit text-[1.25em] tracking-[-0.02em] text-[#6B635C] uppercase">
                     Previous
                   </span>
                 )}
-                <span className="font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                <span className="font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C] uppercase">
                   {page} / {totalPages}
                 </span>
                 {page < totalPages ? (
@@ -127,7 +127,7 @@ export default async function BlogPage({ searchParams }: Props) {
                     Next
                   </Link>
                 ) : (
-                  <span className="font-outfit text-[1.25em] tracking-[-0.02em] text-[#131111]/30 uppercase">
+                  <span className="font-outfit text-[1.25em] tracking-[-0.02em] text-[#6B635C] uppercase">
                     Next
                   </span>
                 )}
@@ -154,7 +154,7 @@ function CategoryFilter({
       href={href}
       className={cn(
         "font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase no-underline",
-        active ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#131111]/45 hover:text-[#131111]"
+        active ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#6B635C] hover:text-[#131111]"
       )}
     >
       {children}

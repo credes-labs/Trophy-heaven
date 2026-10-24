@@ -78,29 +78,29 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
   const accentToken = accent ? CATEGORY_CONFIG[accent].accent : undefined
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
-      <nav aria-label="Breadcrumb" className="mb-2 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">
+    <div className="mx-auto max-w-7xl bg-[#FBFBF7] px-4 py-10 font-outfit text-[#131111]">
+      <nav aria-label="Breadcrumb" className="mb-2 text-sm text-[#6B635C]">
+        <Link href="/" className="hover:text-[#131111]">
           Home
         </Link>{" "}
-        / <span className="text-foreground">{category.name}</span>
+        / <span className="text-[#131111]">{category.name}</span>
       </nav>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-semibold">{category.name}</h1>
+          <h1 className="font-outfit text-3xl font-semibold text-balance text-[#131111]">{category.name}</h1>
           {category.description && (
-            <p className="mt-1 max-w-2xl text-muted-foreground">{category.description}</p>
+            <p className="mt-1 max-w-2xl text-pretty text-[#6B635C]">{category.description}</p>
           )}
         </div>
         <form className="flex items-center gap-2">
-          <label htmlFor="order" className="text-sm text-muted-foreground">
+          <label htmlFor="order" className="text-sm text-[#6B635C]">
             Sort
           </label>
           <select
             id="order"
             name="order"
             defaultValue={order}
-            className="h-10 rounded-md border bg-card px-3 text-sm"
+            className="h-10 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
@@ -108,7 +108,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
               </option>
             ))}
           </select>
-          <button className="h-10 rounded-md border px-3 text-sm hover:bg-muted">Apply</button>
+          <button className="inline-flex min-h-11 items-center rounded-full border-0 bg-[#131111] px-5 text-sm text-[#F2F1EF]">Apply</button>
         </form>
       </div>
 
@@ -118,7 +118,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
             <Link
               key={child.id}
               href={`/categories/${slug[0]}/${child.handle}`}
-              className="rounded-full border px-3 py-1 text-xs hover:bg-muted"
+              className="rounded-full border border-[#131111]/15 px-3 py-1 font-outfit text-xs text-[#131111] hover:bg-[#F2F1EF]"
             >
               {child.name}
             </Link>
@@ -140,8 +140,8 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
                 <Link
                   key={n}
                   href={`/categories/${slug.join("/")}?page=${n}&order=${order}`}
-                  className={`h-10 min-w-10 rounded-md border px-3 text-center leading-10 ${
-                    n === currentPage ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+                  className={`inline-flex h-11 min-w-11 items-center justify-center rounded-full border border-[#131111]/15 px-3 font-outfit text-sm ${
+                    n === currentPage ? "bg-[#131111] text-[#F2F1EF]" : "text-[#6B635C] hover:text-[#131111]"
                   }`}
                 >
                   {n}
@@ -151,7 +151,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
           )}
         </>
       ) : (
-        <p className="mt-10 text-muted-foreground">No products in this category yet.</p>
+        <p className="mt-10 text-pretty text-[#6B635C]">No products in this category yet.</p>
       )}
     </div>
   )

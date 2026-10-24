@@ -15,7 +15,7 @@ export function ShopListingBreadcrumb({
   const label = category ? CATEGORY_CONFIG[category].label : "Shop"
   return (
     <nav aria-label="Breadcrumb">
-      <ol className="m-0 flex list-none flex-wrap items-center gap-[0.5em] p-0 font-outfit text-[0.875em] leading-[1.4] tracking-[-0.02em] text-[rgba(19,17,17,0.5)]">
+      <ol className="m-0 flex list-none flex-wrap items-center gap-[0.5em] p-0 font-outfit text-[0.875em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
         <li>
           <Link href="/" className="text-inherit no-underline transition-opacity hover:text-[#131111]">
             Home
@@ -63,10 +63,10 @@ export function ShopFilterBanner({ category }: { category: CategoryKey | null })
         <p className="m-0 font-outfit text-[0.875em] tracking-[0.14em] text-[#F2F1EF]/80 uppercase">
           {cfg?.label ?? "Collection"}
         </p>
-        <h1 className="mt-[0.35em] m-0 max-w-[18em] font-outfit text-[clamp(1.5rem,3.5vw,2.25em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#F2F1EF]">
+        <h1 className="mt-[0.35em] m-0 max-w-[18em] font-outfit text-[clamp(1.5rem,3.5vw,2.25em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#F2F1EF] text-balance">
           {cfg?.headline ?? "The collection"}
         </h1>
-        <p className="mt-[0.5em] m-0 max-w-[32em] font-outfit text-[0.9375em] leading-[1.45] font-light tracking-[-0.02em] text-[#F2F1EF]/80">
+        <p className="mt-[0.5em] m-0 max-w-[32em] font-outfit text-[0.9375em] leading-[1.45] font-light tracking-[-0.02em] text-[#F2F1EF]/80 text-pretty">
           {cfg?.description ?? "Handcrafted trophies, artisan furniture, and curated artwork."}
         </p>
       </div>
@@ -122,7 +122,7 @@ export function ShopToolbar({
           onClick={() => onLayout("grid")}
           className={cn(
             "flex size-[2.25em] cursor-pointer items-center justify-center border-0 bg-transparent p-0",
-            layout === "grid" ? "text-[#131111]" : "text-[#131111]/35"
+            layout === "grid" ? "text-[#131111]" : "text-[#6B635C]"
           )}
         >
           <LayoutGrid className="size-[1.125em]" strokeWidth={1.5} />
@@ -134,7 +134,7 @@ export function ShopToolbar({
           onClick={() => onLayout("list")}
           className={cn(
             "flex size-[2.25em] cursor-pointer items-center justify-center border-0 bg-transparent p-0",
-            layout === "list" ? "text-[#131111]" : "text-[#131111]/35"
+            layout === "list" ? "text-[#131111]" : "text-[#6B635C]"
           )}
         >
           <List className="size-[1.125em]" strokeWidth={1.5} />
@@ -152,7 +152,7 @@ export function ShopToolbar({
           {active?.label ?? "Newest"}
           <ChevronDown
             aria-hidden
-            className={`size-[1.25em] text-[#9C9C9C] transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`}
+            className={`size-[1.25em] text-[#6B635C] transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`}
             strokeWidth={1.5}
           />
         </button>
@@ -167,7 +167,7 @@ export function ShopToolbar({
                 <button
                   type="button"
                   className={`block w-full cursor-pointer border-0 bg-transparent px-[1em] py-[0.5em] text-left font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] ${
-                    item.value === sort ? "text-[#131111]" : "text-[rgba(19,17,17,0.6)]"
+                    item.value === sort ? "text-[#131111]" : "text-[#6B635C]"
                   }`}
                   onClick={() => onSort(item.value)}
                 >
@@ -179,7 +179,7 @@ export function ShopToolbar({
         ) : null}
       </div>
 
-      <p className="m-0 w-full font-outfit text-[0.8125em] tracking-[0.08em] text-[rgba(19,17,17,0.5)] uppercase sm:ml-auto sm:w-auto">
+      <p className="m-0 w-full font-outfit text-[0.8125em] tracking-[0.08em] text-[#6B635C] uppercase sm:ml-auto sm:w-auto">
         Showing {showingFrom}–{showingTo} of {total} results
       </p>
     </div>
@@ -219,7 +219,7 @@ export function ShopModeToolbar({
 
         <h2
         className={cn(
-          "pointer-events-none absolute top-1/2 left-1/2 m-0 max-w-[calc(100%-8em)] -translate-x-1/2 -translate-y-1/2 text-center font-outfit text-[clamp(1.5rem,3.5vw,2.25em)] leading-[1.2] font-normal tracking-[-0.03em] text-[#131111] transition-opacity duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:duration-0",
+          "pointer-events-none absolute top-1/2 left-1/2 m-0 max-w-[calc(100%-8em)] -translate-x-1/2 -translate-y-1/2 text-center font-outfit text-[clamp(1.5rem,3.5vw,2.25em)] leading-[1.2] font-normal tracking-[-0.03em] text-[#131111] text-balance transition-opacity duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:duration-0",
           filtersOpen ? "opacity-0" : "opacity-100"
         )}
       >
@@ -243,7 +243,7 @@ export function ShopModeToolbar({
             onClick={() => onLayout("grid")}
             className={cn(
               "flex size-[2.25em] cursor-pointer items-center justify-center border-0 bg-transparent p-0",
-              layout === "grid" ? "text-[#131111]" : "text-[#131111]/35"
+              layout === "grid" ? "text-[#131111]" : "text-[#6B635C]"
             )}
           >
             <LayoutGrid className="size-[1.125em]" strokeWidth={1.5} />
@@ -256,7 +256,7 @@ export function ShopModeToolbar({
             onClick={() => onLayout("list")}
             className={cn(
               "flex size-[2.25em] cursor-pointer items-center justify-center border-0 bg-transparent p-0",
-              layout === "list" ? "text-[#131111]" : "text-[#131111]/35"
+              layout === "list" ? "text-[#131111]" : "text-[#6B635C]"
             )}
           >
             <List className="size-[1.125em]" strokeWidth={1.5} />
@@ -275,7 +275,7 @@ export function ShopModeToolbar({
             {active?.label ?? "Newest"}
             <ChevronDown
               aria-hidden
-              className={`size-[1.25em] text-[#9C9C9C] transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`}
+              className={`size-[1.25em] text-[#6B635C] transition-transform duration-300 ${sortOpen ? "rotate-180" : ""}`}
               strokeWidth={1.5}
             />
           </button>
@@ -290,7 +290,7 @@ export function ShopModeToolbar({
                   <button
                     type="button"
                     className={`block w-full cursor-pointer border-0 bg-transparent px-[1em] py-[0.5em] text-left font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] ${
-                      item.value === sort ? "text-[#131111]" : "text-[rgba(19,17,17,0.6)]"
+                      item.value === sort ? "text-[#131111]" : "text-[#6B635C]"
                     }`}
                     onClick={() => onSort(item.value)}
                   >
@@ -302,7 +302,7 @@ export function ShopModeToolbar({
           ) : null}
         </div>
 
-        <p className="m-0 font-outfit text-[0.8125em] tracking-[0.08em] text-[rgba(19,17,17,0.5)] uppercase">
+        <p className="m-0 font-outfit text-[0.8125em] tracking-[0.08em] text-[#6B635C] uppercase">
           Showing {showingFrom}–{showingTo} of {total} results
         </p>
         </div>
@@ -325,7 +325,7 @@ export function ShopBrowseToolbar({
       >
         {SHOP_FILTER_LABEL}
       </button>
-      <h2 className="m-0 text-center font-outfit text-[clamp(1.5rem,3.5vw,2.25em)] leading-[1.2] font-normal tracking-[-0.03em] text-[#131111] sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+      <h2 className="m-0 text-center font-outfit text-[clamp(1.5rem,3.5vw,2.25em)] leading-[1.2] font-normal tracking-[-0.03em] text-[#131111] text-balance sm:absolute sm:left-1/2 sm:-translate-x-1/2">
         {SHOP_RECENT_HEADING}
       </h2>
       <span className="hidden w-[4.5em] sm:block" aria-hidden />

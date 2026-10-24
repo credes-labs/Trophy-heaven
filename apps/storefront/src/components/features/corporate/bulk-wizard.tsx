@@ -20,6 +20,11 @@ import {
 import { useCartStore } from "@/stores/cart-store"
 import { cn } from "@/lib/utils"
 
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
+
 type ProductOption = { id: string; title: string; variantId?: string }
 
 type ParsedRow = { name?: string; designation?: string; award_category?: string }
@@ -168,7 +173,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
             key={label}
             className={cn(
               "list-none font-outfit text-[0.875em] leading-[1.25em] tracking-[-0.02em] uppercase",
-              step === i + 1 ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#131111]/40"
+              step === i + 1 ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#6B635C]"
             )}
           >
             {String(i + 1).padStart(2, "0")} / {label}
@@ -210,7 +215,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
               id="bulk-product"
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
-              className={editorialFieldClass}
+              className={fieldClass}
             >
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -228,7 +233,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
               value={poNumber}
               onChange={(e) => setPoNumber(e.target.value)}
               placeholder="e.g. PO-2026-0042"
-              className={editorialFieldClass}
+              className={fieldClass}
             />
           </div>
           <div>
@@ -239,7 +244,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
               id="bulk-terms"
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value as PaymentTerms)}
-              className={editorialFieldClass}
+              className={fieldClass}
             >
               {termsOptions.map((t) => (
                 <option key={t} value={t}>
@@ -248,7 +253,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
               ))}
             </select>
             {paymentTerms !== "prepaid" ? (
-              <p className="mt-[0.75em] m-0 font-outfit text-[0.875em] leading-[1.4] tracking-[-0.02em] text-[#131111]/55">
+              <p className="mt-[0.75em] m-0 font-outfit text-[0.875em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
                 Billed to {profile?.company_name ?? "your corporate account"} against your credit
                 limit. PO number required.
               </p>
@@ -327,7 +332,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
                 {busy ? "Generating" : "Generate designs"}
               </EditorialCtaButton>
               {hasErrors ? (
-                <p className="m-0 font-outfit text-[0.875em] text-[#131111]/55">
+                <p className="m-0 font-outfit text-[0.875em] text-[#6B635C]">
                   Fix all errors before confirming.
                 </p>
               ) : null}
@@ -338,7 +343,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
 
       {step === 3 && confirmResult ? (
         <div className="mt-[2em] max-w-[32em]">
-          <h2 className="m-0 font-outfit text-[clamp(1.75rem,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+          <h2 className="m-0 font-outfit text-[clamp(1.75rem,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">
             Bulk order ready
           </h2>
           <p className="mt-[1em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">

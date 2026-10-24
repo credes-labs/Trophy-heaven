@@ -80,7 +80,7 @@ export default function WishlistPage() {
       <header className="relative overflow-hidden">
         <EditorialWatermark>saved</EditorialWatermark>
         <EditorialEyebrow>Saved</EditorialEyebrow>
-        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
           Wishlist
         </h1>
         <p className="relative mt-[1em] m-0 max-w-[28em] font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
@@ -123,7 +123,7 @@ export default function WishlistPage() {
                 </p>
               )}
               <div className="mt-[0.75em] flex flex-wrap items-baseline gap-x-[1.25em] gap-y-[0.35em]">
-                <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C] uppercase">
                   Added {addedLabel(item.added_at)}
                 </p>
                 <button

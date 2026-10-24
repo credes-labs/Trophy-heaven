@@ -201,7 +201,7 @@ export function CategoryStage() {
           role="listbox"
           aria-label="Furniture categories. Hover or scroll to preview."
           tabIndex={0}
-          className="relative z-10 flex flex-col items-center gap-[2em] py-[1.875em] outline-none"
+          className="relative z-10 flex flex-col items-center gap-[2em] py-[1.875em] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           onKeyDown={(e) => {
             if (e.key === "ArrowDown" || e.key === "ArrowUp") {
               e.preventDefault()
@@ -232,15 +232,15 @@ export function CategoryStage() {
                 }}
               >
                 <span
-                  className={`origin-center font-outfit leading-none font-light tracking-[-0.02em] uppercase transition-[font-size,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    isActive ? "text-[4.25em] opacity-100" : "text-[3.5em] opacity-40 hover:opacity-70"
+                  className={`origin-center font-outfit leading-none font-light tracking-[-0.02em] uppercase text-balance transition-[font-size,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    isActive ? "text-[4.25em] text-[#131111]" : "text-[3.5em] text-[#6B635C] hover:text-[#131111]"
                   }`}
                 >
                   {category.label}
                 </span>
                 <span
-                  className={`mt-[0.15em] font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase transition-opacity duration-300 ${
-                    isActive ? "opacity-100" : "opacity-40"
+                  className={`mt-[0.15em] font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase transition-colors duration-300 ${
+                    isActive ? "text-[#131111]" : "text-[#6B635C]"
                   }`}
                 >
                   /{category.count}/

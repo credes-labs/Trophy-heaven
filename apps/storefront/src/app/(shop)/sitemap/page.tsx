@@ -64,7 +64,7 @@ export default function HumanSitemapPage() {
         <div className="grid gap-[2.5em] lg:grid-cols-3">
           {GROUPS.map((group) => (
             <div key={group.title}>
-              <h2 className="m-0 font-outfit text-[1.25em] font-normal uppercase tracking-wide text-[#131111]">
+              <h2 className="m-0 font-outfit text-[1.25em] font-normal uppercase tracking-wide text-balance text-[#131111]">
                 {group.title}
               </h2>
               <ul className="mt-[1em] m-0 list-none space-y-[0.5em] p-0">

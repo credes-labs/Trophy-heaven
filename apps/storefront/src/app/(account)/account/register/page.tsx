@@ -11,7 +11,13 @@ import {
 } from "@/components/layout/editorial/editorial-cta"
 import { PasswordField } from "@/components/ui/password-field"
 import { safeReturnPath } from "@/lib/safe-return-path"
+import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth-store"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 function RegisterForm() {
   const router = useRouter()
@@ -63,7 +69,7 @@ function RegisterForm() {
               id="register-first-name"
               name="first_name"
               autoComplete="given-name"
-              className={editorialFieldClass}
+              className={fieldClass}
             />
           </div>
           <div>
@@ -74,7 +80,7 @@ function RegisterForm() {
               id="register-last-name"
               name="last_name"
               autoComplete="family-name"
-              className={editorialFieldClass}
+              className={fieldClass}
             />
           </div>
         </div>
@@ -89,7 +95,7 @@ function RegisterForm() {
             required
             autoComplete="email"
             placeholder="you@studio.in"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -103,7 +109,7 @@ function RegisterForm() {
             minLength={8}
             autoComplete="new-password"
             placeholder="At least 8 characters"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -116,7 +122,7 @@ function RegisterForm() {
             required
             minLength={8}
             autoComplete="new-password"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -129,7 +135,7 @@ function RegisterForm() {
             type="tel"
             autoComplete="tel"
             placeholder="+91 98765 43210"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <label className="flex items-start gap-[0.75em] font-outfit text-[0.875em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">

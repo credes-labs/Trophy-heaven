@@ -49,7 +49,7 @@ export function PromoCode() {
 
   return (
     <div className="min-w-0">
-      <p className="m-0 font-outfit text-[0.8125em] tracking-[-0.02em] text-[rgba(19,17,17,0.55)]">
+      <p className="m-0 max-w-[68ch] font-outfit text-[0.8125em] tracking-[-0.02em] text-pretty text-[#6B635C]">
         Have a coupon? Enter your code.
       </p>
 
@@ -68,7 +68,7 @@ export function PromoCode() {
                 onClick={() => void handleRemove(appliedCode)}
                 disabled={busy}
                 aria-label={`Remove promo code ${appliedCode}`}
-                className="text-[rgba(19,17,17,0.4)] transition-colors hover:text-[#131111] disabled:opacity-50"
+                className="text-[#6B635C] transition-colors hover:text-[#131111] disabled:opacity-50"
               >
                 <X className="h-3 w-3" strokeWidth={1.5} />
               </button>
@@ -83,7 +83,7 @@ export function PromoCode() {
           onChange={(e) => setCode(e.target.value)}
           placeholder="Coupon code"
           aria-label="Coupon code"
-          className="min-w-0 flex-1 border-0 border-b border-[#131111]/20 bg-transparent px-0 py-1.5 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] placeholder:text-[rgba(19,17,17,0.35)] focus-visible:border-[#131111] focus-visible:outline-none"
+          className="min-w-0 flex-1 border-0 border-b border-[#131111]/20 bg-transparent px-0 py-1.5 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] placeholder:text-[#6B635C] focus-visible:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-[#131111]"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -103,7 +103,7 @@ export function PromoCode() {
       {message && (
         <p
           className={`mt-[0.5em] m-0 font-outfit text-[0.75em] ${
-            message.type === "ok" ? "text-[rgba(19,17,17,0.55)]" : "text-destructive"
+            message.type === "ok" ? "text-[#6B635C]" : "text-destructive"
           }`}
           role="status"
         >

@@ -3,6 +3,12 @@
 import { useState, type FormEvent } from "react"
 import { EditorialCtaButton } from "@/components/layout/editorial/editorial-cta"
 import { editorialFieldClass, editorialLabelClass } from "@/components/layout/editorial/editorial-cta"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 export function QuoteRequestForm() {
   const [sent, setSent] = useState(false)
@@ -26,25 +32,25 @@ export function QuoteRequestForm() {
         <label htmlFor="org" className={editorialLabelClass}>
           Organisation
         </label>
-        <input id="org" name="org" required className={editorialFieldClass} />
+        <input id="org" name="org" required className={fieldClass} />
       </div>
       <div>
         <label htmlFor="email" className={editorialLabelClass}>
           Work email
         </label>
-        <input id="email" name="email" type="email" required className={editorialFieldClass} />
+        <input id="email" name="email" type="email" required className={fieldClass} />
       </div>
       <div>
         <label htmlFor="qty" className={editorialLabelClass}>
           Approximate quantity
         </label>
-        <input id="qty" name="qty" type="number" min={1} required className={editorialFieldClass} />
+        <input id="qty" name="qty" type="number" min={1} required className={fieldClass} />
       </div>
       <div>
         <label htmlFor="occasion" className={editorialLabelClass}>
           Occasion
         </label>
-        <input id="occasion" name="occasion" required className={editorialFieldClass} />
+        <input id="occasion" name="occasion" required className={fieldClass} />
       </div>
       <div>
         <label htmlFor="notes" className={editorialLabelClass}>
@@ -54,7 +60,7 @@ export function QuoteRequestForm() {
           id="notes"
           name="notes"
           rows={4}
-          className={`${editorialFieldClass} h-auto py-2`}
+          className={cn(fieldClass, "h-auto py-2")}
         />
       </div>
       <EditorialCtaButton type="submit">Request a quote</EditorialCtaButton>

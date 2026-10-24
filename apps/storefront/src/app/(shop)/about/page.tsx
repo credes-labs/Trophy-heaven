@@ -49,7 +49,7 @@ export default function AboutPage() {
             <div className="relative z-10 max-w-[32em]">
               <EditorialWatermark>legacy</EditorialWatermark>
               <EditorialEyebrow>What we do & about us</EditorialEyebrow>
-              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
                 Crafted with intention. Built to last.
               </h1>
               <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]/70">
@@ -110,7 +110,7 @@ export default function AboutPage() {
             //Materials
           </p>
           <div className="mt-[1.5em] grid grid-cols-1 gap-[2em] lg:grid-cols-12">
-            <h2 className="m-0 max-w-[12em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111] lg:col-span-5">
+            <h2 className="m-0 max-w-[12em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111] lg:col-span-5">
               Built to last, not to replace
             </h2>
             <p className="m-0 max-w-[36em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70 lg:col-span-7">
@@ -123,7 +123,7 @@ export default function AboutPage() {
       </section>
 
       <EditorialFrame>
-        <h2 className="m-0 max-w-[22em] font-outfit text-[clamp(1.75em,4vw,3.375em)] leading-[1.2] font-normal tracking-[-0.02em] text-[#131111]">
+        <h2 className="m-0 max-w-[22em] font-outfit text-[clamp(1.75em,4vw,3.375em)] leading-[1.2] font-normal tracking-[-0.02em] text-balance text-[#131111]">
           Three expressions of the same standard
         </h2>
         <div className="mt-[clamp(2em,4vw,3.75em)] grid grid-cols-1 gap-[2em] lg:grid-cols-3">
@@ -138,7 +138,7 @@ export default function AboutPage() {
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
                 />
               </div>
-              <h3 className="mt-[1em] m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+              <h3 className="mt-[1em] m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-balance text-[#131111] uppercase">
                 {item.title}
               </h3>
               <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">

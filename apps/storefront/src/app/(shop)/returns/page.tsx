@@ -20,7 +20,7 @@ export default function ReturnsPage() {
         body="Within the returns window, request an RMA and we will guide the rest."
       />
       <EditorialFrame>
-        <p className="m-0 mb-[2em] max-w-[36em] font-outfit text-[1em] leading-[1.5] text-[#131111]/7">
+        <p className="m-0 mb-[2em] max-w-[36em] font-outfit text-[1em] leading-[1.5] text-pretty text-[#6B635C]">
           Read the full policy on{" "}
           <Link href="/shipping-returns" className="underline underline-offset-[0.15em] text-[#131111]">
             Shipping &amp; Returns

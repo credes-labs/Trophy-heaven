@@ -25,7 +25,7 @@ export function BulkCalculator({ basePrice = 1499 }: { basePrice?: number }) {
             <label htmlFor="bulk-qty" className="font-outfit text-[0.875em] tracking-[-0.02em] uppercase">
               Quantity
             </label>
-            <span className="font-outfit text-[2em] leading-none font-light tracking-[-0.04em] text-[#131111]">
+            <span className="font-outfit text-[2em] leading-none font-light tracking-[-0.04em] text-[#131111] tabular-nums">
               {qty}
             </span>
           </div>
@@ -44,7 +44,7 @@ export function BulkCalculator({ basePrice = 1499 }: { basePrice?: number }) {
             max={1000}
             value={qty}
             onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
-            className="mt-[1em] h-12 w-28 border-0 border-b border-[#131111]/20 bg-transparent font-outfit text-[1.25em] tracking-[-0.02em] text-[#131111] focus:border-[#131111] focus:outline-none"
+            className="mt-[1em] h-12 w-28 border-0 border-b border-[#131111]/20 bg-transparent font-outfit text-[1.25em] tracking-[-0.02em] text-[#131111] tabular-nums focus:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid"
           />
 
           <div className="mt-[2em] flex flex-wrap gap-x-[1.75em] gap-y-[0.5em]">
@@ -53,7 +53,7 @@ export function BulkCalculator({ basePrice = 1499 }: { basePrice?: number }) {
                 key={t.label}
                 className={cn(
                   "m-0 font-outfit text-[0.875em] tracking-[-0.02em] uppercase",
-                  quote.tierLabel === t.label ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#131111]/40"
+                  quote.tierLabel === t.label ? "text-[#131111] underline underline-offset-[0.2em]" : "text-[#6B635C]"
                 )}
               >
                 {t.label} · {(t.discount * 100).toFixed(0)}%
@@ -65,7 +65,7 @@ export function BulkCalculator({ basePrice = 1499 }: { basePrice?: number }) {
         <dl className="lg:col-span-5">
           <div className="flex justify-between border-b border-[#CDCDCD] py-[0.85em] font-outfit text-[1em] tracking-[-0.02em]">
             <dt className="text-[#131111]/70">Unit</dt>
-            <dd className="m-0">{formatMoney(quote.unitPrice, "inr")}</dd>
+            <dd className="m-0 tabular-nums">{formatMoney(quote.unitPrice, "inr")}</dd>
           </div>
           <div className="flex justify-between border-b border-[#CDCDCD] py-[0.85em] font-outfit text-[1em] tracking-[-0.02em]">
             <dt className="text-[#131111]/70">Discount</dt>
@@ -73,14 +73,14 @@ export function BulkCalculator({ basePrice = 1499 }: { basePrice?: number }) {
           </div>
           <div className="flex justify-between border-b border-[#CDCDCD] py-[0.85em] font-outfit text-[1em] tracking-[-0.02em]">
             <dt className="text-[#131111]/70">Discounted unit</dt>
-            <dd className="m-0">{formatMoney(quote.discountedUnit, "inr")}</dd>
+            <dd className="m-0 tabular-nums">{formatMoney(quote.discountedUnit, "inr")}</dd>
           </div>
           <div className="flex justify-between py-[1em] font-outfit text-[1.25em] tracking-[-0.02em]">
             <dt>Subtotal ({quote.quantity})</dt>
-            <dd className="m-0">{formatMoney(quote.subtotal, "inr")}</dd>
+            <dd className="m-0 tabular-nums">{formatMoney(quote.subtotal, "inr")}</dd>
           </div>
           {quote.savings > 0 ? (
-            <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/55">
+            <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
               You save {formatMoney(quote.savings, "inr")}
             </p>
           ) : null}

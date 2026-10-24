@@ -3,6 +3,12 @@
 import { useState, type FormEvent } from "react"
 import { EditorialCtaButton, editorialFieldClass, editorialLabelClass } from "@/components/layout/editorial/editorial-cta"
 import { subscribeNewsletter } from "@/lib/forms"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 export function JournalSubscribe() {
   const [email, setEmail] = useState("")
@@ -52,7 +58,7 @@ export function JournalSubscribe() {
             placeholder="you@studio.in"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={editorialFieldClass}
+            className={fieldClass}
           />
           {error ? (
             <p className="mt-[0.75em] m-0 font-outfit text-[0.875em] text-[#8A2D25]" role="alert">

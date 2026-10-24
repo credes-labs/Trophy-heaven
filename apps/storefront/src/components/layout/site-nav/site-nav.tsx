@@ -5,10 +5,10 @@ import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
-import { siteNavColumns, siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
+import { siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
 
 export const siteNavItemClass =
-  "font-outfit text-[13px] font-normal tracking-[0.08em] text-white uppercase transition-opacity hover:opacity-70 lg:text-[20px] lg:leading-[25px] lg:tracking-[0.04em]"
+  "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#F2F1EF] lg:text-[13px]"
 
 function SiteCartControl({ className }: { className?: string }) {
   const count = useCartStore((s) => s.itemCount())
@@ -77,7 +77,7 @@ function NavFlyout({
                 <Link
                   href={child.href}
                   role="menuitem"
-                  className="block py-1.5 font-outfit text-[13px] font-normal tracking-[0.08em] text-[#131111] uppercase transition-opacity hover:opacity-60"
+                  className="block py-1.5 font-outfit text-[13px] font-normal tracking-[0.08em] text-[#131111] uppercase transition-colors hover:text-[#6B635C]"
                   onClick={onClose}
                 >
                   {child.label}
@@ -91,8 +91,9 @@ function NavFlyout({
   )
 }
 
-function NavColumns({ categories }: { categories?: NavCategory[] }) {
-  const { col1, col2 } = useMemo(() => siteNavColumns(categories), [categories])
+/** Single-row header: wordmark, links, search, and cart. Flyouts still open under each label. */
+export function SiteNav({ categories }: { categories?: NavCategory[] }) {
+  const links = useMemo(() => siteNavLinks(categories), [categories])
   const [openId, setOpenId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -105,46 +106,24 @@ function NavColumns({ categories }: { categories?: NavCategory[] }) {
   }, [openId])
 
   return (
-    <div className="flex gap-12 lg:gap-16">
-      <ul className="m-0 flex list-none flex-col gap-1 p-0">
-        {col1.map((item) => (
-          <NavFlyout
-            key={item.id}
-            item={item}
-            open={openId === item.id}
-            onOpen={() => setOpenId(item.id)}
-            onClose={() => setOpenId((current) => (current === item.id ? null : current))}
-          />
-        ))}
-      </ul>
-      <ul className="m-0 flex list-none flex-col gap-1 p-0">
-        {col2.map((item) => (
-          <NavFlyout
-            key={item.id}
-            item={item}
-            open={openId === item.id}
-            onOpen={() => setOpenId(item.id)}
-            onClose={() => setOpenId((current) => (current === item.id ? null : current))}
-          />
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-/** Homepage-matching nav: wordmark | two columns | search + cart. */
-export function SiteNav({ categories }: { categories?: NavCategory[] }) {
-  return (
-    <div className="flex items-start justify-between gap-6">
+    <div className="flex items-center justify-between gap-6">
       <HeroWordmark />
-      <nav aria-label="Primary" className="flex items-start gap-10 lg:gap-16">
-        <NavColumns categories={categories} />
-        <div className="flex flex-col items-end gap-1">
-          <Link href="/search" aria-label="Search" className={siteNavItemClass}>
-            SEARCH
-          </Link>
-          <SiteCartControl className={siteNavItemClass} />
-        </div>
+      <nav aria-label="Primary" className="flex items-center gap-5 xl:gap-8">
+        <ul className="m-0 flex list-none items-center gap-4 p-0 xl:gap-6">
+          {links.map((item) => (
+            <NavFlyout
+              key={item.id}
+              item={item}
+              open={openId === item.id}
+              onOpen={() => setOpenId(item.id)}
+              onClose={() => setOpenId((current) => (current === item.id ? null : current))}
+            />
+          ))}
+        </ul>
+        <Link href="/search" aria-label="Search" className={siteNavItemClass}>
+          SEARCH
+        </Link>
+        <SiteCartControl className={siteNavItemClass} />
       </nav>
     </div>
   )
@@ -176,7 +155,7 @@ export function SiteNavMobile({ categories }: { categories?: NavCategory[] }) {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open menu"
-          className="flex size-11 items-center justify-center text-white"
+          className="flex size-11 items-center justify-center text-white focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
         >
           <Menu className="size-6" strokeWidth={1.5} aria-hidden />
         </button>
@@ -196,7 +175,7 @@ export function SiteNavMobile({ categories }: { categories?: NavCategory[] }) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="flex size-11 items-center justify-center"
+                className="flex size-11 items-center justify-center focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
               >
                 <X className="size-6" strokeWidth={1.5} aria-hidden />
               </button>

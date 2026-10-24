@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const dialogContentVariants = cva(
-  "relative z-50 flex flex-col bg-card border border-border shadow-lg focus:outline-none",
+  "relative z-50 flex flex-col bg-card border border-border shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink",
   {
     variants: {
       size: {
@@ -126,7 +126,7 @@ export function DialogContent({ className, size, children, ...props }: DialogCon
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 cursor-pointer rounded-sm border-0 bg-transparent text-inherit opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#131111]"
+          className="absolute right-4 top-4 cursor-pointer rounded-sm border-0 bg-transparent text-inherit opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
           aria-label="Close"
         >
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">

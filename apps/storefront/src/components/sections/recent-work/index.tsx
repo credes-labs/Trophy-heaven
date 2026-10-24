@@ -24,7 +24,7 @@ export async function RecentWorkSection() {
           <SectionEyebrow>recent work</SectionEyebrow>
           <h2
             id="recent-work-heading"
-            className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+            className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
           >
             Lately from the workshop.
           </h2>
@@ -33,7 +33,7 @@ export async function RecentWorkSection() {
       </div>
 
       {products.length === 0 ? (
-        <p className="mt-[2em] m-0 font-outfit text-[#131111]/6">
+        <p className="mt-[2em] m-0 font-outfit text-pretty text-[#6B635C]">
           Catalog is loading. Please check back shortly.
         </p>
       ) : (
@@ -58,7 +58,7 @@ export async function RecentWorkSection() {
                   <p className="mt-[0.85em] m-0 font-outfit text-[1em] leading-[1.3] tracking-[-0.02em] text-[#131111]">
                     {product.title}
                   </p>
-                  <p className="mt-[0.25em] m-0 font-outfit text-[0.875em] text-[#131111]/65">
+                  <p className="mt-[0.25em] m-0 font-outfit text-[0.875em] text-[#131111]/65 tabular-nums">
                     {productPrice(product)}
                   </p>
                 </Link>

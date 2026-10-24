@@ -47,7 +47,7 @@ export async function DisciplinesSection() {
       <SectionEyebrow>three disciplines</SectionEyebrow>
       <h2
         id="disciplines-heading"
-        className="mt-[0.75em] m-0 max-w-[18em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+        className="mt-[0.75em] m-0 max-w-[18em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
       >
         One workshop, three crafts.
       </h2>
@@ -67,14 +67,14 @@ export async function DisciplinesSection() {
                 className="flex h-full flex-col border border-[#131111]/10 p-[1.5em] transition-colors group-hover:border-[#131111]/30"
                 style={{ borderTopWidth: "0.25em", borderTopColor: ACCENTS[key] }}
               >
-                <p className="m-0 font-outfit text-[0.75em] uppercase tracking-[0.12em] text-[#131111]/55">
+                <p className="m-0 font-outfit text-[0.75em] uppercase tracking-[0.12em] text-[#6B635C]">
                   {cfg.label}
                   {count > 0 ? ` · ${count}` : ""}
                 </p>
-                <h3 className="mt-[1em] m-0 font-outfit text-[1.35em] leading-[1.25] font-normal tracking-[-0.02em] text-[#131111]">
+                <h3 className="mt-[1em] m-0 font-outfit text-[1.35em] leading-[1.25] font-normal tracking-[-0.02em] text-balance text-[#131111]">
                   {copy.title}
                 </h3>
-                <p className="mt-[0.75em] m-0 flex-1 font-outfit text-[1em] leading-[1.45] tracking-[-0.02em] text-[#131111]/70">
+                <p className="mt-[0.75em] m-0 flex-1 font-outfit text-[1em] leading-[1.45] tracking-[-0.02em] text-pretty text-[#131111]/70">
                   {copy.body}
                 </p>
                 <span className="mt-[1.25em] font-outfit text-[0.875em] uppercase tracking-wide text-[#131111] underline underline-offset-[0.15em]">

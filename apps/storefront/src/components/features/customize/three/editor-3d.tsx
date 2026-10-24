@@ -138,15 +138,15 @@ export function Editor3D({
         {screenshot && (
           <div className="flex items-center gap-3 rounded-md border border-border p-2">
             <img src={screenshot} alt="Captured preview" className="h-16 w-16 rounded object-cover" />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-[#6B635C]">
               Screenshot captured — it will be used as the cart preview.
             </span>
           </div>
         )}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-[#6B635C]">
           Drag to orbit, scroll to zoom. On touch devices use one finger to rotate, two to zoom.
           A 2D equivalent (material: {material3DTo2D(values.material)}) is available at{" "}
-          <Link href={`/customize/${product.id}/2d`} className="text-accent hover:underline">
+          <Link href={`/customize/${product.id}/2d`} className="text-[#131111] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
             the 2D editor
           </Link>
           .
@@ -159,7 +159,7 @@ export function Editor3D({
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           />
         </div>
 
@@ -171,7 +171,7 @@ export function Editor3D({
                 key={b.id}
                 onClick={() => patch({ baseModelId: b.id })}
                 className={cn(
-                  "rounded-md border px-2 py-2 text-xs",
+                  "rounded-md border px-2 py-2 text-xs text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
                   values.baseModelId === b.id ? "border-accent ring-2 ring-accent" : "border-border"
                 )}
               >
@@ -189,7 +189,7 @@ export function Editor3D({
                 key={m.value}
                 onClick={() => patch({ material: m.value as Material3D })}
                 className={cn(
-                  "rounded-md border p-1.5 text-[11px]",
+                  "rounded-md border p-1.5 text-[11px] text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
                   values.material === m.value ? "border-accent ring-2 ring-accent" : "border-border"
                 )}
               >
@@ -206,7 +206,7 @@ export function Editor3D({
             value={values.engravingText}
             onChange={(e) => patch({ engravingText: e.target.value })}
             placeholder="e.g. Employee of the Year 2026"
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           />
           <select
             value={values.engravingFont}
@@ -223,12 +223,12 @@ export function Editor3D({
 
         <div>
           <p className="mb-1 text-sm font-medium">Logo</p>
-          <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-border px-3 py-3 text-sm text-muted-foreground hover:bg-muted">
+          <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-border px-3 py-3 text-sm text-[#6B635C] hover:bg-muted">
             Upload logo
             <input type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={onUploadLogo} className="hidden" />
           </label>
           {values.logoUrl && (
-            <button onClick={() => patch({ logoUrl: null })} className="mt-1 text-xs text-destructive">
+            <button type="button" onClick={() => patch({ logoUrl: null })} className="mt-1 text-xs text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
               Remove logo
             </button>
           )}
@@ -240,7 +240,7 @@ export function Editor3D({
             <select
               value={values.environment}
               onChange={(e) => patch({ environment: e.target.value as "studio" | "none" })}
-              className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+              className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             >
               <option value="studio">Studio HDRI</option>
               <option value="none">None</option>
@@ -251,7 +251,7 @@ export function Editor3D({
             <select
               value={values.lod}
               onChange={(e) => patch({ lod: e.target.value as Editor3DValues["lod"] })}
-              className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+              className="w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             >
               <option value="auto">Auto</option>
               <option value="high">High</option>
@@ -272,10 +272,10 @@ export function Editor3D({
         )}
 
         <div className="flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={handleSave} disabled={saving}>
+          <Button variant="outline" className="flex-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleSave} disabled={saving}>
             {saving ? "Saving…" : "Save"}
           </Button>
-          <Button variant="accent" className="flex-1" onClick={handleAddToCart} disabled={saving || !variantId}>
+          <Button variant="accent" className="flex-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleAddToCart} disabled={saving || !variantId}>
             Add to cart
           </Button>
         </div>

@@ -48,13 +48,13 @@ export function CartDrawer() {
       />
       <aside className="absolute right-0 top-0 flex h-full w-full max-w-[26rem] flex-col bg-[#F2F1EF] text-[#131111] shadow-xl">
         <div className="flex items-center justify-between border-b border-[#131111]/12 px-5 py-4">
-          <h2 className="m-0 font-outfit text-[1.125em] font-normal tracking-[0.14em] uppercase">
+          <h2 className="m-0 font-outfit text-[1.125em] font-normal tracking-[0.14em] text-balance uppercase">
             Your cart
           </h2>
           <button
             onClick={() => setDrawerOpen(false)}
             aria-label="Close cart"
-            className="flex h-11 w-11 items-center justify-center text-[rgba(19,17,17,0.5)] hover:text-[#131111]"
+            className="flex h-11 w-11 items-center justify-center text-[#6B635C] hover:text-[#131111]"
           >
             <X className="h-5 w-5" strokeWidth={1.5} aria-hidden />
           </button>
@@ -62,7 +62,7 @@ export function CartDrawer() {
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {items.length === 0 ? (
-            <p className="mt-8 text-center font-outfit text-[0.875em] tracking-[-0.02em] text-[rgba(19,17,17,0.55)]">
+            <p className="mt-8 text-center font-outfit text-[0.875em] tracking-[-0.02em] text-pretty text-[#6B635C]">
               Your cart is empty.
             </p>
           ) : (
@@ -79,7 +79,7 @@ export function CartDrawer() {
                       type="button"
                       onClick={() => removeItem(item.id)}
                       aria-label={`Remove ${title} from cart`}
-                      className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center text-[rgba(19,17,17,0.4)] hover:text-[#131111]"
+                      className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center text-[#6B635C] hover:text-[#131111]"
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
                     </button>
@@ -89,12 +89,12 @@ export function CartDrawer() {
                         {title}
                       </p>
                       {item.variant_title ? (
-                        <p className="mt-[0.15em] m-0 font-outfit text-[0.75em] text-[rgba(19,17,17,0.5)]">
+                        <p className="mt-[0.15em] m-0 font-outfit text-[0.75em] text-[#6B635C]">
                           {item.variant_title} / x{qty}
                         </p>
                       ) : null}
                       {item.metadata?.design_id ? (
-                        <p className="mt-0.5 m-0 font-outfit text-[0.75em] text-[rgba(19,17,17,0.55)]">
+                        <p className="mt-0.5 m-0 font-outfit text-[0.75em] text-[#6B635C]">
                           Customized design
                         </p>
                       ) : null}
@@ -122,7 +122,7 @@ export function CartDrawer() {
         <div className="border-t border-[#131111]/12 px-5 py-4">
           <dl className="mb-4 space-y-[0.65em] font-outfit text-[0.8125em] tracking-[-0.02em]">
             <div className="flex items-start justify-between gap-3">
-              <dt className="text-[rgba(19,17,17,0.55)]">Shipping (3–5 business days)</dt>
+              <dt className="text-[#6B635C]">Shipping (3–5 business days)</dt>
               <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
                 {(cart?.shipping_total ?? 0) <= 0
                   ? "Free"
@@ -130,21 +130,21 @@ export function CartDrawer() {
               </dd>
             </div>
             <div className="flex items-start justify-between gap-3">
-              <dt className="text-[rgba(19,17,17,0.55)]">TAX (estimated)</dt>
+              <dt className="text-[#6B635C]">TAX (estimated)</dt>
               <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
                 {formatMoney(cart?.tax_total ?? 0, currency)}
               </dd>
             </div>
             {(cart?.discount_total ?? 0) > 0 ? (
               <div className="flex items-start justify-between gap-3">
-                <dt className="text-[rgba(19,17,17,0.55)]">Discount</dt>
+                <dt className="text-[#6B635C]">Discount</dt>
                 <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
                   −{formatMoney(cart?.discount_total ?? 0, currency)}
                 </dd>
               </div>
             ) : null}
             <div className="flex items-start justify-between gap-3">
-              <dt className="text-[rgba(19,17,17,0.55)]">Subtotal</dt>
+              <dt className="text-[#6B635C]">Subtotal</dt>
               <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
                 {formatMoney(cart?.item_subtotal ?? 0, currency)}
               </dd>
@@ -169,7 +169,7 @@ export function CartDrawer() {
           <Link
             href="/cart"
             onClick={() => setDrawerOpen(false)}
-            className="mt-[0.85em] block text-center font-outfit text-[0.75em] tracking-[0.14em] text-[rgba(19,17,17,0.55)] uppercase no-underline hover:text-[#131111]"
+            className="mt-[0.85em] block text-center font-outfit text-[0.75em] tracking-[0.14em] text-[#6B635C] uppercase no-underline hover:text-[#131111]"
           >
             View full cart
           </Link>

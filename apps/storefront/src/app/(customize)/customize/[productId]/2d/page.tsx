@@ -24,11 +24,11 @@ export default async function Customize2DPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <div className="mb-6">
-        <Link href={`/products/${product.handle}`} className="text-sm text-accent hover:underline">
-          ← Back to {product.title}
+        <Link href={`/products/${product.handle}`} className="font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
+          Back to {product.title}
         </Link>
-        <h1 className="mt-2 font-serif text-3xl">Design your {product.title}</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="mt-[0.75em] font-outfit text-[clamp(1.75rem,3vw,2.25em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">Design your {product.title}</h1>
+        <p className="mt-[0.5em] font-outfit text-[1em] leading-[1.45] text-[#6B635C]">
           Add engraving text and your logo, pick a material finish, then save or add to cart.
         </p>
       </div>

@@ -24,10 +24,10 @@ export function DeliveryOptions({
 }) {
   return (
     <div className="mt-6 space-y-4">
-      <h2 className="font-medium">Select delivery method</h2>
+      <h2 className="text-balance font-medium">Select delivery method</h2>
 
       {options.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
+        <p className="max-w-[68ch] rounded-md border border-dashed border-border p-4 text-pretty text-sm text-muted-foreground">
           No shipping options configured for this region yet.
         </p>
       ) : (

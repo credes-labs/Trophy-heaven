@@ -34,20 +34,20 @@ export function ReviewStep({
 
   return (
     <div className="mt-6 space-y-6">
-      <h2 className="font-medium">Review your order</h2>
+      <h2 className="text-balance font-medium">Review your order</h2>
 
       <dl className="space-y-3 rounded-lg border border-border p-4 text-sm">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-muted-foreground">Shipping to</dt>
+          <dt className="text-xs uppercase tracking-wide text-[#6B635C]">Shipping to</dt>
           <dd className="mt-1">{addressLine}</dd>
           {cart.email && <dd className="text-muted-foreground">{cart.email}</dd>}
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-muted-foreground">Delivery</dt>
+          <dt className="text-xs uppercase tracking-wide text-[#6B635C]">Delivery</dt>
           <dd className="mt-1">{shippingLabel}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-muted-foreground">Payment</dt>
+          <dt className="text-xs uppercase tracking-wide text-[#6B635C]">Payment</dt>
           <dd className="mt-1">{paymentLabel}</dd>
         </div>
       </dl>
@@ -65,7 +65,7 @@ export function ReviewStep({
         ))}
       </ul>
 
-      <p className="text-xs text-muted-foreground">
+      <p className="max-w-[68ch] text-pretty text-xs text-muted-foreground">
         Custom trophy orders are non-returnable. Please review your design and details before placing
         the order.
       </p>
@@ -74,7 +74,7 @@ export function ReviewStep({
         <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
           Back
         </Button>
-        <Button type="button" variant="trophy" onClick={onPlaceOrder} loading={busy}>
+        <Button type="button" variant="trophy" onClick={onPlaceOrder} loading={busy} className="tabular-nums">
           {busy
             ? "Placing order…"
             : netTerms

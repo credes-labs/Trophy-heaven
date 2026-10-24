@@ -59,7 +59,7 @@ export function Slider({
         aria-valuemax={max}
         aria-valuenow={value}
         tabIndex={0}
-        className="relative flex h-5 w-full touch-none select-none items-center"
+        className="relative flex h-5 w-full touch-none select-none items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink"
         onPointerDown={(e) => {
           setDragging(true)
           updateValue(e.clientX)

@@ -31,7 +31,7 @@ export function VoicesSection() {
       <SectionEyebrow>in their words</SectionEyebrow>
       <h2
         id="voices-heading"
-        className="mt-[0.75em] m-0 max-w-[16em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+        className="mt-[0.75em] m-0 max-w-[16em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
       >
         What clients say after the ceremony.
       </h2>
@@ -42,10 +42,10 @@ export function VoicesSection() {
             key={item.name}
             className="m-0 border border-[#131111]/10 p-[1.5em]"
           >
-            <p className="m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]">
+            <p className="m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#131111]">
               “{item.quote}”
             </p>
-            <footer className="mt-[1.25em] font-outfit text-[0.875em] uppercase tracking-wide text-[#131111]/6">
+            <footer className="mt-[1.25em] font-outfit text-[0.875em] uppercase tracking-wide text-[#6B635C]">
               {item.name} · {item.location}
             </footer>
           </blockquote>
@@ -54,10 +54,10 @@ export function VoicesSection() {
 
       <div className="mt-[clamp(1.75em,3.5vw,3em)] lg:hidden">
         <blockquote className="m-0 border border-[#131111]/10 p-[1.5em]">
-          <p className="m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]">
+          <p className="m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#131111]">
             “{quote.quote}”
           </p>
-          <footer className="mt-[1.25em] font-outfit text-[0.875em] uppercase tracking-wide text-[#131111]/6">
+          <footer className="mt-[1.25em] font-outfit text-[0.875em] uppercase tracking-wide text-[#6B635C]">
             {quote.name} · {quote.location}
           </footer>
         </blockquote>

@@ -54,13 +54,13 @@ export function EditorialProductCard({
           ) : null}
         </div>
         <div className="flex min-w-0 flex-1 flex-col justify-center">
-          <p className="m-0 font-outfit text-[0.875em] leading-[1.4] font-light tracking-[-0.03em] text-[rgba(19,17,17,0.6)]">
+          <p className="m-0 font-outfit text-[0.875em] leading-[1.4] font-light tracking-[-0.03em] text-[#6B635C]">
             {category}
           </p>
-          <h3 className="mt-[0.35em] m-0 font-outfit text-[1.25em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+          <h3 className="mt-[0.35em] m-0 font-outfit text-[1.25em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] text-balance uppercase">
             {product.title}
           </h3>
-          <p className="mt-[0.5em] m-0 font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] text-[rgba(19,17,17,0.6)] uppercase">
+          <p className="mt-[0.5em] m-0 font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#6B635C] uppercase tabular-nums">
             {price}
           </p>
         </div>
@@ -85,13 +85,13 @@ export function EditorialProductCard({
         ) : null}
       </div>
       <div className="mt-[1em] flex flex-col gap-[0.35em]">
-        <p className="m-0 font-outfit text-[0.75em] leading-[1.4] font-light tracking-[0.08em] text-[rgba(19,17,17,0.45)] uppercase">
+        <p className="m-0 font-outfit text-[0.75em] leading-[1.4] font-light tracking-[0.08em] text-[#6B635C] uppercase">
           {category}
         </p>
-        <h3 className="m-0 font-outfit text-[1em] leading-[1.35] font-normal tracking-[0.06em] text-[#131111] uppercase">
+        <h3 className="m-0 font-outfit text-[1em] leading-[1.35] font-normal tracking-[0.06em] text-[#131111] text-balance uppercase">
           {product.title}
         </h3>
-        <p className="m-0 font-outfit text-[0.9375em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111]">
+        <p className="m-0 font-outfit text-[0.9375em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] tabular-nums">
           {price}
         </p>
       </div>

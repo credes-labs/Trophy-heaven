@@ -43,16 +43,16 @@ export default function CustomizeLandingPage() {
         </EditorialCtaLink>
       </SimplePageHero>
       <EditorialFrame>
-        <h2 className="m-0 font-outfit text-[clamp(1.5em,3vw,2.25em)] font-normal tracking-[-0.03em] text-[#131111]">
+        <h2 className="m-0 font-outfit text-[clamp(1.5em,3vw,2.25em)] font-normal tracking-[-0.03em] text-balance text-[#131111]">
           Start from a piece
         </h2>
         <ul className="mt-[2em] m-0 grid list-none grid-cols-1 gap-[1.5em] p-0 lg:grid-cols-3">
           {TEMPLATES.map((item) => (
             <li key={item.href} className="border border-[#131111]/10 p-[1.5em]">
-              <h3 className="m-0 font-outfit text-[1.25em] font-normal tracking-[-0.02em] text-[#131111]">
+              <h3 className="m-0 font-outfit text-[1.25em] font-normal tracking-[-0.02em] text-balance text-[#131111]">
                 {item.title}
               </h3>
-              <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.45] text-[#131111]/7">
+              <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.45] text-[#6B635C]">
                 {item.body}
               </p>
               <Link

@@ -9,7 +9,7 @@ export function AboutCopy() {
         {ABOUT_BODY.map((paragraph) => (
           <p
             key={paragraph.slice(0, 24)}
-            className="m-0 font-outfit text-[1em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]"
+            className="m-0 font-outfit text-[1em] leading-[1.4] font-normal tracking-[-0.02em] text-pretty text-[#131111]"
           >
             {paragraph}
           </p>

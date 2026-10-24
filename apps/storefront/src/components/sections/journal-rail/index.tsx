@@ -20,7 +20,7 @@ export async function JournalRailSection() {
           <SectionEyebrow>journal</SectionEyebrow>
           <h2
             id="journal-heading"
-            className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+            className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
           >
             Notes from the bench.
           </h2>
@@ -29,7 +29,7 @@ export async function JournalRailSection() {
       </div>
 
       {posts.length === 0 ? (
-        <p className="mt-[2em] m-0 font-outfit text-[#131111]/6">
+        <p className="mt-[2em] m-0 font-outfit text-pretty text-[#6B635C]">
           New workshop notes arrive soon.
         </p>
       ) : (
@@ -43,17 +43,17 @@ export async function JournalRailSection() {
                     {cover ? (
                       <Image
                         src={cover}
-                        alt=""
+                        alt={post.title}
                         fill
                         sizes="(min-width: 90rem) 20rem, 75vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                       />
                     ) : null}
                   </div>
-                  <p className="mt-[0.75em] m-0 font-outfit text-[0.75em] uppercase tracking-[0.1em] text-[#131111]/55">
+                  <p className="mt-[0.75em] m-0 font-outfit text-[0.75em] uppercase tracking-[0.1em] text-[#6B635C]">
                     {formatPostDate(post.published_at)}
                   </p>
-                  <h3 className="mt-[0.4em] m-0 font-outfit text-[1.125em] leading-[1.3] font-normal tracking-[-0.02em] text-[#131111]">
+                  <h3 className="mt-[0.4em] m-0 font-outfit text-[1.125em] leading-[1.3] font-normal tracking-[-0.02em] text-balance text-[#131111]">
                     {post.title}
                   </h3>
                 </Link>

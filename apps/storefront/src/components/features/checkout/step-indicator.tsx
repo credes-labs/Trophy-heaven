@@ -42,7 +42,7 @@ export function StepIndicator({
               <span
                 className={cn(
                   "truncate text-[10px] uppercase tracking-wide sm:text-xs",
-                  active ? "font-semibold text-foreground" : "text-muted-foreground"
+                  active ? "font-semibold text-foreground" : "text-[#6B635C]"
                 )}
               >
                 {step.label}

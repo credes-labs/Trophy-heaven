@@ -35,7 +35,7 @@ export function QuantityStepper({
         aria-label="Decrease quantity"
         disabled={atMin}
         onClick={() => onChange(Math.max(min, value - step))}
-        className="flex h-9 w-9 items-center justify-center text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+        className="flex h-9 w-9 items-center justify-center text-sm transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50"
       >
         −
       </button>
@@ -51,7 +51,7 @@ export function QuantityStepper({
         aria-label="Increase quantity"
         disabled={atMax}
         onClick={() => onChange(Math.min(max, value + step))}
-        className="flex h-9 w-9 items-center justify-center text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+        className="flex h-9 w-9 items-center justify-center text-sm transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50"
       >
         +
       </button>

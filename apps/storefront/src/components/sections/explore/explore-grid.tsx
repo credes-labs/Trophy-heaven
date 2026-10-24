@@ -4,7 +4,7 @@ import type { ExploreProduct } from "./constants"
 export function ExploreGrid({ products }: { products: ExploreProduct[] }) {
   if (products.length === 0) {
     return (
-      <p className="m-0 font-outfit text-[1.25em] leading-[1.4] tracking-[-0.02em] text-[rgba(19,17,17,0.6)]">
+      <p className="m-0 font-outfit text-[1.25em] leading-[1.4] tracking-[-0.02em] text-pretty text-[rgba(19,17,17,0.6)]">
         No pieces match these filters.
       </p>
     )

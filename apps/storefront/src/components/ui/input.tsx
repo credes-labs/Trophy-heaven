@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils"
 import { PasswordRevealToggle } from "@/components/ui/password-field"
 
 const inputVariants = cva(
-  "flex w-full rounded-md border bg-transparent px-3 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-md border bg-transparent px-3 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-border focus-visible:ring-primary",
+        default: "border-border focus-visible:ring-ink",
         error: "border-destructive focus-visible:ring-destructive",
-        success: "border-success focus-visible:ring-success",
+        success: "border-success focus-visible:ring-ink",
       },
       inputSize: {
         sm: "h-9 text-xs",

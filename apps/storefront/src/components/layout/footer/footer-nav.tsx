@@ -14,7 +14,7 @@ function NavColumn({
 }) {
   return (
     <div>
-      <h3 className="m-0 font-outfit text-[1.25em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+      <h3 className="m-0 font-outfit text-balance text-[1.25em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111] uppercase">
         {title}
       </h3>
       <ul className="mt-[1em] flex flex-col gap-[0.75em]">
@@ -41,7 +41,7 @@ export function FooterNav() {
         <Link
           href="/"
           aria-label="Legacy home"
-          className="footer-wordmark relative z-0 inline-block max-w-full font-outfit text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
+          className="footer-wordmark relative z-0 inline-block max-w-full font-outfit text-balance text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
         >
           <span className="footer-wordmark-l">{FOOTER_WORDMARK.slice(0, 1)}</span>
           {FOOTER_WORDMARK.slice(1)}

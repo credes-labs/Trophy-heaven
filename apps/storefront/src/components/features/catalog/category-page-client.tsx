@@ -184,10 +184,10 @@ export function CategoryPageClient({
         />
 
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
             Sort
             <select
-              className="h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
+              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
               value={sort}
               onChange={(e) => setParam({ sort: e.target.value === "newest" ? null : e.target.value })}
             >
@@ -198,10 +198,10 @@ export function CategoryPageClient({
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
             Price
             <select
-              className="h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
+              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
               value={priceBucket ?? ""}
               onChange={(e) => setParam({ price: e.target.value || null })}
             >
@@ -213,10 +213,10 @@ export function CategoryPageClient({
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
             Material
             <select
-              className="h-9 rounded-md border border-border bg-card px-3 text-sm text-foreground"
+              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
               value={material ?? ""}
               onChange={(e) => setParam({ material: e.target.value || null })}
             >
@@ -232,12 +232,12 @@ export function CategoryPageClient({
             <button
               type="button"
               onClick={() => setParam({ price: null, material: null })}
-              className="text-sm font-medium text-accent hover:underline"
+              className="font-outfit text-sm font-medium text-[#131111] underline underline-offset-2"
             >
               Clear
             </button>
           )}
-          <span className="text-sm text-muted-foreground">
+          <span className="font-outfit text-sm text-[#6B635C]">
             {loading || pending
               ? "Updating…"
               : priceBucket || material
@@ -253,7 +253,7 @@ export function CategoryPageClient({
             ))}
           </div>
         ) : products.length === 0 ? (
-          <p className="py-16 text-center text-muted-foreground">
+          <p className="py-16 text-center font-outfit text-[#6B635C] text-pretty">
             No products in this category yet.
           </p>
         ) : (
@@ -287,10 +287,10 @@ export function CategoryPageClient({
                 <p className={cn("text-xs font-semibold uppercase tracking-wider", config.textClass)}>
                   {config.story.eyebrow}
                 </p>
-                <h2 className="mt-2 font-serif text-3xl font-semibold whitespace-pre-line">
+                <h2 className="mt-2 font-outfit text-3xl font-semibold whitespace-pre-line text-balance text-[#131111]">
                   {config.story.title}
                 </h2>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-pretty text-sm leading-relaxed text-[#6B635C]">
                   {config.story.body}
                 </p>
                 <ul className="mt-4 space-y-2">
@@ -334,7 +334,12 @@ export function CategoryPageClient({
 
             {remaining > 0 && (
               <div className="mt-10 flex justify-center">
-                <Button variant="outline" loading={loading} onClick={loadMore}>
+                <Button
+                  variant="outline"
+                  loading={loading}
+                  onClick={loadMore}
+                  className="min-h-11 rounded-full border-0 bg-[#131111] text-[#F2F1EF] hover:bg-[#131111]"
+                >
                   Show more ({remaining} remaining)
                 </Button>
               </div>
@@ -343,7 +348,7 @@ export function CategoryPageClient({
         )}
 
         <section className="mt-20 border-t border-border pt-12">
-          <h2 className="mb-6 font-serif text-2xl font-semibold">You might also like</h2>
+          <h2 className="mb-6 font-outfit text-2xl font-semibold text-balance text-[#131111]">You might also like</h2>
           <div className="grid gap-6 sm:grid-cols-2">
             {related.map((cat) => (
               <Link
@@ -365,8 +370,8 @@ export function CategoryPageClient({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-walnut/70 via-walnut/20 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-5">
-                    <h3 className="font-serif text-xl text-cream">{cat.headline}</h3>
-                    <p className="mt-1 text-sm text-cream/80">{cat.description}</p>
+                    <h3 className="font-outfit text-xl text-balance text-cream">{cat.headline}</h3>
+                    <p className="mt-1 text-pretty text-sm text-cream/80">{cat.description}</p>
                   </div>
                 </div>
               </Link>

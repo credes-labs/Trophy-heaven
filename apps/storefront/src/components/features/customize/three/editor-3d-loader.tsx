@@ -9,14 +9,14 @@ import { designApi, type DesignRecord } from "@/lib/design-client"
 const Editor3D = dynamic(() => import("./editor-3d").then((m) => m.Editor3D), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-muted-foreground">
+    <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[#6B635C]">
       Loading the 3D studio…
     </div>
   ),
 })
 
 const loadingFallback = (
-  <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-muted-foreground">
+  <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[#6B635C]">
     Loading the 3D studio…
   </div>
 )

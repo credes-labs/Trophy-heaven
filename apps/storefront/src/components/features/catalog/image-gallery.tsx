@@ -136,7 +136,7 @@ export function ImageGallery({
                   {img.url ? (
                     <Image
                       src={localizeImageUrl(img.url)}
-                      alt=""
+                      alt={img.alt?.trim() ? img.alt : title}
                       fill
                       sizes="140px"
                       className="object-contain"

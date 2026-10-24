@@ -81,7 +81,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       <EditorialFrame>
         <div className="mb-[2em] flex flex-wrap gap-[1em]">
           {(Object.keys(GUIDES) as GuideSlug[]).map((key) => (
-            <EditorialTextLink key={key} href={`/guides/${key}`} className={key === slug ? "opacity-100" : "opacity-50"}>
+            <EditorialTextLink key={key} href={`/guides/${key}`} className={key === slug ? "opacity-100" : "text-[#6B635C]"}>
               {GUIDES[key].title}
             </EditorialTextLink>
           ))}
@@ -89,10 +89,10 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         <div className="grid gap-[2em] lg:grid-cols-2">
           {guide.sections.map((section) => (
             <article key={section.h}>
-              <h2 className="m-0 font-outfit text-[1.35em] font-normal tracking-[-0.02em] text-[#131111]">
+              <h2 className="m-0 font-outfit text-[1.35em] font-normal tracking-[-0.02em] text-balance text-[#131111]">
                 {section.h}
               </h2>
-              <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.5] text-[#131111]/7">
+              <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.5] text-[#6B635C]">
                 {section.p}
               </p>
             </article>

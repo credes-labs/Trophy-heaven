@@ -131,7 +131,7 @@ export function ProductActions({
                 : "—"}
           </p>
           {salePct > 0 && price?.original_amount != null ? (
-            <span className="font-outfit text-[1em] text-[rgba(19,17,17,0.45)] line-through tabular-nums">
+            <span className="font-outfit text-[1em] text-[#6B635C] line-through tabular-nums">
               {formatMoney(price.original_amount, price.currency_code ?? "inr")}
             </span>
           ) : null}
@@ -237,7 +237,7 @@ export function ProductActions({
         {emiAmount != null && price ? (
           <li>
             <Tooltip content="No-cost EMI available on Razorpay at checkout" side="top">
-              <span className="cursor-help underline decoration-dotted underline-offset-2">
+              <span className="cursor-help underline decoration-dotted underline-offset-2 tabular-nums">
                 EMI from {formatMoney(emiAmount, price.currency_code ?? "inr")}/mo
               </span>
             </Tooltip>

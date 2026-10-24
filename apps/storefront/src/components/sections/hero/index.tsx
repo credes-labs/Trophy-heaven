@@ -1,18 +1,19 @@
 import { HeroStudioImage } from "./hero-background"
-import { HeroCopy } from "./hero-copy"
-import { HeroCrest } from "./hero-crest"
+import { HeroAside, HeroHeadline } from "./hero-copy"
 import { HeroCta } from "./hero-cta"
 import { HeroNav, HeroNavMobile } from "./hero-nav"
 import { HeroProducts } from "./hero-products"
-import { HERO_HEADLINE } from "./constants"
 
 export function HeroSection() {
   return (
-    <section className="relative isolate min-h-[88svh] w-full overflow-x-clip bg-[#1C1612] lg:min-h-[874px]">
-      <h1 className="sr-only">{HERO_HEADLINE}</h1>
+    <section className="relative isolate min-h-[100svh] w-full overflow-x-clip bg-[#1C1612]">
       <HeroStudioImage />
-      <HeroCrest />
-      <div className="relative z-10 mx-auto flex min-h-[88svh] max-w-[1440px] flex-col px-5 py-5 lg:min-h-[874px] lg:px-10 lg:py-7">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-[#1C1612]/80 via-[#1C1612]/25 to-[#1C1612]/35"
+      />
+
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1440px] flex-col px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] lg:px-10 lg:pt-6 lg:pb-8">
         <div className="hidden lg:block">
           <HeroNav />
         </div>
@@ -20,13 +21,16 @@ export function HeroSection() {
           <HeroNavMobile />
         </div>
 
-        <div className="flex max-w-[521px] flex-1 items-center py-10 lg:py-0">
-          <HeroCopy />
+        <div className="flex flex-1 items-end py-8 lg:items-center lg:py-6">
+          <HeroHeadline />
         </div>
 
-        <div className="flex flex-col items-stretch justify-between gap-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:items-start lg:flex-row lg:items-end">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <HeroProducts />
-          <HeroCta />
+          <div className="flex max-w-[20rem] flex-col items-start gap-4 lg:ml-auto lg:items-start">
+            <HeroAside />
+            <HeroCta />
+          </div>
         </div>
       </div>
     </section>

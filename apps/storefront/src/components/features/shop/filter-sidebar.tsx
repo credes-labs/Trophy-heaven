@@ -73,7 +73,7 @@ function AccordionSection({
         </span>
         <ChevronDown
           aria-hidden
-          className={`size-[1.75em] shrink-0 text-[#C2C2C2] transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          className={`size-[1.75em] shrink-0 text-[#6B635C] transition-transform duration-300 ${open ? "rotate-180" : ""}`}
           strokeWidth={1.5}
         />
       </button>
@@ -106,13 +106,13 @@ function OptionButton({
       type="button"
       className={cn(
         "flex w-full cursor-pointer items-center justify-between gap-2 border-0 bg-transparent p-0 text-left font-outfit text-[1em] leading-[1.4] tracking-[-0.02em]",
-        active ? "text-[#131111]" : "text-[rgba(19,17,17,0.6)]"
+        active ? "text-[#131111]" : "text-[#6B635C]"
       )}
       onClick={onClick}
     >
       <span>{label}</span>
       {typeof count === "number" ? (
-        <span className="text-[0.875em] text-[rgba(19,17,17,0.4)]">({count})</span>
+        <span className="text-[0.875em] text-[#6B635C]">({count})</span>
       ) : null}
     </button>
   )
@@ -251,9 +251,9 @@ export function FilterSidebar({
               onChange={(e) =>
                 onChange({ minPrice: Math.max(PRICE_RANGE.min, Number(e.target.value) || 0) })
               }
-              className="h-[2.5em] w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-[0.75em] font-outfit text-[0.875em] text-[#131111] outline-none"
+              className="h-[2.5em] w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-[0.75em] font-outfit text-[0.875em] text-[#131111] tabular-nums outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             />
-            <span className="text-[rgba(19,17,17,0.4)]">–</span>
+            <span className="text-[#6B635C]">–</span>
             <label className="sr-only" htmlFor="shop-max-price">
               Maximum price
             </label>
@@ -268,7 +268,7 @@ export function FilterSidebar({
                   maxPrice: Math.min(PRICE_RANGE.max, Number(e.target.value) || PRICE_RANGE.max),
                 })
               }
-              className="h-[2.5em] w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-[0.75em] font-outfit text-[0.875em] text-[#131111] outline-none"
+              className="h-[2.5em] w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-[0.75em] font-outfit text-[0.875em] text-[#131111] tabular-nums outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             />
           </div>
         </AccordionSection>

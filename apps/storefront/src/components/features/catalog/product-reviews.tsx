@@ -82,7 +82,7 @@ function ReviewForm({ productId, onSubmitted }: { productId: string; onSubmitted
     return (
       <div className="pdp-review-card font-outfit text-[0.9375em] tracking-[-0.02em]">
         <p className="m-0 text-[#131111]">Thank you for your review.</p>
-        <p className="mt-1 m-0 text-[rgba(19,17,17,0.55)]">
+        <p className="mt-1 m-0 text-[#6B635C]">
           It will appear here once our team approves it — usually within a day.
         </p>
       </div>
@@ -95,7 +95,7 @@ function ReviewForm({ productId, onSubmitted }: { productId: string; onSubmitted
         Here you can review this item.
       </p>
       <div>
-        <span className="font-outfit text-[0.875em] tracking-[-0.02em] text-[rgba(19,17,17,0.55)]">
+        <span className="font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
           Your rating
         </span>
         <div className="mt-1.5 flex gap-1" role="radiogroup" aria-label="Rating">
@@ -140,7 +140,7 @@ function ReviewForm({ productId, onSubmitted }: { productId: string; onSubmitted
           maxLength={5000}
           rows={4}
           placeholder="How was the craftsmanship, finish, and delivery?"
-          className="flex w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-3 py-2 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] transition-colors placeholder:text-[rgba(19,17,17,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#131111]/30"
+          className="flex w-full rounded-[0.125em] border border-[#131111]/20 bg-transparent px-3 py-2 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] transition-colors placeholder:text-[#6B635C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#131111]/30"
         />
       </div>
       {error && (
@@ -261,7 +261,7 @@ export function ProductReviews({ productId }: { productId: string }) {
               </p>
               <div>
                 <Stars rating={average} />
-                <p className="mt-1 m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[rgba(19,17,17,0.5)]">
+                <p className="mt-1 m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C]">
                   Based on {total} review{total === 1 ? "" : "s"}
                 </p>
               </div>
@@ -269,7 +269,7 @@ export function ProductReviews({ productId }: { productId: string }) {
             {distribution && (
               <ul className="m-0 list-none space-y-1.5 p-0">
                 {(["5", "4", "3", "2", "1"] as const).map((star) => (
-                  <li key={star} className="flex items-center gap-2 font-outfit text-[0.75em] text-[rgba(19,17,17,0.5)]">
+                  <li key={star} className="flex items-center gap-2 font-outfit text-[0.75em] text-[#6B635C]">
                     <span className="w-6 shrink-0">{star}★</span>
                     <span className="h-2 flex-1 overflow-hidden bg-[#131111]/10">
                       <span
@@ -290,7 +290,7 @@ export function ProductReviews({ productId }: { productId: string }) {
         {total > 0 && (
           <div className="mt-[1.75em]">
             <div className="mb-4 flex justify-end">
-              <label className="flex items-center gap-2 font-outfit text-[0.875em] text-[rgba(19,17,17,0.5)]">
+              <label className="flex items-center gap-2 font-outfit text-[0.875em] text-[#6B635C]">
                 Sort
                 <select
                   className="h-9 rounded-[0.125em] border border-[#131111]/20 bg-transparent px-3 font-outfit text-[0.875em] text-[#131111]"
@@ -328,16 +328,16 @@ export function ProductReviews({ productId }: { productId: string }) {
                         )}
                         <Stars rating={review.rating} />
                       </div>
-                      <p className="m-0 font-outfit text-[0.75em] text-[rgba(19,17,17,0.5)]">
+                      <p className="m-0 font-outfit text-[0.75em] text-[#6B635C]">
                         {formatReviewDate(review.created_at)}
                       </p>
                     </div>
                     {review.body && (
-                      <p className="mt-[0.75em] m-0 font-outfit text-[0.9375em] leading-[1.55] font-light tracking-[-0.02em] text-[rgba(19,17,17,0.65)]">
+                      <p className="mt-[0.75em] m-0 font-outfit text-[0.9375em] leading-[1.55] font-light tracking-[-0.02em] text-[#6B635C] text-pretty">
                         {review.body}
                       </p>
                     )}
-                    <div className="mt-2 flex flex-wrap items-center gap-3 font-outfit text-[0.75em] text-[rgba(19,17,17,0.5)]">
+                    <div className="mt-2 flex flex-wrap items-center gap-3 font-outfit text-[0.75em] text-[#6B635C]">
                       {review.is_verified_purchase && (
                         <span className="inline-flex items-center gap-1 text-[#131111]">
                           <BadgeCheck className="h-3.5 w-3.5" aria-hidden /> Verified purchase

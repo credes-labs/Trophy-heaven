@@ -29,19 +29,19 @@ export function ProductTabs({ active, onChange }: Props) {
               onClick={() => onChange(tab.id)}
             >
               <motion.span
-                className="inline-block"
+                className={`inline-block text-balance ${isActive ? "text-[#131111]" : "text-[#6B635C]"}`}
                 initial={false}
-                animate={{ opacity: isActive ? 1 : 0.4 }}
-                whileHover={{ opacity: 1 }}
+                animate={{ color: isActive ? "#131111" : "#6B635C" }}
+                whileHover={{ color: "#131111" }}
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               >
                 {tab.label}
               </motion.span>
             </button>
             <motion.span
-              className="font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase"
+              className={`font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase ${isActive ? "text-[#131111]" : "text-[#6B635C]"}`}
               initial={false}
-              animate={{ opacity: isActive ? 1 : 0.4 }}
+              animate={{ color: isActive ? "#131111" : "#6B635C" }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             >
               /{tab.count}/

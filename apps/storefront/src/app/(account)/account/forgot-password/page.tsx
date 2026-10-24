@@ -9,6 +9,12 @@ import {
   editorialLabelClass,
 } from "@/components/layout/editorial/editorial-cta"
 import { medusa } from "@/lib/medusa"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
@@ -59,7 +65,7 @@ export default function ForgotPasswordPage() {
                 required
                 autoComplete="email"
                 placeholder="you@studio.in"
-                className={editorialFieldClass}
+                className={fieldClass}
               />
             </div>
             <EditorialCtaButton disabled={loading}>

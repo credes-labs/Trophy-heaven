@@ -34,13 +34,14 @@ export function ShareButtons({
 
   return (
     <div className={cn("flex flex-wrap items-center gap-x-[1.5em] gap-y-[0.75em]", className)}>
-      <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+      <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C] uppercase">
         Share
       </p>
       <a
         href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Share on X"
         className={linkClass}
       >
         X
@@ -49,11 +50,12 @@ export function ShareButtons({
         href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Share on WhatsApp"
         className={linkClass}
       >
         WhatsApp
       </a>
-      <button type="button" onClick={() => void copyLink()} className={linkClass}>
+      <button type="button" onClick={() => void copyLink()} aria-label="Copy link" className={linkClass}>
         {copied ? "Copied" : "Copy link"}
       </button>
     </div>

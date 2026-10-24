@@ -70,10 +70,10 @@ export function CheckoutAddressStep({
 
   return (
     <div className="mt-[2em]">
-      <h2 className="m-0 font-outfit text-[1.5em] leading-[1.2] font-normal tracking-[-0.03em] text-[#131111]">
+      <h2 className="m-0 font-outfit text-[1.5em] leading-[1.2] font-normal tracking-[-0.03em] text-balance text-[#131111]">
         Delivery address
       </h2>
-      <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
+      <p className="mt-[0.5em] m-0 max-w-[68ch] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-pretty text-[#131111]/70">
         {addresses.length
           ? "Use a saved address or add another."
           : "Add an address to continue. It is saved to your account."}

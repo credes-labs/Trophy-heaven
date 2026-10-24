@@ -413,7 +413,7 @@ export function Editor2D({
               setName(e.target.value)
               setMeta({ name: e.target.value })
             }}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           />
         </div>
 
@@ -422,7 +422,7 @@ export function Editor2D({
           <select
             value={selectedFont}
             onChange={(e) => applyFontToSelection(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           >
             {ENGRAVING_FONTS.map((f) => (
               <option key={f} value={f}>
@@ -436,20 +436,20 @@ export function Editor2D({
               value={fillColor}
               onChange={(e) => applyColorToSelection(e.target.value)}
               aria-label="Text color"
-              className="h-9 w-9 cursor-pointer rounded border border-border"
+              className="h-9 w-9 cursor-pointer rounded border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             />
-            <button onClick={() => toggleStyle("fontWeight")} className="rounded border border-border px-2 py-1 text-sm font-bold">B</button>
-            <button onClick={() => toggleStyle("fontStyle")} className="rounded border border-border px-2 py-1 text-sm italic">I</button>
-            <button onClick={() => toggleStyle("underline")} className="rounded border border-border px-2 py-1 text-sm underline">U</button>
+            <button type="button" onClick={() => toggleStyle("fontWeight")} aria-label="Bold" className="rounded border border-border px-2 py-1 text-sm font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">B</button>
+            <button type="button" onClick={() => toggleStyle("fontStyle")} aria-label="Italic" className="rounded border border-border px-2 py-1 text-sm italic focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">I</button>
+            <button type="button" onClick={() => toggleStyle("underline")} aria-label="Underline" className="rounded border border-border px-2 py-1 text-sm underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">U</button>
           </div>
-          <Button onClick={addText} size="sm" className="w-full">
+          <Button onClick={addText} size="sm" className="w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid">
             Add text
           </Button>
         </div>
 
         <div className="space-y-2">
           <p className="text-sm font-medium">Logo</p>
-          <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-border px-3 py-4 text-sm text-muted-foreground hover:bg-muted">
+          <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-border px-3 py-4 text-sm text-[#6B635C] hover:bg-muted">
             Upload PNG/JPG/SVG
             <input type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={onUploadLogo} className="hidden" />
           </label>
@@ -463,7 +463,7 @@ export function Editor2D({
                 key={m.value}
                 onClick={() => setMeta({ material: m.value })}
                 className={cn(
-                  "rounded-md border p-2 text-xs",
+                  "rounded-md border p-2 text-xs text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
                   material === m.value ? "border-accent ring-2 ring-accent" : "border-border"
                 )}
               >
@@ -478,20 +478,20 @@ export function Editor2D({
       {/* Center: canvas */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" variant="outline" onClick={() => restore(undo())} disabled={!canUndo()}>
+          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => restore(undo())} disabled={!canUndo()}>
             Undo
           </Button>
-          <Button size="sm" variant="outline" onClick={() => restore(redo())} disabled={!canRedo()}>
+          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => restore(redo())} disabled={!canRedo()}>
             Redo
           </Button>
           <div className="flex-1" />
-          <Button size="sm" variant="outline" onClick={() => runValidation()}>
+          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => runValidation()}>
             Validate
           </Button>
-          <Button size="sm" variant="outline" onClick={handleSave} disabled={saving}>
+          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleSave} disabled={saving}>
             {saving ? "Saving…" : "Save"}
           </Button>
-          <Button size="sm" variant="accent" onClick={handleAddToCart} disabled={saving || !variantId}>
+          <Button size="sm" variant="accent" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleAddToCart} disabled={saving || !variantId}>
             Add to cart
           </Button>
         </div>
@@ -520,7 +520,7 @@ export function Editor2D({
             ))}
           </ul>
         )}
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-center text-xs text-[#6B635C]">
           Keep text within the dashed safe area. Max {MAX_ENGRAVING_CHARS} characters per line.
         </p>
       </div>
@@ -530,18 +530,18 @@ export function Editor2D({
         <div>
           <p className="mb-2 text-sm font-medium">Layers</p>
           {layers.length === 0 ? (
-            <p className="text-xs text-muted-foreground">No layers yet. Add text or a logo.</p>
+            <p className="text-xs text-[#6B635C]">No layers yet. Add text or a logo.</p>
           ) : (
             <ul className="space-y-1">
               {layers.map((l) => (
                 <li key={l.id} className="flex items-center gap-2 rounded-md border border-border px-2 py-1.5 text-sm">
-                  <button onClick={() => selectLayer(l.id)} className="flex-1 truncate text-left">
+                  <button type="button" onClick={() => selectLayer(l.id)} className="flex-1 truncate text-left text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
                     {l.label}
                   </button>
-                  <button onClick={() => toggleLayerVisible(l.id)} aria-label="Toggle visibility" className="text-xs text-muted-foreground">
+                  <button type="button" onClick={() => toggleLayerVisible(l.id)} aria-label="Toggle visibility" className="text-xs text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
                     {l.visible ? "Hide" : "Show"}
                   </button>
-                  <button onClick={() => deleteLayer(l.id)} aria-label="Delete layer" className="text-xs text-destructive">
+                  <button type="button" onClick={() => deleteLayer(l.id)} aria-label="Delete layer" className="text-xs text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
                     ✕
                   </button>
                 </li>
@@ -553,12 +553,12 @@ export function Editor2D({
         <div>
           <div className="mb-2 flex items-center justify-between">
             <p className="text-sm font-medium">My designs</p>
-            <button onClick={loadGallery} className="text-xs text-accent hover:underline">
+            <button type="button" onClick={loadGallery} className="text-xs text-[#131111] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
               Refresh
             </button>
           </div>
           {gallery.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Saved designs appear here.</p>
+            <p className="text-xs text-[#6B635C]">Saved designs appear here.</p>
           ) : (
             <ul className="grid grid-cols-2 gap-2">
               {gallery.map((d) => (
@@ -569,7 +569,7 @@ export function Editor2D({
                       setName(d.name)
                       restore(JSON.stringify(d.state_json))
                     }}
-                    className="w-full overflow-hidden rounded-md border border-border text-left hover:border-accent"
+                    className="w-full overflow-hidden rounded-md border border-border text-left text-[#131111] hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
                   >
                     {d.preview_url ? (
                       <img src={d.preview_url} alt={d.name} className="aspect-square w-full object-cover" />

@@ -11,6 +11,12 @@ import {
 } from "@/components/layout/editorial/editorial-cta"
 import { PasswordField } from "@/components/ui/password-field"
 import { medusa } from "@/lib/medusa"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -72,7 +78,7 @@ function ResetPasswordForm() {
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -85,7 +91,7 @@ function ResetPasswordForm() {
             autoComplete="new-password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <EditorialCtaButton disabled={loading}>

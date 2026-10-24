@@ -6,6 +6,11 @@ import { EditorialCtaLink, EditorialTextLink, editorialFieldClass } from "@/comp
 import { cn } from "@/lib/utils"
 import type { FaqItem } from "./page"
 
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
+
 const CATEGORIES = [
   "All",
   "Ordering",
@@ -41,7 +46,7 @@ export function FaqClient({ faqs }: { faqs: FaqItem[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search questions"
-          className={cn(editorialFieldClass, "mt-0")}
+          className={cn(fieldClass, "mt-0")}
         />
 
         <div className="mt-[1.5em] flex flex-wrap gap-x-[1.5em] gap-y-[0.75em]">
@@ -51,10 +56,10 @@ export function FaqClient({ faqs }: { faqs: FaqItem[] }) {
               type="button"
               onClick={() => setCategory(cat)}
               className={cn(
-                "cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase",
+                "cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
                 category === cat
                   ? "text-[#131111] underline underline-offset-[0.2em]"
-                  : "text-[#131111]/45 hover:text-[#131111]"
+                  : "text-[#6B635C] hover:text-[#131111]"
               )}
             >
               {cat}
@@ -71,7 +76,7 @@ export function FaqClient({ faqs }: { faqs: FaqItem[] }) {
                 setCategory("All")
                 setQuery("")
               }}
-              className="cursor-pointer border-0 bg-transparent p-0 font-outfit uppercase underline underline-offset-[0.15em]"
+              className="cursor-pointer border-0 bg-transparent p-0 font-outfit uppercase underline underline-offset-[0.15em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             >
               clear filters
             </button>
@@ -84,7 +89,7 @@ export function FaqClient({ faqs }: { faqs: FaqItem[] }) {
                 <AccordionTrigger className="py-[1.25em] text-left font-outfit text-[1.25em] leading-[1.3] font-normal tracking-[-0.02em] text-[#131111] hover:opacity-70 hover:no-underline [&>svg]:size-[1.75em] [&>svg]:text-[#C2C2C2]">
                   {item.q}
                 </AccordionTrigger>
-                <AccordionContent className="pb-[1.5em] font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
+                <AccordionContent className="max-w-[68ch] pb-[1.5em] font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#131111]/70">
                   {item.a}
                 </AccordionContent>
               </AccordionItem>

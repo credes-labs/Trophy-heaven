@@ -103,11 +103,11 @@ export function ProductCard({
     return (
       <article
         className={cn(
-          "group flex gap-4 overflow-hidden rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg",
+          "group flex gap-4 overflow-hidden rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] p-3",
           className
         )}
       >
-        <Link href={href} className="relative h-28 w-28 shrink-0 overflow-hidden rounded-md bg-muted sm:h-36 sm:w-36">
+        <Link href={href} className="relative h-28 w-28 shrink-0 overflow-hidden rounded-[0.125em] bg-[#D9D9D9] sm:h-36 sm:w-36">
           {product.thumbnail ? (
             <Image
               src={localizeImageUrl(product.thumbnail)}
@@ -117,29 +117,32 @@ export function ProductCard({
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <span className="font-serif text-xl opacity-40">LC</span>
+            <div className="flex h-full items-center justify-center">
+              <span className="font-outfit text-xl text-[#6B635C]">LC</span>
             </div>
           )}
         </Link>
         <div className="flex min-w-0 flex-1 flex-col gap-1 py-0.5">
           {label && (
-            <Badge variant={accent ?? "default"} className="w-fit">
+            <Badge
+              variant={accent ?? "default"}
+              className="w-fit border-0 bg-transparent px-0 font-outfit font-normal tracking-[0.08em] text-[#6B635C]"
+            >
               {label}
             </Badge>
           )}
-          <Link href={href} className="line-clamp-1 font-medium hover:underline">
+          <Link href={href} className="line-clamp-1 font-outfit font-normal tracking-[-0.02em] text-[#131111] text-balance hover:underline">
             {product.title}
           </Link>
           {product.description && (
-            <p className="line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
+            <p className="line-clamp-2 font-outfit text-sm text-[#6B635C] text-pretty">{product.description}</p>
           )}
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-2">
-            <span className="text-sm font-semibold">
+            <span className="font-outfit text-sm text-[#131111] tabular-nums">
               {price ? formatMoney(price.amount, price.currency) : "—"}
             </span>
             {price?.original != null && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="font-outfit text-sm text-[#6B635C] line-through tabular-nums">
                 {formatMoney(price.original, price.currency)}
               </span>
             )}
@@ -149,6 +152,7 @@ export function ProductCard({
               loading={loading && added}
               onClick={handleQuickAdd}
               disabled={!variantId}
+              className="min-h-11 rounded-full border-0 bg-[#131111] text-[#F2F1EF] hover:bg-[#131111]"
             >
               {added ? "Added" : "Add to cart"}
             </Button>
@@ -161,11 +165,11 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg",
+        "group flex flex-col overflow-hidden rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7]",
         className
       )}
     >
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-[#D9D9D9]">
         <Link href={href} className="absolute inset-0 block">
           {product.thumbnail ? (
             <Image
@@ -176,8 +180,8 @@ export function ProductCard({
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <span className="font-serif text-2xl opacity-40">LC</span>
+            <div className="flex h-full items-center justify-center">
+              <span className="font-outfit text-2xl text-[#6B635C]">LC</span>
             </div>
           )}
         </Link>
@@ -185,7 +189,7 @@ export function ProductCard({
         <div className="pointer-events-none absolute left-2 top-2 z-10 flex flex-col gap-1.5">
           {onSale && salePct > 0 && <Badge variant="sale">-{salePct}%</Badge>}
           {isCustomizable(level) && (
-            <Badge className="bg-accent/90 text-accent-foreground">Customizable</Badge>
+            <Badge className="bg-[#131111] text-[#F2F1EF]">Customizable</Badge>
           )}
         </div>
 
@@ -196,10 +200,10 @@ export function ProductCard({
             aria-pressed={wishlisted}
             disabled={wishlistBusy}
             onClick={() => void toggleWishlist()}
-            className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm transition-colors hover:bg-card disabled:opacity-60"
+            className="absolute right-2 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#FBFBF7]/90 text-[#131111] transition-colors hover:bg-[#FBFBF7] disabled:opacity-60"
           >
             <Heart
-              className={cn("h-4 w-4", wishlisted && "fill-destructive text-destructive")}
+              className={cn("h-4 w-4", wishlisted && "fill-[#131111] text-[#131111]")}
             />
           </button>
         )}
@@ -207,7 +211,7 @@ export function ProductCard({
         <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full bg-gradient-to-t from-walnut/80 to-transparent p-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           <Button
             size="sm"
-            className="w-full"
+            className="min-h-11 w-full rounded-full border-0 bg-[#131111] text-[#F2F1EF] hover:bg-[#131111]"
             variant={accent ?? "default"}
             loading={loading && added}
             onClick={handleQuickAdd}
@@ -220,30 +224,22 @@ export function ProductCard({
 
       <div className="flex flex-1 flex-col gap-1 p-4">
         {label && (
-          <span
-            className={cn(
-              "text-xs font-semibold uppercase tracking-wide",
-              accent === "trophy" && "text-trophy",
-              accent === "furniture" && "text-furniture",
-              accent === "artwork" && "text-artwork",
-              !accent && "text-muted-foreground"
-            )}
-          >
+          <span className="font-outfit text-xs font-normal uppercase tracking-[0.08em] text-[#6B635C]">
             {label}
           </span>
         )}
-        <Link href={href} className="line-clamp-2 text-sm font-medium hover:underline">
+        <Link href={href} className="line-clamp-2 font-outfit text-sm font-normal tracking-[-0.02em] text-[#131111] text-balance hover:underline">
           {product.title}
         </Link>
-        <p className="text-xs text-muted-foreground">
+        <p className="font-outfit text-xs text-[#6B635C] text-pretty">
           {CUSTOMIZATION_LABELS[level] ?? "Product"}
         </p>
         <div className="mt-auto flex items-baseline gap-2 pt-2">
-          <span className="text-sm font-semibold">
+          <span className="font-outfit text-sm text-[#131111] tabular-nums">
             {price ? `From ${formatMoney(price.amount, price.currency)}` : "—"}
           </span>
           {price?.original != null && (
-            <span className="text-xs text-muted-foreground line-through">
+            <span className="font-outfit text-xs text-[#6B635C] line-through tabular-nums">
               {formatMoney(price.original, price.currency)}
             </span>
           )}

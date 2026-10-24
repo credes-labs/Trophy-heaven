@@ -31,7 +31,7 @@ export function BlogCard({ post, categories = [], featured = false, className }:
           </div>
           <div className="lg:col-span-5">
             <MetaLine category={category} date={date} readTime={post.read_time_minutes} />
-            <h2 className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+            <h2 className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">
               {post.title}
             </h2>
             {post.excerpt ? (
@@ -58,7 +58,7 @@ export function BlogCard({ post, categories = [], featured = false, className }:
           readTime={post.read_time_minutes}
           className="mt-[1em]"
         />
-        <h3 className="mt-[0.5em] m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111]">
+        <h3 className="mt-[0.5em] m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
           {post.title}
         </h3>
         {post.excerpt ? (
@@ -85,7 +85,7 @@ function MetaLine({
   return (
     <p
       className={cn(
-        "m-0 font-outfit text-[0.875em] leading-[1.25em] tracking-[-0.02em] text-[#131111]/45 uppercase",
+        "m-0 font-outfit text-[0.875em] leading-[1.25em] tracking-[-0.02em] text-[#6B635C] uppercase",
         className
       )}
     >

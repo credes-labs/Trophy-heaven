@@ -54,7 +54,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
         <div className="mx-auto grid max-w-7xl grid-cols-4 gap-8 px-6 py-8">
           {/* Col 1: Categories */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-balance text-[#6B635C]">
               Categories
             </h3>
             <ul className="mt-4 space-y-1">
@@ -65,7 +65,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
                         href={hrefForCategoryHandle(cat.handle)}
                         className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm text-foreground transition-colors hover:bg-muted"
                       >
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground" aria-hidden>
                           {CATEGORY_ICONS[cat.handle] ?? <LayoutGrid className="h-4 w-4" />}
                         </span>
                         {cat.name}
@@ -80,7 +80,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
                           href={hrefForCategoryHandle(handle)}
                           className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm text-foreground transition-colors hover:bg-muted"
                         >
-                          <span className="text-muted-foreground">
+                          <span className="text-muted-foreground" aria-hidden>
                             {CATEGORY_ICONS[handle] ?? <LayoutGrid className="h-4 w-4" />}
                           </span>
                           {name}
@@ -101,7 +101,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
 
           {/* Col 2: Trophies */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-balance text-[#6B635C]">
               Trophies
             </h3>
             <ul className="mt-4 space-y-1">
@@ -120,7 +120,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
 
           {/* Col 3: Furniture */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-balance text-[#6B635C]">
               Furniture
             </h3>
             <ul className="mt-4 space-y-1">
@@ -139,7 +139,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
 
           {/* Col 4: Featured */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-balance text-[#6B635C]">
               Featured
             </h3>
             <div className="mt-4 space-y-4">

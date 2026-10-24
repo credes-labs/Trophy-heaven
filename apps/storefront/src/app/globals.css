@@ -28,6 +28,12 @@
      on champagne; this passes WCAG AA (≥4.5:1) for small text. */
   --color-gold-dark: oklch(0.50 0.09 78);
 
+  /* Figma editorial ink and paper. Muted ink is ~5.7:1 on paper. */
+  --color-ink: #131111;
+  --color-ink-muted: #6B635C;
+  --color-paper: #FBFBF7;
+  --color-paper-raised: #F2F1EF;
+
   /* ── Semantic Colors ── */
 
   --color-background: oklch(0.99 0.005 95);
@@ -121,6 +127,37 @@
     color-scheme: light;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* 2px ink outline. Utilities such as outline-none win over this layer,
+     so those controls must keep their own focus-visible ring. */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
   }
 
   * {

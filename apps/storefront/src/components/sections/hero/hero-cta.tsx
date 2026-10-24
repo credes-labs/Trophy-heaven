@@ -1,20 +1,22 @@
-import { PillCta } from "@/components/sections/_editorial"
+import Link from "next/link"
 import { HERO_CTA, HERO_CTA_HREF, HERO_CTA_SECONDARY, HERO_CTA_SECONDARY_HREF } from "./constants"
 
-/** Dual CTAs — primary design studio, secondary shop. Full-width on mobile. */
+const pillClass =
+  "inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
+
+const textClass =
+  "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#F4F1EA] uppercase underline underline-offset-[0.2em] transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
+
+/** One white pill, matching the reference, plus the second existing action as a text link. */
 export function HeroCta() {
   return (
-    <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-      <PillCta href={HERO_CTA_SECONDARY_HREF} variant="light">
+    <div className="flex flex-col items-start gap-3">
+      <Link href={HERO_CTA_SECONDARY_HREF} className={pillClass}>
         {HERO_CTA_SECONDARY}
-      </PillCta>
-      <PillCta
-        href={HERO_CTA_HREF}
-        variant="light"
-        className="bg-transparent text-[#FCFBF8] ring-1 ring-[#FCFBF8]/40 hover:bg-white/10 [&_span]:bg-[#FCFBF8]"
-      >
+      </Link>
+      <Link href={HERO_CTA_HREF} className={textClass}>
         {HERO_CTA}
-      </PillCta>
+      </Link>
     </div>
   )
 }

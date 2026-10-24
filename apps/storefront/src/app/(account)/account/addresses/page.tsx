@@ -118,7 +118,7 @@ export default function AddressesPage() {
       <header className="relative overflow-hidden">
         <EditorialWatermark>home</EditorialWatermark>
         <EditorialEyebrow>Account</EditorialEyebrow>
-        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
           Addresses
         </h1>
         <p className="relative mt-[1em] m-0 max-w-[28em] font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
@@ -168,7 +168,7 @@ export default function AddressesPage() {
                     .join(", ")}
                 </p>
                 {address.phone ? (
-                  <p className="mt-[0.2em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45">
+                  <p className="mt-[0.2em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
                     {address.phone}
                   </p>
                 ) : null}
@@ -184,7 +184,7 @@ export default function AddressesPage() {
                     <button
                       type="button"
                       onClick={() => void setDefault(address.id)}
-                      className={`${textBtn} text-[#131111]/55`}
+                      className={`${textBtn} text-[#6B635C]`}
                     >
                       Set default
                     </button>
@@ -192,7 +192,7 @@ export default function AddressesPage() {
                   <button
                     type="button"
                     onClick={() => void handleDelete(address.id)}
-                    className={`${textBtn} text-[#131111]/55`}
+                    className={`${textBtn} text-[#6B635C]`}
                   >
                     Delete
                   </button>
@@ -210,7 +210,7 @@ export default function AddressesPage() {
         >
           <DialogHeader className="mb-[0.25em]">
             <EditorialEyebrow>Account</EditorialEyebrow>
-            <DialogTitle className="mt-[1em] font-outfit text-[1.75em] font-normal leading-[1.15] tracking-[-0.03em] text-[#131111]">
+            <DialogTitle className="mt-[1em] font-outfit text-[1.75em] font-normal leading-[1.15] tracking-[-0.03em] text-balance text-[#131111]">
               {editingId ? "Edit address" : "Add address"}
             </DialogTitle>
             <DialogDescription className="mt-[0.5em] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">

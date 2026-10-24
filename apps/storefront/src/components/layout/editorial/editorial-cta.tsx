@@ -70,7 +70,7 @@ export function EditorialTextLink({
 }
 
 export const editorialFieldClass =
-  "mt-[0.5em] h-12 w-full rounded-none border-0 border-b border-[#131111]/20 bg-transparent px-0 font-outfit text-[1em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111] placeholder:text-[#131111]/40 focus:border-[#131111] focus:outline-none"
+  "mt-[0.5em] h-12 w-full rounded-none border-0 border-b border-[#131111]/20 bg-transparent px-0 font-outfit text-[1em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111] placeholder:text-[#6B635C] focus:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-[#131111]"
 
 export const editorialLabelClass =
   "block font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase"

@@ -1,16 +1,27 @@
-import { HERO_COPY, HERO_EYEBROW, HERO_HEADLINE } from "./constants"
+import { HERO_COPY, HERO_EYEBROW, HERO_HEADLINE_LINES } from "./constants"
 
-/** Left-column body copy (Figma 521×124, Outfit 22px). */
-export function HeroCopy() {
+/** Poster headline. Line breaks match the reference stack; the words are the existing tagline. */
+export function HeroHeadline() {
   return (
-    <div className="max-w-[521px]">
-      <p className="m-0 font-outfit text-[14px] leading-5 font-normal tracking-wide text-[#FCFBF8]/70 lowercase lg:text-[16px]">
+    <h1 className="m-0 font-outfit text-[clamp(2.15rem,10.2vw,7.5rem)] leading-[0.84] font-medium tracking-[-0.045em] text-[#F4F1EA] uppercase">
+      {HERO_HEADLINE_LINES.map((line, index) => (
+        <span key={line}>
+          {index > 0 ? <br /> : null}
+          {line}
+        </span>
+      ))}
+    </h1>
+  )
+}
+
+/** Small caption sitting on the lower right of the photograph. */
+export function HeroAside() {
+  return (
+    <div className="max-w-[18rem]">
+      <p className="m-0 font-outfit text-[13px] leading-5 font-normal tracking-wide text-[#F2F1EF] lowercase">
         {HERO_EYEBROW}
       </p>
-      <p className="mt-3 m-0 font-outfit text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.15] font-normal tracking-[-0.03em] text-[#FCFBF8]">
-        {HERO_HEADLINE}
-      </p>
-      <p className="mt-4 m-0 font-outfit text-[18px] leading-[28px] font-normal text-[#FCFBF8]/90 lg:text-[22px] lg:leading-[31px]">
+      <p className="mt-2 m-0 font-outfit text-[14px] leading-5 font-normal text-pretty text-[#F4F1EA] lg:text-[15px] lg:leading-[22px]">
         {HERO_COPY}
       </p>
     </div>

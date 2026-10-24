@@ -14,7 +14,7 @@ const badgeVariants = cva(
         furniture: "bg-furniture text-white",
         artwork: "bg-artwork text-white",
         sale: "bg-destructive text-destructive-foreground",
-        success: "bg-success/15 text-success",
+        success: "bg-success/15 text-ink",
       },
     },
     defaultVariants: { variant: "default" },

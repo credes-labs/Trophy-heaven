@@ -86,7 +86,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
           <p className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111]">
             {displayName}
           </p>
-          <p className="mt-[0.25em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45">
+          <p className="mt-[0.25em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
             {customer.email}
           </p>
           <nav
@@ -104,7 +104,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                     "shrink-0",
                     active
                       ? "text-[#131111] underline underline-offset-[0.2em]"
-                      : "text-[#131111]/45 hover:text-[#131111]"
+                      : "text-[#6B635C] hover:text-[#131111]"
                   )}
                 >
                   {item.label}
@@ -116,7 +116,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
               onClick={() => void handleLogout()}
               className={cn(
                 navLinkClass,
-                "shrink-0 cursor-pointer border-0 bg-transparent p-0 text-[#131111]/45 hover:text-[#131111]"
+                "shrink-0 cursor-pointer border-0 bg-transparent p-0 text-[#6B635C] hover:text-[#131111]"
               )}
             >
               Logout
@@ -130,7 +130,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
               <p className="m-0 font-outfit text-[1.25em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111]">
                 {displayName}
               </p>
-              <p className="mt-[0.35em] m-0 truncate font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45">
+              <p className="mt-[0.35em] m-0 truncate font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
                 {customer.email}
               </p>
               <nav className="mt-[2em] flex flex-col gap-[0.75em]" aria-label="Account sections">
@@ -144,7 +144,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                         navLinkClass,
                         active
                           ? "text-[#131111] underline underline-offset-[0.2em]"
-                          : "text-[#131111]/45 hover:text-[#131111]"
+                          : "text-[#6B635C] hover:text-[#131111]"
                       )}
                     >
                       {item.label}
@@ -158,7 +158,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                   onClick={() => void handleLogout()}
                   className={cn(
                     navLinkClass,
-                    "cursor-pointer border-0 bg-transparent p-0 text-[#131111]/45 hover:text-[#131111]"
+                    "cursor-pointer border-0 bg-transparent p-0 text-[#6B635C] hover:text-[#131111]"
                   )}
                 >
                   Logout

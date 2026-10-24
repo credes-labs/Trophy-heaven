@@ -33,17 +33,17 @@ export function MaterialsSection() {
       <SectionEyebrow>materials</SectionEyebrow>
       <h2
         id="materials-heading"
-        className="mt-[0.75em] m-0 max-w-[14em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em]"
+        className="mt-[0.75em] m-0 max-w-[14em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
       >
         We name what we use.
       </h2>
       <ul className="mt-[clamp(1.75em,3.5vw,3em)] m-0 grid list-none grid-cols-2 gap-x-[1em] gap-y-[1.75em] p-0 lg:grid-cols-3 lg:gap-[2em]">
         {MATERIALS.map((item) => (
           <li key={item.name}>
-            <h3 className="m-0 font-outfit text-[1.125em] font-normal tracking-[-0.02em] text-[#131111]">
+            <h3 className="m-0 font-outfit text-[1.125em] font-normal tracking-[-0.02em] text-balance text-[#131111]">
               {item.name}
             </h3>
-            <p className="mt-[0.5em] m-0 font-outfit text-[0.9375em] leading-[1.45] text-[#131111]/7">
+            <p className="mt-[0.5em] m-0 font-outfit text-[0.9375em] leading-[1.45] text-pretty text-[#6B635C]">
               {item.body}
             </p>
           </li>

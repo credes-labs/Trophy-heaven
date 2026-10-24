@@ -62,7 +62,7 @@ export default async function SharedDesignPage({
       <EditorialFrame>
         {design ? (
           <div className="border border-[#131111]/10 p-[1.5em] max-w-[36em]">
-            <p className="m-0 font-outfit text-[0.875em] uppercase tracking-wide text-[#131111]/55">
+            <p className="m-0 font-outfit text-[0.875em] uppercase tracking-wide text-[#6B635C]">
               Status · {design.status ?? "shared"}
             </p>
             <p className="mt-[1em] m-0 font-outfit text-[1em] leading-[1.5] text-[#131111]/75">

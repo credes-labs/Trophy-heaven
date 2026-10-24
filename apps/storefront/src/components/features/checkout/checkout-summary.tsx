@@ -14,7 +14,7 @@ export function CheckoutSummary({
 }) {
   return (
     <aside className="h-fit rounded-lg border border-border bg-card p-5 lg:sticky lg:top-24">
-      <h2 className="font-serif text-lg font-semibold">Order summary</h2>
+      <h2 className="text-balance font-serif text-lg font-semibold">Order summary</h2>
       <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto text-sm">
         {(cart.items ?? []).map((i) => (
           <li key={i.id} className="flex justify-between gap-3">
@@ -52,7 +52,7 @@ export function CheckoutSummary({
         </div>
       </dl>
       {netTermsLabel && (
-        <p className="mt-3 text-xs text-muted-foreground">{netTermsLabel}</p>
+        <p className="mt-3 max-w-[68ch] text-pretty text-xs text-muted-foreground">{netTermsLabel}</p>
       )}
     </aside>
   )

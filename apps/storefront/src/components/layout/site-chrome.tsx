@@ -4,8 +4,8 @@ import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
 /**
- * Homepage keeps its own overlay nav in the hero, so the sticky header stays
- * off `/`. The announcement bar is shown on every route including home.
+ * Homepage is a full-bleed poster with its own overlay nav, so the sticky
+ * header and the announcement strip stay off `/`.
  */
 export function SiteChrome({
   announcement,
@@ -19,7 +19,7 @@ export function SiteChrome({
 
   return (
     <>
-      {announcement}
+      {isHome ? null : announcement}
       {isHome ? null : header}
     </>
   )

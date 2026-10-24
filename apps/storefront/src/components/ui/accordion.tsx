@@ -74,7 +74,7 @@ export function AccordionTrigger({ className, children, ...props }: React.Button
       aria-expanded={isOpen}
       onClick={() => toggle(value)}
       className={cn(
-        "flex w-full items-center justify-between py-4 text-sm font-medium transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [&>svg]:shrink-0",
+        "flex w-full items-center justify-between py-4 text-sm font-medium transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 [&>svg]:shrink-0",
         className
       )}
       {...props}

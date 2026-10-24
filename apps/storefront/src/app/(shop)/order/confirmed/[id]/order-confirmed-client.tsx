@@ -79,8 +79,8 @@ export function OrderConfirmedClient({ id }: { id: string }) {
         <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-trophy">
           Order confirmed
         </p>
-        <h1 className="mt-2 font-serif text-3xl font-semibold">Thank you for your order</h1>
-        <p className="mt-3 text-muted-foreground">
+        <h1 className="mt-2 text-balance font-serif text-3xl font-semibold">Thank you for your order</h1>
+        <p className="mx-auto mt-3 max-w-[68ch] text-pretty text-muted-foreground">
           Your order has been placed and a confirmation email is on its way. Sign in to view full
           order details and tracking.
         </p>
@@ -108,8 +108,8 @@ export function OrderConfirmedClient({ id }: { id: string }) {
         <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-trophy">
           Order confirmed
         </p>
-        <h1 className="mt-2 font-serif text-3xl font-semibold">Thank you for your order</h1>
-        <p className="mt-3 text-muted-foreground">
+        <h1 className="mt-2 text-balance font-serif text-3xl font-semibold">Thank you for your order</h1>
+        <p className="mx-auto mt-3 max-w-[68ch] text-pretty text-muted-foreground">
           Order <span className="font-medium text-foreground">{label}</span> · Placed{" "}
           {formatDate(order.created_at)} · A confirmation email is on its way.
         </p>
@@ -122,7 +122,7 @@ export function OrderConfirmedClient({ id }: { id: string }) {
           </div>
           <div>
             <p className="text-sm font-medium">Estimated delivery</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="max-w-[68ch] text-pretty text-sm text-muted-foreground">
               Arriving by <span className="font-medium text-foreground">{estimatedDelivery(order)}</span>
               . Custom pieces may take 7–14 days — we&apos;ll email updates as it moves.
             </p>
@@ -132,7 +132,7 @@ export function OrderConfirmedClient({ id }: { id: string }) {
 
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle className="text-base">Items</CardTitle>
+          <CardTitle className="text-balance text-base">Items</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {(order.items ?? []).map((item) => (
@@ -150,13 +150,13 @@ export function OrderConfirmedClient({ id }: { id: string }) {
                   {item.variant?.title ? ` · ${item.variant.title}` : ""}
                 </p>
               </div>
-              <p className="font-medium">
+              <p className="font-medium tabular-nums">
                 {formatMoney(item.total ?? item.unit_price ?? 0, order.currency_code)}
               </p>
             </div>
           ))}
           {(order.items ?? []).length === 0 && (
-            <p className="text-sm text-muted-foreground">No line items on this order.</p>
+            <p className="max-w-[68ch] text-pretty text-sm text-muted-foreground">No line items on this order.</p>
           )}
         </CardContent>
       </Card>
@@ -164,7 +164,7 @@ export function OrderConfirmedClient({ id }: { id: string }) {
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Shipping address</CardTitle>
+            <CardTitle className="text-balance text-base">Shipping address</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             {ship ? (
@@ -186,33 +186,33 @@ export function OrderConfirmedClient({ id }: { id: string }) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Payment summary</CardTitle>
+            <CardTitle className="text-balance text-base">Payment summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal</span>
-              <span>{formatMoney(order.item_subtotal ?? 0, order.currency_code)}</span>
+              <span className="tabular-nums">{formatMoney(order.item_subtotal ?? 0, order.currency_code)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Shipping</span>
-              <span>{formatMoney(order.shipping_total ?? 0, order.currency_code)}</span>
+              <span className="tabular-nums">{formatMoney(order.shipping_total ?? 0, order.currency_code)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Tax (GST)</span>
-              <span>{formatMoney(order.tax_total ?? 0, order.currency_code)}</span>
+              <span className="tabular-nums">{formatMoney(order.tax_total ?? 0, order.currency_code)}</span>
             </div>
             {(order.discount_total ?? 0) > 0 && (
               <div className="flex justify-between text-success">
                 <span>Discount</span>
-                <span>-{formatMoney(order.discount_total ?? 0, order.currency_code)}</span>
+                <span className="tabular-nums">-{formatMoney(order.discount_total ?? 0, order.currency_code)}</span>
               </div>
             )}
             <Separator />
             <div className="flex justify-between font-medium">
               <span>Total</span>
-              <span>{formatMoney(order.total ?? 0, order.currency_code)}</span>
+              <span className="tabular-nums">{formatMoney(order.total ?? 0, order.currency_code)}</span>
             </div>
-            <p className="pt-2 text-xs text-muted-foreground">
+            <p className="max-w-[68ch] pt-2 text-pretty text-xs text-muted-foreground">
               Payment: <Badge variant="gold">{order.payment_status}</Badge>
             </p>
           </CardContent>

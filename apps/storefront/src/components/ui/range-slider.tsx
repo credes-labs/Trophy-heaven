@@ -130,10 +130,10 @@ export function RangeSlider({
             <div
               key={thumb}
               {...thumbProps(thumb, v)}
-              className="absolute -translate-x-1/2 outline-none"
+              className="absolute -translate-x-1/2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink"
               style={{ left: `${pct(v)}%` }}
             >
-              <div className="h-4.5 w-4.5 rounded-full border-2 border-primary bg-card shadow-sm transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-primary/50" />
+              <div className="h-4.5 w-4.5 rounded-full border-2 border-primary bg-card shadow-sm transition-transform hover:scale-110" />
               {dragging === thumb && (
                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-foreground px-2 py-0.5 text-xs text-background">
                   {formatValue(v)}

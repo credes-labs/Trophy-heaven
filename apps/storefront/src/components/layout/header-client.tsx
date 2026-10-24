@@ -96,7 +96,7 @@ export function HeaderClient({ categories }: { categories: Category[] }) {
               >
                 <Link
                   href={link.href}
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-[#6B635C] transition-colors hover:text-foreground"
                 >
                   {link.label}
                 </Link>
@@ -178,7 +178,7 @@ export function HeaderClient({ categories }: { categories: Category[] }) {
               </ul>
               {categories.length > 0 && (
                 <div className="mt-6 border-t pt-6">
-                  <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="px-3 text-xs font-semibold uppercase tracking-wider text-[#6B635C]">
                     Categories
                   </p>
                   <ul className="mt-3 space-y-1">
@@ -187,7 +187,7 @@ export function HeaderClient({ categories }: { categories: Category[] }) {
                         <Link
                           href={hrefForCategoryHandle(cat.handle)}
                           onClick={() => setMobileOpen(false)}
-                          className="block rounded-md px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                          className="block rounded-md px-3 py-2.5 text-sm text-[#6B635C] transition-colors hover:bg-muted hover:text-foreground"
                         >
                           {cat.name}
                         </Link>

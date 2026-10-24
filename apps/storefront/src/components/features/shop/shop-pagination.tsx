@@ -52,7 +52,7 @@ export function ShopPagination({
               "flex size-[2.5em] cursor-pointer items-center justify-center border bg-transparent font-outfit text-[0.875em] tracking-[0.06em]",
               n === page
                 ? "border-[#131111] bg-[#131111] text-[#F2F1EF]"
-                : "border-[#131111]/15 bg-transparent text-[#131111]/50 hover:border-[#131111]/40 hover:text-[#131111]"
+                : "border-[#131111]/15 bg-transparent text-[#6B635C] hover:border-[#131111]/40 hover:text-[#131111]"
             )}
           >
             {pageLabel(n)}
@@ -69,7 +69,7 @@ export function ShopPagination({
         </button>
       </nav>
       {showing ? (
-        <p className="m-0 font-outfit text-[0.8125em] tracking-[0.08em] text-[rgba(19,17,17,0.5)] uppercase">
+        <p className="m-0 font-outfit text-[0.8125em] tracking-[0.08em] text-[#6B635C] uppercase">
           {showing}
         </p>
       ) : null}

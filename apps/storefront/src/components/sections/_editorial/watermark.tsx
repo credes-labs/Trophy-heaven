@@ -39,13 +39,19 @@ export function FilmWatermark({
   className?: string
 }) {
   return (
-    <p
+    <div
       className={cn(
-        "pointer-events-none absolute right-0 bottom-0 left-0 m-0 translate-y-[8%] text-center font-outfit text-[clamp(2rem,8.5vw,8.059em)] leading-[0.74] font-medium tracking-[-0.054em] text-[#F2F1EF] lg:translate-y-[18%] lg:whitespace-nowrap",
+        "pointer-events-none absolute right-0 bottom-0 left-0 translate-y-[8%] font-outfit text-[clamp(2rem,8.5vw,8.059em)] leading-[0.74] lg:translate-y-[18%] lg:whitespace-nowrap",
         className
       )}
     >
-      {children}
-    </p>
+      <div
+        aria-hidden
+        className="absolute inset-x-0 -top-[0.4em] -bottom-[0.15em] bg-gradient-to-t from-[#131111]/82 from-65% to-transparent"
+      />
+      <p className="relative m-0 text-center font-medium tracking-[-0.054em] text-balance text-[#F2F1EF]">
+        {children}
+      </p>
+    </div>
   )
 }

@@ -39,7 +39,7 @@ export function PasswordRevealToggle({
       aria-pressed={visible}
       onClick={onToggle}
       className={cn(
-        "flex cursor-pointer items-center justify-center border-0 bg-transparent p-0",
+        "flex cursor-pointer items-center justify-center border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ink",
         className
       )}
     >
@@ -64,7 +64,7 @@ export function PasswordField({
       <PasswordRevealToggle
         visible={visible}
         onToggle={() => setVisible((v) => !v)}
-        className="absolute right-0 bottom-0 h-12 w-10 text-[#131111]/55 hover:text-[#131111]"
+        className="absolute right-0 bottom-0 h-12 w-10 text-ink-muted hover:text-ink"
       />
     </div>
   )

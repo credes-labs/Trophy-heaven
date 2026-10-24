@@ -124,7 +124,7 @@ export function DropdownMenuItem({ className, icon, destructive, children, ...pr
         setOpen(false)
       }}
       className={cn(
-        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-muted hover:bg-muted disabled:pointer-events-none disabled:opacity-50",
+        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink focus:bg-muted hover:bg-muted disabled:pointer-events-none disabled:opacity-50",
         destructive && "text-destructive focus:text-destructive",
         className
       )}

@@ -79,7 +79,7 @@ export function TabsList({ className, children, ...props }: React.HTMLAttributes
       {children}
       {variant === "default" && indicator.width > 0 && (
         <span
-          className="absolute bottom-0 h-0.5 bg-primary transition-all duration-200"
+          className="absolute bottom-0 h-0.5 bg-primary transition-[left,width] duration-200"
           style={{ left: indicator.left, width: indicator.width }}
         />
       )}
@@ -110,7 +110,7 @@ export function TabsTrigger({ value: tabValue, className, children, ...props }: 
       data-state={isActive ? "active" : "inactive"}
       onClick={() => onValueChange(tabValue)}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center whitespace-nowrap px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         variant === "default" && "border-b-2 border-transparent text-muted-foreground data-[state=active]:text-foreground",
         variant === "pills" && "rounded-md text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm",
         className
@@ -133,7 +133,7 @@ export function TabsContent({ value: tabValue, className, ...props }: TabsConten
     <div
       role="tabpanel"
       tabIndex={0}
-      className={cn("mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary", className)}
+      className={cn("mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2", className)}
       {...props}
     />
   )

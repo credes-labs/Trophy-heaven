@@ -11,7 +11,13 @@ import {
 } from "@/components/layout/editorial/editorial-cta"
 import { PasswordField } from "@/components/ui/password-field"
 import { safeReturnPath } from "@/lib/safe-return-path"
+import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth-store"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
 
 function LoginForm() {
   const router = useRouter()
@@ -52,7 +58,7 @@ function LoginForm() {
             required
             autoComplete="email"
             placeholder="you@studio.in"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
         </div>
         <div>
@@ -64,7 +70,7 @@ function LoginForm() {
             name="password"
             required
             autoComplete="current-password"
-            className={editorialFieldClass}
+            className={fieldClass}
           />
           <div className="mt-[0.75em]">
             <EditorialTextLink href="/account/forgot-password" className="text-[0.875em]">

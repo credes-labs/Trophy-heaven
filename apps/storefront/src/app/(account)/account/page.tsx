@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import type { HttpTypes } from "@medusajs/types"
-import { ArrowRight, Package, Palette, MapPin } from "lucide-react"
+import { Package, Palette, MapPin } from "lucide-react"
 import { useAuthStore } from "@/stores/auth-store"
 import { medusa } from "@/lib/medusa"
 import { designApi, type DesignRecord } from "@/lib/design-client"
 import { formatMoney } from "@/lib/format"
-import { buttonVariants } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
+import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
+import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
+
+const textLink =
+  "font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
 function orderLabel(order: HttpTypes.StoreOrder) {
   return order.display_id != null ? `#LC-${order.display_id}` : order.id.slice(0, 12)
@@ -60,120 +62,104 @@ export default function AccountDashboardPage() {
   const firstName = customer.first_name || "there"
   const addressCount = customer.addresses?.length ?? 0
 
+  const stats = [
+    {
+      href: "/account/orders",
+      label: "Recent orders",
+      value: loading ? "—" : String(orders.length),
+      action: "View all",
+      icon: Package,
+    },
+    {
+      href: "/account/designs",
+      label: "Saved designs",
+      value: loading ? "—" : String(designCount),
+      action: "View all",
+      icon: Palette,
+    },
+    {
+      href: "/account/addresses",
+      label: "Addresses",
+      value: String(addressCount),
+      action: "Manage",
+      icon: MapPin,
+    },
+  ] as const
+
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">
+    <div>
+      <header className="relative overflow-hidden">
+        <EditorialWatermark>account</EditorialWatermark>
+        <EditorialEyebrow>Account</EditorialEyebrow>
+        <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
           Welcome back, {firstName}
         </h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="relative mt-[1em] m-0 max-w-[28em] font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
           Manage orders, designs, and account preferences.
         </p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <Package className="h-4 w-4 text-gold" aria-hidden />
-              Recent orders
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="font-serif text-2xl font-semibold">
-              {loading ? "—" : orders.length}
+      <ul className="mt-[2.5em] m-0 grid list-none gap-[1.5em] border-y border-[#CDCDCD] p-0 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <li key={stat.href} className="py-[1.25em] sm:px-[1em] sm:first:pl-0">
+            <p className="m-0 flex items-center gap-[0.5em] font-outfit text-[0.75em] tracking-[-0.02em] text-[#131111] uppercase">
+              <stat.icon className="size-[1em] text-gold" aria-hidden />
+              {stat.label}
             </p>
-            <Link
-              href="/account/orders"
-              className="mt-2 inline-flex items-center gap-1 text-sm text-accent hover:underline"
-            >
-              View all <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <Palette className="h-4 w-4 text-gold" aria-hidden />
-              Saved designs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="font-serif text-2xl font-semibold">
-              {loading ? "—" : designCount}
+            <p className="mt-[0.35em] m-0 font-outfit text-[2em] leading-none font-light tracking-[-0.04em] text-[#131111] tabular-nums">
+              {stat.value}
             </p>
-            <Link
-              href="/account/designs"
-              className="mt-2 inline-flex items-center gap-1 text-sm text-accent hover:underline"
-            >
-              View all <ArrowRight className="h-3.5 w-3.5" />
+            <Link href={stat.href} className={`mt-[0.75em] inline-block ${textLink}`}>
+              {stat.action}
             </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base font-medium">
-              <MapPin className="h-4 w-4 text-gold" aria-hidden />
-              Addresses
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="font-serif text-2xl font-semibold">{addressCount}</p>
-            <Link
-              href="/account/addresses"
-              className="mt-2 inline-flex items-center gap-1 text-sm text-accent hover:underline"
-            >
-              Manage <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
+          </li>
+        ))}
+      </ul>
 
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-semibold">Recent orders</h2>
-          <Link
-            href="/account/orders"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-          >
+      <section className="mt-[3em]">
+        <div className="flex flex-wrap items-baseline justify-between gap-[1em]">
+          <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
+            Recent orders
+          </h2>
+          <Link href="/account/orders" className={textLink}>
             View all
           </Link>
         </div>
         {loading ? (
-          <div className="space-y-3">
+          <div className="mt-[1.5em] space-y-[0.75em]">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
+              <Skeleton key={i} className="h-16 w-full rounded-[0.125em] bg-[#D9D9D9]" />
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-start gap-3 py-8">
-              <p className="text-muted-foreground">No orders yet. Start with something handmade.</p>
-              <Link href="/shop" className={cn(buttonVariants())}>
-                Browse shop
-              </Link>
-            </CardContent>
-          </Card>
+          <div className="mt-[1.5em]">
+            <p className="m-0 max-w-[28em] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
+              No orders yet. Start with something handmade.
+            </p>
+            <div className="mt-[1.75em]">
+              <EditorialCtaLink href="/shop">Browse shop</EditorialCtaLink>
+            </div>
+          </div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="mt-[1em] m-0 list-none p-0">
             {orders.map((order) => (
-              <li key={order.id}>
+              <li key={order.id} className="border-b border-[#CDCDCD]">
                 <Link
                   href={`/account/orders/${order.id}`}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:bg-muted/50"
+                  className="flex flex-wrap items-baseline justify-between gap-x-[1.5em] gap-y-[0.35em] py-[1.15em] no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
                 >
                   <div>
-                    <p className="font-medium">{orderLabel(order)}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(order.created_at)} · {order.items?.length ?? 0} items
+                    <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111]">
+                      {orderLabel(order)}
+                    </p>
+                    <p className="mt-[0.2em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
+                      {formatDate(order.created_at)} · {order.items?.length ?? 0} items ·{" "}
+                      {order.fulfillment_status || order.status}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="gold">{order.fulfillment_status || order.status}</Badge>
-                    <span className="font-medium">
-                      {formatMoney(order.total ?? 0, order.currency_code)}
-                    </span>
-                  </div>
+                  <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111] tabular-nums">
+                    {formatMoney(order.total ?? 0, order.currency_code)}
+                  </p>
                 </Link>
               </li>
             ))}
@@ -181,50 +167,48 @@ export default function AccountDashboardPage() {
         )}
       </section>
 
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-semibold">Saved designs</h2>
-          <Link href="/account/designs" className="text-sm text-accent hover:underline">
+      <section className="mt-[3em]">
+        <div className="flex flex-wrap items-baseline justify-between gap-[1em]">
+          <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
+            Saved designs
+          </h2>
+          <Link href="/account/designs" className={textLink}>
             View all
           </Link>
         </div>
         {loading ? (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="mt-[1.5em] grid gap-[1.5em] sm:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3] w-full" />
+              <Skeleton key={i} className="aspect-[4/3] w-full rounded-[0.125em] bg-[#D9D9D9]" />
             ))}
           </div>
         ) : designs.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-muted-foreground">
-              No saved designs yet. Customize a product to get started.
-            </CardContent>
-          </Card>
+          <p className="mt-[1.5em] m-0 max-w-[28em] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
+            No saved designs yet. Customize a product to get started.
+          </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <ul className="mt-[1.5em] m-0 grid list-none gap-[1.5em] p-0 sm:grid-cols-3">
             {designs.map((design) => (
-              <Card key={design.id} className="overflow-hidden">
-                <div className="aspect-[4/3] bg-muted">
+              <li key={design.id}>
+                <div className="aspect-[4/3] overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
                   {design.preview_url ? (
                     // Raw <img> used intentionally (dynamic backend URLs; Next/Image domain config not required here).
-                    <img
-                      src={design.preview_url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
+                    <img src={design.preview_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                    <div className="flex h-full items-center justify-center font-outfit text-[0.875em] text-[#6B635C]">
                       No preview
                     </div>
                   )}
                 </div>
-                <CardContent className="space-y-1 p-4">
-                  <p className="truncate font-medium">{design.name}</p>
-                  <Badge variant="outline">{design.mode.toUpperCase()}</Badge>
-                </CardContent>
-              </Card>
+                <p className="mt-[0.75em] m-0 truncate font-outfit text-[1em] tracking-[-0.02em] text-[#131111]">
+                  {design.name}
+                </p>
+                <p className="mt-[0.2em] m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">
+                  {design.mode}
+                </p>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </section>
     </div>

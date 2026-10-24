@@ -47,6 +47,8 @@ that matches how much you need to know.
 | 030 | [Vercel schemas prebuild](L3/030-vercel-schemas-build.md) | WP-32 |
 | 031 | [Homepage sections, copy deck, and sitemap](L3/031-homepage-sitemap.md) | WP-34 |
 | 032 | [Vercel production hardening](L3/032-vercel-production-hardening.md) | WP-35 |
+| 033 | [Editorial contrast and type](L3/033-editorial-contrast.md) | WP-36 |
+| 034 | [Homepage hero poster](L3/034-hero-poster.md) | WP-37 |
 
 
 

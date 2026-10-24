@@ -115,10 +115,10 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="relative mt-[1.5em] max-w-[40em]">
               <EditorialWatermark>story</EditorialWatermark>
               <EditorialEyebrow>{category?.name ?? "Journal"}</EditorialEyebrow>
-              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+              <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
                 {post.title}
               </h1>
-              <p className="mt-[1.25em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+              <p className="mt-[1.25em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C] uppercase">
                 {post.author_name}
                 {meta ? ` · ${meta}` : ""}
               </p>
@@ -149,7 +149,7 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               <div className="mt-[2.5em]">
-                <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C] uppercase">
                   Written by
                 </p>
                 <p className="mt-[0.5em] m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111]">
@@ -165,7 +165,7 @@ export default async function BlogPostPage({ params }: Props) {
             {toc.length > 1 ? (
               <aside className="lg:col-span-4">
                 <nav className="sticky top-24" aria-label="On this page">
-                  <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/45 uppercase">
+                  <p className="m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C] uppercase">
                     Contents
                   </p>
                   <ul className="mt-[1em] m-0 flex list-none flex-col gap-[0.75em] p-0">
@@ -188,7 +188,7 @@ export default async function BlogPostPage({ params }: Props) {
           {related.length > 0 ? (
             <section className="mt-[clamp(3em,6vw,5em)] border-t border-[#CDCDCD] pt-[clamp(2em,4vw,3.5em)]">
               <div className="flex flex-wrap items-baseline justify-between gap-[1em]">
-                <h2 className="m-0 font-outfit text-[clamp(1.75em,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-[#131111]">
+                <h2 className="m-0 font-outfit text-[clamp(1.75em,3vw,2.5em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">
                   Related
                 </h2>
                 {category ? (

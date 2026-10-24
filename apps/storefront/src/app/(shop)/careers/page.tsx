@@ -39,10 +39,10 @@ export default function CareersPage() {
         <ul className="m-0 grid list-none gap-[1.25em] p-0">
           {ROLES.map((role) => (
             <li key={role.title} className="border-b border-[#131111]/10 pb-[1.25em]">
-              <h2 className="m-0 font-outfit text-[1.35em] font-normal tracking-[-0.02em] text-[#131111]">
+              <h2 className="m-0 font-outfit text-[1.35em] font-normal tracking-[-0.02em] text-balance text-[#131111]">
                 {role.title}
               </h2>
-              <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.45] text-[#131111]/7">
+              <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.45] text-[#6B635C]">
                 {role.body}
               </p>
             </li>

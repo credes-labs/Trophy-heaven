@@ -1,13 +1,25 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import {
+  EditorialCtaButton,
+  editorialFieldClass,
+  editorialLabelClass,
+} from "@/components/layout/editorial/editorial-cta"
 import {
   corporateApi,
   type CorporateProfileRecord,
   type TeamMemberRecord,
 } from "@/lib/bulk-client"
 import { formatMoney } from "@/lib/format"
+import { cn } from "@/lib/utils"
+
+const fieldClass = cn(
+  editorialFieldClass,
+  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:!outline-solid"
+)
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
 export function CorporateDashboard() {
   const [loading, setLoading] = useState(true)
@@ -72,11 +84,13 @@ export function CorporateDashboard() {
     }
   }
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading your corporate account…</p>
+  if (loading) {
+    return <p className="m-0 font-outfit text-[1em] text-[#6B635C]">Loading your corporate account…</p>
+  }
 
   if (error && !profile) {
     return (
-      <p className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+      <p className="m-0 font-outfit text-[0.875em] leading-[1.4] text-[#8A2D25]" role="alert">
         {error} — you may need to sign in.
       </p>
     )
@@ -84,102 +98,140 @@ export function CorporateDashboard() {
 
   if (!profile) {
     return (
-      <div className="max-w-lg space-y-4 rounded-lg border border-border p-6">
-        <h2 className="font-serif text-2xl">Create your corporate account</h2>
+      <div className="max-w-[32em] space-y-[1.5em]">
+        <h2 className="m-0 font-outfit text-[1.75em] leading-[1.2] font-normal tracking-[-0.03em] text-balance text-[#131111]">
+          Create your corporate account
+        </h2>
         <div>
-          <label className="mb-1 block text-sm font-medium">Company name</label>
+          <label htmlFor="corp-company" className={editorialLabelClass}>
+            Company name
+          </label>
           <input
+            id="corp-company"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className={fieldClass}
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium">GST / Tax ID</label>
+          <label htmlFor="corp-tax" className={editorialLabelClass}>
+            GST / Tax ID
+          </label>
           <input
+            id="corp-tax"
             value={taxId}
             onChange={(e) => setTaxId(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className={fieldClass}
           />
         </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        <Button onClick={createProfile} disabled={!companyName || !taxId}>
+        {error ? (
+          <p className="m-0 font-outfit text-[0.875em] text-[#8A2D25]" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <EditorialCtaButton
+          type="button"
+          onClick={() => void createProfile()}
+          disabled={!companyName || !taxId}
+          className={focusRing}
+        >
           Create account
-        </Button>
+        </EditorialCtaButton>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-lg border border-border p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="font-serif text-2xl">{profile.company_name}</h2>
-          <span
-            className={
-              profile.is_verified
-                ? "rounded-full bg-success/15 px-3 py-1 text-xs text-success"
-                : "rounded-full bg-warning/15 px-3 py-1 text-xs"
-            }
-          >
+    <div className="space-y-[2.5em]">
+      <section className="border-y border-[#CDCDCD] py-[1.5em]">
+        <div className="flex flex-wrap items-baseline justify-between gap-[1em]">
+          <h2 className="m-0 font-outfit text-[1.75em] leading-[1.2] font-normal tracking-[-0.03em] text-balance text-[#131111]">
+            {profile.company_name}
+          </h2>
+          <p className="m-0 font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">
             {profile.is_verified ? "Verified" : "Pending verification"}
-          </span>
+          </p>
         </div>
-        <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-3">
+        <dl className="mt-[1.25em] grid gap-[1.25em] font-outfit text-[1em] tracking-[-0.02em] sm:grid-cols-3">
           <div>
-            <dt className="text-muted-foreground">GST / Tax ID</dt>
-            <dd>{profile.tax_id}</dd>
+            <dt className="text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">GST / Tax ID</dt>
+            <dd className="mt-[0.25em] m-0">{profile.tax_id}</dd>
           </div>
           <div>
-            <dt className="text-muted-foreground">Payment terms</dt>
-            <dd className="uppercase">{profile.payment_terms.replace("_", " ")}</dd>
+            <dt className="text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">Payment terms</dt>
+            <dd className="mt-[0.25em] m-0 uppercase">{profile.payment_terms.replace("_", " ")}</dd>
           </div>
           <div>
-            <dt className="text-muted-foreground">Credit limit</dt>
-            <dd>{formatMoney(profile.credit_limit, "inr")}</dd>
+            <dt className="text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">Credit limit</dt>
+            <dd className="mt-[0.25em] m-0 tabular-nums">{formatMoney(profile.credit_limit, "inr")}</dd>
           </div>
         </dl>
-        {orderCount != null && (
-          <p className="mt-4 text-sm text-muted-foreground">Orders on this account: {orderCount}</p>
-        )}
+        {orderCount != null ? (
+          <p className="mt-[1.25em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
+            Orders on this account: <span className="tabular-nums text-[#131111]">{orderCount}</span>
+          </p>
+        ) : null}
       </section>
 
-      <section className="rounded-lg border border-border p-6">
-        <h3 className="font-serif text-xl">Team members</h3>
-        <ul className="mt-3 space-y-1 text-sm">
-          {members.length === 0 && <li className="text-muted-foreground">No members yet.</li>}
+      <section>
+        <h3 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
+          Team members
+        </h3>
+        <ul className="mt-[1em] m-0 list-none p-0 font-outfit text-[1em] tracking-[-0.02em]">
+          {members.length === 0 ? <li className="text-[#6B635C]">No members yet.</li> : null}
           {members.map((m) => (
-            <li key={m.id} className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+            <li
+              key={m.id}
+              className="flex flex-wrap items-baseline justify-between gap-[0.75em] border-b border-[#CDCDCD] py-[0.85em]"
+            >
               <span>{m.email}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">
                 {m.role} · {m.status}
               </span>
             </li>
           ))}
         </ul>
-        <div className="mt-4 flex flex-wrap items-end gap-2">
-          <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium">Invite by email</label>
+        <div className="mt-[1.5em] flex flex-wrap items-end gap-[1em]">
+          <div className="min-w-[16em] flex-1">
+            <label htmlFor="corp-invite" className={editorialLabelClass}>
+              Invite by email
+            </label>
             <input
+              id="corp-invite"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="teammate@company.com"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className={fieldClass}
             />
           </div>
-          <select
-            value={inviteRole}
-            onChange={(e) => setInviteRole(e.target.value as "member" | "manager")}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          <div>
+            <label htmlFor="corp-role" className={editorialLabelClass}>
+              Role
+            </label>
+            <select
+              id="corp-role"
+              value={inviteRole}
+              onChange={(e) => setInviteRole(e.target.value as "member" | "manager")}
+              className={fieldClass}
+            >
+              <option value="member">Member</option>
+              <option value="manager">Manager</option>
+            </select>
+          </div>
+          <EditorialCtaButton
+            type="button"
+            onClick={() => void addMember()}
+            disabled={!inviteEmail}
+            className={focusRing}
           >
-            <option value="member">Member</option>
-            <option value="manager">Manager</option>
-          </select>
-          <Button onClick={addMember} disabled={!inviteEmail} size="sm">
             Invite
-          </Button>
+          </EditorialCtaButton>
         </div>
-        {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+        {error ? (
+          <p className="mt-[1em] m-0 font-outfit text-[0.875em] text-[#8A2D25]" role="alert">
+            {error}
+          </p>
+        ) : null}
       </section>
     </div>
   )

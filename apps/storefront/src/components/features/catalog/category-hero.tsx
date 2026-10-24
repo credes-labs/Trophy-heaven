@@ -73,7 +73,7 @@ export function CategoryHero({ config, productCount, className }: CategoryHeroPr
                 Home
               </Link>
             </BreadcrumbItem>
-            <BreadcrumbSeparator className="text-white/50" />
+            <BreadcrumbSeparator className="text-white/80" />
             <BreadcrumbItem>
               <span className="font-medium text-white" aria-current="page">
                 {config.label}
@@ -82,12 +82,12 @@ export function CategoryHero({ config, productCount, className }: CategoryHeroPr
           </BreadcrumbList>
         </Breadcrumb>
 
-        <h1 className="font-serif text-4xl font-semibold text-white md:text-5xl">
+        <h1 className="font-outfit text-4xl font-semibold text-balance text-white md:text-5xl">
           {config.headline}
         </h1>
-        <p className="mt-2 max-w-2xl text-base text-white/80 md:text-lg">{config.description}</p>
+        <p className="mt-2 max-w-2xl text-pretty text-base text-white/80 md:text-lg">{config.description}</p>
         {typeof productCount === "number" && (
-          <p className="mt-3 text-sm text-white/60">
+          <p className="mt-3 text-sm text-white/80">
             {productCount} product{productCount === 1 ? "" : "s"}
           </p>
         )}

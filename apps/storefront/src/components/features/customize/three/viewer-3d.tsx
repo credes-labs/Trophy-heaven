@@ -66,7 +66,7 @@ export function Viewer3D({
   if (!cap.webgl) {
     return (
       <div className="flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-lg border border-border bg-muted p-6 text-center">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-[#6B635C]">
           3D preview isn&apos;t available on this device. Showing the 2D preview instead.
         </p>
         {fallback}
@@ -122,29 +122,29 @@ export function Viewer3D({
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setSpin((s) => !s)}
-          className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+          className="rounded-md border border-border px-3 py-1.5 text-sm text-[#131111] hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
         >
           {spin ? "Stop spin" : "360° spin"}
         </button>
         <button
           onClick={screenshot}
-          className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+          className="rounded-md border border-border px-3 py-1.5 text-sm text-[#131111] hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
         >
           Screenshot
         </button>
         {arSupported ? (
           <button
             onClick={() => xrStore.enterAR()}
-            className="rounded-md border border-accent px-3 py-1.5 text-sm text-accent hover:bg-accent/10"
+            className="rounded-md border border-[#131111] px-3 py-1.5 text-sm text-[#131111] hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           >
             View in AR
           </button>
         ) : (
-          <span className="rounded-md border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground">
+          <span className="rounded-md border border-dashed border-border px-3 py-1.5 text-xs text-[#6B635C]">
             AR not supported on this device
           </span>
         )}
-        <span className="ml-auto self-center text-xs text-muted-foreground">
+        <span className="ml-auto self-center text-xs text-[#6B635C]">
           LOD: {effectiveLod} · {cap.tier}-end
         </span>
       </div>

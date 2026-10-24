@@ -56,7 +56,7 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
           >
             legacy
           </p>
-          <h1 className="relative m-0 font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111]">
+          <h1 className="relative m-0 font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111] text-balance">
             {slide.title}
           </h1>
           <Link
@@ -80,12 +80,12 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
             className="object-contain p-[7%]"
           />
           {slides.length > 1 ? (
-            <div className="absolute right-[1em] bottom-[1em] z-10 flex items-center gap-[0.65em] font-outfit text-[0.8125em] tracking-[0.12em] text-[#131111]/55 uppercase">
+            <div className="absolute right-[1em] bottom-[1em] z-10 flex items-center gap-[0.65em] font-outfit text-[0.8125em] tracking-[0.12em] text-[#6B635C] uppercase">
               <button
                 type="button"
                 aria-label="Previous featured piece"
                 onClick={prev}
-                className="cursor-pointer border-0 bg-transparent p-0 text-[1.25em] leading-none text-[#131111]/40 hover:text-[#131111]"
+                className="cursor-pointer border-0 bg-transparent p-0 text-[1.25em] leading-none text-[#6B635C] hover:text-[#131111]"
               >
                 ‹
               </button>
@@ -98,7 +98,7 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
                 type="button"
                 aria-label="Next featured piece"
                 onClick={next}
-                className="cursor-pointer border-0 bg-transparent p-0 text-[1.25em] leading-none text-[#131111]/40 hover:text-[#131111]"
+                className="cursor-pointer border-0 bg-transparent p-0 text-[1.25em] leading-none text-[#6B635C] hover:text-[#131111]"
               >
                 ›
               </button>

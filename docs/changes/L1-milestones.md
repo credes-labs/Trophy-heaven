@@ -3,6 +3,12 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Homepage hero is a full-bleed poster
+The tagline is set large on the studio photograph, with a single-row nav and the existing caption and actions on the lower right. Same copy, same images. → L2 WP-37 · [L3/034](L3/034-hero-poster.md)
+
+## 2026-10-25 — Editorial type meets WCAG on paper
+Washed-out ink (as low as 4% opacity) and gold focus rings are now muted ink `#6B635C` and 2px ink outlines. Account pages that were still gold cards match the editorial system. → L2 WP-36 · [L3/033](L3/033-editorial-contrast.md)
+
 ## 2026-10-03 — Vercel production hardening for revised storefront
 Canonical site URL + Medusa-down resilience so `/` renders on Vercel without localhost metadata. → L2 WP-35 · [L3/032](L3/032-vercel-production-hardening.md)
 

@@ -4,6 +4,9 @@ export const HERO_EYEBROW = "//trophies · furniture · artwork"
 
 export const HERO_HEADLINE = BRAND.tagline
 
+/** Visual stack of HERO_HEADLINE. Three lines, same words. */
+export const HERO_HEADLINE_LINES = ["Crafted with", "intention.", "Built to last."] as const
+
 export const HERO_COPY =
   `${BRAND.name} is a ${BRAND.city} atelier that makes three things well — trophies that mark a moment, furniture that outlives a trend, and artwork that quiets a room.`
 

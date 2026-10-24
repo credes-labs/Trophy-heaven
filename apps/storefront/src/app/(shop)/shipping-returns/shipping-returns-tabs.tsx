@@ -58,7 +58,7 @@ export function ShippingReturnsTabs() {
               "cursor-pointer border-0 bg-transparent p-0 font-outfit text-[1em] leading-[1.25em] font-normal tracking-[-0.02em] uppercase",
               tab === id
                 ? "text-[#131111] underline underline-offset-[0.25em]"
-                : "text-[#131111]/40 hover:text-[#131111]"
+                : "text-[#6B635C] hover:text-[#131111]"
             )}
           >
             {label}
@@ -70,13 +70,13 @@ export function ShippingReturnsTabs() {
         <div className="mt-[2em] divide-y divide-[#CDCDCD] border-y border-[#CDCDCD]">
           {TIERS.map((tier) => (
             <div key={tier.name} className="grid grid-cols-1 gap-[0.5em] py-[1.5em] sm:grid-cols-12 sm:items-baseline">
-              <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase sm:col-span-4">
+              <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-balance text-[#131111] uppercase sm:col-span-4">
                 {tier.name}
               </h2>
               <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111]/70 sm:col-span-3">
                 {tier.time}
               </p>
-              <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111] sm:col-span-2">
+              <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111] tabular-nums sm:col-span-2">
                 {tier.price}
               </p>
               <p className="m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70 sm:col-span-3">
@@ -89,7 +89,7 @@ export function ShippingReturnsTabs() {
         <div className="mt-[2em]">
           <div className="grid grid-cols-1 gap-[2.5em] border-b border-[#CDCDCD] pb-[2.5em] lg:grid-cols-2">
             <div>
-              <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+              <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-balance text-[#131111] uppercase">
                 7-day window
               </h2>
               <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
@@ -98,7 +98,7 @@ export function ShippingReturnsTabs() {
               </p>
             </div>
             <div>
-              <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-[#131111] uppercase">
+              <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25em] font-light tracking-[-0.02em] text-balance text-[#131111] uppercase">
                 Custom work
               </h2>
               <p className="mt-[0.75em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
@@ -110,10 +110,10 @@ export function ShippingReturnsTabs() {
           <div className="mt-[2.5em] grid grid-cols-1 gap-[2em] sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((step) => (
               <div key={step.n}>
-                <p className="m-0 font-outfit text-[2em] leading-none font-light tracking-[-0.04em] text-[#131111]/25">
+                <p className="m-0 font-outfit text-[2em] leading-none font-light tracking-[-0.04em] text-[#6B635C]">
                   {step.n}
                 </p>
-                <h3 className="mt-[0.5em] m-0 font-outfit text-[1.125em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
+                <h3 className="mt-[0.5em] m-0 font-outfit text-[1.125em] font-normal tracking-[-0.02em] text-balance text-[#131111] uppercase">
                   {step.title}
                 </h3>
                 <p className="mt-[0.5em] m-0 font-outfit text-[0.9375em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
