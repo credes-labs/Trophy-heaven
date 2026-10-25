@@ -3,6 +3,12 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Nav bar drops “Collection”
+The site nav, on desktop and mobile, no longer has a COLLECTION item; CATALOG now leads. The shop pages and the footer link stay. → L2 WP-59
+
+## 2026-10-25 — Design studio becomes a 3D plaque configurator
+`/customize` now lets customers turn an engraved plaque in 3D. They choose the form, timber, plate, display and size, type their engraving onto the model live, share the exact design by link, and add it to the cart as a saved design. → L2 WP-56 · [L3/043](L3/043-customize-3d-configurator.md)
+
 ## 2026-10-25 — Category furniture spins a full turn, uncut, and swaps smoothly
 When a category changes, the old piece now sinks out of its slot while the new one eases in, instead of vanishing. Switching no longer redraws textures, so the swap no longer hitches. Every piece now turns a full 360° every 15 seconds. Each is sized to its slot so that no angle cuts it off at the slot edge. → L2 WP-53 · [L3/041](L3/041-category-furniture-transitions.md)
 

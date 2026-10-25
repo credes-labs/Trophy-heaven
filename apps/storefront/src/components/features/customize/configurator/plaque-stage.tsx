@@ -60,7 +60,7 @@ export function PlaqueStage({ config, reduced }: { config: PlaqueConfig; reduced
   return (
     <div
       ref={frame}
-      className="configurator-stage relative h-full min-h-[22rem] w-full overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]"
+      className="configurator-stage relative h-full w-full overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]"
     >
       <div role="img" aria-label={label} className="absolute inset-0">
         {webgl ? (

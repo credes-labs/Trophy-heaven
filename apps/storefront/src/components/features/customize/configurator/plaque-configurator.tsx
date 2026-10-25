@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useReducedMotion } from "motion/react"
 import { Link2, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
 import { useCartStore } from "@/stores/cart-store"
 import { designApi } from "@/lib/design-client"
 import { formatMoney } from "@/lib/format"
@@ -113,6 +114,8 @@ export function PlaqueConfigurator({
   const reduced = Boolean(useReducedMotion())
   const addItem = useCartStore((s) => s.addItem)
   const cartLoading = useCartStore((s) => s.loading)
+  const cartCount = useCartStore((s) => s.itemCount())
+  const setDrawerOpen = useCartStore((s) => s.setDrawerOpen)
   const woodSwatches = useWoodSwatches()
 
   const variant = resolveVariant(variants, config.size)
@@ -243,14 +246,25 @@ export function PlaqueConfigurator({
   return (
     <section
       aria-labelledby="configurator-heading"
-      className="grid border-b border-[#131111]/10 lg:h-[calc(100svh-3rem)] lg:min-h-[40rem] lg:grid-cols-[minmax(0,1fr)_minmax(24rem,28em)]"
+      className="grid h-full grid-rows-[45dvh_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(24rem,28em)] lg:grid-rows-1"
     >
-      <div className="relative aspect-[4/5] max-h-[72svh] w-full sm:aspect-[4/3] lg:aspect-auto lg:h-full lg:max-h-none">
+      <div className="relative min-h-0 w-full">
         <PlaqueStage config={config} reduced={reduced} />
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between px-[1em] pt-[0.5em] sm:px-[1.25em] sm:pt-[0.75em]">
+          <HeroWordmark className="pointer-events-auto h-9 w-[5.5rem] [&_img]:brightness-0 focus-visible:outline-[#131111] lg:h-10 lg:w-[6.25rem]" />
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label={`Open cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
+            className="pointer-events-auto font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
+          >
+            Cart ({cartCount})
+          </button>
+        </div>
       </div>
 
-      <div className="flex min-h-0 flex-col border-[#131111]/10 bg-[#FBFBF7] lg:border-l">
-        <div className="flex-1 px-[clamp(1.25rem,2.5vw,2.25em)] pt-[1.75em] pb-[1.5em] lg:overflow-y-auto">
+      <div className="flex min-h-0 flex-col border-t border-[#131111]/10 bg-[#FBFBF7] lg:border-t-0 lg:border-l">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-[clamp(1.25rem,2.5vw,2.25em)] pt-[1.25em] pb-[1.5em] lg:pt-[1.75em]">
           <p className="m-0 font-outfit text-[0.75em] tracking-[0.14em] text-[#6B635C] uppercase">Design studio</p>
           <h1
             id="configurator-heading"
@@ -258,12 +272,12 @@ export function PlaqueConfigurator({
           >
             Compose your plaque
           </h1>
-          <p className="mt-[0.75em] mb-0 font-outfit text-[0.9375em] leading-[1.45] tracking-[-0.01em] text-pretty text-[#6B635C]">
+          <p className="mt-[0.75em] mb-0 hidden font-outfit text-[0.9375em] leading-[1.45] tracking-[-0.01em] text-pretty text-[#6B635C] sm:block">
             Turn it, change the timber and the plate, and read your engraving back at size. Every finish is
             included in the price — we send a proof before we cut.
           </p>
 
-          <div className="mt-[2em] flex flex-col gap-[1.75em]">
+          <div className="mt-[1.5em] flex flex-col gap-[1.75em] sm:mt-[2em]">
             <SwatchGroup legend="Form" name="form" value={config.form} options={formOptions} onChange={(v) => set("form", v)} />
             <SwatchGroup legend="Timber" name="wood" value={config.wood} options={woodOptions} onChange={(v) => set("wood", v)} />
             <SwatchGroup legend="Plate" name="plate" value={config.plate} options={plateOptions} onChange={(v) => set("plate", v)} />
@@ -317,7 +331,9 @@ export function PlaqueConfigurator({
           ) : null}
         </div>
 
-        <div className="sticky bottom-0 border-t border-[#131111]/10 bg-[#FBFBF7] px-[clamp(1.25rem,2.5vw,2.25em)] py-[1.1em]">
+        <div
+          className="shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] px-[clamp(1.25rem,2.5vw,2.25em)] pt-[0.9em] pb-[max(0.6em,env(safe-area-inset-bottom))] lg:py-[1.1em]"
+        >
           <div className="flex items-baseline justify-between gap-3">
             <p className="m-0 font-outfit text-[0.8125em] tracking-[-0.01em] text-[#6B635C]">
               {product ? (

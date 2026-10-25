@@ -56,6 +56,7 @@ that matches how much you need to know.
 | 039 | [Homepage material specimens](L3/039-materials-specimens.md) | WP-51 |
 | 040 | [Categories 3D furniture](L3/040-category-furniture-3d.md) | WP-52 |
 | 041 | [Category furniture transitions](L3/041-category-furniture-transitions.md) | WP-53 |
+| 043 | [/customize 3D plaque configurator](L3/043-customize-3d-configurator.md) | WP-56 |
 
 
 

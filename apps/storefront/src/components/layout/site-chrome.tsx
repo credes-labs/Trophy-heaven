@@ -3,6 +3,13 @@
 import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
+/** Full-viewport app screens that render without any site chrome. */
+const BARE_ROUTES = new Set(["/customize"])
+
+export function isBareRoute(pathname: string | null) {
+  return pathname != null && BARE_ROUTES.has(pathname)
+}
+
 /**
  * Homepage is a full-bleed poster with its own overlay nav, so the sticky
  * header and the announcement strip stay off `/`.
@@ -16,11 +23,18 @@ export function SiteChrome({
 }) {
   const pathname = usePathname()
   const isHome = pathname === "/"
+  const hidden = isHome || isBareRoute(pathname)
 
   return (
     <>
-      {isHome ? null : announcement}
-      {isHome ? null : header}
+      {hidden ? null : announcement}
+      {hidden ? null : header}
     </>
   )
+}
+
+/** Footer / mobile tab bar: everywhere except bare app screens. */
+export function ChromeGate({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+  return isBareRoute(pathname) ? null : <>{children}</>
 }

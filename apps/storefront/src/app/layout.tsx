@@ -9,7 +9,7 @@ import { CartDrawer } from "@/components/features/cart/cart-drawer"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
-import { SiteChrome } from "@/components/layout/site-chrome"
+import { ChromeGate, SiteChrome } from "@/components/layout/site-chrome"
 import { getSiteUrl } from "@/lib/site-url"
 
 const inter = Inter({
@@ -108,9 +108,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer />
+          <ChromeGate>
+            <Footer />
+          </ChromeGate>
           <CartDrawer />
-          <MobileNav />
+          <ChromeGate>
+            <MobileNav />
+          </ChromeGate>
           <PWARegister />
         </Providers>
         <Analytics />

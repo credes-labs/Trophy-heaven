@@ -5,8 +5,19 @@ import * as THREE from "three"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { ContactShadows, Environment, Lightformer, OrbitControls, Shadow } from "@react-three/drei"
 import { linenTexture, useDisposable } from "@/lib/three/procedural"
-import { SIZES, type PlaqueConfig } from "@/lib/configurator/plaque"
-import { DEPTH, DeskStand, PlaqueBody, disposeWoodTextures } from "./plaque-model"
+import { SIZES, type MountId, type PlaqueConfig } from "@/lib/configurator/plaque"
+import { faceDims } from "@/lib/configurator/shapes"
+import { DEPTH, DeskStand, Easel, PlaqueBody, PresentationBox, disposeWoodTextures } from "./plaque-model"
+
+const EASEL_LEAN = 0.2
+
+/** Where the plaque sits for each display option. */
+const MOUNT_POSE: Record<MountId, { position: [number, number, number]; lean: number }> = {
+  desk: { position: [0, 0.16, -0.02 + DEPTH / 2 - 0.02], lean: 0.13 },
+  wall: { position: [0, 0.34, 0], lean: 0 },
+  easel: { position: [0, 0.22, 0], lean: EASEL_LEAN },
+  box: { position: [0, 0.24, 0.08], lean: 0.3 },
+}
 
 const FOV = 30
 const PLINTH_Y = 0.06
@@ -22,8 +33,8 @@ type Controls = { target: THREE.Vector3; minDistance: number; maxDistance: numbe
 /** Distance at which the tallest/widest configuration fits this aspect. */
 function fitDistance(aspect: number) {
   const tan = Math.tan(THREE.MathUtils.degToRad(FOV / 2))
-  const byHeight = 2.7 / (2 * tan * 0.82)
-  const byWidth = 2.3 / (2 * tan * aspect * 0.82)
+  const byHeight = 2.8 / (2 * tan * 0.82)
+  const byWidth = 2.7 / (2 * tan * aspect * 0.82)
   return Math.max(byHeight, byWidth)
 }
 
@@ -64,7 +75,18 @@ function Turntable({
   const group = useRef<THREE.Group>(null)
   const kick = useRef(0)
   const clock = useRef(0)
-  const key = `${config.form}|${config.wood}|${config.plate}|${config.mount}|${config.size}`
+  const key = [
+    config.form,
+    config.edge,
+    config.wood,
+    config.finish,
+    config.border,
+    config.plate,
+    config.pshape,
+    config.emblem,
+    config.mount,
+    config.size,
+  ].join("|")
   const invalidate = useThree((s) => s.invalidate)
   const scale = SIZE_SCALE[config.size]
 
@@ -137,17 +159,20 @@ function Lights() {
 
 export default function PlaqueScene({
   config,
+  layoutImage,
   view,
   reduced,
   active,
 }: {
   config: PlaqueConfig
+  layoutImage: string | null
   view: StageView
   reduced: boolean
   active: boolean
 }) {
   useEffect(() => () => disposeWoodTextures(), [])
-  const desk = config.mount === "desk"
+  const { w, h } = faceDims(config.form)
+  const pose = MOUNT_POSE[config.mount]
 
   return (
     <Canvas
@@ -167,14 +192,11 @@ export default function PlaqueScene({
       <Shadow position={[0, 0.002, 0]} scale={[4.6, 4.6, 1]} color="#5a4a36" opacity={0.18} />
       <group position={[0, PLINTH_Y, 0]}>
         <Turntable config={config} yaw={view.yaw} reduced={reduced}>
-          {desk ? <DeskStand wood={config.wood} /> : null}
-          <group
-            position={desk ? [0, 0.16, -0.02] : [0, 0.34, 0]}
-            rotation={desk ? [-0.13, 0, 0] : [0, 0, 0]}
-          >
-            <group position={[0, 0, desk ? DEPTH / 2 - 0.02 : 0]}>
-              <PlaqueBody config={config} />
-            </group>
+          {config.mount === "desk" ? <DeskStand wood={config.wood} width={w} /> : null}
+          {config.mount === "easel" ? <Easel width={w} height={h} lean={EASEL_LEAN} /> : null}
+          {config.mount === "box" ? <PresentationBox width={w} height={h} /> : null}
+          <group position={pose.position} rotation={[-pose.lean, 0, 0]}>
+            <PlaqueBody config={config} layoutImage={layoutImage} />
           </group>
         </Turntable>
         <ContactShadows

@@ -42,7 +42,7 @@ export function SwatchGroup<Id extends string>({
         {options.map((option) => {
           const checked = option.id === value
           return (
-            <label key={option.id} className="group flex w-[4.25em] cursor-pointer flex-col items-center gap-[0.45em]">
+            <label key={option.id} className="group relative flex w-[4.25em] cursor-pointer flex-col items-center gap-[0.45em]">
               <input
                 type="radio"
                 name={name}
