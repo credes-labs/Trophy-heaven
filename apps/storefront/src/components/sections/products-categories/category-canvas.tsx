@@ -17,13 +17,24 @@ import * as THREE from "three"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Environment, PerspectiveCamera, Shadow, View } from "@react-three/drei"
 import type { FurnitureKind } from "./constants"
-import { FURNITURE, retainFurniture, uploadFurnitureTextures } from "./furniture-models"
+import {
+  FURNITURE,
+  furnitureBounds,
+  retainFurniture,
+  uploadFurnitureTextures,
+  type FurnitureBounds,
+} from "./furniture-models"
 
 const CAMERA_Y = 0.85
 const CAMERA_Z = 4.7
+const FOV = 30
 const BASE_YAW = -0.62
-const SWAY_SPEED = 0.7
-const SWAY_YAW = 0.26
+/** One full turn every 15s. */
+const SPIN = (Math.PI * 2) / 15
+/** Share of the slot's frustum a piece may fill, so it never reaches the edge. */
+const FILL = 0.9
+/** Enter/exit drop, as a share of the fitted half-height. */
+const DROP = 0.35
 /** Seconds for a full enter / exit. */
 const ENTER = 0.8
 const EXIT = 0.42
@@ -33,6 +44,54 @@ const MAX_PIECES = 3
 const KINDS = Object.keys(FURNITURE) as FurnitureKind[]
 
 const easeOutCubic = (x: number) => 1 - (1 - x) ** 3
+
+const fitCamera = new THREE.PerspectiveCamera(FOV, 1)
+fitCamera.position.set(0, CAMERA_Y, CAMERA_Z)
+fitCamera.rotation.set(-Math.atan(CAMERA_Y / CAMERA_Z), 0, 0)
+fitCamera.updateMatrixWorld()
+
+const RING = 48
+const fitted = new Map<string, number>()
+
+/**
+ * Largest scale at which the piece's spin cylinder (radius × height, centred
+ * on the origin) projects inside FILL of a view with this aspect, so no yaw
+ * can clip it. Scaling about the centre keeps every enter/exit frame inside too.
+ */
+function fitScale(kind: FurnitureKind, b: FurnitureBounds, aspect: number) {
+  const key = `${kind}:${aspect.toFixed(3)}`
+  const known = fitted.get(key)
+  if (known !== undefined) return known
+  const tanY = Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * FILL
+  const tanX = tanY * aspect
+  // Circumscribe the circle so the sampled polygon never undercuts it.
+  const radius = b.radius / Math.cos(Math.PI / RING)
+  const half = (b.top - b.bottom) / 2
+  const point = new THREE.Vector3()
+  const inside = (scale: number) => {
+    for (const y of [-half, half]) {
+      for (let k = 0; k < RING; k++) {
+        const a = (k / RING) * Math.PI * 2
+        point
+          .set(Math.cos(a) * radius, y, Math.sin(a) * radius)
+          .multiplyScalar(scale)
+          .applyMatrix4(fitCamera.matrixWorldInverse)
+        const depth = -point.z
+        if (depth <= 0 || Math.abs(point.x) > tanX * depth || Math.abs(point.y) > tanY * depth) return false
+      }
+    }
+    return true
+  }
+  let lo = 0
+  let hi = 4
+  for (let i = 0; i < 24; i++) {
+    const mid = (lo + hi) / 2
+    if (inside(mid)) lo = mid
+    else hi = mid
+  }
+  fitted.set(key, lo)
+  return lo
+}
 
 type Entry = {
   id: number
@@ -88,18 +147,24 @@ function Piece({
   reduced: boolean
   onExited: (id: number) => void
 }) {
-  const { Model, scale, height, footprint } = FURNITURE[entry.kind]
+  const Model = FURNITURE[entry.kind]
   const group = useRef<THREE.Group>(null)
+  const model = useRef<THREE.Group>(null)
   const shadow = useRef<THREE.Group>(null)
+  const bounds = useRef<FurnitureBounds | null>(null)
   const progress = useRef(reduced ? 1 : 0)
   const wait = useRef(entry.delay)
   const phase = useRef(entry.leaving)
   const exited = useRef(false)
-  const floor = (-height * scale) / 2
+
+  useLayoutEffect(() => {
+    if (model.current) bounds.current = furnitureBounds(entry.kind, model.current)
+  }, [entry.kind])
 
   useFrame((state, delta) => {
     const node = group.current
-    if (!node) return
+    const b = bounds.current
+    if (!node || !b) return
     // Clamp so a resumed frameloop doesn't skip the animation.
     const dt = Math.min(delta, 0.1)
     if (phase.current !== entry.leaving) {
@@ -122,24 +187,32 @@ function Piece({
     // continuous when a leaving piece is revived mid-exit.
     const p = easeOutCubic(progress.current)
     const away = (1 - p) * entry.side
-    const sway = reduced ? 0 : Math.sin(state.clock.elapsedTime * SWAY_SPEED + index * 1.7) * SWAY_YAW
+    // View cameras take the slot's aspect each frame, so the fit follows resizes.
+    const scale = fitScale(entry.kind, b, (state.camera as THREE.PerspectiveCamera).aspect)
+    const half = ((b.top - b.bottom) / 2) * scale
+    const mid = ((b.top + b.bottom) / 2) * scale
+    const spin = reduced ? 0 : state.clock.elapsedTime * SPIN + index * 1.7
+    // Scale about the piece's centre: every in-between frame then lies between
+    // the fitted piece and its centre, so it stays inside the fit as well.
     node.scale.setScalar(Math.max(0.0001, scale * p))
-    node.position.y = floor + away * 0.4
-    node.rotation.y = BASE_YAW + sway + away * 0.8
-    shadow.current?.scale.setScalar(Math.max(0.0001, p))
+    node.position.y = -mid * p + away * DROP * half
+    node.rotation.y = BASE_YAW + spin + away * 0.8
+    const floor = shadow.current
+    if (floor) {
+      floor.position.y = -half + 0.002
+      floor.scale.setScalar(Math.max(0.0001, b.radius * scale * 1.8 * p))
+    }
   })
 
   return (
     <>
-      <group ref={group} position={[0, floor, 0]} rotation={[0, BASE_YAW, 0]} scale={reduced ? scale : 0.0001}>
-        <Model />
+      <group ref={group} rotation={[0, BASE_YAW, 0]} scale={0.0001}>
+        <group ref={model}>
+          <Model />
+        </group>
       </group>
-      <group ref={shadow} position={[0, floor + 0.002, 0]} scale={reduced ? 1 : 0.0001}>
-        <Shadow
-          scale={[footprint[0] * scale * 1.1, footprint[1] * scale * 1.1, 1]}
-          color="#1a1816"
-          opacity={0.3}
-        />
+      <group ref={shadow} scale={0.0001}>
+        <Shadow color="#1a1816" opacity={0.3} />
       </group>
     </>
   )
@@ -275,7 +348,7 @@ function Prewarm() {
 
   const kind = KINDS[step]
   if (!kind) return null
-  const { Model } = FURNITURE[kind]
+  const Model = FURNITURE[kind]
   return (
     <group position={[0, 0, CAMERA_Z + 40]}>
       <Model key={kind} />

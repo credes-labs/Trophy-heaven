@@ -3,8 +3,8 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
-## 2026-10-25 — Category furniture swaps smoothly and turns faster
-When a category changes, the old piece now sinks out of its slot while the new one eases in, instead of vanishing. Switching no longer redraws textures, so the swap no longer hitches. The pieces' idle sway is about twice as fast. → L2 WP-55 · [L3/041](L3/041-category-furniture-transitions.md)
+## 2026-10-25 — Category furniture spins a full turn, uncut, and swaps smoothly
+When a category changes, the old piece now sinks out of its slot while the new one eases in, instead of vanishing. Switching no longer redraws textures, so the swap no longer hitches. Every piece now turns a full 360° every 15 seconds. Each is sized to its slot so that no angle cuts it off at the slot edge. → L2 WP-53 · [L3/041](L3/041-category-furniture-transitions.md)
 
 ## 2026-10-25 — Homepage drops the client quotes
 “//in their words” (“What clients say after the ceremony.”) is unmounted from the homepage; “//for organisations” now follows “Explore the collection”. The component stays in the repo. → L2 WP-54

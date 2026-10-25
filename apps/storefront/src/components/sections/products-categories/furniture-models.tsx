@@ -481,21 +481,45 @@ function Bookcase() {
   )
 }
 
-export type FurnitureSpec = {
-  Model: () => JSX.Element
-  /** Uniform scale that fits the piece into a portrait slot. */
-  scale: number
-  /** Unscaled height, used to centre the piece and place its shadow. */
-  height: number
-  /** Unscaled footprint for the contact shadow, [x, z]. */
-  footprint: readonly [number, number]
+export const FURNITURE: Record<FurnitureKind, () => JSX.Element> = {
+  lounge: LoungeChair,
+  armchair: Armchair,
+  coffee: CoffeeTable,
+  dining: DiningTable,
+  side: SideTable,
+  shelf: Bookcase,
 }
 
-export const FURNITURE: Record<FurnitureKind, FurnitureSpec> = {
-  lounge: { Model: LoungeChair, scale: 1.12, height: 1.24, footprint: [1.5, 1.4] },
-  armchair: { Model: Armchair, scale: 1.2, height: 1.1, footprint: [1.2, 1.1] },
-  coffee: { Model: CoffeeTable, scale: 0.9, height: 0.64, footprint: [2, 1.2] },
-  dining: { Model: DiningTable, scale: 0.86, height: 0.77, footprint: [2.1, 1.1] },
-  side: { Model: SideTable, scale: 1.55, height: 0.66, footprint: [0.9, 0.9] },
-  shelf: { Model: Bookcase, scale: 0.98, height: 1.98, footprint: [1.1, 0.5] },
+/** Unscaled extent of a piece spinning about its vertical axis. */
+export type FurnitureBounds = {
+  /** Largest distance of any vertex from the y axis. */
+  radius: number
+  bottom: number
+  top: number
+}
+
+const bounds = new Map<FurnitureKind, FurnitureBounds>()
+
+/** Measure a mounted model once per kind, from its vertices in `root`'s frame. */
+export function furnitureBounds(kind: FurnitureKind, root: THREE.Group): FurnitureBounds {
+  const known = bounds.get(kind)
+  if (known) return known
+  root.updateWorldMatrix(true, true)
+  const toRoot = root.matrixWorld.clone().invert()
+  const matrix = new THREE.Matrix4()
+  const vertex = new THREE.Vector3()
+  const result = { radius: 0, bottom: Infinity, top: -Infinity }
+  root.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return
+    matrix.multiplyMatrices(toRoot, object.matrixWorld)
+    const position = (object.geometry as THREE.BufferGeometry).attributes.position as THREE.BufferAttribute
+    for (let i = 0; i < position.count; i++) {
+      vertex.fromBufferAttribute(position, i).applyMatrix4(matrix)
+      result.radius = Math.max(result.radius, Math.hypot(vertex.x, vertex.z))
+      result.bottom = Math.min(result.bottom, vertex.y)
+      result.top = Math.max(result.top, vertex.y)
+    }
+  })
+  bounds.set(kind, result)
+  return result
 }

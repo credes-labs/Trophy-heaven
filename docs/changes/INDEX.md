@@ -55,7 +55,7 @@ that matches how much you need to know.
 | 038 | [Hero chair and sticky filters](L3/038-hero-chair-sticky-filters.md) | WP-47 |
 | 039 | [Homepage material specimens](L3/039-materials-specimens.md) | WP-51 |
 | 040 | [Categories 3D furniture](L3/040-category-furniture-3d.md) | WP-52 |
-| 041 | [Category furniture transitions](L3/041-category-furniture-transitions.md) | WP-55 |
+| 041 | [Category furniture transitions](L3/041-category-furniture-transitions.md) | WP-53 |
 
 
 

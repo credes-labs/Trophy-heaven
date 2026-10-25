@@ -10,6 +10,14 @@ import { siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
 export const siteNavItemClass =
   "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#F2F1EF] lg:text-[13px]"
 
+/** `light` = white type for the dark homepage poster; `ink` = dark type for light inner pages. */
+export type SiteNavTone = "light" | "ink"
+
+const siteNavInkItemClass =
+  "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
+
+const inkWordmarkClass = "[&_img]:brightness-0 focus-visible:outline-[#131111]"
+
 function SiteCartControl({ className }: { className?: string }) {
   const count = useCartStore((s) => s.itemCount())
   const setDrawerOpen = useCartStore((s) => s.setDrawerOpen)
@@ -32,11 +40,13 @@ function NavFlyout({
   open,
   onOpen,
   onClose,
+  itemClass,
 }: {
   item: SiteNavItem
   open: boolean
   onOpen: () => void
   onClose: () => void
+  itemClass: string
 }) {
   const panelId = useId()
   const children = item.children ?? []
@@ -50,7 +60,7 @@ function NavFlyout({
     >
       <Link
         href={item.href}
-        className={siteNavItemClass}
+        className={itemClass}
         aria-expanded={hasMenu ? (open ? "true" : "false") : undefined}
         aria-controls={hasMenu ? panelId : undefined}
         aria-haspopup={hasMenu ? "true" : undefined}
@@ -92,9 +102,16 @@ function NavFlyout({
 }
 
 /** Single-row header: wordmark, links, search, and cart. Flyouts still open under each label. */
-export function SiteNav({ categories }: { categories?: NavCategory[] }) {
+export function SiteNav({
+  categories,
+  tone = "light",
+}: {
+  categories?: NavCategory[]
+  tone?: SiteNavTone
+}) {
   const links = useMemo(() => siteNavLinks(categories), [categories])
   const [openId, setOpenId] = useState<string | null>(null)
+  const itemClass = tone === "ink" ? siteNavInkItemClass : siteNavItemClass
 
   useEffect(() => {
     if (!openId) return
@@ -107,7 +124,7 @@ export function SiteNav({ categories }: { categories?: NavCategory[] }) {
 
   return (
     <div className="flex items-center justify-between gap-6">
-      <HeroWordmark />
+      <HeroWordmark className={tone === "ink" ? inkWordmarkClass : undefined} />
       <nav aria-label="Primary" className="flex items-center gap-5 xl:gap-8">
         <ul className="m-0 flex list-none items-center gap-4 p-0 xl:gap-6">
           {links.map((item) => (
@@ -117,19 +134,26 @@ export function SiteNav({ categories }: { categories?: NavCategory[] }) {
               open={openId === item.id}
               onOpen={() => setOpenId(item.id)}
               onClose={() => setOpenId((current) => (current === item.id ? null : current))}
+              itemClass={itemClass}
             />
           ))}
         </ul>
-        <Link href="/search" aria-label="Search" className={siteNavItemClass}>
+        <Link href="/search" aria-label="Search" className={itemClass}>
           SEARCH
         </Link>
-        <SiteCartControl className={siteNavItemClass} />
+        <SiteCartControl className={itemClass} />
       </nav>
     </div>
   )
 }
 
-export function SiteNavMobile({ categories }: { categories?: NavCategory[] }) {
+export function SiteNavMobile({
+  categories,
+  tone = "light",
+}: {
+  categories?: NavCategory[]
+  tone?: SiteNavTone
+}) {
   const [open, setOpen] = useState(false)
   const links = useMemo(() => siteNavLinks(categories), [categories])
 
@@ -150,12 +174,16 @@ export function SiteNavMobile({ categories }: { categories?: NavCategory[] }) {
   return (
     <>
       <header className="relative z-20 flex items-center justify-between">
-        <HeroWordmark />
+        <HeroWordmark className={tone === "ink" ? inkWordmarkClass : undefined} />
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open menu"
-          className="flex size-11 items-center justify-center text-white focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
+          className={
+            tone === "ink"
+              ? "flex size-11 items-center justify-center text-[#131111] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+              : "flex size-11 items-center justify-center text-white focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
+          }
         >
           <Menu className="size-6" strokeWidth={1.5} aria-hidden />
         </button>
