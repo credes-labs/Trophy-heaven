@@ -1,9 +1,12 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import type { Canvas as FabricCanvas, FabricObject, IText } from "fabric"
 import type { HttpTypes } from "@medusajs/types"
 import type { Material2D } from "@legacy-crafts/schemas"
+import { Bold, Italic, Redo2, Underline, Undo2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useFabricCanvas } from "@/hooks/use-fabric-canvas"
 import { useEditorStore } from "@/stores/editor-store"
@@ -19,9 +22,30 @@ import {
 import { ENGRAVING_FONTS, loadGoogleFont } from "@/lib/fonts"
 import { designApi, type DesignRecord } from "@/lib/design-client"
 import { track } from "@/lib/analytics"
+import { formatMoney } from "@/lib/format"
 import { isAllowedLogo, sanitizeSvg } from "@/lib/sanitize"
 import { cn } from "@/lib/utils"
 import { cheapestInStockVariant } from "@/lib/product-filters"
+import {
+  PLATES,
+  PLATE_TO_MATERIAL_2D,
+  SAMPLE_LINES,
+  SIZES,
+  configOptions,
+  engravingLines,
+  getFont,
+  getPlate,
+  inkFor,
+  resolveVariant,
+  serializeConfig,
+  summarizeConfig,
+  type LineKey,
+  type PlaqueConfig,
+} from "@/lib/configurator/plaque"
+import { readLayout, writeLayout } from "@/lib/configurator/layout-store"
+import { StudioTopBar } from "./configurator/studio-top-bar"
+import { SwatchGroup, type SwatchOption } from "./configurator/swatch-group"
+import type { PlaqueContext } from "./editor-2d-loader"
 
 type FabricObjectLike = FabricObject & { id?: string; text?: string; fontFamily?: string }
 
@@ -36,15 +60,57 @@ function serialize(canvas: FabricCanvas): string {
   return JSON.stringify(canvas.toObject(["id"]))
 }
 
+const SEED_ROWS: { key: LineKey; y: number; size: number; caps: boolean }[] = [
+  { key: "title", y: 0.24, size: 22, caps: true },
+  { key: "name", y: 0.5, size: 46, caps: false },
+  { key: "detail", y: 0.8, size: 20, caps: false },
+]
+
+const METAL_SWATCH = (color: string) =>
+  `radial-gradient(circle at 32% 28%, color-mix(in srgb, ${color} 45%, white) 0%, ${color} 48%, color-mix(in srgb, ${color} 55%, black) 100%)`
+
+const sectionLabel = "m-0 font-outfit text-[0.75em] font-medium tracking-[0.14em] text-[#131111] uppercase"
+const fieldClass =
+  "h-[2.75em] w-full rounded-[0.125em] border border-[#131111]/20 bg-white px-[0.85em] font-outfit text-[0.9375em] text-[#131111] focus-visible:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+const iconButton =
+  "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-[#FBFBF7] disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+const styleButton =
+  "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/20 text-[#131111] hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+const pillOutline =
+  "flex h-[3em] items-center justify-center rounded-full border border-[#131111]/25 px-[1.1em] font-outfit text-[0.75em] tracking-[0.08em] whitespace-nowrap text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+
+/** Scales the fixed 800px Fabric surface to fit its stage cell (Fabric maps pointers through CSS transforms). */
+function useFitScale(padding: { x: number; top: number; bottom: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(0.5)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      const next = Math.min((width - padding.x * 2) / CANVAS_SIZE, (height - padding.top - padding.bottom) / CANVAS_SIZE)
+      setScale(Math.max(0.2, Math.min(1, next)))
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [padding.x, padding.top, padding.bottom])
+  return { ref, scale }
+}
+
+const STAGE_PADDING = { x: 16, top: 64, bottom: 72 }
+
 export function Editor2D({
   product,
   initialDesign,
   preferredVariantId,
+  plaque = null,
 }: {
   product: HttpTypes.StoreProduct
   initialDesign?: DesignRecord | null
   preferredVariantId?: string
+  plaque?: PlaqueContext | null
 }) {
+  const router = useRouter()
   const { elRef, getCanvas, getFabric, ready } = useFabricCanvas()
   const {
     material,
@@ -63,20 +129,47 @@ export function Editor2D({
   } = useEditorStore()
 
   const addItem = useCartStore((s) => s.addItem)
+  const [config, setConfig] = useState<PlaqueConfig | null>(plaque?.config ?? null)
   const [name, setName] = useState(initialDesign?.name ?? "Untitled design")
   const [designId, setDesignId] = useState<string | null>(initialDesign?.id ?? null)
-  const [selectedFont, setSelectedFont] = useState<string>(ENGRAVING_FONTS[0])
-  const [fillColor, setFillColor] = useState("#1a1a1a")
+  const [selectedFont, setSelectedFont] = useState<string>(
+    plaque ? getFont(plaque.config.font).family2d : ENGRAVING_FONTS[0]
+  )
+  const [fillColor, setFillColor] = useState(plaque ? inkFor(plaque.config) : "#1a1a1a")
   const [layers, setLayers] = useState<{ id: string; label: string; visible: boolean }[]>([])
   const [gallery, setGallery] = useState<DesignRecord[]>([])
   const [addedMsg, setAddedMsg] = useState<string | null>(null)
   // Track uploaded logo intrinsic resolution for the DPI check (FR-2D-9).
   const logoMetaRef = useRef<Record<string, { naturalWidth: number }>>({})
   const skipHistoryRef = useRef(false)
+  const { ref: stageRef, scale } = useFitScale(STAGE_PADDING)
 
-  const variantId =
-    product.variants?.find((v) => v.id === preferredVariantId)?.id ??
-    cheapestInStockVariant(product)?.id
+  const plaqueVariant = plaque && config ? resolveVariant(plaque.variants, config.size) : undefined
+  const variantId = plaque
+    ? (plaqueVariant?.id ?? preferredVariantId)
+    : (product.variants?.find((v) => v.id === preferredVariantId)?.id ?? cheapestInStockVariant(product)?.id)
+  const productVariant = product.variants?.find((v) => v.id === variantId)
+  const price = plaqueVariant
+    ? plaqueVariant.amount != null
+      ? formatMoney(plaqueVariant.amount, plaqueVariant.currency)
+      : null
+    : productVariant?.calculated_price?.calculated_amount != null
+      ? formatMoney(productVariant.calculated_price.calculated_amount, productVariant.calculated_price.currency_code ?? "inr")
+      : null
+  const tint = config ? getPlate(config.plate).color : (MATERIALS_2D.find((m) => m.value === material)?.tint ?? "#ffffff")
+  const studio3dHref = config ? `/customize?${serializeConfig(config)}` : null
+
+  // Plaque mode: the URL carries the shared configuration (variant = size).
+  useEffect(() => {
+    if (!config) return
+    const params = new URLSearchParams(window.location.search)
+    for (const [key, value] of new URLSearchParams(serializeConfig(config))) params.set(key, value)
+    if (variantId) params.set("variant", variantId)
+    const query = params.toString()
+    if (window.location.search.slice(1) !== query) {
+      window.history.replaceState(null, "", `${window.location.pathname}?${query}`)
+    }
+  }, [config, variantId])
 
   const refreshLayers = useCallback(() => {
     const canvas = getCanvas()
@@ -106,6 +199,35 @@ export function Editor2D({
     refreshLayers()
   }, [getCanvas, pushSnapshot, refreshLayers])
 
+  /** Lays the configurator's engraving lines out in the safe area as editable text. */
+  async function seedFromConfig(canvas: FabricCanvas, seed: PlaqueConfig) {
+    const fabric = getFabric()
+    if (!fabric) return
+    const font = getFont(seed.font)
+    await loadGoogleFont(font.family2d)
+    const lines = engravingLines(seed)
+    const empty = !lines.title && !lines.name && !lines.detail
+    for (const row of SEED_ROWS) {
+      const raw = lines[row.key] || (empty ? SAMPLE_LINES[row.key] : "")
+      if (!raw) continue
+      const left = seed.align === "left" ? DEFAULT_SAFE_AREA.x + 24 : DEFAULT_SAFE_AREA.x + DEFAULT_SAFE_AREA.width / 2
+      const text = new fabric.IText(row.caps || font.caps ? raw.toUpperCase() : raw, {
+        left,
+        top: DEFAULT_SAFE_AREA.y + DEFAULT_SAFE_AREA.height * row.y,
+        originX: seed.align === "left" ? "left" : "center",
+        originY: "center",
+        fontFamily: font.family2d,
+        fontSize: row.size,
+        fontStyle: row.key === "name" ? font.style : "normal",
+        charSpacing: row.caps ? 180 : 0,
+        fill: inkFor(seed),
+        textAlign: seed.align === "left" ? "left" : "center",
+      }) as IText & FabricObjectLike
+      ensureId(text)
+      canvas.add(text)
+    }
+  }
+
   // Wire Fabric events -> history + selection once the canvas is ready.
   useEffect(() => {
     const canvas = getCanvas()
@@ -128,19 +250,36 @@ export function Editor2D({
     canvas.on("selection:updated", onSelection)
     canvas.on("selection:cleared", onCleared)
 
-    // Load an existing design (edit/clone flow) or seed the first history entry.
-    if (initialDesign && initialDesign.state_json) {
+    const loadJson = (json: object) => {
       skipHistoryRef.current = true
-      canvas.loadFromJSON(initialDesign.state_json as object).then(() => {
+      canvas.loadFromJSON(json).then(() => {
         canvas.getObjects().forEach((o) => ensureId(o as FabricObjectLike))
+        canvas.backgroundColor = tint
         canvas.requestRenderAll()
         skipHistoryRef.current = false
         pushSnapshot(serialize(canvas))
         refreshLayers()
       })
+    }
+
+    // Load an existing design (edit/clone flow), the layout from the 3D studio,
+    // or the configurator's engraving lines; otherwise seed the first history entry.
+    const stored = plaque && !initialDesign ? readLayout(product.id) : null
+    if (initialDesign && initialDesign.state_json) {
+      loadJson(initialDesign.state_json as object)
       const stateMaterial = (initialDesign.state_json as { materialOverlay?: Material2D })
         .materialOverlay
-      if (stateMaterial) setMeta({ material: stateMaterial })
+      if (stateMaterial && !plaque) setMeta({ material: stateMaterial })
+    } else if (stored?.fabric) {
+      loadJson(stored.fabric as object)
+    } else if (plaque) {
+      skipHistoryRef.current = true
+      void seedFromConfig(canvas, plaque.config).finally(() => {
+        skipHistoryRef.current = false
+        canvas.requestRenderAll()
+        pushSnapshot(serialize(canvas))
+        refreshLayers()
+      })
     } else {
       pushSnapshot(serialize(canvas))
     }
@@ -156,14 +295,18 @@ export function Editor2D({
     }
   }, [ready])
 
+  // Plaque mode: the 2D material follows the plate metal.
+  useEffect(() => {
+    if (config) setMeta({ material: PLATE_TO_MATERIAL_2D[config.plate] })
+  }, [config, setMeta])
+
   // Reflect material choice as a canvas background tint (FR-2D-7 overlay).
   useEffect(() => {
     const canvas = getCanvas()
     if (!canvas) return
-    const tint = MATERIALS_2D.find((m) => m.value === material)?.tint ?? "#ffffff"
     canvas.backgroundColor = tint
     canvas.requestRenderAll()
-  }, [material, getCanvas, ready])
+  }, [tint, getCanvas, ready])
 
   useEffect(() => {
     track("design_started", { mode: "2d", product_id: product.id })
@@ -308,8 +451,7 @@ export function Editor2D({
     skipHistoryRef.current = true
     canvas.loadFromJSON(JSON.parse(json)).then(() => {
       canvas.getObjects().forEach((o) => ensureId(o as FabricObjectLike))
-      canvas.backgroundColor =
-        MATERIALS_2D.find((m) => m.value === material)?.tint ?? "#ffffff"
+      canvas.backgroundColor = tint
       canvas.requestRenderAll()
       skipHistoryRef.current = false
       refreshLayers()
@@ -323,10 +465,14 @@ export function Editor2D({
       const obj = o as FabricObjectLike & Record<string, unknown>
       return { ...obj.toObject(["id"]), id: obj.id }
     })
-    return buildDesign2DState(objects as never, {
+    const state = buildDesign2DState(objects as never, {
       material,
       baseImageUrl: product.thumbnail ?? null,
     })
+    // The plaque's 3D choices travel with the layout so the workshop gets one spec.
+    return config
+      ? { ...state, configurator: { kind: "plaque" as const, options: configOptions({ ...config, face: "custom" }) } }
+      : state
   }
 
   function runValidation(): { state: ReturnType<typeof collectState>; ok: boolean } {
@@ -386,10 +532,47 @@ export function Editor2D({
       design_name: record.name,
       preview_url: record.preview_url,
       customization_mode: "2d",
+      ...(config ? { configuration: { ...summarizeConfig({ ...config, face: "custom" }), engraving: engravingLines(config) } } : {}),
     })
     track("design_added_to_cart", { design_id: record.id, mode: "2d", product_id: product.id })
     setAddedMsg("Added to cart with your design")
     setTimeout(() => setAddedMsg(null), 2500)
+  }
+
+  /**
+   * Plaque mode: export the engraving area as a transparent PNG, hand it to the
+   * 3D studio through sessionStorage and switch modes. With nothing on the
+   * canvas the studio keeps its engraving lines.
+   */
+  function openIn3D({ validate }: { validate: boolean }) {
+    const canvas = getCanvas()
+    if (!canvas || !config) return
+    if (validate && !runValidation().ok) return
+    const objects = canvas.getObjects().filter((o) => o.visible !== false)
+    if (objects.length === 0) {
+      router.push(`/customize?${serializeConfig({ ...config, face: "text" })}`)
+      return
+    }
+    canvas.discardActiveObject()
+    canvas.backgroundColor = ""
+    canvas.renderAll()
+    const image = canvas.toDataURL({
+      format: "png",
+      multiplier: 2,
+      left: DEFAULT_SAFE_AREA.x,
+      top: DEFAULT_SAFE_AREA.y,
+      width: DEFAULT_SAFE_AREA.width,
+      height: DEFAULT_SAFE_AREA.height,
+    })
+    const fabricJson = canvas.toObject(["id"])
+    canvas.backgroundColor = tint
+    canvas.requestRenderAll()
+    if (!writeLayout(product.id, { image, fabric: fabricJson })) {
+      setValidationErrors(["This layout is too large to carry into 3D on this device. Try a smaller logo file."])
+      return
+    }
+    track("design_saved", { mode: "2d", product_id: product.id })
+    router.push(`/customize?${serializeConfig({ ...config, face: "custom" })}`)
   }
 
   async function loadGallery() {
@@ -401,189 +584,321 @@ export function Editor2D({
     }
   }
 
+  function setPlaque<K extends keyof PlaqueConfig>(key: K, value: PlaqueConfig[K]) {
+    setConfig((c) => (c ? { ...c, [key]: value } : c))
+  }
+
+  const plateOptions: SwatchOption<PlaqueConfig["plate"]>[] = PLATES.map((p) => ({
+    id: p.id,
+    label: p.label,
+    visual: <span className="size-full" style={{ background: METAL_SWATCH(p.color) }} />,
+  }))
+  const materialOptions: SwatchOption<Material2D>[] = MATERIALS_2D.map((m) => ({
+    id: m.value,
+    label: m.label,
+    visual: <span className="size-full" style={{ background: METAL_SWATCH(m.tint) }} />,
+  }))
+  const sizeOptions: SwatchOption<PlaqueConfig["size"]>[] = SIZES.map((s) => {
+    const v = plaque ? resolveVariant(plaque.variants, s.id) : undefined
+    return {
+      id: s.id,
+      label: s.detail,
+      note: v?.amount != null ? formatMoney(v.amount, v.currency) : undefined,
+      visual: <span className="font-outfit text-[0.9375em] font-medium tracking-[-0.02em] text-[#131111]">{s.label}</span>,
+    }
+  })
+  const inkSwatches = config
+    ? [inkFor({ ...config, fill: "natural" }), "#d9b46a", "#141210"]
+    : ["#1a1a1a", "#d9b46a", "#ffffff"]
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_1fr_300px]">
-      {/* Left: tools */}
-      <aside className="space-y-6 rounded-lg border border-border bg-card p-4">
-        <div>
-          <label className="mb-1 block text-sm font-medium">Design name</label>
-          <input
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value)
-              setMeta({ name: e.target.value })
-            }}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Text</p>
-          <select
-            value={selectedFont}
-            onChange={(e) => applyFontToSelection(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-          >
-            {ENGRAVING_FONTS.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={fillColor}
-              onChange={(e) => applyColorToSelection(e.target.value)}
-              aria-label="Text color"
-              className="h-9 w-9 cursor-pointer rounded border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-            />
-            <button type="button" onClick={() => toggleStyle("fontWeight")} aria-label="Bold" className="rounded border border-border px-2 py-1 text-sm font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">B</button>
-            <button type="button" onClick={() => toggleStyle("fontStyle")} aria-label="Italic" className="rounded border border-border px-2 py-1 text-sm italic focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">I</button>
-            <button type="button" onClick={() => toggleStyle("underline")} aria-label="Underline" className="rounded border border-border px-2 py-1 text-sm underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">U</button>
-          </div>
-          <Button onClick={addText} size="sm" className="w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid">
-            Add text
-          </Button>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Logo</p>
-          <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-border px-3 py-4 text-sm text-[#6B635C] hover:bg-muted">
-            Upload PNG/JPG/SVG
-            <input type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={onUploadLogo} className="hidden" />
-          </label>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Material</p>
-          <div className="grid grid-cols-3 gap-2">
-            {MATERIALS_2D.map((m) => (
-              <button
-                key={m.value}
-                onClick={() => setMeta({ material: m.value })}
-                className={cn(
-                  "rounded-md border p-2 text-xs text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
-                  material === m.value ? "border-accent ring-2 ring-accent" : "border-border"
-                )}
-              >
-                <span className="mb-1 block h-6 w-full rounded" style={{ backgroundColor: m.tint }} />
-                {m.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </aside>
-
-      {/* Center: canvas */}
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => restore(undo())} disabled={!canUndo()}>
-            Undo
-          </Button>
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => restore(redo())} disabled={!canRedo()}>
-            Redo
-          </Button>
-          <div className="flex-1" />
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => runValidation()}>
-            Validate
-          </Button>
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving…" : "Save"}
-          </Button>
-          <Button size="sm" variant="accent" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleAddToCart} disabled={saving || !variantId}>
-            Add to cart
-          </Button>
-        </div>
-
-        <div className="relative mx-auto w-fit rounded-lg border border-border bg-white shadow-sm">
-          {/* Safe-area guide overlay (FR-2D-9) */}
+    <section
+      aria-labelledby="editor-2d-heading"
+      className="grid h-full grid-rows-[45dvh_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(24rem,28em)] lg:grid-rows-1"
+    >
+      <div
+        ref={stageRef}
+        className="relative min-h-0 w-full overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]"
+      >
+        <StudioTopBar
+          mode="2d"
+          hrefs={studio3dHref ? { "3d": studio3dHref, "2d": "#" } : {}}
+          onNavigate={
+            studio3dHref
+              ? (mode, event) => {
+                  if (mode !== "3d") return
+                  event.preventDefault()
+                  openIn3D({ validate: false })
+                }
+              : undefined
+          }
+        />
+        <div
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{ top: STAGE_PADDING.top, width: CANVAS_SIZE * scale, height: CANVAS_SIZE * scale }}
+        >
           <div
-            className="pointer-events-none absolute z-10 rounded border-2 border-dashed border-accent/40"
-            style={{
-              left: `${(DEFAULT_SAFE_AREA.x / CANVAS_SIZE) * 100}%`,
-              top: `${(DEFAULT_SAFE_AREA.y / CANVAS_SIZE) * 100}%`,
-              width: `${(DEFAULT_SAFE_AREA.width / CANVAS_SIZE) * 100}%`,
-              height: `${(DEFAULT_SAFE_AREA.height / CANVAS_SIZE) * 100}%`,
-            }}
-          />
-          <canvas ref={elRef} width={CANVAS_SIZE} height={CANVAS_SIZE} className="max-w-full" />
+            className="absolute top-0 left-0 overflow-hidden rounded-[0.25em] shadow-[0_18px_40px_-24px_rgba(43,29,16,0.55)]"
+            style={{ width: CANVAS_SIZE, height: CANVAS_SIZE, transform: `scale(${scale})`, transformOrigin: "0 0" }}
+          >
+            {/* Safe-area guide overlay (FR-2D-9) */}
+            <div
+              className="pointer-events-none absolute z-10 rounded border-2 border-dashed border-[#131111]/35"
+              style={{
+                left: `${(DEFAULT_SAFE_AREA.x / CANVAS_SIZE) * 100}%`,
+                top: `${(DEFAULT_SAFE_AREA.y / CANVAS_SIZE) * 100}%`,
+                width: `${(DEFAULT_SAFE_AREA.width / CANVAS_SIZE) * 100}%`,
+                height: `${(DEFAULT_SAFE_AREA.height / CANVAS_SIZE) * 100}%`,
+              }}
+            />
+            <canvas ref={elRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+          </div>
         </div>
 
-        {addedMsg && (
-          <p className="rounded-md bg-accent/10 px-4 py-2 text-center text-sm text-accent-foreground">{addedMsg}</p>
-        )}
-        {validationErrors.length > 0 && (
-          <ul className="space-y-1 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
-            {validationErrors.map((err, i) => (
-              <li key={i}>• {err}</li>
-            ))}
-          </ul>
-        )}
-        <p className="text-center text-xs text-[#6B635C]">
-          Keep text within the dashed safe area. Max {MAX_ENGRAVING_CHARS} characters per line.
-        </p>
-      </div>
-
-      {/* Right: layers + gallery */}
-      <aside className="space-y-6 rounded-lg border border-border bg-card p-4">
-        <div>
-          <p className="mb-2 text-sm font-medium">Layers</p>
-          {layers.length === 0 ? (
-            <p className="text-xs text-[#6B635C]">No layers yet. Add text or a logo.</p>
-          ) : (
-            <ul className="space-y-1">
-              {layers.map((l) => (
-                <li key={l.id} className="flex items-center gap-2 rounded-md border border-border px-2 py-1.5 text-sm">
-                  <button type="button" onClick={() => selectLayer(l.id)} className="flex-1 truncate text-left text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-                    {l.label}
-                  </button>
-                  <button type="button" onClick={() => toggleLayerVisible(l.id)} aria-label="Toggle visibility" className="text-xs text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-                    {l.visible ? "Hide" : "Show"}
-                  </button>
-                  <button type="button" onClick={() => deleteLayer(l.id)} aria-label="Delete layer" className="text-xs text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-medium">My designs</p>
-            <button type="button" onClick={loadGallery} className="text-xs text-[#131111] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-              Refresh
+        <div className="absolute inset-x-0 bottom-[1em] flex items-center justify-between gap-3 px-[1em] sm:bottom-[1.25em] sm:px-[1.25em]">
+          <p className="m-0 hidden font-outfit text-[0.75em] tracking-[0.08em] text-[#6B635C] uppercase sm:block">
+            Keep engraving inside the dashed area
+          </p>
+          <div className="ml-auto flex items-center gap-2">
+            <button type="button" className={iconButton} aria-label="Undo" onClick={() => restore(undo())} disabled={!canUndo()}>
+              <Undo2 className="size-[1em]" strokeWidth={1.5} aria-hidden />
+            </button>
+            <button type="button" className={iconButton} aria-label="Redo" onClick={() => restore(redo())} disabled={!canRedo()}>
+              <Redo2 className="size-[1em]" strokeWidth={1.5} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => runValidation()}
+              className="h-[2.5em] rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 px-[1em] font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase backdrop-blur-sm hover:bg-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+            >
+              Validate
             </button>
           </div>
-          {gallery.length === 0 ? (
-            <p className="text-xs text-[#6B635C]">Saved designs appear here.</p>
-          ) : (
-            <ul className="grid grid-cols-2 gap-2">
-              {gallery.map((d) => (
-                <li key={d.id}>
-                  <button
-                    onClick={() => {
-                      setDesignId(d.id)
-                      setName(d.name)
-                      restore(JSON.stringify(d.state_json))
-                    }}
-                    className="w-full overflow-hidden rounded-md border border-border text-left text-[#131111] hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-                  >
-                    {d.preview_url ? (
-                      <img src={d.preview_url} alt={d.name} className="aspect-square w-full object-cover" />
-                    ) : (
-                      <span className="flex aspect-square w-full items-center justify-center bg-muted text-xs">No preview</span>
-                    )}
-                    <span className="block truncate px-1 py-1 text-xs">{d.name}</span>
-                  </button>
-                </li>
+        </div>
+      </div>
+
+      <div className="flex min-h-0 flex-col border-t border-[#131111]/10 bg-[#FBFBF7] lg:border-t-0 lg:border-l">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-[clamp(1.25rem,2.5vw,2.25em)] pt-[0.9em] pb-[1.5em] lg:pt-[1.75em]">
+          <p className="m-0 hidden font-outfit text-[0.75em] tracking-[0.14em] text-[#6B635C] uppercase lg:block">
+            Design studio · 2D layout
+          </p>
+          <h1
+            id="editor-2d-heading"
+            className="m-0 font-outfit text-[1.375rem] leading-[1.05] font-normal tracking-[-0.04em] text-balance text-[#131111] lg:mt-[0.4em] lg:text-[clamp(1.75rem,3vw,2.5em)]"
+          >
+            Design your {product.title}
+          </h1>
+          <p className="mt-[0.6em] mb-0 hidden font-outfit text-[0.9375em] leading-[1.45] tracking-[-0.01em] text-pretty text-[#6B635C] lg:block">
+            {config
+              ? "Place text and your logo freely inside the engraving area, then apply it to the plaque in 3D."
+              : "Add engraving text and your logo, pick a material finish, then save or add to cart."}
+          </p>
+
+          {validationErrors.length > 0 ? (
+            <ul role="alert" className="mt-[1em] mb-0 list-none space-y-1 rounded-[0.25em] border border-[#8A2D25]/30 bg-[#8A2D25]/5 p-[0.85em] font-outfit text-[0.8125em] text-[#8A2D25]">
+              {validationErrors.map((err, i) => (
+                <li key={i}>{err}</li>
               ))}
             </ul>
-          )}
+          ) : null}
+
+          <div className="mt-[1.4em] flex flex-col gap-[1.6em]">
+            <div className="flex flex-col gap-[0.8em]">
+              <p className={sectionLabel}>Text</p>
+              <label className="sr-only" htmlFor="editor-2d-font">
+                Font
+              </label>
+              <select
+                id="editor-2d-font"
+                value={selectedFont}
+                onChange={(e) => applyFontToSelection(e.target.value)}
+                className={fieldClass}
+              >
+                {ENGRAVING_FONTS.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+              <div className="flex flex-wrap items-center gap-2">
+                {inkSwatches.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => applyColorToSelection(color)}
+                    aria-label={`Text colour ${color}`}
+                    aria-pressed={fillColor.toLowerCase() === color.toLowerCase()}
+                    className={cn(
+                      "size-[2.5em] rounded-full ring-offset-2 ring-offset-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111]",
+                      fillColor.toLowerCase() === color.toLowerCase() ? "ring-[1.5px] ring-[#131111]" : "ring-1 ring-[#131111]/15"
+                    )}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+                <input
+                  type="color"
+                  value={fillColor}
+                  onChange={(e) => applyColorToSelection(e.target.value)}
+                  aria-label="Text color"
+                  className="h-[2.5em] w-[2.5em] cursor-pointer rounded-full border border-[#131111]/20 bg-transparent p-[0.2em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+                />
+                <span aria-hidden className="mx-1 h-[1.5em] w-px bg-[#131111]/15" />
+                <button type="button" onClick={() => toggleStyle("fontWeight")} aria-label="Bold" className={styleButton}>
+                  <Bold className="size-[1em]" strokeWidth={1.75} aria-hidden />
+                </button>
+                <button type="button" onClick={() => toggleStyle("fontStyle")} aria-label="Italic" className={styleButton}>
+                  <Italic className="size-[1em]" strokeWidth={1.75} aria-hidden />
+                </button>
+                <button type="button" onClick={() => toggleStyle("underline")} aria-label="Underline" className={styleButton}>
+                  <Underline className="size-[1em]" strokeWidth={1.75} aria-hidden />
+                </button>
+              </div>
+              <Button
+                onClick={addText}
+                variant="outline"
+                className="h-[2.75em] w-full rounded-full border-[#131111]/25 font-outfit text-[0.8125em] tracking-[0.08em] text-[#131111] uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+              >
+                Add text
+              </Button>
+            </div>
+
+            <div className="flex flex-col gap-[0.6em]">
+              <p className={sectionLabel}>Layers</p>
+              {layers.length === 0 ? (
+                <p className="m-0 font-outfit text-[0.8125em] text-[#6B635C]">No layers yet. Add text or a logo.</p>
+              ) : (
+                <ul className="m-0 flex list-none flex-col gap-1 p-0">
+                  {layers.map((l) => (
+                    <li key={l.id} className="flex items-center gap-2 rounded-[0.25em] border border-[#131111]/12 bg-white px-[0.75em] py-[0.45em] font-outfit text-[0.8125em]">
+                      <button type="button" onClick={() => selectLayer(l.id)} className="flex-1 truncate text-left text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
+                        {l.label}
+                      </button>
+                      <button type="button" onClick={() => toggleLayerVisible(l.id)} aria-label="Toggle visibility" className="text-[#6B635C] hover:text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
+                        {l.visible ? "Hide" : "Show"}
+                      </button>
+                      <button type="button" onClick={() => deleteLayer(l.id)} aria-label="Delete layer" className="text-[#8A2D25] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
+                        ✕
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-[0.6em]">
+              <p className={sectionLabel}>Logo</p>
+              <label className="relative flex cursor-pointer items-center justify-center rounded-[0.25em] border border-dashed border-[#131111]/25 bg-white px-3 py-[1em] font-outfit text-[0.8125em] text-[#6B635C] hover:border-[#131111]/50 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#131111]">
+                Upload PNG / JPG / SVG
+                <input type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={onUploadLogo} className="sr-only" />
+              </label>
+            </div>
+
+            {config ? (
+              <>
+                <SwatchGroup legend="Plate" name="plate-2d" value={config.plate} options={plateOptions} onChange={(v) => setPlaque("plate", v)} />
+                <SwatchGroup legend="Size" name="size-2d" value={config.size} options={sizeOptions} onChange={(v) => setPlaque("size", v)} />
+              </>
+            ) : (
+              <SwatchGroup
+                legend="Material"
+                name="material-2d"
+                value={material ?? MATERIALS_2D[0].value}
+                options={materialOptions}
+                onChange={(v) => setMeta({ material: v })}
+              />
+            )}
+
+            <div className="flex flex-col gap-[0.5em]">
+              <label htmlFor="editor-2d-name" className={sectionLabel}>
+                Design name
+              </label>
+              <input
+                id="editor-2d-name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  setMeta({ name: e.target.value })
+                }}
+                className={fieldClass}
+              />
+            </div>
+
+            <div className="flex flex-col gap-[0.6em]">
+              <div className="flex items-center justify-between">
+                <p className={sectionLabel}>My designs</p>
+                <button type="button" onClick={loadGallery} className="font-outfit text-[0.75em] text-[#131111] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
+                  Refresh
+                </button>
+              </div>
+              {gallery.length === 0 ? (
+                <p className="m-0 font-outfit text-[0.8125em] text-[#6B635C]">Saved designs appear here.</p>
+              ) : (
+                <ul className="m-0 grid list-none grid-cols-3 gap-2 p-0">
+                  {gallery.map((d) => (
+                    <li key={d.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDesignId(d.id)
+                          setName(d.name)
+                          restore(JSON.stringify(d.state_json))
+                        }}
+                        className="w-full overflow-hidden rounded-[0.25em] border border-[#131111]/12 bg-white text-left text-[#131111] hover:border-[#131111]/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+                      >
+                        {d.preview_url ? (
+                          <img src={d.preview_url} alt={d.name} className="aspect-square w-full object-cover" />
+                        ) : (
+                          <span className="flex aspect-square w-full items-center justify-center bg-[#F2F1EF] px-1 text-center font-outfit text-[0.6875em] text-[#6B635C]">
+                            Preview pending
+                          </span>
+                        )}
+                        <span className="block truncate px-1 py-1 font-outfit text-[0.6875em]">{d.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <p className="m-0 font-outfit text-[0.75em] text-[#6B635C]">
+              Max {MAX_ENGRAVING_CHARS} characters per line. {config ? "Every finish is included in the price." : null}
+            </p>
+          </div>
         </div>
-      </aside>
-    </div>
+
+        <div className="shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] px-[clamp(1.25rem,2.5vw,2.25em)] pt-[0.9em] pb-[max(0.6em,env(safe-area-inset-bottom))] lg:py-[1.1em]">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="m-0 font-outfit text-[0.8125em] tracking-[-0.01em] text-[#6B635C]">
+              <Link href={`/products/${product.handle}`} className="text-[#6B635C] underline underline-offset-[0.2em] hover:text-[#131111]">
+                {product.title}
+              </Link>
+            </p>
+            <p className="m-0 font-outfit text-[1.375em] tracking-[-0.03em] text-[#131111] tabular-nums" aria-live="polite">
+              {price ?? "—"}
+            </p>
+          </div>
+          <div className="mt-[0.85em] flex items-center gap-2">
+            <Button
+              onClick={handleAddToCart}
+              disabled={saving || !variantId}
+              className="h-[3em] min-w-0 flex-1 rounded-full font-outfit text-[0.8125em] tracking-[0.08em] uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+              style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
+            >
+              Add to cart
+            </Button>
+            <button type="button" onClick={handleSave} disabled={saving} className={pillOutline}>
+              {saving ? "Saving…" : "Save"}
+            </button>
+            {config ? (
+              <button type="button" onClick={() => openIn3D({ validate: true })} className={pillOutline}>
+                Apply in 3D
+              </button>
+            ) : null}
+          </div>
+          <p role="status" className="mt-[0.6em] mb-0 min-h-[1.25em] font-outfit text-[0.75em] leading-[1.35] text-[#6B635C]">
+            {addedMsg ?? ""}
+          </p>
+        </div>
+      </div>
+    </section>
   )
 }

@@ -48,7 +48,7 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
 
   return (
     <section className="relative overflow-hidden border-b border-[#131111]/10">
-      <div className="mx-auto grid w-full max-w-[90em] items-center gap-[2.5em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[max(clamp(2.5rem,6vw,5em),calc(var(--site-header-h)+1.5rem))] pb-[clamp(2.5rem,6vw,5em)] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-16 lg:min-h-[32em]">
+      <div className="mx-auto grid w-full max-w-[90em] items-center gap-[2.5em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2.5rem,6vw,5em)] pb-[clamp(2.5rem,6vw,5em)] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-16 lg:min-h-[32em]">
         <div className="relative z-10 max-w-[28em]">
           <p
             aria-hidden

@@ -382,7 +382,8 @@ export type FaceLayout = {
   image: string
 }
 
-function optionsOf(config: PlaqueConfig): Record<OptionKey, string> {
+/** The option choices alone (no engraving copy), as saved with a design. */
+export function configOptions(config: PlaqueConfig): Record<OptionKey, string> {
   return Object.fromEntries(OPTION_KEYS.map((key) => [key, config[key]])) as Record<OptionKey, string>
 }
 
@@ -413,7 +414,7 @@ export function buildDesignState(config: PlaqueConfig, layout?: FaceLayout | nul
     logo: null,
     configurator: {
       kind: "plaque",
-      options: optionsOf(config),
+      options: configOptions(config),
       lines,
       layout: custom ? { source: "2d", fabric: custom.fabric } : null,
     },

@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation"
 
 /** Full-viewport app screens that render without any site chrome. */
 const BARE_ROUTES = new Set(["/customize"])
+/** The 2D layout editor shares the studio's fullscreen shell. */
+const BARE_PATTERN = /^\/customize\/[^/]+\/2d$/
 
 export function isBareRoute(pathname: string | null) {
-  return pathname != null && BARE_ROUTES.has(pathname)
+  return pathname != null && (BARE_ROUTES.has(pathname) || BARE_PATTERN.test(pathname))
 }
 
 /**

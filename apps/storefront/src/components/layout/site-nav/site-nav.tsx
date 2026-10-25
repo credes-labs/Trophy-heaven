@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useId, useMemo, useState } from "react"
+import { useEffect, useId, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
 import { siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
+import { useHoverIntent } from "./use-hover-intent"
 
 export const siteNavItemClass =
   "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#F2F1EF] lg:text-[13px]"
@@ -35,59 +36,160 @@ function SiteCartControl({ className }: { className?: string }) {
   )
 }
 
+function focusMenuItem(panel: HTMLElement | null, index: number | "next" | "prev") {
+  const items = Array.from(panel?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
+  if (items.length === 0) return
+  const current = items.indexOf(document.activeElement as HTMLElement)
+  const target =
+    index === "next"
+      ? (current + 1) % items.length
+      : index === "prev"
+        ? (current - 1 + items.length) % items.length
+        : (index + items.length) % items.length
+  items[target]?.focus()
+}
+
 function NavFlyout({
   item,
   open,
   onOpen,
   onClose,
+  onPointerEnter,
+  onPointerLeave,
   itemClass,
 }: {
   item: SiteNavItem
   open: boolean
   onOpen: () => void
   onClose: () => void
+  onPointerEnter: () => void
+  onPointerLeave: () => void
   itemClass: string
 }) {
   const panelId = useId()
+  const triggerRef = useRef<HTMLAnchorElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const pointerTypeRef = useRef<string>("mouse")
+  const openAtPointerDownRef = useRef(false)
+  const pendingFocusRef = useRef<number | null>(null)
   const children = item.children ?? []
   const hasMenu = children.length > 0
 
+  useEffect(() => {
+    if (!open || pendingFocusRef.current === null) return
+    focusMenuItem(panelRef.current, pendingFocusRef.current)
+    pendingFocusRef.current = null
+  }, [open])
+
+  const openAndFocus = (index: number) => {
+    if (open) {
+      focusMenuItem(panelRef.current, index)
+      return
+    }
+    pendingFocusRef.current = index
+    onOpen()
+  }
+
   return (
     <li
-      className="relative"
-      onMouseEnter={hasMenu ? onOpen : undefined}
-      onMouseLeave={hasMenu ? onClose : undefined}
+      className={
+        hasMenu ? "pointer-events-auto relative -mx-2 -my-3 px-2 py-3" : "relative"
+      }
+      onPointerEnter={
+        hasMenu
+          ? (event) => {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") onPointerEnter()
+            }
+          : undefined
+      }
+      onPointerLeave={
+        hasMenu
+          ? (event) => {
+              if (event.pointerType === "mouse" || event.pointerType === "pen") onPointerLeave()
+            }
+          : undefined
+      }
+      onBlur={
+        hasMenu
+          ? (event) => {
+              const next = event.relatedTarget as Node | null
+              if (!open || (next && event.currentTarget.contains(next))) return
+              onClose()
+            }
+          : undefined
+      }
+      onKeyDown={
+        hasMenu
+          ? (event) => {
+              if (event.key === "Escape" && open) {
+                event.stopPropagation()
+                onClose()
+                triggerRef.current?.focus()
+              }
+            }
+          : undefined
+      }
     >
       <Link
+        ref={triggerRef}
         href={item.href}
         className={itemClass}
         aria-expanded={hasMenu ? (open ? "true" : "false") : undefined}
         aria-controls={hasMenu ? panelId : undefined}
         aria-haspopup={hasMenu ? "true" : undefined}
         onFocus={hasMenu ? onOpen : undefined}
-        onBlur={(event) => {
+        onPointerDown={(event) => {
+          pointerTypeRef.current = event.pointerType
+          openAtPointerDownRef.current = open
+        }}
+        onClick={(event) => {
+          if (!hasMenu || pointerTypeRef.current !== "touch" || openAtPointerDownRef.current) return
+          event.preventDefault()
+          onOpen()
+        }}
+        onKeyDown={(event) => {
           if (!hasMenu) return
-          const next = event.relatedTarget as Node | null
-          if (next && event.currentTarget.parentElement?.contains(next)) return
-          onClose()
+          if (event.key === "ArrowDown") {
+            event.preventDefault()
+            openAndFocus(0)
+          } else if (event.key === "ArrowUp") {
+            event.preventDefault()
+            openAndFocus(-1)
+          }
         }}
       >
         {item.label}
       </Link>
       {hasMenu && open ? (
         <div
+          ref={panelRef}
           id={panelId}
           role="menu"
           aria-label={item.label}
-          className="absolute top-full left-0 z-50 min-w-[16rem] pt-3"
+          className="absolute top-full left-2 z-50 min-w-[16rem]"
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault()
+              focusMenuItem(panelRef.current, "next")
+            } else if (event.key === "ArrowUp") {
+              event.preventDefault()
+              focusMenuItem(panelRef.current, "prev")
+            } else if (event.key === "Home") {
+              event.preventDefault()
+              focusMenuItem(panelRef.current, 0)
+            } else if (event.key === "End") {
+              event.preventDefault()
+              focusMenuItem(panelRef.current, -1)
+            }
+          }}
         >
-          <ul className="m-0 list-none border border-[#131111]/10 bg-[#F2F1EF] px-5 py-4 shadow-[0_12px_40px_rgba(19,17,17,0.12)]">
+          <ul className="m-0 list-none border border-[#131111]/10 bg-[#F2F1EF] py-3 shadow-[0_12px_40px_rgba(19,17,17,0.12)]">
             {children.map((child) => (
               <li key={`${child.href}-${child.label}`}>
                 <Link
                   href={child.href}
                   role="menuitem"
-                  className="block py-1.5 font-outfit text-[13px] font-normal tracking-[0.08em] text-[#131111] uppercase transition-colors hover:text-[#6B635C]"
+                  className="block px-5 py-2 font-outfit text-[13px] font-normal tracking-[0.08em] text-[#131111] uppercase transition-colors hover:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-[#131111]"
                   onClick={onClose}
                 >
                   {child.label}
@@ -110,17 +212,17 @@ export function SiteNav({
   tone?: SiteNavTone
 }) {
   const links = useMemo(() => siteNavLinks(categories), [categories])
-  const [openId, setOpenId] = useState<string | null>(null)
+  const { openId, open, close, pointerEnter, pointerLeave } = useHoverIntent()
   const itemClass = tone === "ink" ? siteNavInkItemClass : siteNavItemClass
 
   useEffect(() => {
     if (!openId) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenId(null)
+      if (event.key === "Escape") close()
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [openId])
+  }, [openId, close])
 
   return (
     <div className="flex items-center justify-between gap-6">
@@ -132,8 +234,10 @@ export function SiteNav({
               key={item.id}
               item={item}
               open={openId === item.id}
-              onOpen={() => setOpenId(item.id)}
-              onClose={() => setOpenId((current) => (current === item.id ? null : current))}
+              onOpen={() => open(item.id)}
+              onClose={close}
+              onPointerEnter={() => pointerEnter(item.id)}
+              onPointerLeave={pointerLeave}
               itemClass={itemClass}
             />
           ))}

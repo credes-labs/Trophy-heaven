@@ -3,6 +3,9 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Nav dropdowns stay open on the way down
+The desktop nav menus no longer disappear while the pointer travels to them. The trigger and its panel now form one continuous hover area, with a short delay before opening and a forgiving delay before closing. Touch and keyboard support also improved. → L2 WP-62
+
 ## 2026-10-25 — Nav bar drops “Collection”
 The site nav, on desktop and mobile, no longer has a COLLECTION item; CATALOG now leads. The shop pages and the footer link stay. → L2 WP-59
 

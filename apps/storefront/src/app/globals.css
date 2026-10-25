@@ -561,10 +561,11 @@
       row-gap var(--shop-move) var(--shop-ease);
   }
 
+  /* `clip`, not `hidden`: a hidden overflow becomes the scroll container and kills the sticky inner. */
   .shop-listing-sidebar {
     min-width: 0;
     min-height: 0;
-    overflow: hidden;
+    overflow: clip;
     opacity: 0;
     pointer-events: none;
     transition: opacity 320ms var(--shop-ease);
@@ -597,6 +598,11 @@
       grid-template-columns: 22.125em minmax(0, 1fr);
       column-gap: 3.25em;
       row-gap: 0;
+    }
+
+    /* Full row height so the sticky inner has a track to travel along the grid. */
+    .shop-listing-sidebar {
+      align-self: stretch;
     }
 
     .shop-listing-sidebar-inner {
@@ -642,6 +648,17 @@
   :root {
     --site-header-h: 5rem;
   }
+}
+
+/* Only routes that render the overlay nav get the clearance (not `/` or bare app screens). */
+[data-site-header] ~ #main {
+  padding-top: var(--site-header-h);
+}
+
+/* Page roots with their own surface colour paint it behind the nav instead of a body-colour strip. */
+[data-site-header] ~ #main > .under-site-header {
+  margin-top: calc(-1 * var(--site-header-h));
+  padding-top: var(--site-header-h);
 }
 
 @keyframes fade {

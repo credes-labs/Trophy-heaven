@@ -347,7 +347,7 @@ export function ShopClient({
   return (
     <div
       className={cn(
-        "shop-page bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]",
+        "shop-page under-site-header bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]",
         filtersOpen && "is-filter"
       )}
     >
@@ -360,7 +360,7 @@ export function ShopClient({
       <div
         className={cn(
           "mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3rem,6vw,5.5em)] transition-[padding] duration-[560ms] ease-[cubic-bezier(0.25,0.82,0.25,1)] motion-reduce:duration-0",
-          filtersOpen ? "pt-[1.75em]" : "pt-[clamp(2rem,4vw,3.5em)]"
+          filtersOpen ? "pt-[clamp(1.25rem,2vw,2em)]" : "pt-[clamp(2rem,4vw,3.5em)]"
         )}
       >
         <div className="shop-filter-breadcrumb" aria-hidden={!filtersOpen}>
@@ -373,7 +373,9 @@ export function ShopClient({
 
         <div className="shop-listing-frame">
           <div className="shop-listing-sidebar" aria-hidden={!filtersOpen}>
-            <div className="shop-listing-sidebar-inner lg:sticky lg:top-[6em]">{filterPanel}</div>
+            <div className="shop-listing-sidebar-inner lg:sticky lg:top-[calc(var(--site-header-h)+1.5em)] lg:max-h-[calc(100svh-var(--site-header-h)-3em)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin]">
+              {filterPanel}
+            </div>
           </div>
           <div className="min-w-0">
             <div className="shop-filter-banner-slot" aria-hidden={!filtersOpen}>

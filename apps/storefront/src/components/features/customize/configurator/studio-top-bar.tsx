@@ -28,11 +28,14 @@ function ModeLabel({ mode }: { mode: (typeof MODES)[number] }) {
 export function StudioTopBar({
   mode,
   hrefs,
+  onNavigate,
   className,
 }: {
   mode: StudioMode
   /** Omit a mode to hide the switch (products without a 3D studio). */
   hrefs: Partial<Record<StudioMode, string>>
+  /** Lets a mode hand its state over before leaving (may preventDefault and navigate itself). */
+  onNavigate?: (mode: StudioMode, event: React.MouseEvent<HTMLAnchorElement>) => void
   className?: string
 }) {
   const cartCount = useCartStore((s) => s.itemCount())
@@ -65,6 +68,7 @@ export function StudioTopBar({
               <Link
                 key={m.id}
                 href={hrefs[m.id]!}
+                onClick={onNavigate ? (event) => onNavigate(m.id, event) : undefined}
                 className="rounded-full px-[0.9em] py-[0.45em] font-outfit text-[11px] leading-none font-medium tracking-[0.1em] whitespace-nowrap text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] sm:text-[12px]"
               >
                 <ModeLabel mode={m} />

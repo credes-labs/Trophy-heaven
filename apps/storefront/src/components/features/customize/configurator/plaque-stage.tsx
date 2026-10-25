@@ -27,7 +27,15 @@ const controlClass =
   "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
 /** 3D stage with orbit + keyboard turn controls; falls back to the flat drawing without WebGL. */
-export function PlaqueStage({ config, reduced }: { config: PlaqueConfig; reduced: boolean }) {
+export function PlaqueStage({
+  config,
+  layoutImage,
+  reduced,
+}: {
+  config: PlaqueConfig
+  layoutImage: string | null
+  reduced: boolean
+}) {
   const webgl = useSyncExternalStore(noopSubscribe, detectWebGL, () => null)
   const [view, setView] = useState<StageView>({ yaw: 0, reset: 0 })
   const [active, setActive] = useState(true)
@@ -55,7 +63,7 @@ export function PlaqueStage({ config, reduced }: { config: PlaqueConfig; reduced
   }, [webgl])
 
   const s = summarizeConfig(config)
-  const label = `Preview: ${s.form.toLowerCase()} ${s.wood.toLowerCase()} plaque, ${s.plate.toLowerCase()} plate, ${s.mount.toLowerCase()}, ${s.size}.`
+  const label = `Preview: ${s.form.toLowerCase()} ${s.wood.toLowerCase()} plaque, ${s.finish.toLowerCase()}, ${s.plate.toLowerCase()} ${s.plateShape.toLowerCase()} plate, ${s.mount.toLowerCase()}, ${s.size}.`
 
   return (
     <div
@@ -64,7 +72,7 @@ export function PlaqueStage({ config, reduced }: { config: PlaqueConfig; reduced
     >
       <div role="img" aria-label={label} className="absolute inset-0">
         {webgl ? (
-          <PlaqueScene config={config} view={view} reduced={reduced} active={active} />
+          <PlaqueScene config={config} layoutImage={layoutImage} view={view} reduced={reduced} active={active} />
         ) : null}
         <div
           aria-hidden
@@ -72,7 +80,7 @@ export function PlaqueStage({ config, reduced }: { config: PlaqueConfig; reduced
             webgl === true && ready ? "opacity-0" : "opacity-100"
           }`}
         >
-          <PlaquePreview2D config={config} className="h-full max-h-[34rem] w-full" />
+          <PlaquePreview2D config={config} layoutImage={layoutImage} className="h-full max-h-[34rem] w-full" />
         </div>
       </div>
 

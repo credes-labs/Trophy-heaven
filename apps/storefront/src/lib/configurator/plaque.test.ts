@@ -9,6 +9,7 @@ import {
   parseConfig,
   resolveVariant,
   serializeConfig,
+  sizeForVariant,
   type PlaqueVariant,
 } from "./plaque"
 
@@ -58,6 +59,51 @@ describe("plaque configurator state", () => {
     const unlabeled = VARIANTS.map((v, i) => ({ ...v, sizeLabel: `Option ${i}` }))
     expect(resolveVariant(unlabeled, "m")?.id).toBe("var_l")
     expect(resolveVariant([], "m")).toBeUndefined()
+  })
+
+  it("round-trips the 10-inch size and rejects anything else", () => {
+    const query = serializeConfig({ ...DEFAULT_CONFIG, size: "l" })
+    expect(new URLSearchParams(query).get("size")).toBe("l")
+    expect(parseConfig(new URLSearchParams(query)).size).toBe("l")
+    for (const bad of ["10", "xl", "", "l;drop"]) {
+      expect(parseConfig({ size: bad }).size).toBe("m")
+    }
+  })
+
+  it("whitelists every new option group", () => {
+    const config = {
+      ...DEFAULT_CONFIG,
+      form: "octagon" as const,
+      edge: "chamfer" as const,
+      wood: "sheesham" as const,
+      finish: "gloss" as const,
+      border: "double" as const,
+      plate: "rose" as const,
+      pshape: "ribbon" as const,
+      emblem: "monogram" as const,
+      fill: "gold" as const,
+      align: "left" as const,
+      face: "custom" as const,
+      mount: "box" as const,
+    }
+    expect(parseConfig(new URLSearchParams(serializeConfig(config)))).toEqual(config)
+    const junk = parseConfig({ edge: "jagged", finish: "chrome", pshape: "heart", emblem: "skull", mount: "ceiling", face: "x" })
+    expect(junk).toEqual(DEFAULT_CONFIG)
+  })
+
+  it("maps sizes and variant ids both ways so 2D and 3D price the same", () => {
+    expect(sizeForVariant(VARIANTS, "var_l")).toBe("l")
+    expect(sizeForVariant(VARIANTS, "var_m")).toBe("m")
+    expect(sizeForVariant(VARIANTS, "var_unknown")).toBeUndefined()
+    expect(sizeForVariant(VARIANTS, undefined)).toBeUndefined()
+  })
+
+  it("carries an applied 2D layout in the saved state only when the face uses it", () => {
+    const layout = { image: "data:image/png;base64,AAAA", fabric: { objects: [] } }
+    const custom = buildDesignState({ ...DEFAULT_CONFIG, face: "custom" }, layout)
+    expect(Design3DState.safeParse(custom).success).toBe(true)
+    expect(custom.configurator.layout).toEqual({ source: "2d", fabric: { objects: [] } })
+    expect(buildDesignState({ ...DEFAULT_CONFIG, face: "text" }, layout).configurator.layout).toBeNull()
   })
 
   it("builds a design state the backend schema accepts", () => {
