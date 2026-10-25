@@ -3,9 +3,6 @@ import { HeroSection } from "@/components/sections/hero-section"
 import { AboutSection } from "@/components/sections/about-section"
 import { ProductsCategoriesSection } from "@/components/sections/products-categories-section"
 import { ExploreSection } from "@/components/sections/explore-section"
-import { DisciplinesSection } from "@/components/sections/disciplines"
-import { CustomizerSection } from "@/components/sections/customizer"
-import { ProcessSection } from "@/components/sections/process"
 import { RecentWorkSection } from "@/components/sections/recent-work"
 import { CorporateBandSection } from "@/components/sections/corporate-band"
 import { MaterialsSection } from "@/components/sections/materials"
@@ -25,24 +22,10 @@ export default function HomePage() {
     <>
       <HeroSection />
       <div className="flex flex-col">
-        <div className="order-1 lg:order-none">
-          <Suspense fallback={null}>
-            <DisciplinesSection />
-          </Suspense>
-        </div>
-        <div className="order-2 lg:order-none">
-          <CustomizerSection />
-        </div>
-        <div className="order-5 lg:order-none">
-          <ProcessSection />
-        </div>
         <div className="order-3 lg:order-none">
           <Suspense fallback={null}>
             <RecentWorkSection />
           </Suspense>
-        </div>
-        <div className="order-4 lg:order-none">
-          <CorporateBandSection />
         </div>
         <div className="order-6 lg:order-none">
           <AboutSection />
@@ -60,11 +43,14 @@ export default function HomePage() {
           <VoicesSection />
         </div>
         <div className="order-11 lg:order-none">
+          <CorporateBandSection />
+        </div>
+        <div className="order-12 lg:order-none">
           <Suspense fallback={null}>
             <JournalRailSection />
           </Suspense>
         </div>
-        <div className="order-12 lg:order-none">
+        <div className="order-13 lg:order-none">
           <SignupSection />
         </div>
       </div>

@@ -3,6 +3,33 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Materials section is six 3D specimens
+“We name what we use.” keeps its eyebrow and headline. The text grid is now one shared WebGL canvas: walnut, brass, Belgian linen, teak, leather, and hand-loomed jute. Optical crystal and honed stone are gone from this section. → L2 WP-51 · [L3/039](L3/039-materials-specimens.md)
+
+## 2026-10-25 — Mobile hero stacks the headline, then the chair
+Below the desktop breakpoint the chair follows the headline and overlaps its lower lines. The caption and both actions sit clear of the bottom navigation. → L2 WP-50
+
+## 2026-10-25 — Material specimens stay in their slots while scrolling
+The shared materials canvas is fixed to the viewport, so the six objects no longer slip off their names when the page moves. → L2 WP-49
+
+## 2026-10-25 — Install prompt is a full-width bar
+The PWA install prompt spans the screen with a hairline border, paper ground, and the ink Install button. On a phone it sits above the bottom navigation. → L2 WP-48
+
+## 2026-10-25 — Hero chair sits on the lower headline; collection filters stick
+The studio photograph is the hero background and the walnut chair cutout overlaps “intention.” and “Built to last.” The Explore filters stick beside the product grid on desktop and release at the end of that section. → L2 WP-47 · [L3/038](L3/038-hero-chair-sticky-filters.md)
+
+## 2026-10-25 — Organisations band sits between quotes and the journal
+“//for organisations” moves from after recent work to between “//in their words” and “//journal”, on desktop and on the phone order. → L2 WP-46
+
+## 2026-10-25 — Homepage drops three studio sections
+“//three disciplines”, “//design it first”, and “//how it works” are unmounted from the homepage. The section components stay in the repo. → L2 WP-45
+
+## 2026-10-25 — Footer wordmark “l” matches the rest of the word
+The extra bold weight and wide shadow on the footer “l” are gone. A hair of horizontal shadow keeps the stem even with “egacy”. → L2 WP-44
+
+## 2026-10-25 — Letter column left-aligned; trust lines match the footer sentence
+The “A letter, not a blast.” column is left-aligned. The four trust lines drop semibold ink for the footer sentence’s regular weight, muted color, and tracking. → L2 WP-43
+
 ## 2026-10-25 — Footer CTA line hides below the desktop breakpoint
 The ceremony sentence and Shop the collection button stay beside the orbit from `lg` up, and leave the layout on smaller screens. The orbit, wordmark, and link columns stay. → L2 WP-42
 

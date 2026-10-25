@@ -33,21 +33,35 @@ export function PWARegister() {
   if (!installEvent || dismissed) return null
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 shadow-lg">
-      <span className="text-sm">Install Legacy Crafts for a faster, offline-ready experience.</span>
-      <button
-        onClick={async () => {
-          await installEvent.prompt()
-          await installEvent.userChoice
-          setInstallEvent(null)
-        }}
-        className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground"
-      >
-        Install
-      </button>
-      <button onClick={() => setDismissed(true)} className="text-sm text-muted-foreground" aria-label="Dismiss">
-        ✕
-      </button>
+    <div
+      role="region"
+      aria-label="Install the app"
+      className="fixed inset-x-0 bottom-16 z-[60] border-y border-[#131111]/15 bg-[#F2F1EF] md:bottom-0"
+    >
+      <div className="mx-auto flex w-full max-w-[90em] items-center gap-4 px-[clamp(1.25rem,2.78vw,2.5rem)] py-3">
+        <p className="m-0 min-w-0 flex-1 font-outfit text-sm leading-snug tracking-[-0.01em] text-[#131111] sm:text-base">
+          Install Legacy Crafts for a faster, offline-ready experience.
+        </p>
+        <button
+          type="button"
+          onClick={async () => {
+            await installEvent.prompt()
+            await installEvent.userChoice
+            setInstallEvent(null)
+          }}
+          className="inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#131111] px-5 font-outfit text-sm tracking-wide text-[#F2F1EF] uppercase focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+        >
+          Install
+        </button>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          aria-label="Dismiss"
+          className="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center font-outfit text-lg text-[#131111]/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+        >
+          ×
+        </button>
+      </div>
     </div>
   )
 }

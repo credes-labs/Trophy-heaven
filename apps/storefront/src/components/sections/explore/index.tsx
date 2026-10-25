@@ -87,7 +87,7 @@ export function ExploreSection() {
         />
 
         <div className="mt-[2.5em] flex flex-col gap-[2.5em] lg:flex-row lg:items-start lg:gap-[3.25em]">
-          <div className="hidden lg:block">
+          <div className="hidden lg:sticky lg:top-24 lg:block lg:w-[22.125em] lg:shrink-0 lg:self-start">
             <ExploreFilters {...filterProps} />
           </div>
           <div className="min-w-0 flex-1">

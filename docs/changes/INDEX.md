@@ -52,6 +52,8 @@ that matches how much you need to know.
 | 035 | [Footer wordmark and column padding](L3/035-footer-wordmark.md) | WP-38 |
 | 036 | [Footer 3D orbit](L3/036-footer-orbit.md) | WP-39 |
 | 037 | [Letter form and trust row](L3/037-signup-trust-row.md) | WP-41 |
+| 038 | [Hero chair and sticky filters](L3/038-hero-chair-sticky-filters.md) | WP-47 |
+| 039 | [Homepage material specimens](L3/039-materials-specimens.md) | WP-51 |
 
 
 
