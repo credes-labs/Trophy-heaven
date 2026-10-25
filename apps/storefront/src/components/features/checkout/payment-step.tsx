@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { CheckoutBack, CheckoutSubmit } from "@/components/features/checkout/checkout-actions"
 import type { CartPaymentMeta } from "@/lib/data/checkout"
 import { cn } from "@/lib/utils"
 
@@ -31,102 +31,82 @@ export function PaymentStep({
 }) {
   if (netTerms) {
     return (
-      <div className="mt-6 space-y-4">
-        <h2 className="text-balance font-medium">Corporate billing</h2>
-        <div className="rounded-lg border border-trophy/30 bg-trophy/5 p-5">
-          <p className="font-medium">Pay on account</p>
-          <p className="mt-2 max-w-[68ch] text-pretty text-sm text-muted-foreground">
-            This order will be billed on{" "}
-            <strong className="text-foreground">
-              {paymentMeta.payment_terms === "net_60" ? "Net 60" : "Net 30"}
-            </strong>
-            {paymentMeta.po_number ? (
-              <>
-                {" "}
-                against PO <strong className="text-foreground">{String(paymentMeta.po_number)}</strong>
-              </>
-            ) : null}
-            . No prepaid payment is collected at checkout.
-          </p>
-        </div>
-        <div className="flex justify-between pt-2">
-          <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
+      <div className="checkout-step">
+        <h2 className="checkout-section-title">Corporate billing</h2>
+        <p className="checkout-note">
+          This order will be billed on{" "}
+          <strong>{paymentMeta.payment_terms === "net_60" ? "Net 60" : "Net 30"}</strong>
+          {paymentMeta.po_number ? (
+            <>
+              {" "}
+              against PO <strong>{String(paymentMeta.po_number)}</strong>
+            </>
+          ) : null}
+          . No prepaid payment is collected at checkout.
+        </p>
+        <div className="checkout-actions is-follow">
+          <CheckoutBack onClick={onBack} disabled={busy}>
             Back
-          </Button>
-          <Button type="button" variant="trophy" onClick={onContinue} disabled={busy}>
-            Continue to review
-          </Button>
+          </CheckoutBack>
+          <CheckoutSubmit type="button" onClick={onContinue} disabled={busy}>
+            Continue
+          </CheckoutSubmit>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="mt-6 space-y-4">
-      <h2 className="text-balance font-medium">Payment method</h2>
+    <div className="checkout-step">
+      <h2 className="checkout-section-title">Payment</h2>
+      <p className="checkout-help">Your payment information is secure and encrypted.</p>
 
-      <ul className="space-y-3">
+      <ul className="checkout-choice-list">
         <li>
-          <label
-            className={cn(
-              "flex cursor-pointer gap-3 rounded-lg border p-4 transition-colors",
-              method === "razorpay" ? "border-trophy bg-trophy/5" : "border-border hover:bg-muted/40"
-            )}
-          >
+          <label className={cn("checkout-choice", method === "razorpay" && "is-active")}>
             <input
               type="radio"
               name="payment"
               checked={method === "razorpay"}
               onChange={() => onMethodChange("razorpay")}
-              className="mt-1 accent-[var(--color-trophy)]"
             />
-            <span>
-              <span className="block font-medium">
+            <span className="checkout-choice-body">
+              <span className="checkout-choice-title">
                 {razorpayEnabled ? "Pay with Razorpay" : "Online payment"}
               </span>
-              <span className="mt-0.5 block text-xs text-muted-foreground">
+              <span className="checkout-choice-help">
                 {razorpayEnabled
-                  ? "UPI · Cards · Net banking · Wallets"
+                  ? "UPI, cards, net banking, wallets"
                   : "System provider (test mode) — Razorpay key not configured"}
               </span>
             </span>
           </label>
         </li>
         {razorpayEnabled ? null : (
-        <li>
-          <label
-            className={cn(
-              "flex cursor-pointer gap-3 rounded-lg border p-4 transition-colors",
-              method === "cod" ? "border-trophy bg-trophy/5" : "border-border hover:bg-muted/40"
-            )}
-          >
-            <input
-              type="radio"
-              name="payment"
-              checked={method === "cod"}
-              onChange={() => onMethodChange("cod")}
-              className="mt-1 accent-[var(--color-trophy)]"
-            />
-            <span>
-              <span className="block font-medium">Cash on delivery</span>
-              <span className="mt-0.5 block text-xs text-muted-foreground">
-                Pay when your order arrives
+          <li>
+            <label className={cn("checkout-choice", method === "cod" && "is-active")}>
+              <input
+                type="radio"
+                name="payment"
+                checked={method === "cod"}
+                onChange={() => onMethodChange("cod")}
+              />
+              <span className="checkout-choice-body">
+                <span className="checkout-choice-title">Cash on delivery</span>
+                <span className="checkout-choice-help">Pay when your order arrives</span>
               </span>
-            </span>
-          </label>
-        </li>
+            </label>
+          </li>
         )}
       </ul>
 
-      <p className="max-w-[68ch] text-pretty text-xs text-muted-foreground">Your payment information is secure and encrypted.</p>
-
-      <div className="flex justify-between pt-2">
-        <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
+      <div className="checkout-actions is-follow">
+        <CheckoutBack onClick={onBack} disabled={busy}>
           Back
-        </Button>
-        <Button type="button" variant="trophy" onClick={onContinue} disabled={busy}>
-          Continue to review
-        </Button>
+        </CheckoutBack>
+        <CheckoutSubmit type="button" onClick={onContinue} disabled={busy}>
+          Continue
+        </CheckoutSubmit>
       </div>
     </div>
   )

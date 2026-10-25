@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import type { HttpTypes } from "@medusajs/types"
 import { useCartStore, CART_ID_KEY } from "@/stores/cart-store"
@@ -27,8 +28,16 @@ import { PaymentStep, type PaymentMethod } from "@/components/features/checkout/
 import { ReviewStep, paymentMethodLabel } from "@/components/features/checkout/review-step"
 import { CheckoutSummary } from "@/components/features/checkout/checkout-summary"
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
-import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
-import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
+import "@/components/features/checkout/checkout.css"
+
+function CheckoutCanvas({ children }: { children: ReactNode }) {
+  return (
+    <EditorialShell className="checkout-page bg-[#FBFBF7] font-sans text-[#131111]">
+      <div className="checkout-veil" aria-hidden="true" />
+      <EditorialFrame>{children}</EditorialFrame>
+    </EditorialShell>
+  )
+}
 
 const RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? ""
 
@@ -186,24 +195,24 @@ export default function CheckoutPage() {
 
   if (!cart || (authLoading && !customer)) {
     return (
-      <EditorialShell>
-        <EditorialFrame>
-          <p className="m-0 font-outfit text-[1em] text-[#131111]/70">Loading checkout…</p>
-        </EditorialFrame>
-      </EditorialShell>
+      <CheckoutCanvas>
+        <p className="checkout-help">Loading checkout…</p>
+      </CheckoutCanvas>
     )
   }
 
   if (!(cart.items?.length)) {
     return (
-      <EditorialShell>
-        <EditorialFrame className="text-center">
-          <p className="m-0 font-outfit text-[1.125em] text-[#131111]/70">Your cart is empty.</p>
-          <div className="mt-[1.75em] flex justify-center">
-            <EditorialCtaLink href="/shop">Continue shopping</EditorialCtaLink>
-          </div>
-        </EditorialFrame>
-      </EditorialShell>
+      <CheckoutCanvas>
+        <p className="checkout-eyebrow">Order</p>
+        <h1 className="checkout-title">Checkout</h1>
+        <p className="checkout-help">Your cart is empty.</p>
+        <div className="checkout-actions is-follow">
+          <Link href="/shop" className="checkout-continue">
+            Continue shopping
+          </Link>
+        </div>
+      </CheckoutCanvas>
     )
   }
 
@@ -220,29 +229,23 @@ export default function CheckoutPage() {
     : null
 
   return (
-    <EditorialShell>
-      <EditorialFrame>
-        <div className="grid gap-[3em] lg:grid-cols-[1fr_20em]">
-          <div>
-            <EditorialEyebrow>Order</EditorialEyebrow>
-            <h1 className="m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
-              Checkout
-            </h1>
+    <CheckoutCanvas>
+      <div className="checkout-layout">
+        <div className="checkout-main">
+          <p className="checkout-eyebrow">Order</p>
+          <h1 className="checkout-title">Checkout</h1>
 
-            {!customer ? (
-              <CheckoutAuthGate />
-            ) : (
-              <>
-                <StepIndicator current={step} className="mt-[2em]" />
+          {!customer ? (
+            <CheckoutAuthGate />
+          ) : (
+            <>
+              <StepIndicator current={step} />
 
-                {error ? (
-                  <p
-                    className="mt-[1.25em] m-0 max-w-[68ch] font-outfit text-[0.875em] leading-[1.4] text-pretty text-[#8A2D25]"
-                    role="alert"
-                  >
-                    {error}
-                  </p>
-                ) : null}
+              {error ? (
+                <p className="checkout-alert" role="alert">
+                  {error}
+                </p>
+              ) : null}
 
                 {step === "address" && (
                   <CheckoutAddressStep
@@ -296,7 +299,6 @@ export default function CheckoutPage() {
 
           <CheckoutSummary cart={cart} currency={currency} netTermsLabel={netTermsLabel} />
         </div>
-      </EditorialFrame>
-    </EditorialShell>
+    </CheckoutCanvas>
   )
 }

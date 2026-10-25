@@ -3,7 +3,13 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
-## 2026-10-26 — Search matches the catalogue tiles
+## 2026-10-26 — Checkout is one editorial form
+`/checkout` keeps city and state inside the address column, so those labels no longer sit in the nav. The page is paper, a Playfair “Checkout”, a quiet step index, hairline fields, and a summary panel. Continue has no decorative dot. → L2 WP-69 · [L3/048](L3/048-checkout-editorial.md)
+
+## 2026-10-26 - Product pages lose the nav strip and the grey gallery plate
+`/products/[handle]` now paints `#F2F1EF` behind the transparent nav, and the product photograph and thumbnails sit directly on paper instead of a `#D9D9D9` well. The PDP root also clips a 2px tab overflow at 390px. → L2 WP-68 · [L3/047](L3/047-pdp-seamless-nav-paper-gallery.md)
+
+## 2026-10-26 - Search matches the catalogue tiles
 `/search` drops the bordered cards. Photos, names, and prices sit on paper, filters stick under the nav while the results scroll, and prices match the shop instead of ₹0.00. → L2 WP-67
 
 ## 2026-10-26 — Plaque studio is one fullscreen screen

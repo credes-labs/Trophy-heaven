@@ -13,47 +13,43 @@ export function CheckoutSummary({
   netTermsLabel?: string | null
 }) {
   return (
-    <aside className="h-fit rounded-lg border border-border bg-card p-5 lg:sticky lg:top-24">
-      <h2 className="text-balance font-serif text-lg font-semibold">Order summary</h2>
-      <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto text-sm">
+    <aside className="checkout-summary" aria-label="Order summary">
+      <h2>Order summary</h2>
+      <ul className="checkout-summary-items">
         {(cart.items ?? []).map((i) => (
-          <li key={i.id} className="flex justify-between gap-3">
-            <span className="min-w-0 truncate text-muted-foreground">
+          <li key={i.id}>
+            <span>
               {i.product_title} × {i.quantity}
             </span>
-            <span className="shrink-0 tabular-nums">
+            <span className="checkout-money">
               {formatMoney((i.unit_price ?? 0) * (i.quantity ?? 1), currency)}
             </span>
           </li>
         ))}
       </ul>
-      <dl className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
-        <div className="flex justify-between">
-          <dt className="text-muted-foreground">Subtotal</dt>
-          <dd className="tabular-nums">{formatMoney(cart.item_subtotal ?? 0, currency)}</dd>
+      <dl>
+        <div className="checkout-summary-row">
+          <dt>Subtotal</dt>
+          <dd>{formatMoney(cart.item_subtotal ?? 0, currency)}</dd>
         </div>
-        <div className="flex justify-between">
-          <dt className="text-muted-foreground">Shipping</dt>
-          <dd className="tabular-nums">
-            {(cart.shipping_total ?? 0) <= 0
-              ? "—"
-              : formatMoney(cart.shipping_total ?? 0, currency)}
+        <div className="checkout-summary-row">
+          <dt>Shipping</dt>
+          <dd>
+            {(cart.shipping_total ?? 0) <= 0 ? "—" : formatMoney(cart.shipping_total ?? 0, currency)}
           </dd>
         </div>
         {(cart.tax_total ?? 0) > 0 && (
-          <div className="flex justify-between">
-            <dt className="text-muted-foreground">Tax</dt>
-            <dd className="tabular-nums">{formatMoney(cart.tax_total ?? 0, currency)}</dd>
+          <div className="checkout-summary-row">
+            <dt>Tax</dt>
+            <dd>{formatMoney(cart.tax_total ?? 0, currency)}</dd>
           </div>
         )}
-        <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
+        <div className="checkout-summary-total">
           <dt>Total</dt>
-          <dd className="tabular-nums">{formatMoney(cart.total ?? 0, currency)}</dd>
+          <dd>{formatMoney(cart.total ?? 0, currency)}</dd>
         </div>
       </dl>
-      {netTermsLabel && (
-        <p className="mt-3 max-w-[68ch] text-pretty text-xs text-muted-foreground">{netTermsLabel}</p>
-      )}
+      {netTermsLabel ? <p className="checkout-summary-note">{netTermsLabel}</p> : null}
     </aside>
   )
 }

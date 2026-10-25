@@ -46,10 +46,7 @@ export function ImageGallery({
 
   return (
     <div>
-      <div
-        className="pdp-gallery-well"
-        style={{ aspectRatio: "1 / 1", backgroundColor: "#D9D9D9" }}
-      >
+      <div className="pdp-gallery-well">
         <button
           type="button"
           onClick={() => current.url && setLightbox(true)}

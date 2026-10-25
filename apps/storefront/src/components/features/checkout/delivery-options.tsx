@@ -1,7 +1,7 @@
 "use client"
 
 import type { HttpTypes } from "@medusajs/types"
-import { Button } from "@/components/ui/button"
+import { CheckoutBack, CheckoutSubmit } from "@/components/features/checkout/checkout-actions"
 import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -23,42 +23,33 @@ export function DeliveryOptions({
   onContinue: () => void
 }) {
   return (
-    <div className="mt-6 space-y-4">
-      <h2 className="text-balance font-medium">Select delivery method</h2>
+    <div className="checkout-step">
+      <h2 className="checkout-section-title">Delivery</h2>
+      <p className="checkout-help">Choose how this order should arrive.</p>
 
       {options.length === 0 ? (
-        <p className="max-w-[68ch] rounded-md border border-dashed border-border p-4 text-pretty text-sm text-muted-foreground">
-          No shipping options configured for this region yet.
-        </p>
+        <p className="checkout-note">No shipping options configured for this region yet.</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="checkout-choice-list">
           {options.map((o) => {
             const active = selectedId === o.id
             return (
               <li key={o.id}>
-                <label
-                  className={cn(
-                    "flex cursor-pointer items-center justify-between gap-4 rounded-lg border p-4 transition-colors",
-                    active ? "border-trophy bg-trophy/5" : "border-border hover:bg-muted/40"
-                  )}
-                >
-                  <span className="flex items-start gap-3">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value={o.id}
-                      checked={active}
-                      onChange={() => onSelect(o.id)}
-                      className="mt-1 accent-[var(--color-trophy)]"
-                    />
-                    <span>
-                      <span className="block font-medium">{o.name}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">
-                        Arrives in estimated transit time for your region
-                      </span>
+                <label className={cn("checkout-choice", active && "is-active")}>
+                  <input
+                    type="radio"
+                    name="shipping"
+                    value={o.id}
+                    checked={active}
+                    onChange={() => onSelect(o.id)}
+                  />
+                  <span className="checkout-choice-body">
+                    <span className="checkout-choice-title">{o.name}</span>
+                    <span className="checkout-choice-help">
+                      Arrives in estimated transit time for your region
                     </span>
                   </span>
-                  <span className="shrink-0 text-sm font-medium tabular-nums">
+                  <span className="checkout-choice-price">
                     {(o.amount ?? 0) <= 0 ? "Free" : formatMoney(o.amount ?? 0, currency)}
                   </span>
                 </label>
@@ -68,19 +59,13 @@ export function DeliveryOptions({
         </ul>
       )}
 
-      <div className="flex justify-between pt-2">
-        <Button type="button" variant="ghost" onClick={onBack} disabled={busy}>
+      <div className="checkout-actions is-follow">
+        <CheckoutBack onClick={onBack} disabled={busy}>
           Back
-        </Button>
-        <Button
-          type="button"
-          variant="trophy"
-          onClick={onContinue}
-          disabled={busy || !selectedId}
-          loading={busy}
-        >
-          Continue to payment
-        </Button>
+        </CheckoutBack>
+        <CheckoutSubmit type="button" onClick={onContinue} disabled={busy || !selectedId}>
+          {busy ? "Saving" : "Continue"}
+        </CheckoutSubmit>
       </div>
     </div>
   )
