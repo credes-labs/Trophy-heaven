@@ -3,6 +3,21 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Footer CTA line hides below the desktop breakpoint
+The ceremony sentence and Shop the collection button stay beside the orbit from `lg` up, and leave the layout on smaller screens. The orbit, wordmark, and link columns stay. → L2 WP-42
+
+## 2026-10-25 — Letter form and trust lines share one row
+The newsletter sits on the left; the four trust lines stack on the right, evenly spaced and semibold. The separate trust strip is gone. → L2 WP-41 · [L3/037](L3/037-signup-trust-row.md)
+
+## 2026-10-25 — Footer orbit moves left; CTA sits beside it
+No orbit line, no visible headline; the line and button sit right of the revolving pieces, which clear the footer links. → L2 WP-40 (amends [L3/036](L3/036-footer-orbit.md))
+
+## 2026-10-25 — Footer pieces revolve on a 3D ring
+Five furniture cutouts orbit above the footer links in a lazy-loaded three.js scene, with a static row for reduced motion. → L2 WP-39 · [L3/036](L3/036-footer-orbit.md)
+
+## 2026-10-25 — Footer wordmark fills the row; link columns stay on the gray
+The white strip under the footer was the page background showing past a fixed-height row. “legacy” now fills the width beside the columns, and the Support links sit above a padded footer edge. → L2 WP-38 · [L3/035](L3/035-footer-wordmark.md)
+
 ## 2026-10-25 — Homepage hero is a full-bleed poster
 The tagline is set large on the studio photograph, with a single-row nav and the existing caption and actions on the lower right. Same copy, same images. → L2 WP-37 · [L3/034](L3/034-hero-poster.md)
 

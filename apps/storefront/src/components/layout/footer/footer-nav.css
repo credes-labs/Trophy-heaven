@@ -1,3 +1,16 @@
+/* The slot’s width is whatever the columns leave. Size the word from that
+   width so “legacy” fills it without a fixed em that overflows the row. */
+@media (min-width: 1024px) {
+  .footer-wordmark-slot {
+    container-type: inline-size;
+  }
+
+  .footer-wordmark-slot .footer-wordmark {
+    font-size: 36cqw;
+    line-height: 0.78;
+  }
+}
+
 /* Outfit’s lowercase l is a single stem. At this display size it reads thinner
    than the bowls in “egacy”. Thicken only that glyph, and only horizontally, so
    the square terminals stay square (a stroke would round them and overflow). */

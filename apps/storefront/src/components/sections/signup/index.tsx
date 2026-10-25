@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import { SectionEyebrow, SectionShell } from "@/components/sections/_editorial"
+import { TRUST_POINTS } from "@/lib/brand-facts"
 import { subscribeNewsletter } from "@/lib/forms"
 
 export function SignupSection() {
@@ -28,8 +29,9 @@ export function SignupSection() {
 
   return (
     <SectionShell id="stay-close" aria-labelledby="signup-heading">
-      <div className="mx-auto max-w-[36em] text-center">
-        <SectionEyebrow className="justify-center">stay close</SectionEyebrow>
+      <div className="flex flex-col items-stretch gap-14 lg:flex-row lg:items-stretch lg:justify-between lg:gap-[6em]">
+      <div className="w-full max-w-[36em] text-left lg:shrink-0">
+        <SectionEyebrow>stay close</SectionEyebrow>
         <h2
           id="signup-heading"
           className="mt-[0.75em] m-0 font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
@@ -79,6 +81,21 @@ export function SignupSection() {
         <p className="mt-[1em] m-0 font-outfit text-[0.8125em] text-pretty text-[#6B635C]">
           Unsubscribe anytime.
         </p>
+      </div>
+
+      <ul
+        aria-label="Why Legacy Crafts"
+        className="m-0 flex list-none flex-col justify-between gap-6 p-0 lg:w-[26em] lg:shrink-0 lg:gap-0 lg:py-[1.75em]"
+      >
+        {TRUST_POINTS.map((point) => (
+          <li
+            key={point}
+            className="font-outfit text-[1.0625em] leading-[1.4] font-normal tracking-[-0.03em] text-pretty text-[#6B635C]"
+          >
+            {point}
+          </li>
+        ))}
+      </ul>
       </div>
     </SectionShell>
   )

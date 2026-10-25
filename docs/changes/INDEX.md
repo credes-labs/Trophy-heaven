@@ -49,6 +49,9 @@ that matches how much you need to know.
 | 032 | [Vercel production hardening](L3/032-vercel-production-hardening.md) | WP-35 |
 | 033 | [Editorial contrast and type](L3/033-editorial-contrast.md) | WP-36 |
 | 034 | [Homepage hero poster](L3/034-hero-poster.md) | WP-37 |
+| 035 | [Footer wordmark and column padding](L3/035-footer-wordmark.md) | WP-38 |
+| 036 | [Footer 3D orbit](L3/036-footer-orbit.md) | WP-39 |
+| 037 | [Letter form and trust row](L3/037-signup-trust-row.md) | WP-41 |
 
 
 

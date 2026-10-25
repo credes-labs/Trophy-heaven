@@ -11,7 +11,6 @@ import { CorporateBandSection } from "@/components/sections/corporate-band"
 import { MaterialsSection } from "@/components/sections/materials"
 import { VoicesSection } from "@/components/sections/voices"
 import { JournalRailSection } from "@/components/sections/journal-rail"
-import { TrustStripSection } from "@/components/sections/trust-strip"
 import { SignupSection } from "@/components/sections/signup"
 
 /** ISR: refresh the homepage every five minutes. */
@@ -66,9 +65,6 @@ export default function HomePage() {
           </Suspense>
         </div>
         <div className="order-12 lg:order-none">
-          <TrustStripSection />
-        </div>
-        <div className="order-13 lg:order-none">
           <SignupSection />
         </div>
       </div>
