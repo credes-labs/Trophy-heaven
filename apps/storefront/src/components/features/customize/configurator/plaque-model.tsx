@@ -222,7 +222,8 @@ function useEmblemTexture(config: PlaqueConfig) {
   const invalidate = useThree((s) => s.invalidate)
   const texture = useCanvasTexture(256, 256)
   const kind = config.emblem
-  const ink = inkFor(config)
+  // The roundel is always metal, so it keeps the plate's cut colour even with no plate.
+  const ink = inkFor({ ...config, pshape: "rect" })
   const initials = monogram(config)
 
   useEffect(() => {

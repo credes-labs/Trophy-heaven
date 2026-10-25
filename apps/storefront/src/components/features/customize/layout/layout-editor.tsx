@@ -36,17 +36,39 @@ import {
   getFont,
   getPlate,
   getWood,
+  hasPlate,
   inkFor,
+  woodInk,
+  WOOD_ETCH,
   type FaceLayout,
   type LineKey,
   type PlaqueConfig,
 } from "@/lib/configurator/plaque"
+import {
+  DEFAULT_ENGRAVE,
+  ENGRAVE_STYLES,
+  sanitizeEngrave,
+  type EngraveParams,
+} from "@/lib/configurator/engrave"
+import { PhotoError, prepareOriginal, renderEngraved } from "@/lib/configurator/engrave-image"
 import { emblem, formOutline, insetOutline, plateOutline, plateRect } from "@/lib/configurator/shapes"
 import { plaqueCanvasLayout, remapRect, type Rect } from "@/lib/configurator/layout-geometry"
 import { readLayout } from "@/lib/configurator/layout-store"
 import { SwatchGroup, type SwatchOption } from "../configurator/swatch-group"
 
-type FabricObjectLike = FabricObject & { id?: string; text?: string; fontFamily?: string }
+type FabricObjectLike = FabricObject & {
+  id?: string
+  text?: string
+  fontFamily?: string
+  /** Uploaded photo, resized, kept so the engrave effect can be re-run. */
+  lcOriginal?: string
+  lcEngrave?: EngraveParams
+  /** Placed by the configurator's lines (replaced while the canvas is untouched). */
+  lcSeed?: boolean
+}
+
+/** Custom props that travel with every snapshot, export and saved design. */
+const CUSTOM_PROPS = ["id", "lcOriginal", "lcEngrave"]
 
 /** Attaches a stable id to every object so it survives serialization. */
 function ensureId(obj: FabricObjectLike): string {
@@ -54,10 +76,14 @@ function ensureId(obj: FabricObjectLike): string {
   return obj.id
 }
 
-/** Snapshot including custom `id` props (undo/redo + save). */
+/** Snapshot including custom props (undo/redo + save). */
 function serialize(canvas: FabricCanvas): string {
-  return JSON.stringify(canvas.toObject(["id"]))
+  return JSON.stringify(canvas.toObject(CUSTOM_PROPS))
 }
+
+const isText = (obj: FabricObjectLike) => obj.type === "i-text" || obj.type === "text"
+
+export type LayoutSelection = { id: string; kind: "text" | "image" | "other"; engrave: EngraveParams | null }
 
 const SEED_ROWS: { key: LineKey; y: number; size: number; caps: boolean }[] = [
   { key: "title", y: 0.2, size: 0.11, caps: true },
@@ -75,6 +101,8 @@ export type LayoutController = {
   save: () => Promise<DesignRecord | null>
   /** Drops the composition and goes back to mirroring the engraving lines. */
   clear: () => void
+  /** Places a photo/logo (queued until the canvas is ready). */
+  upload: (file: File) => void
 }
 
 type Layer = { id: string; label: string; visible: boolean }
@@ -98,6 +126,11 @@ type LayoutEditorValue = {
   saving: boolean
   addText: () => Promise<void>
   uploadLogo: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
+  selection: LayoutSelection | null
+  /** Re-engraves the selected photo with these settings. */
+  setEngrave: (patch: Partial<EngraveParams>) => void
+  engraving: boolean
+  deselect: () => void
   applyFont: (font: string) => void
   applyColor: (color: string) => void
   toggleStyle: (prop: "fontWeight" | "fontStyle" | "underline") => void
@@ -169,6 +202,13 @@ export function LayoutEditorProvider({
   const [fillColor, setFillColor] = useState(plaque ? inkFor(plaque) : "#1a1a1a")
   const [layers, setLayers] = useState<Layer[]>([])
   const [gallery, setGallery] = useState<DesignRecord[]>([])
+  const [selection, setSelection] = useState<LayoutSelection | null>(null)
+  const [engraving, setEngraving] = useState(false)
+  const engraveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const engraveGen = useRef(0)
+  // Uploads wait for any saved composition to finish loading, and for the canvas itself.
+  const loadedRef = useRef<Promise<unknown>>(Promise.resolve())
+  const pendingUploadRef = useRef<File | null>(null)
   // Track uploaded logo intrinsic resolution for the DPI check (FR-2D-9).
   const logoMetaRef = useRef<Record<string, { naturalWidth: number }>>({})
   const skipHistoryRef = useRef(false)
@@ -202,7 +242,9 @@ export function LayoutEditorProvider({
             obj.type === "i-text" || obj.type === "text"
               ? `Text: ${(obj.text ?? "").slice(0, 18) || "(empty)"}`
               : obj.type === "image"
-                ? "Logo / image"
+                ? obj.lcOriginal
+                  ? "Photo"
+                  : "Logo / image"
                 : obj.type ?? "layer"
           return { id, label, visible: obj.visible !== false }
         })
@@ -224,7 +266,7 @@ export function LayoutEditorProvider({
       width: area.width,
       height: area.height,
     })
-    return { image, fabric: canvas.toObject(["id"]), area }
+    return { image, fabric: canvas.toObject(CUSTOM_PROPS), area }
   }, [getCanvas])
 
   const flush = useCallback(() => {
@@ -281,7 +323,7 @@ export function LayoutEditorProvider({
     await loadGoogleFont(font.family2d)
     if (gen !== seedGenRef.current || editedRef.current) return
     skipHistoryRef.current = true
-    canvas.remove(...canvas.getObjects())
+    canvas.remove(...canvas.getObjects().filter((o) => (o as FabricObjectLike).lcSeed))
     const area = safeAreaRef.current
     const left = seed.align === "left"
     for (const row of SEED_ROWS) {
@@ -300,6 +342,7 @@ export function LayoutEditorProvider({
         textAlign: left ? "left" : "center",
       }) as IText & FabricObjectLike
       ensureId(text)
+      text.lcSeed = true
       canvas.add(text)
     }
     canvas.requestRenderAll()
@@ -317,11 +360,23 @@ export function LayoutEditorProvider({
     const onSelection = () => {
       const active = canvas.getActiveObject() as FabricObjectLike | undefined
       setSelected(active ? ensureId(active) : null)
-      if (active && (active.type === "i-text" || active.type === "text")) {
+      setSelection(
+        active
+          ? {
+              id: ensureId(active),
+              kind: isText(active) ? "text" : active.type === "image" ? "image" : "other",
+              engrave: active.lcOriginal ? sanitizeEngrave(active.lcEngrave) : null,
+            }
+          : null
+      )
+      if (active && isText(active)) {
         setSelectedFont((active.fontFamily as string) ?? ENGRAVING_FONTS[0])
       }
     }
-    const onCleared = () => setSelected(null)
+    const onCleared = () => {
+      setSelected(null)
+      setSelection(null)
+    }
 
     canvas.on("object:added", onModified)
     canvas.on("object:modified", onModified)
@@ -345,13 +400,13 @@ export function LayoutEditorProvider({
     if (initialDesign && initialDesign.state_json) {
       editedRef.current = true
       skipHistoryRef.current = true
-      canvas.loadFromJSON(initialDesign.state_json as object).then(finish)
+      loadedRef.current = canvas.loadFromJSON(initialDesign.state_json as object).then(finish)
       const stateMaterial = (initialDesign.state_json as { materialOverlay?: Material2D }).materialOverlay
       if (stateMaterial && !plaque) setMeta({ material: stateMaterial })
     } else if (stored?.fabric) {
       editedRef.current = true
       skipHistoryRef.current = true
-      canvas.loadFromJSON(stored.fabric as object).then(() => {
+      loadedRef.current = canvas.loadFromJSON(stored.fabric as object).then(() => {
         if (stored.area) remapObjects(stored.area, safeAreaRef.current)
         finish()
       })
@@ -359,6 +414,9 @@ export function LayoutEditorProvider({
       finish()
     }
     setMeta({ productId: product.id, name })
+    const pending = pendingUploadRef.current
+    pendingUploadRef.current = null
+    if (pending) void uploadFile(pending)
 
     return () => {
       canvas.off("object:added", onModified)
@@ -427,37 +485,50 @@ export function LayoutEditorProvider({
     canvas.requestRenderAll()
   }
 
-  async function uploadLogo(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
+  /** SVG logos go on as-is; photos (PNG/JPG) are engraved by default and keep their original for re-engraving. */
+  async function uploadFile(file: File) {
     const canvas = getCanvas()
     const fabric = getFabric()
-    if (!file || !canvas || !fabric) return
-    if (!isAllowedLogo(file)) {
-      setValidationErrors(["Unsupported file type. Upload a PNG, JPG, or SVG."])
+    if (!canvas || !fabric) {
+      pendingUploadRef.current = file
       return
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setValidationErrors(["Logo exceeds 5MB. Please upload a smaller file."])
+    const heic = /\.(heic|heif)$/i.test(file.name) || /hei[cf]/i.test(file.type)
+    if (!heic && !isAllowedLogo(file)) {
+      setValidationErrors(["Unsupported file type. Upload a JPG, PNG or SVG."])
       return
     }
+    if (file.size > 15 * 1024 * 1024) {
+      setValidationErrors(["That file is over 15MB. Please upload a smaller version."])
+      return
+    }
+    setValidationErrors([])
     let url: string
-    if (file.type === "image/svg+xml") {
-      // Sanitize SVGs before use (strip scripts/handlers/external refs).
-      const raw = await file.text()
-      const clean = sanitizeSvg(raw)
-      url = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(clean)))}`
-    } else {
-      url = await new Promise<string>((resolve) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.readAsDataURL(file)
-      })
+    let original: string | undefined
+    try {
+      if (file.type === "image/svg+xml") {
+        // Sanitize SVGs before use (strip scripts/handlers/external refs).
+        const raw = await file.text()
+        const clean = sanitizeSvg(raw)
+        url = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(clean)))}`
+      } else {
+        setEngraving(true)
+        original = await prepareOriginal(file)
+        url = await renderEngraved(original, DEFAULT_ENGRAVE)
+      }
+    } catch (error) {
+      setValidationErrors([error instanceof PhotoError ? error.message : "We couldn't read that image. Try a JPG or PNG."])
+      return
+    } finally {
+      setEngraving(false)
     }
+    await loadedRef.current
     const area = safeAreaRef.current
     const img = await fabric.FabricImage.fromURL(url, { crossOrigin: "anonymous" })
     const imgLike = img as FabricObjectLike & { width?: number; height?: number }
     const naturalWidth = imgLike.width ?? 0
-    const fit = Math.min((area.width * 0.6) / Math.max(1, naturalWidth), (area.height * 0.8) / Math.max(1, imgLike.height ?? 1))
+    const share = original ? 0.9 : 0.6
+    const fit = Math.min((area.width * share) / Math.max(1, naturalWidth), (area.height * 0.9) / Math.max(1, imgLike.height ?? 1))
     if (fit < 1) img.scale(fit)
     img.set({
       left: area.x + area.width / 2,
@@ -465,12 +536,45 @@ export function LayoutEditorProvider({
       originX: "center",
       originY: "center",
     })
-    const id = ensureId(img as FabricObjectLike)
+    if (original) {
+      imgLike.lcOriginal = original
+      imgLike.lcEngrave = DEFAULT_ENGRAVE
+    }
+    const id = ensureId(imgLike)
     logoMetaRef.current[id] = { naturalWidth }
     canvas.add(img)
     canvas.setActiveObject(img)
     canvas.requestRenderAll()
+  }
+
+  async function uploadLogo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
     e.target.value = ""
+    if (file) await uploadFile(file)
+  }
+
+  function setEngrave(patch: Partial<EngraveParams>) {
+    const canvas = getCanvas()
+    const active = canvas?.getActiveObject() as (FabricObjectLike & { setSrc?: (src: string) => Promise<unknown> }) | undefined
+    if (!canvas || !active?.lcOriginal || !active.setSrc) return
+    const params = sanitizeEngrave({ ...sanitizeEngrave(active.lcEngrave), ...patch })
+    active.lcEngrave = params
+    setSelection((s) => (s ? { ...s, engrave: params } : s))
+    if (engraveTimer.current) clearTimeout(engraveTimer.current)
+    const gen = ++engraveGen.current
+    const original = active.lcOriginal
+    setEngraving(true)
+    engraveTimer.current = setTimeout(async () => {
+      try {
+        const url = await renderEngraved(original, params)
+        if (gen !== engraveGen.current) return
+        await active.setSrc!(url)
+        canvas.requestRenderAll()
+        snapshot()
+      } finally {
+        if (gen === engraveGen.current) setEngraving(false)
+      }
+    }, 160)
   }
 
   function applyFont(font: string) {
@@ -559,7 +663,10 @@ export function LayoutEditorProvider({
     if (!canvas) return null
     const objects = canvas.getObjects().map((o) => {
       const obj = o as FabricObjectLike & Record<string, unknown>
-      return { ...obj.toObject(["id"]), id: obj.id }
+      // The design API caps request bodies, so the saved record keeps the engraved
+      // image and its settings; the full original stays in this session's copy.
+      const { lcOriginal: _original, ...saved } = obj.toObject(CUSTOM_PROPS) as Record<string, unknown>
+      return { ...saved, id: obj.id, ...(obj.lcOriginal ? { lcSource: "photo" } : {}) }
     })
     const state = {
       ...buildDesign2DState(objects as never, { material, baseImageUrl: product.thumbnail ?? null }),
@@ -638,9 +745,16 @@ export function LayoutEditorProvider({
   saveRef.current = save
   const clearRef = useRef(clear)
   clearRef.current = clear
+  const uploadRef = useRef(uploadFile)
+  uploadRef.current = uploadFile
   useEffect(() => {
     if (!controllerRef) return
-    controllerRef.current = { flush, save: () => saveRef.current(), clear: () => clearRef.current() }
+    controllerRef.current = {
+      flush,
+      save: () => saveRef.current(),
+      clear: () => clearRef.current(),
+      upload: (file) => void uploadRef.current(file),
+    }
     return () => {
       controllerRef.current = null
     }
@@ -677,6 +791,15 @@ export function LayoutEditorProvider({
     saving,
     addText,
     uploadLogo,
+    selection,
+    setEngrave,
+    engraving,
+    deselect: () => {
+      const canvas = getCanvas()
+      canvas?.discardActiveObject()
+      canvas?.requestRenderAll()
+      setSelection(null)
+    },
     applyFont,
     applyColor,
     toggleStyle,
@@ -734,7 +857,7 @@ function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
   const layout = plaqueCanvasLayout(config)
   const { w, h, scale, originX, originY } = layout
   const outline = formOutline(config.form, w, h)
-  const rect = plateRect(config.form, w, h)
+  const rect = plateRect(config.form, w, h, config.pshape)
   const mark = emblem(config.form, w, h)
   const toPath = (points: [number, number][]) => points.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(4)} ${y.toFixed(4)}`).join(" ") + " Z"
   const borders = config.border === "none" ? [] : config.border === "double" ? [0.07, 0.095] : [0.075]
@@ -780,9 +903,11 @@ function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
         {config.emblem !== "none" ? (
           <circle cx="0" cy={mark.cy} r={mark.r} fill={`url(#metal-${uid})`} />
         ) : null}
-        <g transform={`translate(0 ${rect.cy})`}>
-          <path d={toPath(plateOutline(config.pshape, rect.width, rect.height))} fill={`url(#metal-${uid})`} />
-        </g>
+        {hasPlate(config) ? (
+          <g transform={`translate(0 ${rect.cy})`}>
+            <path d={toPath(plateOutline(config.pshape, rect.width, rect.height))} fill={`url(#metal-${uid})`} />
+          </g>
+        ) : null}
       </g>
     </svg>
   )
@@ -851,6 +976,109 @@ export function LayoutStage({ className }: { className?: string }) {
   )
 }
 
+export const UPLOAD_ACCEPT = "image/png,image/jpeg,image/svg+xml,.heic,.heif"
+
+const SLIDERS: { key: "contrast" | "detail" | "fade"; label: string }[] = [
+  { key: "contrast", label: "Contrast" },
+  { key: "detail", label: "Detail" },
+  { key: "fade", label: "Edge fade" },
+]
+
+/** Laser-engrave settings for the selected photo. */
+function PhotoEngraveControls({ params }: { params: EngraveParams }) {
+  const editor = useLayoutEditor()
+  const id = useId()
+  const darkWood = editor.plaque && !hasPlate(editor.plaque) && woodInk(editor.plaque.wood) === WOOD_ETCH
+  return (
+    <div className="flex flex-col gap-[0.9em]">
+      <div className="flex items-center justify-between gap-3">
+        <p className={groupLabel}>Photo engraving</p>
+        <span role="status" className="font-outfit text-[0.75em] text-[#6B635C]">
+          {editor.engraving ? "Engraving…" : ""}
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span id={`${id}-switch`} className="font-outfit text-[0.875em] text-[#131111]">
+          Engrave effect
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={params.enabled}
+          aria-labelledby={`${id}-switch`}
+          onClick={() => editor.setEngrave({ enabled: !params.enabled })}
+          className={cn(
+            "relative h-[1.6em] w-[2.9em] shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
+            params.enabled ? "bg-[#131111]" : "bg-[#131111]/20"
+          )}
+        >
+          <span
+            aria-hidden
+            className={cn(
+              "absolute top-[0.2em] size-[1.2em] rounded-full bg-[#FBFBF7] transition-[left] duration-150 motion-reduce:transition-none",
+              params.enabled ? "left-[1.5em]" : "left-[0.2em]"
+            )}
+          />
+        </button>
+      </div>
+      <div role="radiogroup" aria-label="Engrave style" className={cn("flex gap-[0.4em]", !params.enabled && "opacity-40")}>
+        {ENGRAVE_STYLES.map((s) => {
+          const on = s.id === params.style
+          return (
+            <button
+              key={s.id}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              disabled={!params.enabled}
+              onClick={() => editor.setEngrave({ style: s.id })}
+              className={cn(
+                "h-[2.3em] flex-1 rounded-full border font-outfit text-[0.75em] tracking-[0.06em] uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
+                on ? "border-[#131111] bg-[#131111] text-[#F2F1EF]" : "border-[#131111]/20 text-[#131111] hover:bg-[#131111]/5"
+              )}
+            >
+              {s.label}
+            </button>
+          )
+        })}
+      </div>
+      <div className={cn("flex flex-col gap-[0.4em]", !params.enabled && "opacity-40")}>
+        {SLIDERS.map((s) => (
+          <div key={s.key} className="flex items-center gap-[0.7em]">
+            <label htmlFor={`${id}-${s.key}`} className="w-[5.6em] shrink-0 font-outfit text-[0.8125em] text-[#131111]">
+              {s.label}
+            </label>
+            <input
+              id={`${id}-${s.key}`}
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              disabled={!params.enabled}
+              value={Math.round(params[s.key] * 100)}
+              onChange={(e) => editor.setEngrave({ [s.key]: Number(e.target.value) / 100 })}
+              className="h-[1.4em] min-w-0 flex-1 accent-[#131111]"
+            />
+          </div>
+        ))}
+      </div>
+      {darkWood ? (
+        <p className="m-0 font-outfit text-[0.75em] leading-[1.35] text-[#6B635C]">
+          Photos burn in best on light timber — try maple or oak.
+        </p>
+      ) : null}
+      {editor.validationErrors.length > 0 ? (
+        <p role="alert" className="m-0 font-outfit text-[0.75em] leading-[1.35] text-[#8A2D25]">
+          {editor.validationErrors[0]}
+        </p>
+      ) : null}
+      <button type="button" onClick={editor.deselect} className={cn(pillButton, "flex-none")}>
+        Done
+      </button>
+    </div>
+  )
+}
+
 const LAYERS_PER_PAGE = 3
 const smallButton =
   "flex size-[2.25em] shrink-0 items-center justify-center rounded-full border border-[#131111]/20 text-[#131111] hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
@@ -866,6 +1094,10 @@ export function LayoutComposePanel() {
   const current = Math.min(page, pages - 1)
   const visible = editor.layers.slice(current * LAYERS_PER_PAGE, current * LAYERS_PER_PAGE + LAYERS_PER_PAGE)
   const fileId = useId()
+
+  if (editor.selection?.kind === "image" && editor.selection.engrave) {
+    return <PhotoEngraveControls params={editor.selection.engrave} />
+  }
 
   return (
     <div className="flex flex-col gap-[1em]">
@@ -930,8 +1162,8 @@ export function LayoutComposePanel() {
           </button>
           <label className={cn(pillButton, "cursor-pointer focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#131111]")}>
             <ImagePlus className="size-[1.1em]" strokeWidth={1.5} aria-hidden />
-            Add logo
-            <input type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={editor.uploadLogo} className="sr-only" />
+            Add photo
+            <input type="file" accept={UPLOAD_ACCEPT} onChange={editor.uploadLogo} className="sr-only" />
           </label>
         </div>
       </div>

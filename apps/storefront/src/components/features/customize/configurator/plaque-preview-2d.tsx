@@ -5,6 +5,7 @@ import {
   getFont,
   getPlate,
   getWood,
+  hasPlate,
   inkFor,
   monogram,
   type LineKey,
@@ -130,14 +131,14 @@ export function PlaquePreview2D({
         {config.emblem !== "none" ? (
           <g>
             <circle cx="0" cy={markY} r={mark.r} fill={`url(#metal-${uid})`} />
-            {config.emblem === "star" ? <polygon points={starPoints(0, markY, mark.r * 0.62)} fill={ink} /> : null}
+            {config.emblem === "star" ? <polygon points={starPoints(0, markY, mark.r * 0.62)} fill={emblemInk} /> : null}
             {config.emblem === "monogram" ? (
               <text
                 x="0"
                 y={markY}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill={ink}
+                fill={emblemInk}
                 fontSize={mark.r * 0.8}
                 style={{ fontFamily: "var(--font-playfair)", fontStyle: "italic" }}
               >
@@ -150,7 +151,7 @@ export function PlaquePreview2D({
                 cy={markY}
                 r={mark.r * 0.62}
                 fill="none"
-                stroke={ink}
+                stroke={emblemInk}
                 strokeWidth={mark.r * 0.14}
                 strokeDasharray={`${mark.r * 0.2} ${mark.r * 0.08}`}
               />

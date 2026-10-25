@@ -1,20 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { Box, PenLine } from "lucide-react"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
 import { useCartStore } from "@/stores/cart-store"
 import { cn } from "@/lib/utils"
 
 export type StudioMode = "3d" | "2d"
 
-const MODES: { id: StudioMode; short: string; rest: string }[] = [
-  { id: "3d", short: "3D", rest: " Preview" },
-  { id: "2d", short: "2D", rest: " Layout" },
+const MODES: { id: StudioMode; label: string; hint: string; Icon: typeof Box }[] = [
+  { id: "3d", label: "3D Preview", hint: "Shape & materials", Icon: Box },
+  { id: "2d", label: "2D Design", hint: "Add photo & text", Icon: PenLine },
 ]
 
 /**
- * Overlay bar for the studio: wordmark home link, the 3D / 2D mode switch
- * (both modes share one state, so switching never leaves the page) and the cart.
+ * Overlay bar for the studio: wordmark home link, the primary 3D / 2D mode
+ * switch (both modes share one state, so switching never leaves the page) and
+ * the cart. On small screens the switch drops to its own full-width row.
  */
 export function StudioTopBar({
   mode,
@@ -32,36 +34,56 @@ export function StudioTopBar({
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const cartCount = mounted ? storeCount : 0
+  const refs = useRef<Partial<Record<StudioMode, HTMLButtonElement | null>>>({})
+
+  function onKey(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (!onModeChange || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return
+    e.preventDefault()
+    const next: StudioMode = mode === "3d" ? "2d" : "3d"
+    onModeChange(next)
+    refs.current[next]?.focus()
+  }
 
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 px-[1em] pt-[0.5em] sm:px-[1.25em] sm:pt-[0.75em]",
+        "pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-wrap items-center justify-between gap-x-3 gap-y-[0.5em] px-[1em] pt-[0.5em] sm:px-[1.25em] sm:pt-[0.75em]",
         className,
       )}
     >
       <HeroWordmark className="pointer-events-auto h-9 w-[5.5rem] shrink-0 [&_img]:brightness-0 focus-visible:outline-[#131111] lg:h-10 lg:w-[6.25rem]" />
       {onModeChange ? (
         <div
-          role="group"
+          role="radiogroup"
           aria-label="Studio mode"
-          className="pointer-events-auto flex rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 p-[0.2em] backdrop-blur-sm"
+          className="pointer-events-auto order-last flex w-full rounded-full border border-[#131111]/15 bg-[#FBFBF7]/92 p-[4px] shadow-[0_10px_30px_-18px_rgba(19,17,17,0.55)] backdrop-blur-sm md:absolute md:top-[0.75em] md:left-1/2 md:order-none md:w-auto md:-translate-x-1/2"
         >
           {MODES.map((m) => {
             const active = m.id === mode
             return (
               <button
                 key={m.id}
+                ref={(el) => {
+                  refs.current[m.id] = el
+                }}
                 type="button"
-                aria-pressed={active}
+                role="radio"
+                aria-checked={active}
+                tabIndex={active ? 0 : -1}
                 onClick={() => (active ? undefined : onModeChange(m.id))}
+                onKeyDown={onKey}
                 className={cn(
-                  "rounded-full px-[0.9em] py-[0.45em] font-outfit text-[11px] leading-none font-medium tracking-[0.1em] whitespace-nowrap uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] sm:text-[12px]",
-                  active ? "bg-[#131111] text-[#F2F1EF]" : "text-[#131111] hover:bg-[#131111]/5",
+                  "flex min-w-0 flex-1 items-center justify-center gap-[0.55em] rounded-full px-[1.1em] py-[0.5em] font-outfit whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] md:flex-none md:px-[1.4em]",
+                  active ? "bg-[#131111] text-[#F2F1EF]" : "text-[#131111] hover:bg-[#131111]/6",
                 )}
               >
-                {m.short}
-                <span className="sr-only sm:not-sr-only">{m.rest}</span>
+                <m.Icon className="size-[16px] shrink-0" strokeWidth={1.6} aria-hidden />
+                <span className="flex flex-col items-start leading-[1.1]">
+                  <span className="text-[13px] font-medium tracking-[0.02em] lg:text-[14px]">{m.label}</span>
+                  <span className={cn("text-[11px] tracking-[0.01em]", active ? "text-[#F2F1EF]/75" : "text-[#6B635C]")}>
+                    {m.hint}
+                  </span>
+                </span>
               </button>
             )
           })}
