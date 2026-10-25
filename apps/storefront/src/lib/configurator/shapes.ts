@@ -82,9 +82,13 @@ export function outlinePath(points: Point[], height: number, offsetX = 0, offset
   )
 }
 
-/** Plate on the face (centre y, width, height), above the bottom margin. */
-export function plateRect(form: FormId, w = PLAQUE_W, h = PLAQUE_H) {
-  const width = w * (form === "landscape" ? 0.62 : 0.72)
+/**
+ * Plate on the face (centre y, width, height), above the bottom margin. With no
+ * plate the same box is the engraving field burned into the wood, a little wider.
+ */
+export function plateRect(form: FormId, w = PLAQUE_W, h = PLAQUE_H, shape?: PlateShapeId) {
+  const bare = shape === "none"
+  const width = w * (form === "landscape" ? (bare ? 0.72 : 0.62) : bare ? 0.8 : 0.72)
   return { cy: h * (form === "landscape" ? 0.4 : 0.36), width, height: width * PLATE_ASPECT }
 }
 
@@ -116,7 +120,7 @@ export function plateOutline(shape: PlateShapeId, width: number, height: number)
 
 /** Share of the plate width engraving may use, so text stays clear of curved/notched ends. */
 export function plateTextWidth(shape: PlateShapeId): number {
-  return shape === "oval" ? 0.7 : shape === "ribbon" ? 0.76 : 0.86
+  return shape === "oval" ? 0.7 : shape === "ribbon" ? 0.76 : shape === "none" ? 0.94 : 0.86
 }
 
 /** Emblem roundel centre + radius, in the upper field of the face. */

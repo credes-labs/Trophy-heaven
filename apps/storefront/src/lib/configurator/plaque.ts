@@ -76,6 +76,7 @@ export const PLATE_SHAPES = [
   { id: "rect", label: "Rectangle" },
   { id: "oval", label: "Oval" },
   { id: "ribbon", label: "Ribbon" },
+  { id: "none", label: "No plate" },
 ] as const satisfies readonly Option<string>[]
 
 export const EMBLEMS = [
@@ -305,10 +306,25 @@ export const getPlate = (id: PlateId): PlateSpec => PLATES.find((p) => p.id === 
 export const getFont = (id: FontId): FontSpec => FONTS.find((f) => f.id === id) ?? FONTS[0]
 export const getFinish = (id: FinishId) => FINISHES.find((f) => f.id === id) ?? FINISHES[1]
 
-/** Engraving colour: the plate's natural cut colour or an explicit fill. */
+/** False when the engraving is burned straight into the wood (plate shape "No plate"). */
+export const hasPlate = (config: Pick<PlaqueConfig, "pshape">) => config.pshape !== "none"
+
+/** Laser burn on light timber; dark timber shows a pale etch instead. */
+export const WOOD_BURN = "#3b2414"
+export const WOOD_ETCH = "#e2cca4"
+
+function hexLuminance(hex: string) {
+  const n = parseInt(hex.slice(1), 16)
+  return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255
+}
+
+export const woodInk = (wood: WoodId) => (hexLuminance(getWood(wood).grain[0]) < 0.32 ? WOOD_ETCH : WOOD_BURN)
+
+/** Engraving colour: an explicit fill, else the plate's natural cut colour or the wood burn. */
 export function inkFor(config: PlaqueConfig): string {
   const fill = FILLS.find((f) => f.id === config.fill)
-  return fill && "color" in fill ? fill.color : getPlate(config.plate).ink
+  if (fill && "color" in fill) return fill.color
+  return hasPlate(config) ? getPlate(config.plate).ink : woodInk(config.wood)
 }
 
 /** The minimum a variant needs for size matching + pricing. */
@@ -363,7 +379,7 @@ export function summarizeConfig(config: PlaqueConfig) {
     wood: labelOf(WOODS, config.wood),
     finish: labelOf(FINISHES, config.finish),
     border: labelOf(BORDERS, config.border),
-    plate: labelOf(PLATES, config.plate),
+    plate: hasPlate(config) ? labelOf(PLATES, config.plate) : "None — engraved into the wood",
     plateShape: labelOf(PLATE_SHAPES, config.pshape),
     emblem: labelOf(EMBLEMS, config.emblem),
     font: labelOf(FONTS, config.font),
@@ -380,6 +396,8 @@ export type FaceLayout = {
   fabric: unknown
   /** Transparent PNG of the engraving safe area. */
   image: string
+  /** Safe area (2D canvas px) the composition was laid out in. */
+  area?: { x: number; y: number; width: number; height: number }
 }
 
 /** The option choices alone (no engraving copy), as saved with a design. */

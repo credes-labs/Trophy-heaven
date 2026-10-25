@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { PlaqueConfigurator } from "@/components/features/customize/configurator/plaque-configurator"
 import { getProductByHandle } from "@/lib/data/catalog"
-import { PLAQUE_HANDLE, parseConfig } from "@/lib/configurator/plaque"
+import { PLAQUE_HANDLE, parseConfig, sizeForVariant } from "@/lib/configurator/plaque"
 import { toPlaqueVariants } from "@/lib/configurator/variants"
 
 export const metadata: Metadata = {
@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/customize" },
 }
 
+const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)
+
 export default async function CustomizeLandingPage({
   searchParams,
 }: {
@@ -19,13 +21,27 @@ export default async function CustomizeLandingPage({
 }) {
   const [params, product] = await Promise.all([searchParams, getProductByHandle(PLAQUE_HANDLE)])
   const variants = toPlaqueVariants(product)
+  const config = parseConfig(params)
+  // A `variant` id (PDP links, saved 2D links) is the source of truth for size.
+  const size = sizeForVariant(variants, first(params.variant)) ?? config.size
 
   return (
     <EditorialShell className="h-dvh overflow-hidden">
       <PlaqueConfigurator
-        product={product ? { id: product.id, title: product.title ?? "Engraved plaque", handle: product.handle ?? PLAQUE_HANDLE } : null}
+        product={
+          product
+            ? {
+                id: product.id,
+                title: product.title ?? "Engraved plaque",
+                handle: product.handle ?? PLAQUE_HANDLE,
+                thumbnail: product.thumbnail ?? null,
+              }
+            : null
+        }
         variants={variants}
-        initialConfig={parseConfig(params)}
+        initialConfig={{ ...config, size }}
+        initialMode={first(params.mode) === "2d" ? "2d" : "3d"}
+        designId={first(params.design)}
       />
     </EditorialShell>
   )

@@ -3,6 +3,9 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Shop filters stick while the grid scrolls
+Inner pages now start below the transparent nav, so the shop breadcrumb no longer runs into the logo. The `/shop` filter column sticks beside the product grid, as the homepage Explore filters do, and scrolls on its own when it is taller than the screen. It also has even spacing and a smaller CLEAR FILTERS button. `/catalog` now opens the shop. → L2 WP-63
+
 ## 2026-10-25 — Nav dropdowns stay open on the way down
 The desktop nav menus no longer disappear while the pointer travels to them. The trigger and its panel now form one continuous hover area, with a short delay before opening and a forgiving delay before closing. Touch and keyboard support also improved. → L2 WP-62
 

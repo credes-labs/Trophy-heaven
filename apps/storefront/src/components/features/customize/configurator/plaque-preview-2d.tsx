@@ -56,7 +56,10 @@ export function PlaquePreview2D({
   const ink = inkFor(config)
   const lines = engravingLines(config)
   const { w, h } = faceDims(config.form)
-  const rect = plateRect(config.form, w, h)
+  const rect = plateRect(config.form, w, h, config.pshape)
+  const bare = !hasPlate(config)
+  // The emblem roundel is always metal, so it keeps the plate's cut colour.
+  const emblemInk = inkFor({ ...config, pshape: "rect" })
   const mark = emblem(config.form, w, h)
   const outline = formOutline(config.form, w, h)
   const face = outlinePath(outline, BASELINE)
@@ -154,7 +157,7 @@ export function PlaquePreview2D({
             ) : null}
           </g>
         ) : null}
-        <path d={platePath} fill={`url(#metal-${uid})`} />
+        {bare ? null : <path d={platePath} fill={`url(#metal-${uid})`} />}
         {custom ? (
           <image
             href={custom}

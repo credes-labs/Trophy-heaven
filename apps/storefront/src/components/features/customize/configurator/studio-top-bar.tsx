@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { useEffect, useState } from "react"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
 import { useCartStore } from "@/stores/cart-store"
 import { cn } from "@/lib/utils"
@@ -12,70 +12,60 @@ const MODES: { id: StudioMode; short: string; rest: string }[] = [
   { id: "2d", short: "2D", rest: " Layout" },
 ]
 
-function ModeLabel({ mode }: { mode: (typeof MODES)[number] }) {
-  return (
-    <>
-      {mode.short}
-      <span className="sr-only sm:not-sr-only">{mode.rest}</span>
-    </>
-  )
-}
-
 /**
- * Overlay bar shared by both studio modes: wordmark home link, the 3D / 2D mode
- * switch (links, so each mode keeps its own URL) and the cart.
+ * Overlay bar for the studio: wordmark home link, the 3D / 2D mode switch
+ * (both modes share one state, so switching never leaves the page) and the cart.
  */
 export function StudioTopBar({
   mode,
-  hrefs,
-  onNavigate,
+  onModeChange,
   className,
 }: {
   mode: StudioMode
-  /** Omit a mode to hide the switch (products without a 3D studio). */
-  hrefs: Partial<Record<StudioMode, string>>
-  /** Lets a mode hand its state over before leaving (may preventDefault and navigate itself). */
-  onNavigate?: (mode: StudioMode, event: React.MouseEvent<HTMLAnchorElement>) => void
+  /** Omit to hide the switch (products without a 3D studio). */
+  onModeChange?: (mode: StudioMode) => void
   className?: string
 }) {
-  const cartCount = useCartStore((s) => s.itemCount())
+  const storeCount = useCartStore((s) => s.itemCount())
   const setDrawerOpen = useCartStore((s) => s.setDrawerOpen)
-  const showSwitch = Boolean(hrefs["3d"] && hrefs["2d"])
+  // The cart can load before this subtree hydrates; render the server's 0 until mounted.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const cartCount = mounted ? storeCount : 0
 
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 px-[1em] pt-[0.5em] sm:px-[1.25em] sm:pt-[0.75em]",
+        "pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 px-[1em] pt-[0.5em] sm:px-[1.25em] sm:pt-[0.75em]",
         className,
       )}
     >
       <HeroWordmark className="pointer-events-auto h-9 w-[5.5rem] shrink-0 [&_img]:brightness-0 focus-visible:outline-[#131111] lg:h-10 lg:w-[6.25rem]" />
-      {showSwitch ? (
-        <nav
+      {onModeChange ? (
+        <div
+          role="group"
           aria-label="Studio mode"
           className="pointer-events-auto flex rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 p-[0.2em] backdrop-blur-sm"
         >
-          {MODES.map((m) =>
-            m.id === mode ? (
-              <span
+          {MODES.map((m) => {
+            const active = m.id === mode
+            return (
+              <button
                 key={m.id}
-                aria-current="page"
-                className="rounded-full bg-[#131111] px-[0.9em] py-[0.45em] font-outfit text-[11px] leading-none font-medium tracking-[0.1em] whitespace-nowrap text-[#F2F1EF] uppercase sm:text-[12px]"
+                type="button"
+                aria-pressed={active}
+                onClick={() => (active ? undefined : onModeChange(m.id))}
+                className={cn(
+                  "rounded-full px-[0.9em] py-[0.45em] font-outfit text-[11px] leading-none font-medium tracking-[0.1em] whitespace-nowrap uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] sm:text-[12px]",
+                  active ? "bg-[#131111] text-[#F2F1EF]" : "text-[#131111] hover:bg-[#131111]/5",
+                )}
               >
-                <ModeLabel mode={m} />
-              </span>
-            ) : (
-              <Link
-                key={m.id}
-                href={hrefs[m.id]!}
-                onClick={onNavigate ? (event) => onNavigate(m.id, event) : undefined}
-                className="rounded-full px-[0.9em] py-[0.45em] font-outfit text-[11px] leading-none font-medium tracking-[0.1em] whitespace-nowrap text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] sm:text-[12px]"
-              >
-                <ModeLabel mode={m} />
-              </Link>
-            ),
-          )}
-        </nav>
+                {m.short}
+                <span className="sr-only sm:not-sr-only">{m.rest}</span>
+              </button>
+            )
+          })}
+        </div>
       ) : null}
       <button
         type="button"

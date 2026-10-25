@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import type { HttpTypes } from "@medusajs/types"
 import { designApi, type DesignRecord } from "@/lib/design-client"
-import type { PlaqueConfig, PlaqueVariant } from "@/lib/configurator/plaque"
 
 const loadingFallback = (
   <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)] font-outfit text-[0.875em] tracking-[0.08em] text-[#6B635C] uppercase">
@@ -18,22 +17,17 @@ const Editor2D = dynamic(
   { ssr: false, loading: () => loadingFallback }
 )
 
-export type PlaqueContext = { config: PlaqueConfig; variants: PlaqueVariant[] }
-
 export function Editor2DLoader({
   product,
   initialDesign,
   designId,
   preferredVariantId,
-  plaque = null,
 }: {
   product: HttpTypes.StoreProduct
   initialDesign?: DesignRecord | null
   /** Saved design to resume (from /account/designs "Open"). Fetched client-side. */
   designId?: string
   preferredVariantId?: string
-  /** Set for the engraved plaque: the configuration shared with the 3D studio. */
-  plaque?: PlaqueContext | null
 }) {
   const [design, setDesign] = useState<DesignRecord | null>(initialDesign ?? null)
   const [ready, setReady] = useState(!designId)
@@ -59,5 +53,5 @@ export function Editor2DLoader({
   }, [designId])
 
   if (!ready) return loadingFallback
-  return <Editor2D product={product} initialDesign={design} preferredVariantId={preferredVariantId} plaque={plaque} />
+  return <Editor2D product={product} initialDesign={design} preferredVariantId={preferredVariantId} />
 }

@@ -17,7 +17,7 @@ export function readLayout(productId: string): FaceLayout | null {
     if (stored.productId !== productId || typeof stored.image !== "string" || !stored.image.startsWith("data:image/png")) {
       return null
     }
-    return { image: stored.image, fabric: stored.fabric ?? null }
+    return { image: stored.image, fabric: stored.fabric ?? null, area: stored.area }
   } catch {
     return null
   }

@@ -8,6 +8,7 @@ import { canvasTexture, roundedBox, useDisposable, woodTexture } from "@/lib/thr
 import { rng } from "@/lib/three/draw"
 import {
   engravingLines,
+  hasPlate,
   getFinish,
   getFont,
   getPlate,
@@ -253,13 +254,15 @@ export function PlaqueBody({ config, layoutImage }: { config: PlaqueConfig; layo
   const engraving = useEngravingTexture(config, layoutImage)
   const emblemMap = useEmblemTexture(config)
   const brushed = useDisposable(() => brushedTexture())
-  const rect = plateRect(config.form, w, h)
+  const rect = plateRect(config.form, w, h, config.pshape)
   const plateGeo = usePlateGeometry(config.pshape, rect.width, rect.height)
   const mark = emblem(config.form, w, h)
   const pinX = rect.width / 2 - 0.045
   const pinY = rect.height / 2 - 0.045
+  const bare = !hasPlate(config)
   const plateZ = front + 0.002
-  const plateFront = plateZ + 0.006
+  // No plate: the engraving sits on the wood itself, read as a burn.
+  const plateFront = bare ? front : plateZ + 0.006
   const metalInk = config.fill === "gold" || (config.fill === "natural" && config.plate === "black")
   const plateMaterial = (
     <meshStandardMaterial
@@ -295,17 +298,19 @@ export function PlaqueBody({ config, layoutImage }: { config: PlaqueConfig; layo
         </mesh>
       ) : null}
 
-      <mesh geometry={plateGeo} dispose={null} position={[0, rect.cy, plateZ]}>
-        {plateMaterial}
-      </mesh>
+      {bare ? null : (
+        <mesh geometry={plateGeo} dispose={null} position={[0, rect.cy, plateZ]}>
+          {plateMaterial}
+        </mesh>
+      )}
       <mesh position={[0, rect.cy, plateFront + 0.0008]}>
         <planeGeometry args={[rect.width * 0.96, rect.height * 0.96]} />
         <meshStandardMaterial
           map={engraving}
           transparent
           depthWrite={false}
-          metalness={metalInk ? 0.9 : 0.15}
-          roughness={metalInk ? 0.3 : 0.75}
+          metalness={metalInk ? 0.9 : bare ? 0 : 0.15}
+          roughness={metalInk ? 0.3 : bare ? 0.92 : 0.75}
           polygonOffset
           polygonOffsetFactor={-2}
         />

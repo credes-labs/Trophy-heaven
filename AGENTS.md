@@ -53,6 +53,10 @@ Meilisearch v1 via `docker-compose.yml`.
 - **axe + animations**: scroll-reveal sections measure mid-fade in axe runs and
   produce spurious color-contrast violations; the e2e spec scrolls the page and
   waits before analyzing. Keep that pattern.
+- **Inner-page header is a zero-height overlay**: `#main` is padded by
+ `--site-header-h` in `globals.css`, so pages must not add their own header clearance. A page root
+ with its own surface colour adds `.under-site-header`. Sticky columns need `overflow: clip`, not
+ `hidden`, on their ancestors (WP-63).
 - **Gold text on light backgrounds fails WCAG AA** — use `text-gold-dark`
   (`--color-gold-dark` in `globals.css`) for any text-sized gold on cream/champagne;
   `text-gold` is for dark surfaces and decorative icons only.
