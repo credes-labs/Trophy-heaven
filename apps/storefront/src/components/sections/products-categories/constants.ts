@@ -295,13 +295,25 @@ export const PRODUCTS_BY_TAB: Record<ProductTabId, CatalogProduct[]> = {
   ],
 }
 
+/** Procedural 3D pieces drawn by `category-canvas.tsx`, one per catalog photo. */
+export type FurnitureKind = "lounge" | "armchair" | "coffee" | "dining" | "side" | "shelf"
+
+export const FURNITURE_LABELS: Record<FurnitureKind, string> = {
+  lounge: "Walnut lounge chair with oatmeal cushions and brass-capped legs",
+  armchair: "Walnut armchair with taupe bouclé cushions",
+  coffee: "Oval oak coffee table with a brass fin",
+  dining: "Oval walnut dining table on tapered legs",
+  side: "Round fluted-glass side table on walnut legs",
+  shelf: "Walnut bookcase with brass shelves over a two-door cabinet",
+}
+
 export type CatalogCategory = {
   id: string
   label: string
   count: number
   href: string
-  images: readonly [string, string, string]
-  alts: readonly [string, string, string]
+  /** Large left piece, then the two small right pieces. */
+  pieces: readonly [FurnitureKind, FurnitureKind, FurnitureKind]
 }
 
 export const CATALOG_CATEGORIES: CatalogCategory[] = [
@@ -310,60 +322,35 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     label: "Chairs",
     count: 48,
     href: "/shop?category=furniture&sub=chairs",
-    images: [IMG.lounge, IMG.armchair, IMG.side],
-    alts: [
-      "Walnut lounge chair in a plaster living room",
-      "Bouclé armchair against a navy panelled wall",
-      "Glass side table beside a lounge chair",
-    ],
+    pieces: ["lounge", "armchair", "side"],
   },
   {
     id: "cabinets",
     label: "Cabinets",
     count: 32,
     href: "/shop?category=furniture&sub=cabinets",
-    images: [IMG.shelf, IMG.side, IMG.dining],
-    alts: [
-      "Brass-framed walnut bookshelf",
-      "Walnut cabinet behind a glass side table",
-      "Dining room credenza with a gold lamp",
-    ],
+    pieces: ["shelf", "side", "dining"],
   },
   {
     id: "shelves",
     label: "Shelves",
     count: 27,
     href: "/shop?category=furniture&sub=shelves",
-    images: [IMG.side, IMG.lounge, IMG.armchair],
-    alts: [
-      "Quiet bedside table with fluted glass",
-      "Lounge chair in a warm, low-lit room",
-      "Armchair as a bedroom reading seat",
-    ],
+    pieces: ["side", "lounge", "armchair"],
   },
   {
     id: "stools",
     label: "Stools",
     count: 21,
     href: "/shop?category=furniture&sub=stools",
-    images: [IMG.dining, IMG.coffee, IMG.lounge],
-    alts: [
-      "Dining setting with olive branches",
-      "Low table styled with a planter",
-      "Lounge chair beside an indoor tree",
-    ],
+    pieces: ["dining", "coffee", "lounge"],
   },
   {
     id: "tables",
     label: "Tables",
     count: 15,
     href: "/shop?category=furniture&sub=tables",
-    images: [IMG.coffee, IMG.dining, IMG.side],
-    alts: [
-      "Oval coffee table on a navy rug",
-      "Walnut dining table for eight",
-      "Round glass side table with brass clips",
-    ],
+    pieces: ["coffee", "dining", "side"],
   },
 ]
 

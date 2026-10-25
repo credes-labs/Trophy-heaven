@@ -6,7 +6,6 @@ import { ExploreSection } from "@/components/sections/explore-section"
 import { RecentWorkSection } from "@/components/sections/recent-work"
 import { CorporateBandSection } from "@/components/sections/corporate-band"
 import { MaterialsSection } from "@/components/sections/materials"
-import { VoicesSection } from "@/components/sections/voices"
 import { JournalRailSection } from "@/components/sections/journal-rail"
 import { SignupSection } from "@/components/sections/signup"
 
@@ -38,9 +37,6 @@ export default function HomePage() {
         </div>
         <div className="order-9 lg:order-none">
           <ExploreSection />
-        </div>
-        <div className="order-10 lg:order-none">
-          <VoicesSection />
         </div>
         <div className="order-11 lg:order-none">
           <CorporateBandSection />

@@ -3,6 +3,15 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-25 — Category furniture swaps smoothly and turns faster
+When a category changes, the old piece now sinks out of its slot while the new one eases in, instead of vanishing. Switching no longer redraws textures, so the swap no longer hitches. The pieces' idle sway is about twice as fast. → L2 WP-55 · [L3/041](L3/041-category-furniture-transitions.md)
+
+## 2026-10-25 — Homepage drops the client quotes
+“//in their words” (“What clients say after the ceremony.”) is unmounted from the homepage; “//for organisations” now follows “Explore the collection”. The component stays in the repo. → L2 WP-54
+
+## 2026-10-25 — Categories show 3D furniture instead of photos
+The `//categories` stage draws three procedural 3D pieces per category, with no backgrounds: lounge chair, bouclé armchair, oak coffee table, walnut dining table, fluted-glass side table, and bookcase, all modelled on the catalog photos. The pieces swap in when a category is picked. → L2 WP-52 · [L3/040](L3/040-category-furniture-3d.md)
+
 ## 2026-10-25 — Materials section is six 3D specimens
 “We name what we use.” keeps its eyebrow and headline. The text grid is now one shared WebGL canvas: walnut, brass, Belgian linen, teak, leather, and hand-loomed jute. Optical crystal and honed stone are gone from this section. → L2 WP-51 · [L3/039](L3/039-materials-specimens.md)
 
