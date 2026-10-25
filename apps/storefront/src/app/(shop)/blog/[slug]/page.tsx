@@ -98,7 +98,7 @@ export default async function BlogPostPage({ params }: Props) {
     .join(" · ")
 
   return (
-    <article>
+    <EditorialShell>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <EditorialShell>
+      <article>
         <section className="relative overflow-hidden border-b border-[#131111]/10">
           <EditorialFrame className="pb-[clamp(2.5rem,6vw,5em)]">
             <EditorialTextLink href="/blog">← Journal</EditorialTextLink>
@@ -212,7 +212,7 @@ export default async function BlogPostPage({ params }: Props) {
             <JournalSubscribe />
           </div>
         </EditorialFrame>
-      </EditorialShell>
-    </article>
+      </article>
+    </EditorialShell>
   )
 }

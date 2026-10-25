@@ -262,7 +262,7 @@ function StudioTabs<Id extends string>({
     refs.current[next]?.focus()
   }
   return (
-    <div role="tablist" aria-label={label} className="flex gap-3 border-b border-[#131111]/10 pe-11">
+    <div role="tablist" aria-label={label} className="flex gap-x-3 border-b border-[#131111]/10 pe-11">
       {tabs.map((t, index) => {
         const selected = t.id === value
         return (
@@ -280,7 +280,7 @@ function StudioTabs<Id extends string>({
             onClick={() => onChange(t.id)}
             onKeyDown={(e) => onKey(e, index)}
             className={cn(
-              "-mb-px min-w-0 flex-1 border-b-[1.5px] px-1.5 pt-2.5 pb-2.5 font-outfit text-[0.6875em] font-medium tracking-[0.08em] whitespace-nowrap uppercase transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#131111]",
+              "-mb-px shrink-0 border-b-[1.5px] px-0.5 pt-2.5 pb-2.5 font-outfit text-[0.6875em] font-medium tracking-[0.06em] whitespace-nowrap uppercase transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#131111]",
               selected ? "border-[#131111] text-[#131111]" : "border-transparent text-[#6B635C] hover:text-[#131111]"
             )}
           >

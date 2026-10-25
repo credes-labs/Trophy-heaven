@@ -3,6 +3,12 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-26 — Plaque studio is one fullscreen screen
+`/customize` keeps the plaque in a fixed viewport: icon-only 2D/3D, photos engraved on the wood or the plate, no metal when “No plate” is chosen, and a looser options panel that still does not scroll. Size and the other finishes stay on this URL. → L2 WP-65 · [L3/045](L3/045-customize-studio.md)
+
+## 2026-10-26 - Seamless inner-page headers and the auth chair sheet
+`EditorialShell` and the account shell now paint `#F2F1EF` behind the transparent nav, removing the body-colour strip on /about, /blog, /contact and the account pages. Login and register gain the supplied nine-view barrel-armchair technical sheet on the right at ≥1280px. → L2 WP-66 · [L3/046](L3/046-seamless-headers-auth-chair-sheet.md)
+
 ## 2026-10-26 - Catalogue hero becomes a turning silhouette grid
 The `/shop` hero is now the supplied transparent mosaic: 15 thin-lined boxes with procedural furniture turning on a turntable, drawn on the catalogue's `#F2F1EF` surface with `#131111` hairlines. Filters still fold it away. → L2 WP-64 · [L3/044](L3/044-shop-silhouette-hero.md)
 
