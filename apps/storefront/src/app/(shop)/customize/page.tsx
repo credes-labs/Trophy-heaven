@@ -1,13 +1,15 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { SimplePageHero } from "@/components/layout/editorial/simple-page-hero"
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
-import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
+import { PlaqueConfigurator } from "@/components/features/customize/configurator/plaque-configurator"
+import { getProductByHandle } from "@/lib/data/catalog"
+import { variantInStock } from "@/lib/product-filters"
+import { PLAQUE_HANDLE, parseConfig, type PlaqueVariant } from "@/lib/configurator/plaque"
 
 export const metadata: Metadata = {
   title: "Design Studio",
   description:
-    "Design your trophy in the browser with Legacy Crafts' 2D and 3D studio. Approve a render before we cut.",
+    "Compose an engraved plaque in 3D — choose the form, timber, plate and lettering, read your engraving at size, and share the design before we cut.",
   alternates: { canonical: "/customize" },
 }
 
@@ -29,19 +31,29 @@ const TEMPLATES = [
   },
 ] as const
 
-export default function CustomizeLandingPage() {
+export default async function CustomizeLandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const [params, product] = await Promise.all([searchParams, getProductByHandle(PLAQUE_HANDLE)])
+  const sizeOptionId = product?.options?.find((o) => /size/i.test(o.title ?? ""))?.id
+  const variants: PlaqueVariant[] = (product?.variants ?? []).map((v) => ({
+    id: v.id,
+    sizeLabel:
+      v.options?.find((o) => o.option_id === sizeOptionId)?.value ?? v.options?.[0]?.value ?? v.title ?? "",
+    amount: v.calculated_price?.calculated_amount ?? null,
+    currency: v.calculated_price?.currency_code ?? "inr",
+    inStock: variantInStock(v),
+  }))
+
   return (
     <EditorialShell>
-      <SimplePageHero
-        eyebrow="Design studio"
-        watermark="design"
-        title="See it before you commission it."
-        body="Open a template, place your engraving, and approve a render of the real trophy — so the first piece you hold is the one you signed off."
-      >
-        <EditorialCtaLink href="/shop?category=trophies&customizable=1">
-          See customisable trophies
-        </EditorialCtaLink>
-      </SimplePageHero>
+      <PlaqueConfigurator
+        product={product ? { id: product.id, title: product.title ?? "Engraved plaque", handle: product.handle ?? PLAQUE_HANDLE } : null}
+        variants={variants}
+        initialConfig={parseConfig(params)}
+      />
       <EditorialFrame>
         <h2 className="m-0 font-outfit text-[clamp(1.5em,3vw,2.25em)] font-normal tracking-[-0.03em] text-balance text-[#131111]">
           Start from a piece

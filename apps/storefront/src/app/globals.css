@@ -634,6 +634,16 @@
   --duration-move: 400ms;
 }
 
+/* Height of the overlay inner-page nav (`SiteHeader`); first sections pad by it. */
+:root {
+  --site-header-h: 4.25rem;
+}
+@media (min-width: 64rem) {
+  :root {
+    --site-header-h: 5rem;
+  }
+}
+
 @keyframes fade {
   from {
     filter: blur(3px);
