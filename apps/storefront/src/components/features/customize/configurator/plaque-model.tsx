@@ -7,6 +7,7 @@ import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 import { canvasTexture, roundedBox, useDisposable, woodTexture } from "@/lib/three/procedural"
 import { rng } from "@/lib/three/draw"
 import {
+  artworkOnWood,
   engravingLines,
   hasPlate,
   getFinish,
@@ -22,6 +23,7 @@ import {
   type PlateShapeId,
   type WoodId,
 } from "@/lib/configurator/plaque"
+import { FACE_ART_INSET } from "@/lib/configurator/layout-geometry"
 import {
   emblem,
   faceDims,
@@ -182,7 +184,8 @@ function useEngravingTexture(config: PlaqueConfig, layoutImage: string | null) {
   const ink = inkFor(config)
   const widthRatio = plateTextWidth(config.pshape)
   const align = config.align
-  const custom = config.face === "custom" ? layoutImage : null
+  const burn = !hasPlate(config) && config.fill === "natural"
+  const custom = config.face === "custom" && !artworkOnWood(config) ? layoutImage : null
 
   useEffect(() => {
     let cancelled = false
@@ -204,7 +207,7 @@ function useEngravingTexture(config: PlaqueConfig, layoutImage: string | null) {
       const family = resolveFontFamily(font.cssVar)
       const draw = () => {
         if (cancelled) return
-        drawEngraving(ctx, { title, name, detail }, font, family, ink, { align, widthRatio })
+        drawEngraving(ctx, { title, name, detail }, font, family, ink, { align, widthRatio, burn })
         commit()
       }
       draw()
@@ -213,9 +216,76 @@ function useEngravingTexture(config: PlaqueConfig, layoutImage: string | null) {
     return () => {
       cancelled = true
     }
-  }, [texture, title, name, detail, font, ink, align, widthRatio, custom, invalidate])
+  }, [texture, title, name, detail, font, ink, align, widthRatio, burn, custom, invalidate])
 
   return texture
+}
+
+/** Face-shaped decal: the 2D export is drawn into the same inset the canvas uses. */
+function useWoodArtTexture(form: FormId, layoutImage: string | null) {
+  const invalidate = useThree((s) => s.invalidate)
+  const { w, h } = faceDims(form)
+  const height = Math.max(1, Math.round(1024 * (h / w)))
+  const texture = useMemo(() => {
+    const canvas = document.createElement("canvas")
+    canvas.width = 1024
+    canvas.height = height
+    const map = new THREE.CanvasTexture(canvas)
+    map.colorSpace = THREE.SRGBColorSpace
+    map.anisotropy = 8
+    return map
+  }, [height])
+  useEffect(() => () => texture.dispose(), [texture])
+
+  useEffect(() => {
+    const canvas = texture.image as HTMLCanvasElement
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    let cancelled = false
+    const paint = (image?: CanvasImageSource) => {
+      if (cancelled) return
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      if (image) {
+        const m = FACE_ART_INSET
+        ctx.drawImage(
+          image,
+          canvas.width * m,
+          canvas.height * m,
+          canvas.width * (1 - m * 2),
+          canvas.height * (1 - m * 2)
+        )
+      }
+      texture.needsUpdate = true
+      invalidate()
+    }
+    if (!layoutImage) {
+      paint()
+      return
+    }
+    const image = new Image()
+    image.onload = () => paint(image)
+    image.src = layoutImage
+    return () => {
+      cancelled = true
+    }
+  }, [texture, layoutImage, invalidate])
+
+  return texture
+}
+
+function useArtGeometry(form: FormId) {
+  return useGeometry(() => {
+    const { w, h } = faceDims(form)
+    const geometry = new THREE.ShapeGeometry(toShape(formOutline(form, w, h)), 8)
+    const pos = geometry.attributes.position
+    const uv = new Float32Array(pos.count * 2)
+    for (let i = 0; i < pos.count; i++) {
+      uv[i * 2] = (pos.getX(i) + w / 2) / w
+      uv[i * 2 + 1] = pos.getY(i) / h
+    }
+    geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2))
+    return geometry
+  }, [form])
 }
 
 function useEmblemTexture(config: PlaqueConfig) {
@@ -252,7 +322,10 @@ export function PlaqueBody({ config, layoutImage }: { config: PlaqueConfig; layo
   const finish = getFinish(config.finish)
   const plate = getPlate(config.plate)
   const map = getWoodTexture(config.wood)
+  const onWoodArt = Boolean(layoutImage) && config.face === "custom" && artworkOnWood(config)
   const engraving = useEngravingTexture(config, layoutImage)
+  const woodArt = useWoodArtTexture(config.form, onWoodArt ? layoutImage : null)
+  const artGeo = useArtGeometry(config.form)
   const emblemMap = useEmblemTexture(config)
   const brushed = useDisposable(() => brushedTexture())
   const rect = plateRect(config.form, w, h, config.pshape)
@@ -299,11 +372,26 @@ export function PlaqueBody({ config, layoutImage }: { config: PlaqueConfig; layo
         </mesh>
       ) : null}
 
+      {onWoodArt ? (
+        <mesh geometry={artGeo} dispose={null} position={[0, 0, front + 0.0015]}>
+          <meshStandardMaterial
+            map={woodArt}
+            transparent
+            depthWrite={false}
+            roughness={0.92}
+            metalness={0}
+            polygonOffset
+            polygonOffsetFactor={-1}
+          />
+        </mesh>
+      ) : null}
+
       {bare ? null : (
         <mesh geometry={plateGeo} dispose={null} position={[0, rect.cy, plateZ]}>
           {plateMaterial}
         </mesh>
       )}
+      {onWoodArt ? null : (
       <mesh position={[0, rect.cy, plateFront + 0.0008]}>
         <planeGeometry args={[rect.width * 0.96, rect.height * 0.96]} />
         <meshStandardMaterial
@@ -316,6 +404,7 @@ export function PlaqueBody({ config, layoutImage }: { config: PlaqueConfig; layo
           polygonOffsetFactor={-2}
         />
       </mesh>
+      )}
       {config.pshape === "rect"
         ? [
             [-pinX, -pinY],

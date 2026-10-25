@@ -31,6 +31,7 @@ import { isAllowedLogo, sanitizeSvg } from "@/lib/sanitize"
 import { cn } from "@/lib/utils"
 import { drawWood } from "@/lib/three/draw"
 import {
+  artworkOnWood,
   configOptions,
   engravingLines,
   getFont,
@@ -40,10 +41,12 @@ import {
   inkFor,
   woodInk,
   WOOD_ETCH,
+  type ArtId,
   type FaceLayout,
   type LineKey,
   type PlaqueConfig,
 } from "@/lib/configurator/plaque"
+import { artworkClipPath, plaqueCanvasLayout, remapRect, type Rect } from "@/lib/configurator/layout-geometry"
 import {
   DEFAULT_ENGRAVE,
   ENGRAVE_STYLES,
@@ -52,8 +55,8 @@ import {
 } from "@/lib/configurator/engrave"
 import { PhotoError, prepareOriginal, renderEngraved } from "@/lib/configurator/engrave-image"
 import { emblem, formOutline, insetOutline, plateOutline, plateRect } from "@/lib/configurator/shapes"
-import { plaqueCanvasLayout, remapRect, type Rect } from "@/lib/configurator/layout-geometry"
 import { readLayout } from "@/lib/configurator/layout-store"
+import { ArtworkPlacement } from "../configurator/artwork-placement"
 import { SwatchGroup, type SwatchOption } from "../configurator/swatch-group"
 
 type FabricObjectLike = FabricObject & {
@@ -103,6 +106,8 @@ export type LayoutController = {
   clear: () => void
   /** Places a photo/logo (queued until the canvas is ready). */
   upload: (file: File) => void
+  /** True when the canvas has engraving text or an uploaded image. */
+  hasContent: () => boolean
 }
 
 type Layer = { id: string; label: string; visible: boolean }
@@ -129,6 +134,7 @@ type LayoutEditorValue = {
   selection: LayoutSelection | null
   /** Re-engraves the selected photo with these settings. */
   setEngrave: (patch: Partial<EngraveParams>) => void
+  setArt: (art: ArtId) => void
   engraving: boolean
   deselect: () => void
   applyFont: (font: string) => void
@@ -167,6 +173,7 @@ export function LayoutEditorProvider({
   plaque = null,
   initialDesign = null,
   onLayoutChange,
+  onArtChange,
   controllerRef,
   children,
 }: {
@@ -176,6 +183,7 @@ export function LayoutEditorProvider({
   plaque?: PlaqueConfig | null
   initialDesign?: DesignRecord | null
   onLayoutChange?: (layout: FaceLayout | null) => void
+  onArtChange?: (art: ArtId) => void
   controllerRef?: RefObject<LayoutController | null>
   children: ReactNode
 }) {
@@ -220,9 +228,10 @@ export function LayoutEditorProvider({
 
   const form = plaque?.form
   const pshape = plaque?.pshape
+  const art = plaque?.art
   const safeArea = useMemo<Rect>(
-    () => (form && pshape ? plaqueCanvasLayout({ form, pshape }).safeArea : DEFAULT_SAFE_AREA),
-    [form, pshape]
+    () => (form && pshape ? plaqueCanvasLayout({ form, pshape, art }).safeArea : DEFAULT_SAFE_AREA),
+    [form, pshape, art]
   )
   const safeAreaRef = useRef(safeArea)
   const tint = plaque ? "" : (MATERIALS_2D.find((m) => m.value === material)?.tint ?? "#ffffff")
@@ -339,6 +348,7 @@ export function LayoutEditorProvider({
         fontStyle: row.key === "name" ? font.style : "normal",
         charSpacing: row.caps ? 160 : 0,
         fill: inkFor(seed),
+        opacity: !hasPlate(seed) && seed.fill === "natural" ? 0.82 : 1,
         textAlign: left ? "left" : "center",
       }) as IText & FabricObjectLike
       ensureId(text)
@@ -429,13 +439,32 @@ export function LayoutEditorProvider({
     }
   }, [ready])
 
-  // Form / plate shape changed in 3D: carry an edited composition onto the new plate.
+  // Form, plate or artwork placement changed: carry the composition, and let a photo cover the wood.
   useEffect(() => {
     const previous = safeAreaRef.current
     safeAreaRef.current = safeArea
     if (!ready || !editedRef.current) return
     remapObjects(previous, safeArea)
-    if (getCanvas()?.getObjects().length) snapshot()
+    const canvas = getCanvas()
+    const grew = safeArea.width * safeArea.height > previous.width * previous.height * 1.35
+    if (canvas && grew) {
+      for (const obj of canvas.getObjects()) {
+        const item = obj as FabricObjectLike
+        if (item.type !== "image" || !item.lcOriginal) continue
+        const scale = Math.max(safeArea.width / Math.max(1, item.width ?? 1), safeArea.height / Math.max(1, item.height ?? 1))
+        item.set({
+          originX: "center",
+          originY: "center",
+          left: safeArea.x + safeArea.width / 2,
+          top: safeArea.y + safeArea.height / 2,
+          scaleX: scale,
+          scaleY: scale,
+        })
+        item.setCoords()
+      }
+      canvas.requestRenderAll()
+    }
+    if (canvas?.getObjects().length) snapshot()
   }, [safeArea, ready, remapObjects, snapshot, getCanvas])
 
   // Untouched canvas: keep it in step with the 3D engraving lines, lettering and plate.
@@ -477,6 +506,7 @@ export function LayoutEditorProvider({
       fontFamily: selectedFont,
       fontSize: plaque ? Math.round(area.height * 0.22) : 48,
       fill: fillColor,
+      opacity: plaque && !hasPlate(plaque) && plaque.fill === "natural" ? 0.82 : 1,
       textAlign: "center",
     }) as IText & FabricObjectLike
     ensureId(text)
@@ -527,9 +557,14 @@ export function LayoutEditorProvider({
     const img = await fabric.FabricImage.fromURL(url, { crossOrigin: "anonymous" })
     const imgLike = img as FabricObjectLike & { width?: number; height?: number }
     const naturalWidth = imgLike.width ?? 0
+    const onWood = Boolean(plaqueRef.current && artworkOnWood(plaqueRef.current))
     const share = original ? 0.9 : 0.6
-    const fit = Math.min((area.width * share) / Math.max(1, naturalWidth), (area.height * 0.9) / Math.max(1, imgLike.height ?? 1))
-    if (fit < 1) img.scale(fit)
+    const baseW = Math.max(1, naturalWidth)
+    const baseH = Math.max(1, imgLike.height ?? 1)
+    const fit = onWood && original
+      ? Math.max(area.width / baseW, area.height / baseH)
+      : Math.min((area.width * share) / baseW, (area.height * 0.9) / baseH)
+    if (onWood || fit < 1) img.scale(fit)
     img.set({
       left: area.x + area.width / 2,
       top: area.y + area.height / 2,
@@ -754,11 +789,21 @@ export function LayoutEditorProvider({
       save: () => saveRef.current(),
       clear: () => clearRef.current(),
       upload: (file) => void uploadRef.current(file),
+      hasContent: () => {
+        const canvas = getCanvas()
+        if (!canvas) return false
+        return canvas.getObjects().some((o) => {
+          if (o.visible === false) return false
+          const obj = o as FabricObjectLike
+          if (isText(obj)) return Boolean((obj.text ?? "").trim())
+          return obj.type === "image"
+        })
+      },
     }
     return () => {
       controllerRef.current = null
     }
-  }, [controllerRef, flush])
+  }, [controllerRef, flush, getCanvas])
 
   async function loadGallery() {
     try {
@@ -793,6 +838,7 @@ export function LayoutEditorProvider({
     uploadLogo,
     selection,
     setEngrave,
+    setArt: (next) => onArtChange?.(next),
     engraving,
     deselect: () => {
       const canvas = getCanvas()
@@ -848,8 +894,16 @@ const METAL_STOPS = (color: string) => [
   `color-mix(in srgb, ${color} 60%, black)`,
 ]
 
-/** The plaque drawn at 2D-canvas scale under the transparent Fabric layer: face, grain, inlay, emblem and plate. */
-function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
+/** The plaque drawn at 2D-canvas scale. `ground` is the timber; `metal` is the plate and emblem drawn above a wood-covering photo. */
+function PlaqueFaceArt({
+  config,
+  layer = "full",
+  className,
+}: {
+  config: PlaqueConfig
+  layer?: "full" | "ground" | "metal"
+  className?: string
+}) {
   const uid = useId().replace(/:/g, "")
   const [grain, setGrain] = useState<string | null>(null)
   const wood = getWood(config.wood)
@@ -862,6 +916,8 @@ function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
   const toPath = (points: [number, number][]) => points.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(4)} ${y.toFixed(4)}`).join(" ") + " Z"
   const borders = config.border === "none" ? [] : config.border === "double" ? [0.07, 0.095] : [0.075]
   const [light, mid, dark] = METAL_STOPS(plate.color)
+  const showGround = layer !== "metal"
+  const showMetal = layer !== "ground"
 
   useEffect(() => {
     const canvas = document.createElement("canvas")
@@ -873,7 +929,7 @@ function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
   }, [wood])
 
   return (
-    <svg viewBox={`0 0 ${CANVAS_SIZE} ${CANVAS_SIZE}`} className="absolute inset-0 size-full" aria-hidden>
+    <svg viewBox={`0 0 ${CANVAS_SIZE} ${CANVAS_SIZE}`} className={cn("absolute inset-0 size-full", className)} aria-hidden>
       <defs>
         <pattern id={`grain-${uid}`} patternUnits="userSpaceOnUse" width="180" height="180">
           <rect width="180" height="180" fill={wood.grain[0]} />
@@ -889,8 +945,9 @@ function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
         </filter>
       </defs>
       <g transform={`translate(${originX} ${originY}) scale(${scale} ${-scale})`}>
-        <path d={toPath(outline)} fill={`url(#grain-${uid})`} filter={`url(#lift-${uid})`} />
-        {borders.map((margin) => (
+        {showGround ? <path d={toPath(outline)} fill={`url(#grain-${uid})`} filter={`url(#lift-${uid})`} /> : null}
+        {showGround
+          ? borders.map((margin) => (
           <path
             key={margin}
             d={toPath(insetOutline(outline, w, h, margin))}
@@ -899,11 +956,12 @@ function PlaqueFaceArt({ config }: { config: PlaqueConfig }) {
             strokeWidth={margin > 0.09 ? 1.5 : 3}
             vectorEffect="non-scaling-stroke"
           />
-        ))}
-        {config.emblem !== "none" ? (
+        ))
+          : null}
+        {showMetal && config.emblem !== "none" ? (
           <circle cx="0" cy={mark.cy} r={mark.r} fill={`url(#metal-${uid})`} />
         ) : null}
-        {hasPlate(config) ? (
+        {showMetal && hasPlate(config) ? (
           <g transform={`translate(0 ${rect.cy})`}>
             <path d={toPath(plateOutline(config.pshape, rect.width, rect.height))} fill={`url(#metal-${uid})`} />
           </g>
@@ -942,19 +1000,28 @@ export function LayoutStage({ className }: { className?: string }) {
           className={cn("absolute top-0 left-0", editor.plaque ? null : "overflow-hidden rounded-[0.25em] shadow-[0_18px_40px_-24px_rgba(43,29,16,0.55)]")}
           style={{ width: CANVAS_SIZE, height: CANVAS_SIZE, transform: `scale(${scale})`, transformOrigin: "0 0" }}
         >
-          {editor.plaque ? <PlaqueFaceArt config={editor.plaque} /> : null}
-          {/* Safe-area guide overlay (FR-2D-9) */}
+          {editor.plaque ? (
+            <PlaqueFaceArt config={editor.plaque} layer={artworkOnWood(editor.plaque) ? "ground" : "full"} />
+          ) : null}
           <div
-            className="pointer-events-none absolute z-10 rounded-[2px] border-2 border-dashed border-[#131111]/40"
+            className="absolute inset-0 z-10"
+            style={editor.plaque ? { clipPath: `path('${artworkClipPath(editor.plaque)}')` } : undefined}
+          >
+            <canvas ref={editor.elRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+          </div>
+          {editor.plaque && artworkOnWood(editor.plaque) ? (
+            <PlaqueFaceArt config={editor.plaque} layer="metal" className="pointer-events-none z-20" />
+          ) : null}
+          <div
+            className="pointer-events-none absolute z-30 rounded-[2px] border-2 border-dashed border-[#131111]/40"
             style={{ left: area.x, top: area.y, width: area.width, height: area.height }}
           />
-          <canvas ref={editor.elRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
         </div>
       </div>
 
       <div className="absolute inset-x-0 bottom-[0.75em] flex items-center justify-between gap-3 px-[1em] sm:px-[1.25em]">
         <p className="m-0 hidden font-outfit text-[0.75em] tracking-[0.08em] text-[#6B635C] uppercase sm:block">
-          Engraving stays inside the dashed area
+          {editor.plaque && artworkOnWood(editor.plaque) ? "Photo is engraved across the wood" : "Engraving stays inside the dashed area"}
         </p>
         <div className="ml-auto flex items-center gap-2">
           <button type="button" className={roundControl} aria-label="Undo" onClick={editor.undo} disabled={!editor.canUndo}>
@@ -990,7 +1057,14 @@ function PhotoEngraveControls({ params }: { params: EngraveParams }) {
   const id = useId()
   const darkWood = editor.plaque && !hasPlate(editor.plaque) && woodInk(editor.plaque.wood) === WOOD_ETCH
   return (
-    <div className="flex flex-col gap-[0.9em]">
+    <div className="flex flex-col gap-[0.7em]">
+      {editor.plaque ? (
+        hasPlate(editor.plaque) ? (
+          <ArtworkPlacement value={editor.plaque.art} onChange={editor.setArt} />
+        ) : (
+          <p className="m-0 font-outfit text-[0.75em] leading-[1.35] text-[#6B635C]">No metal plate — engraving and photos sit in the wood.</p>
+        )
+      ) : null}
       <div className="flex items-center justify-between gap-3">
         <p className={groupLabel}>Photo engraving</p>
         <span role="status" className="font-outfit text-[0.75em] text-[#6B635C]">
@@ -1100,8 +1174,15 @@ export function LayoutComposePanel() {
   }
 
   return (
-    <div className="flex flex-col gap-[1em]">
-      <div className="flex flex-col gap-[0.55em]">
+    <div className="flex flex-col gap-[0.85em]">
+      {editor.plaque ? (
+        hasPlate(editor.plaque) ? (
+          <ArtworkPlacement value={editor.plaque.art} onChange={editor.setArt} />
+        ) : (
+          <p className="m-0 font-outfit text-[0.75em] leading-[1.35] text-[#6B635C]">No metal plate — engraving and photos sit in the wood.</p>
+        )
+      ) : null}
+      <div className="flex flex-col gap-[0.45em]">
         <p className={groupLabel}>Text</p>
         <div className="flex items-center gap-[0.4em]">
           <label className="sr-only" htmlFor={`${fileId}-font`}>

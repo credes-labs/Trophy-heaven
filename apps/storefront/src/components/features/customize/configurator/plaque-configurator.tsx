@@ -37,6 +37,8 @@ import {
   getPlate,
   getWood,
   hasEngraving,
+  artworkOnWood,
+  hasPlate,
   parseConfig,
   resolveVariant,
   serializeConfig,
@@ -56,6 +58,7 @@ import {
   LayoutStage,
   type LayoutController,
 } from "../layout/layout-editor"
+import { ArtworkPlacement } from "./artwork-placement"
 import { PlaqueStage } from "./plaque-stage"
 import { StudioTopBar, type StudioMode } from "./studio-top-bar"
 import { SwatchGroup, type SwatchOption } from "./swatch-group"
@@ -77,8 +80,8 @@ const TABS_3D = [
   { id: "shape", label: "Shape" },
   { id: "wood", label: "Wood" },
   { id: "plate", label: "Plate" },
-  { id: "text", label: "Text" },
-  { id: "style", label: "Style" },
+  { id: "engraving", label: "Engraving" },
+  { id: "display", label: "Display" },
 ] as const
 const TABS_2D = [
   { id: "compose", label: "Compose" },
@@ -102,11 +105,11 @@ const FINISH_SHEEN: Record<(typeof FINISHES)[number]["id"], string> = {
   gloss: "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.08) 38%, rgba(255,255,255,0) 60%)",
 }
 
-const ICON = "h-[1.9em] w-[1.9em]"
-const panelX = "px-[clamp(1.25rem,2.5vw,2.25em)]"
+const ICON = "h-[1.7em] w-[1.7em]"
+const panelX = "px-5 lg:px-6"
 const ringFocus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 const roundButton = cn(
-  "flex size-[3em] shrink-0 items-center justify-center rounded-full border border-[#131111]/20 text-[#131111] hover:bg-[#131111]/5",
+  "flex size-[2.6em] shrink-0 items-center justify-center rounded-full border border-[#131111]/20 text-[#131111] hover:bg-[#131111]/5",
   ringFocus
 )
 
@@ -259,7 +262,7 @@ function StudioTabs<Id extends string>({
     refs.current[next]?.focus()
   }
   return (
-    <div role="tablist" aria-label={label} className="flex border-b border-[#131111]/10">
+    <div role="tablist" aria-label={label} className="flex gap-3 border-b border-[#131111]/10 pe-11">
       {tabs.map((t, index) => {
         const selected = t.id === value
         return (
@@ -277,7 +280,7 @@ function StudioTabs<Id extends string>({
             onClick={() => onChange(t.id)}
             onKeyDown={(e) => onKey(e, index)}
             className={cn(
-              "-mb-px min-w-0 flex-1 border-b-[1.5px] px-[0.3em] pt-[0.3em] pb-[0.65em] font-outfit text-[0.6875em] font-medium tracking-[0.12em] uppercase transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#131111]",
+              "-mb-px min-w-0 flex-1 border-b-[1.5px] px-1.5 pt-2.5 pb-2.5 font-outfit text-[0.6875em] font-medium tracking-[0.08em] whitespace-nowrap uppercase transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#131111]",
               selected ? "border-[#131111] text-[#131111]" : "border-transparent text-[#6B635C] hover:text-[#131111]"
             )}
           >
@@ -315,7 +318,7 @@ export function PlaqueConfigurator({
   const [mode, setMode] = useState<StudioMode>(startMode)
   const [opened2d, setOpened2d] = useState(startMode === "2d")
   const [layout, setLayout] = useState<FaceLayout | null>(null)
-  const [tab3d, setTab3d] = useState<Tab3D>(initialConfig.face === "custom" ? "text" : "shape")
+  const [tab3d, setTab3d] = useState<Tab3D>(initialConfig.face === "custom" ? "engraving" : "shape")
   const [tab2d, setTab2d] = useState<Tab2D>("compose")
   const [status, setStatus] = useState<{ tone: "info" | "error"; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
@@ -327,6 +330,14 @@ export function PlaqueConfigurator({
   const addItem = useCartStore((s) => s.addItem)
   const cartLoading = useCartStore((s) => s.loading)
   const layoutSaving = useEditorStore((s) => s.saving)
+  useEffect(() => {
+    const root = document.documentElement
+    const previous = root.style.overflow
+    root.style.overflow = "hidden"
+    return () => {
+      root.style.overflow = previous
+    }
+  }, [])
   const woodSwatches = useWoodSwatches()
   const tabsId = useId()
   const controllerRef = useRef<LayoutController | null>(null)
@@ -348,13 +359,20 @@ export function PlaqueConfigurator({
   }, [])
 
   // The URL is the shareable record of the design: options, size variant and mode.
+  // Next patches history.replaceState and, when state is null, dispatches a
+  // navigation. Passing the existing Next history state updates the query only.
   useEffect(() => {
     const params = new URLSearchParams(serializeConfig(config))
     if (mode === "2d") params.set("mode", "2d")
     if (variant) params.set("variant", variant.id)
     const query = params.toString()
-    if (window.location.search.slice(1) !== query) {
-      window.history.replaceState(null, "", `${window.location.pathname}?${query}`)
+    if (window.location.search.slice(1) === query) return
+    const url = `${window.location.pathname}?${query}`
+    const state = window.history.state as { __NA?: boolean; _N?: boolean } | null
+    if (state && (state.__NA || state._N)) {
+      window.history.replaceState(state, "", url)
+    } else {
+      History.prototype.replaceState.call(window.history, state, "", url)
     }
   }, [config, mode, variant])
 
@@ -530,8 +548,8 @@ export function PlaqueConfigurator({
   async function addToCart3D() {
     if (!product || !variant) return
     if (!hasEngraving(config) && !customFace) {
-      say("error", "Add at least one line of engraving before adding to cart.")
-      setTab3d("text")
+      say("error", "Add a line of engraving or a photo before adding to cart.")
+      setTab3d("engraving")
       requestAnimationFrame(() => document.getElementById("engraving-name")?.focus())
       return
     }
@@ -576,6 +594,11 @@ export function PlaqueConfigurator({
 
   async function addToCart2D() {
     if (!product || !variant) return
+    if (!hasEngraving(config) && !controllerRef.current?.hasContent()) {
+      say("error", "Add a line of engraving or a photo before adding to cart.")
+      setTab2d("compose")
+      return
+    }
     const record = await saveLayout()
     if (!record) return
     setBusy(true)
@@ -640,7 +663,7 @@ export function PlaqueConfigurator({
   const body = (
     <section
       aria-labelledby="configurator-heading"
-      className="grid h-full grid-rows-[40dvh_minmax(0,1fr)] text-[clamp(12px,1.75dvh,16px)] lg:grid-cols-[minmax(0,1fr)_minmax(22rem,27em)] lg:grid-rows-1"
+      className="grid h-full min-h-0 grid-rows-[minmax(0,34dvh)_minmax(0,1fr)] overflow-hidden text-[12px] lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:grid-rows-1 lg:text-[13px]"
     >
       <div className="relative min-h-0 w-full overflow-hidden">
         <div className={cn("absolute inset-0", in2d && "invisible")} aria-hidden={in2d || undefined}>
@@ -651,22 +674,14 @@ export function PlaqueConfigurator({
       </div>
 
       <div className="flex min-h-0 flex-col overflow-hidden border-t border-[#131111]/10 bg-[#FBFBF7] lg:border-t-0 lg:border-l">
-        <div className={cn("shrink-0 pt-[0.8em] lg:pt-[1.5em]", panelX)}>
-          <p className="m-0 hidden font-outfit text-[0.6875em] tracking-[0.14em] text-[#6B635C] uppercase lg:block">
-            Design studio · {in2d ? "2D layout" : "3D preview"}
-          </p>
+        <div className={cn("shrink-0 pt-5 lg:pt-6", panelX)}>
           <h1
             id="configurator-heading"
-            className="m-0 font-outfit text-[1.375em] leading-[1.05] font-normal tracking-[-0.04em] text-balance text-[#131111] lg:mt-[0.3em] lg:text-[1.875em]"
+            className="m-0 font-outfit text-[1.15em] leading-none font-normal tracking-[-0.03em] text-[#131111] lg:text-[1.35em]"
           >
-            {in2d && product ? `Design your ${product.title}` : "Compose your plaque"}
+            {in2d && product ? product.title : "Customise your plaque"}
           </h1>
-          <p className="mt-[0.5em] mb-0 hidden font-outfit text-[0.875em] leading-[1.4] tracking-[-0.01em] text-pretty text-[#6B635C] lg:[@media(min-height:840px)]:block">
-            {in2d
-              ? "Place text and your logo anywhere inside the plate. Switch to 3D Preview to see it on the plaque."
-              : "Turn it, change the timber and the plate, and read your engraving back at size. Every finish is included in the price."}
-          </p>
-          <div className="mt-[0.7em] lg:mt-[1em]">
+          <div className="mt-4">
             {in2d ? (
               <StudioTabs tabs={TABS_2D} value={tab2d} onChange={setTab2d} idBase={`${tabsId}-2d`} label="Layout tools" />
             ) : (
@@ -679,7 +694,7 @@ export function PlaqueConfigurator({
           role="tabpanel"
           id={in2d ? `${tabsId}-2d-panel` : `${tabsId}-3d-panel`}
           aria-labelledby={in2d ? `${tabsId}-2d-tab-${tab2d}` : `${tabsId}-3d-tab-${tab3d}`}
-          className={cn("relative min-h-0 flex-1 overflow-hidden pt-[1em]", panelX)}
+          className={cn("relative min-h-0 flex-1 overflow-hidden pt-5", panelX)}
         >
           {in2d ? (
             tab2d === "compose" ? (
@@ -688,13 +703,12 @@ export function PlaqueConfigurator({
               <LayoutLibraryPanel />
             )
           ) : (
-            <div className="flex flex-col gap-[1.1em]">
+            <div className="flex flex-col gap-6">
               {tab3d === "shape" ? (
                 <>
                   <SwatchGroup legend="Form" name="form" value={config.form} options={formOptions} onChange={(v) => set("form", v)} />
                   <SwatchGroup legend="Edge" name="edge" value={config.edge} options={edgeOptions} onChange={(v) => set("edge", v)} />
                   <SwatchGroup legend="Size" name="size" value={config.size} options={sizeOptions} onChange={(v) => set("size", v)} />
-                  <SwatchGroup legend="Display" name="mount" value={config.mount} options={mountOptions} onChange={(v) => set("mount", v)} />
                 </>
               ) : null}
 
@@ -708,13 +722,22 @@ export function PlaqueConfigurator({
 
               {tab3d === "plate" ? (
                 <>
-                  <SwatchGroup legend="Metal" name="plate" value={config.plate} options={plateOptions} onChange={(v) => set("plate", v)} />
                   <SwatchGroup legend="Plate shape" name="pshape" value={config.pshape} options={plateShapeOptions} onChange={(v) => set("pshape", v)} />
+                  {hasPlate(config) ? (
+                    <>
+                      <SwatchGroup legend="Metal" name="plate" value={config.plate} options={plateOptions} onChange={(v) => set("plate", v)} />
+                      <ArtworkPlacement value={config.art} onChange={(v) => set("art", v)} />
+                    </>
+                  ) : (
+                    <p className="m-0 font-outfit text-[0.75em] leading-[1.35] text-[#6B635C]">
+                      No metal plate — engraving and photos sit in the wood.
+                    </p>
+                  )}
                   <SwatchGroup legend="Emblem" name="emblem" value={config.emblem} options={emblemOptions} onChange={(v) => set("emblem", v)} />
                 </>
               ) : null}
 
-              {tab3d === "text" ? (
+              {tab3d === "engraving" ? (
                 <>
                   {layout ? (
                     <div className="flex items-end justify-between gap-3">
@@ -730,8 +753,8 @@ export function PlaqueConfigurator({
                   ) : null}
 
                   {customFace ? (
-                    <p className="m-0 font-outfit text-[0.8125em] leading-[1.45] text-[#6B635C]">
-                      The plate shows your 2D layout. Switch the face back to lines, or keep composing in 2D.
+                    <p className="m-0 font-outfit text-[0.75em] leading-[1.35] text-[#6B635C]">
+                      {artworkOnWood(config) ? "The wood shows your 2D layout." : "The plate shows your 2D layout."}
                     </p>
                   ) : (
                     <fieldset className="m-0 min-w-0 border-0 p-0">
@@ -774,27 +797,23 @@ export function PlaqueConfigurator({
                       )}
                     >
                       <PenLine className="size-[1.1em]" strokeWidth={1.5} aria-hidden />
-                      {layout ? "Edit the 2D layout" : "Add a logo or free layout in 2D"}
+                      {layout ? "Edit in 2D" : "Add a photo in 2D"}
                     </button>
                   ) : null}
-                </>
-              ) : null}
-
-              {tab3d === "style" ? (
-                <>
                   <SwatchGroup legend="Lettering" name="font" value={config.font} options={fontOptions} onChange={(v) => set("font", v)} />
                   <SwatchGroup legend="Fill" name="fill" value={config.fill} options={fillOptions} onChange={(v) => set("fill", v)} />
                   <SwatchGroup legend="Alignment" name="align" value={config.align} options={alignOptions} onChange={(v) => set("align", v)} />
-                  {customFace ? (
-                    <p className="m-0 font-outfit text-[0.75em] text-[#6B635C]">These style the engraving lines; your 2D layout keeps its own.</p>
-                  ) : null}
                 </>
+              ) : null}
+
+              {tab3d === "display" ? (
+                <SwatchGroup legend="Display" name="mount" value={config.mount} options={mountOptions} onChange={(v) => set("mount", v)} />
               ) : null}
             </div>
           )}
         </div>
 
-        <div className={cn("relative shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] pt-[0.8em] pb-[max(0.6em,env(safe-area-inset-bottom))] lg:py-[1em]", panelX)}>
+        <div className={cn("relative shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-4", panelX)}>
           <p
             role="status"
             className={cn(
@@ -816,16 +835,16 @@ export function PlaqueConfigurator({
               )}
               {sizeLabel ? ` · ${sizeLabel}` : null}
             </p>
-            <p className="m-0 font-outfit text-[1.375em] tracking-[-0.03em] text-[#131111] tabular-nums" aria-live="polite">
+            <p className="m-0 font-outfit text-[1.15em] tracking-[-0.03em] text-[#131111] tabular-nums" aria-live="polite">
               {price ?? "—"}
             </p>
           </div>
-          <div className="mt-[0.75em] flex items-center gap-2">
+          <div className="mt-3 flex items-center gap-2.5">
             <Button
               onClick={in2d ? addToCart2D : addToCart3D}
               disabled={!canBuy || saving || cartLoading}
               loading={saving}
-              className={cn("h-[3em] min-w-0 flex-1 rounded-full font-outfit text-[0.8125em] tracking-[0.08em] uppercase", ringFocus)}
+              className={cn("h-[2.6em] min-w-0 flex-1 rounded-full font-outfit text-[0.75em] tracking-[0.08em] uppercase", ringFocus)}
               style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
             >
               {!product ? "Unavailable" : variant && !variant.inStock ? "Out of stock" : "Add to cart"}
@@ -836,7 +855,7 @@ export function PlaqueConfigurator({
                 onClick={handleSave}
                 disabled={saving}
                 className={cn(
-                  "flex h-[3em] items-center justify-center rounded-full border border-[#131111]/25 px-[1.2em] font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 disabled:opacity-50",
+                  "flex h-[2.6em] items-center justify-center rounded-full border border-[#131111]/25 px-[1em] font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 disabled:opacity-50",
                   ringFocus
                 )}
               >
@@ -867,6 +886,7 @@ export function PlaqueConfigurator({
       plaque={config}
       initialDesign={savedDesign.record}
       onLayoutChange={handleLayoutChange}
+      onArtChange={(art) => set("art", art)}
       controllerRef={controllerRef}
     >
       {body}

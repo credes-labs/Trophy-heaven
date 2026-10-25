@@ -1,22 +1,38 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Box, PenLine } from "lucide-react"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
 import { useCartStore } from "@/stores/cart-store"
 import { cn } from "@/lib/utils"
 
 export type StudioMode = "3d" | "2d"
 
-const MODES: { id: StudioMode; label: string; hint: string; Icon: typeof Box }[] = [
-  { id: "3d", label: "3D Preview", hint: "Shape & materials", Icon: Box },
-  { id: "2d", label: "2D Design", hint: "Add photo & text", Icon: PenLine },
+const MODES: { id: StudioMode; label: string }[] = [
+  { id: "3d", label: "3D preview" },
+  { id: "2d", label: "2D design" },
 ]
 
+function CubeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-[1.15em]" aria-hidden>
+      <path d="M12 3.4 19.5 7.5v9L12 20.6 4.5 16.5v-9L12 3.4Z" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M12 12.2 19.5 7.7M12 12.2 4.5 7.7M12 12.2v8.2" fill="none" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  )
+}
+
+function PlaqueIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-[1.15em]" aria-hidden>
+      <path d="M7 19.5V9.2C7 6.2 9 4.2 12 4.2s5 2 5 5v10.3H7Z" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="9" y="10.2" width="6" height="4.2" rx="0.4" fill="currentColor" />
+    </svg>
+  )
+}
+
 /**
- * Overlay bar for the studio: wordmark home link, the primary 3D / 2D mode
- * switch (both modes share one state, so switching never leaves the page) and
- * the cart. On small screens the switch drops to its own full-width row.
+ * Overlay for the studio stage: wordmark, icon-only 2D/3D switch, and cart.
+ * Both modes share one design, so the switch never leaves this screen.
  */
 export function StudioTopBar({
   mode,
@@ -30,7 +46,6 @@ export function StudioTopBar({
 }) {
   const storeCount = useCartStore((s) => s.itemCount())
   const setDrawerOpen = useCartStore((s) => s.setDrawerOpen)
-  // The cart can load before this subtree hydrates; render the server's 0 until mounted.
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const cartCount = mounted ? storeCount : 0
@@ -47,16 +62,16 @@ export function StudioTopBar({
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-wrap items-center justify-between gap-x-3 gap-y-[0.5em] px-[1em] pt-[0.5em] sm:px-[1.25em] sm:pt-[0.75em]",
+        "pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 px-3 pt-2 sm:px-4 sm:pt-3",
         className,
       )}
     >
-      <HeroWordmark className="pointer-events-auto h-9 w-[5.5rem] shrink-0 [&_img]:brightness-0 focus-visible:outline-[#131111] lg:h-10 lg:w-[6.25rem]" />
+      <HeroWordmark className="pointer-events-auto h-8 w-[4.75rem] shrink-0 [&_img]:brightness-0 focus-visible:outline-[#131111] lg:h-9 lg:w-[5.5rem]" />
       {onModeChange ? (
         <div
           role="radiogroup"
-          aria-label="Studio mode"
-          className="pointer-events-auto order-last flex w-full rounded-full border border-[#131111]/15 bg-[#FBFBF7]/92 p-[4px] shadow-[0_10px_30px_-18px_rgba(19,17,17,0.55)] backdrop-blur-sm md:absolute md:top-[0.75em] md:left-1/2 md:order-none md:w-auto md:-translate-x-1/2"
+          aria-label="Preview"
+          className="pointer-events-auto absolute top-2 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-[#131111]/12 bg-[#FBFBF7]/90 p-1 sm:top-3"
         >
           {MODES.map((m) => {
             const active = m.id === mode
@@ -69,21 +84,17 @@ export function StudioTopBar({
                 type="button"
                 role="radio"
                 aria-checked={active}
+                aria-label={m.label}
+                title={m.label}
                 tabIndex={active ? 0 : -1}
                 onClick={() => (active ? undefined : onModeChange(m.id))}
                 onKeyDown={onKey}
                 className={cn(
-                  "flex min-w-0 flex-1 items-center justify-center gap-[0.55em] rounded-full px-[1.1em] py-[0.5em] font-outfit whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] md:flex-none md:px-[1.4em]",
-                  active ? "bg-[#131111] text-[#F2F1EF]" : "text-[#131111] hover:bg-[#131111]/6",
+                  "flex size-8 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
+                  active ? "bg-[#131111]/10 text-[#131111]" : "text-[#6B635C] hover:bg-[#131111]/5 hover:text-[#131111]"
                 )}
               >
-                <m.Icon className="size-[16px] shrink-0" strokeWidth={1.6} aria-hidden />
-                <span className="flex flex-col items-start leading-[1.1]">
-                  <span className="text-[13px] font-medium tracking-[0.02em] lg:text-[14px]">{m.label}</span>
-                  <span className={cn("text-[11px] tracking-[0.01em]", active ? "text-[#F2F1EF]/75" : "text-[#6B635C]")}>
-                    {m.hint}
-                  </span>
-                </span>
+                {m.id === "3d" ? <CubeIcon /> : <PlaqueIcon />}
               </button>
             )
           })}
@@ -93,7 +104,7 @@ export function StudioTopBar({
         type="button"
         onClick={() => setDrawerOpen(true)}
         aria-label={`Open cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
-        className="pointer-events-auto shrink-0 font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
+        className="pointer-events-auto shrink-0 font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111]"
       >
         Cart ({cartCount})
       </button>

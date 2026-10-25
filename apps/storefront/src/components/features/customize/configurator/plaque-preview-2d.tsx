@@ -1,6 +1,7 @@
 import { useId } from "react"
 import {
   SAMPLE_LINES,
+  artworkOnWood,
   engravingLines,
   getFont,
   getPlate,
@@ -11,6 +12,7 @@ import {
   type LineKey,
   type PlaqueConfig,
 } from "@/lib/configurator/plaque"
+import { FACE_ART_INSET } from "@/lib/configurator/layout-geometry"
 import {
   emblem,
   faceDims,
@@ -73,6 +75,8 @@ export function PlaquePreview2D({
   const textX = left ? -maxText / 2 : 0
   const lift = config.mount === "wall" ? -0.18 : config.mount === "desk" ? 0 : -0.06
   const custom = config.face === "custom" ? layoutImage : null
+  const onWood = Boolean(custom) && artworkOnWood(config)
+  const burnText = bare && config.fill === "natural"
   const borders = config.border === "none" ? [] : config.border === "double" ? [0.074, 0.097] : [0.079]
   const markY = BASELINE - mark.cy
 
@@ -95,6 +99,9 @@ export function PlaquePreview2D({
         </radialGradient>
         <clipPath id={`plate-${uid}`}>
           <path d={platePath} />
+        </clipPath>
+        <clipPath id={`face-${uid}`}>
+          <path d={face} />
         </clipPath>
       </defs>
 
@@ -128,6 +135,17 @@ export function PlaquePreview2D({
             strokeWidth={margin > 0.09 ? 0.004 : 0.008}
           />
         ))}
+        {onWood && custom ? (
+          <image
+            href={custom}
+            x={-w / 2 + w * FACE_ART_INSET}
+            y={BASELINE - h + h * FACE_ART_INSET}
+            width={w * (1 - FACE_ART_INSET * 2)}
+            height={h * (1 - FACE_ART_INSET * 2)}
+            preserveAspectRatio="none"
+            clipPath={`url(#face-${uid})`}
+          />
+        ) : null}
         {config.emblem !== "none" ? (
           <g>
             <circle cx="0" cy={markY} r={mark.r} fill={`url(#metal-${uid})`} />
@@ -159,7 +177,7 @@ export function PlaquePreview2D({
           </g>
         ) : null}
         {bare ? null : <path d={platePath} fill={`url(#metal-${uid})`} />}
-        {custom ? (
+        {onWood ? null : custom ? (
           <image
             href={custom}
             x={-maxText / 2}
@@ -183,7 +201,7 @@ export function PlaquePreview2D({
                 textAnchor={left ? "start" : "middle"}
                 dominantBaseline="middle"
                 fill={ink}
-                fillOpacity={real ? 1 : 0.28}
+                fillOpacity={real ? (burnText ? 0.82 : 1) : 0.28}
                 fontSize={size}
                 letterSpacing={row.caps ? size * 0.18 : 0}
                 style={{

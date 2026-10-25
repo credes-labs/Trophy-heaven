@@ -1,8 +1,9 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getProductById } from "@/lib/data/catalog"
 import { Editor3DLoader } from "@/components/features/customize/three/editor-3d-loader"
+import { PLAQUE_HANDLE } from "@/lib/configurator/plaque"
 
 export const metadata: Metadata = {
   title: "Customize in 3D",
@@ -20,6 +21,13 @@ export default async function Customize3DPage({
   const { design, variant } = await searchParams
   const product = await getProductById(productId)
   if (!product) notFound()
+
+  if (product.handle === PLAQUE_HANDLE) {
+    const next = new URLSearchParams()
+    if (variant) next.set("variant", variant)
+    if (design) next.set("design", design)
+    redirect(`/customize?${next.toString()}`)
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">

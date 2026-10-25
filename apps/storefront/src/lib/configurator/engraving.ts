@@ -42,7 +42,7 @@ export function drawEngraving(
   font: FontSpec,
   family: string,
   ink: string,
-  options: { align?: AlignId; widthRatio?: number } = {},
+  options: { align?: AlignId; widthRatio?: number; burn?: boolean } = {},
 ) {
   const w = ctx.canvas.width
   const h = ctx.canvas.height
@@ -70,7 +70,7 @@ export function drawEngraving(
       if (ctx.measureText(upper).width <= maxWidth || px <= 12 * scale) break
       px *= 0.94
     }
-    ctx.globalAlpha = real ? 1 : 0.24
+    ctx.globalAlpha = real ? (options.burn ? 0.82 : 1) : 0.24
     ctx.fillText(upper, x, h * row.y)
   }
 

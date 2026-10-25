@@ -26,7 +26,7 @@ export default async function CustomizeLandingPage({
   const size = sizeForVariant(variants, first(params.variant)) ?? config.size
 
   return (
-    <EditorialShell className="h-dvh overflow-hidden">
+    <EditorialShell className="fixed inset-0 z-30 h-dvh overflow-hidden overscroll-none">
       <PlaqueConfigurator
         product={
           product

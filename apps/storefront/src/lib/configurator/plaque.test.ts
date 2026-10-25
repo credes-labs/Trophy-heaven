@@ -5,6 +5,7 @@ import {
   buildDesignState,
   cartMetadata,
   cleanLine,
+  artworkOnWood,
   hasEngraving,
   parseConfig,
   resolveVariant,
@@ -63,11 +64,22 @@ describe("plaque configurator state", () => {
 
   it("round-trips the 10-inch size and rejects anything else", () => {
     const query = serializeConfig({ ...DEFAULT_CONFIG, size: "l" })
+    expect(query.startsWith("form=")).toBe(true)
+    expect(query).not.toContain("/customize")
     expect(new URLSearchParams(query).get("size")).toBe("l")
     expect(parseConfig(new URLSearchParams(query)).size).toBe("l")
     for (const bad of ["10", "xl", "", "l;drop"]) {
       expect(parseConfig({ size: bad }).size).toBe("m")
     }
+  })
+
+  it("puts artwork on the wood for that placement or when there is no plate", () => {
+    expect(artworkOnWood({ pshape: "rect", art: "plate" })).toBe(false)
+    expect(artworkOnWood({ pshape: "rect", art: "wood" })).toBe(true)
+    expect(artworkOnWood({ pshape: "none", art: "plate" })).toBe(true)
+    const query = serializeConfig({ ...DEFAULT_CONFIG, art: "wood", pshape: "none" })
+    expect(parseConfig(new URLSearchParams(query))).toMatchObject({ art: "wood", pshape: "none" })
+    expect(parseConfig({ art: "vinyl" }).art).toBe("plate")
   })
 
   it("whitelists every new option group", () => {

@@ -42,11 +42,11 @@ export function SwatchGroup<Id extends string>({
           {current?.note ? ` · ${current.note}` : null}
         </span>
       </legend>
-      <div className="mt-[0.55em] flex flex-wrap gap-[0.5em]">
+      <div className="mt-3 flex flex-wrap gap-2.5">
         {options.map((option) => {
           const checked = option.id === value
           return (
-            <label key={option.id} className="group relative flex cursor-pointer" title={option.label}>
+            <label key={option.id} className="group relative flex cursor-pointer p-1" title={option.label}>
               <input
                 type="radio"
                 name={name}
@@ -62,7 +62,7 @@ export function SwatchGroup<Id extends string>({
               <span
                 aria-hidden
                 className={cn(
-                  "flex size-[2.6em] items-center justify-center overflow-hidden rounded-full ring-offset-[2px] ring-offset-[#FBFBF7] transition-[box-shadow,transform] duration-200 motion-reduce:transition-none",
+                  "flex size-[2.15em] items-center justify-center overflow-hidden rounded-full ring-offset-[2px] ring-offset-[#FBFBF7] transition-[box-shadow,transform] duration-200 motion-reduce:transition-none",
                   "group-hover:scale-[1.05] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-[4px] peer-focus-visible:outline-[#131111]",
                   checked ? "ring-[1.5px] ring-[#131111]" : "ring-1 ring-[#131111]/12"
                 )}

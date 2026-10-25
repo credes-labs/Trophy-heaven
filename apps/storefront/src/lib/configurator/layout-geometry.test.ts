@@ -1,21 +1,39 @@
 import { describe, expect, it } from "vitest"
 import { CANVAS_SIZE } from "@/lib/design-2d"
-import { plaqueCanvasLayout, remapRect } from "./layout-geometry"
+import { artworkClipPath, plaqueCanvasLayout, remapRect } from "./layout-geometry"
 import { FORMS, PLATE_SHAPES } from "./plaque"
 
 describe("plaqueCanvasLayout", () => {
-  it("keeps the engraving safe area inside the plate and the canvas for every form and plate shape", () => {
+  it("keeps plate artwork inside the plate, and wood artwork across the face", () => {
     for (const form of FORMS) {
       for (const shape of PLATE_SHAPES) {
-        const { plate, safeArea } = plaqueCanvasLayout({ form: form.id, pshape: shape.id })
+        const { face, plate, safeArea } = plaqueCanvasLayout({ form: form.id, pshape: shape.id })
         expect(safeArea.width).toBeGreaterThan(100)
-        expect(safeArea.x).toBeGreaterThanOrEqual(Math.floor(plate.x))
-        expect(safeArea.y).toBeGreaterThanOrEqual(Math.floor(plate.y))
-        expect(safeArea.x + safeArea.width).toBeLessThanOrEqual(Math.ceil(plate.x + plate.width))
-        expect(safeArea.y + safeArea.height).toBeLessThanOrEqual(Math.ceil(plate.y + plate.height))
         expect(safeArea.x + safeArea.width).toBeLessThanOrEqual(CANVAS_SIZE)
+        if (shape.id === "none") {
+          expect(safeArea.width).toBeGreaterThan(plate.width)
+          expect(safeArea.x).toBeGreaterThanOrEqual(Math.floor(face.x))
+          expect(safeArea.y).toBeGreaterThanOrEqual(Math.floor(face.y))
+        } else {
+          expect(safeArea.x).toBeGreaterThanOrEqual(Math.floor(plate.x))
+          expect(safeArea.y).toBeGreaterThanOrEqual(Math.floor(plate.y))
+          expect(safeArea.x + safeArea.width).toBeLessThanOrEqual(Math.ceil(plate.x + plate.width))
+          expect(safeArea.y + safeArea.height).toBeLessThanOrEqual(Math.ceil(plate.y + plate.height))
+        }
       }
     }
+  })
+
+  it("gives On the wood a larger field than the plate, clipped to the timber", () => {
+    const plate = plaqueCanvasLayout({ form: "arch", pshape: "rect", art: "plate" })
+    const wood = plaqueCanvasLayout({ form: "arch", pshape: "rect", art: "wood" })
+    expect(wood.safeArea.width).toBeGreaterThan(plate.safeArea.width)
+    expect(wood.safeArea.height).toBeGreaterThan(plate.plate.height)
+    expect(wood.onWood).toBe(true)
+    expect(artworkClipPath({ form: "arch", pshape: "rect", art: "wood" }).startsWith("M")).toBe(true)
+    expect(artworkClipPath({ form: "arch", pshape: "rect", art: "wood" }).length).toBeGreaterThan(
+      artworkClipPath({ form: "arch", pshape: "rect", art: "plate" }).length
+    )
   })
 
   it("centres the plate horizontally", () => {

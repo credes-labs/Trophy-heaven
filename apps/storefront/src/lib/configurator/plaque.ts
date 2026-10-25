@@ -79,6 +79,12 @@ export const PLATE_SHAPES = [
   { id: "none", label: "No plate" },
 ] as const satisfies readonly Option<string>[]
 
+/** Where an uploaded photo is engraved. Price does not change. */
+export const ARTWORKS = [
+  { id: "plate", label: "On the plate" },
+  { id: "wood", label: "On the wood" },
+] as const satisfies readonly Option<string>[]
+
 export const EMBLEMS = [
   { id: "laurel", label: "Laurel" },
   { id: "star", label: "Star" },
@@ -139,6 +145,7 @@ export type FinishId = (typeof FINISHES)[number]["id"]
 export type BorderId = (typeof BORDERS)[number]["id"]
 export type PlateId = (typeof PLATES)[number]["id"]
 export type PlateShapeId = (typeof PLATE_SHAPES)[number]["id"]
+export type ArtId = (typeof ARTWORKS)[number]["id"]
 export type EmblemId = (typeof EMBLEMS)[number]["id"]
 export type FillId = (typeof FILLS)[number]["id"]
 export type AlignId = (typeof ALIGNS)[number]["id"]
@@ -159,6 +166,7 @@ export type PlaqueConfig = {
   border: BorderId
   plate: PlateId
   pshape: PlateShapeId
+  art: ArtId
   emblem: EmblemId
   font: FontId
   fill: FillId
@@ -179,6 +187,7 @@ export const DEFAULT_CONFIG: PlaqueConfig = {
   border: "none",
   plate: "brass",
   pshape: "rect",
+  art: "plate",
   emblem: "laurel",
   font: "serif",
   fill: "natural",
@@ -207,6 +216,7 @@ export const OPTION_KEYS = [
   "border",
   "plate",
   "pshape",
+  "art",
   "emblem",
   "font",
   "fill",
@@ -227,6 +237,7 @@ export const OPTION_IDS: Record<OptionKey, readonly string[]> = {
   border: ids(BORDERS),
   plate: ids(PLATES),
   pshape: ids(PLATE_SHAPES),
+  art: ids(ARTWORKS),
   emblem: ids(EMBLEMS),
   font: ids(FONTS),
   fill: ids(FILLS),
@@ -309,6 +320,11 @@ export const getFinish = (id: FinishId) => FINISHES.find((f) => f.id === id) ?? 
 /** False when the engraving is burned straight into the wood (plate shape "No plate"). */
 export const hasPlate = (config: Pick<PlaqueConfig, "pshape">) => config.pshape !== "none"
 
+/** Photos and lines sit on the timber: either there is no plate, or the shopper chose "On the wood". */
+export function artworkOnWood(config: Pick<PlaqueConfig, "pshape"> & { art?: ArtId }) {
+  return !hasPlate(config) || config.art === "wood"
+}
+
 /** Laser burn on light timber; dark timber shows a pale etch instead. */
 export const WOOD_BURN = "#3b2414"
 export const WOOD_ETCH = "#e2cca4"
@@ -381,6 +397,7 @@ export function summarizeConfig(config: PlaqueConfig) {
     border: labelOf(BORDERS, config.border),
     plate: hasPlate(config) ? labelOf(PLATES, config.plate) : "None — engraved into the wood",
     plateShape: labelOf(PLATE_SHAPES, config.pshape),
+    artwork: artworkOnWood(config) ? "On the wood" : "On the plate",
     emblem: labelOf(EMBLEMS, config.emblem),
     font: labelOf(FONTS, config.font),
     fill: labelOf(FILLS, config.fill),

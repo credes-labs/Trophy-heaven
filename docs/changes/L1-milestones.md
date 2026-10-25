@@ -3,6 +3,10 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-26 - Catalogue hero becomes a turning silhouette grid
+The `/shop` hero is now the supplied transparent mosaic: 15 thin-lined boxes with procedural furniture turning on a turntable, drawn on the catalogue's `#F2F1EF` surface with `#131111` hairlines. Filters still fold it away. → L2 WP-64 · [L3/044](L3/044-shop-silhouette-hero.md)
+
+
 ## 2026-10-25 — Shop filters stick while the grid scrolls
 Inner pages now start below the transparent nav, so the shop breadcrumb no longer runs into the logo. The `/shop` filter column sticks beside the product grid, as the homepage Explore filters do, and scrolls on its own when it is taller than the screen. It also has even spacing and a smaller CLEAR FILTERS button. `/catalog` now opens the shop. → L2 WP-63
 
