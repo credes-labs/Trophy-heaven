@@ -205,7 +205,7 @@ export function engraveTones(rgba: ArrayLike<number>, w: number, h: number, para
 }
 
 /** Full pipeline: source RGBA → burn-coloured RGBA (same size). Disabled returns a copy. */
-export function engravePixels(rgba: ArrayLike<number>, w: number, h: number, params: EngraveParams): Uint8ClampedArray {
+export function engravePixels(rgba: ArrayLike<number>, w: number, h: number, params: EngraveParams): Uint8ClampedArray<ArrayBuffer> {
   const out = new Uint8ClampedArray(w * h * 4)
   if (!params.enabled) {
     for (let i = 0; i < out.length; i++) out[i] = rgba[i]

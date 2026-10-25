@@ -9,7 +9,7 @@ import {
   type ShopFilters,
   type SubcategoryOption,
 } from "@/components/features/shop/filter-sidebar"
-import { ShopHero } from "@/components/features/shop/shop-hero"
+import { SilhouetteHero } from "@/components/features/shop/silhouette-hero"
 import { ShopTestimonials } from "@/components/features/shop/shop-testimonials"
 import { ShopBanner } from "@/components/features/shop/shop-banner"
 import { ShopPagination } from "@/components/features/shop/shop-pagination"
@@ -351,9 +351,11 @@ export function ShopClient({
         filtersOpen && "is-filter"
       )}
     >
+      <h1 className="sr-only">Shop all products</h1>
+
       <div className="shop-page-hero" aria-hidden={filtersOpen}>
         <div className="shop-fold-pane">
-          <ShopHero products={initialProducts} />
+          <SilhouetteHero />
         </div>
       </div>
 
