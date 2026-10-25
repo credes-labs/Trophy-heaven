@@ -610,6 +610,49 @@
     }
   }
 
+  /* Search filters: same sticky track as the shop sidebar. `clip`, not `hidden`. */
+  .search-listing-frame {
+    display: grid;
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.5em;
+    overflow-x: clip;
+  }
+
+  .search-listing-sidebar {
+    min-width: 0;
+    min-height: 0;
+    overflow: clip;
+  }
+
+  @media (min-width: 1024px) {
+    .search-listing-frame {
+      grid-template-columns: 22.125em minmax(0, 1fr);
+      column-gap: 3.25em;
+      row-gap: 0;
+    }
+
+    .search-listing-sidebar {
+      align-self: stretch;
+    }
+  }
+
+  /* Tiles sit on the paper. No card border, fill, shadow, or rounded frame. */
+  .search-page a.group,
+  .search-page a.group:hover {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .search-page a.group > div {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .shop-page-hero,
     .shop-filter-breadcrumb,

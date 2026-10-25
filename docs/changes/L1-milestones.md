@@ -3,6 +3,9 @@
 One or two lines per milestone. Detail lives in [L2](L2-work-packages.md) and [L3/](L3/).
 Newest first.
 
+## 2026-10-26 — Search matches the catalogue tiles
+`/search` drops the bordered cards. Photos, names, and prices sit on paper, filters stick under the nav while the results scroll, and prices match the shop instead of ₹0.00. → L2 WP-67
+
 ## 2026-10-26 — Plaque studio is one fullscreen screen
 `/customize` keeps the plaque in a fixed viewport: icon-only 2D/3D, photos engraved on the wood or the plate, no metal when “No plate” is chosen, and a looser options panel that still does not scroll. Size and the other finishes stay on this URL. → L2 WP-65 · [L3/045](L3/045-customize-studio.md)
 

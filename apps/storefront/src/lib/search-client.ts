@@ -1,3 +1,4 @@
+import { CUSTOMIZATION_LABELS } from "./format"
 import { BACKEND_URL, PUBLISHABLE_KEY } from "./medusa"
 
 export type SearchHit = {
@@ -11,6 +12,36 @@ export type SearchHit = {
   customization_level: string
   price: number
   price_tier: string
+}
+
+export const FACET_LABELS: Record<string, string> = {
+  category: "Category",
+  material: "Material",
+  customization_level: "Customization",
+  price_tier: "Price",
+}
+
+export const PRICE_TIER_LABELS: Record<string, string> = {
+  under_1000: "Under ₹1,000",
+  "1000_5000": "₹1,000–₹5,000",
+  "5000_15000": "₹5,000–₹15,000",
+  "15000_plus": "₹15,000+",
+}
+
+function humanizeKey(value: string): string {
+  return value
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
+
+/** Facet checkbox copy. Customization uses the catalog label map. */
+export function facetValueLabel(attr: string, value: string): string {
+  if (attr === "price_tier") return PRICE_TIER_LABELS[value] ?? humanizeKey(value)
+  if (attr === "customization_level") return CUSTOMIZATION_LABELS[value] ?? humanizeKey(value)
+  if (attr === "material") return humanizeKey(value)
+  return value
 }
 
 export type SearchResponse = {

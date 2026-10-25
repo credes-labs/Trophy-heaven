@@ -8,6 +8,7 @@ import {
   lowestInrPrice,
   type ProductDoc,
 } from "../lib/meilisearch"
+import { inrPriceByProductId } from "../lib/product-index-prices"
 
 /**
  * Syncs the Meilisearch product index on product create/update/delete
@@ -38,11 +39,20 @@ export default async function productIndexHandler({
     return
   }
 
-  const price = lowestInrPrice(
+  let price = lowestInrPrice(
     (product.variants ?? []) as Array<{
       prices?: Array<{ currency_code: string; amount: number }>
     }>
   )
+  try {
+    const priced = await inrPriceByProductId(container, [product.id])
+    const fromPricing = priced.get(product.id)
+    if (fromPricing != null && fromPricing > 0) price = fromPricing
+  } catch (err) {
+    logger.warn(
+      `product-index: price lookup failed for ${product.id}: ${(err as Error).message}`
+    )
+  }
 
   const doc: ProductDoc = {
     id: product.id,
