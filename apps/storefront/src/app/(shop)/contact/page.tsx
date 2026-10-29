@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Image from "next/image"
+import GlobeDemo from "@/components/globe-demo"
 import { ContactForm } from "@/components/features/contact/contact-form"
 import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
@@ -28,15 +28,8 @@ export default function ContactPage() {
                 A brief, an order, or a visit. We typically reply within one business day.
               </p>
             </div>
-            <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
-              <Image
-                src="/images/about/about-legacy-portrait.jpg"
-                alt="Walnut lounge chair in the Legacy showroom"
-                fill
-                priority
-                sizes="(min-width: 1024px) 48em, 100vw"
-                className="object-cover object-center"
-              />
+            <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] lg:aspect-[6/5]">
+              <GlobeDemo embedded />
             </div>
           </div>
         </EditorialFrame>
@@ -60,11 +53,17 @@ export default function ContactPage() {
                 Karnataka, India
               </p>
               <p className="mt-[1.25em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
-                <a href="mailto:hello@legacycrafts.com" className="text-[#131111] no-underline hover:opacity-70">
+                <a
+                  href="mailto:hello@legacycrafts.com"
+                  className="text-[#131111] no-underline hover:opacity-70"
+                >
                   hello@legacycrafts.com
                 </a>
                 <br />
-                <a href="tel:+918012345678" className="text-[#131111] no-underline hover:opacity-70">
+                <a
+                  href="tel:+918012345678"
+                  className="text-[#131111] no-underline hover:opacity-70"
+                >
                   +91 80 1234 5678
                 </a>
               </p>

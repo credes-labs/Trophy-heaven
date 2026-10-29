@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { getProductById } from "@/lib/data/catalog"
 import { EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { Editor2DLoader } from "@/components/features/customize/editor-2d-loader"
-import { PLAQUE_HANDLE } from "@/lib/configurator/plaque"
+import { studioPieceForHandle } from "@/lib/configurator/studio-pieces"
 
 export const metadata: Metadata = {
   title: "Customize your design",
@@ -24,8 +24,10 @@ export default async function Customize2DPage({
   if (!product) notFound()
 
   // The engraved plaque's 2D layout lives inside the studio, next to its 3D preview.
-  if (product.handle === PLAQUE_HANDLE) {
+  const piece = studioPieceForHandle(product.handle)
+  if (piece) {
     const next = new URLSearchParams()
+    next.set("piece", piece.id)
     for (const [key, value] of Object.entries(query)) {
       const v = first(value)
       if (v != null && key !== "mode") next.set(key, v)
@@ -36,7 +38,11 @@ export default async function Customize2DPage({
 
   return (
     <EditorialShell className="h-dvh overflow-hidden">
-      <Editor2DLoader product={product} designId={first(query.design)} preferredVariantId={first(query.variant)} />
+      <Editor2DLoader
+        product={product}
+        designId={first(query.design)}
+        preferredVariantId={first(query.variant)}
+      />
     </EditorialShell>
   )
 }

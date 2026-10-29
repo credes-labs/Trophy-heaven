@@ -4,9 +4,7 @@ import { AboutSection } from "@/components/sections/about-section"
 import { ProductsCategoriesSection } from "@/components/sections/products-categories-section"
 import { ExploreSection } from "@/components/sections/explore-section"
 import { RecentWorkSection } from "@/components/sections/recent-work"
-import { CorporateBandSection } from "@/components/sections/corporate-band"
 import { MaterialsSection } from "@/components/sections/materials"
-import { JournalRailSection } from "@/components/sections/journal-rail"
 import { SignupSection } from "@/components/sections/signup"
 
 /** ISR: refresh the homepage every five minutes. */
@@ -37,14 +35,6 @@ export default function HomePage() {
         </div>
         <div className="order-9 lg:order-none">
           <ExploreSection />
-        </div>
-        <div className="order-11 lg:order-none">
-          <CorporateBandSection />
-        </div>
-        <div className="order-12 lg:order-none">
-          <Suspense fallback={null}>
-            <JournalRailSection />
-          </Suspense>
         </div>
         <div className="order-13 lg:order-none">
           <SignupSection />

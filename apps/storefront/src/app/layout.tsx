@@ -6,7 +6,6 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/features/cart/cart-drawer"
-import { MobileNav } from "@/components/layout/mobile-nav"
 import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
 import { ChromeGate, SiteChrome } from "@/components/layout/site-chrome"
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Legacy Crafts",
     locale: "en_IN",
-    images: [{ url: "/images/hero/hero-workshop.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/images/hero/hero-legacy-tables.jpg", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
   robots: process.env.VERCEL_ENV === "preview" ? { index: false, follow: false } : undefined,
@@ -112,9 +111,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </ChromeGate>
           <CartDrawer />
-          <ChromeGate>
-            <MobileNav />
-          </ChromeGate>
           <PWARegister />
         </Providers>
         <Analytics />

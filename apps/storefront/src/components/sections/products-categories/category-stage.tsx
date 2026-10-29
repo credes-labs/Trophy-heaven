@@ -1,20 +1,28 @@
 "use client"
 
-import { useEffect, useRef, useState, type RefObject } from "react"
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react"
 import dynamic from "next/dynamic"
+import Image from "next/image"
 import Link from "next/link"
+import { CanvasBoundary } from "./canvas-boundary"
 
 import {
-  CATALOG_CATEGORIES,
+  DISCIPLINES,
   CATEGORY_EYEBROW,
-  DEFAULT_CATEGORY_ID,
-  FURNITURE_LABELS,
+  DEFAULT_DISCIPLINE_ID,
+  PRODUCT_LABELS,
+  type DisciplineId,
 } from "./constants"
 
-const CategoryCanvas = dynamic(
-  () => import("./category-canvas").then((m) => m.CategoryCanvas),
-  { ssr: false },
-)
+const CategoryCanvas = dynamic(() => import("./category-canvas").then((m) => m.CategoryCanvas), {
+  ssr: false,
+})
 
 type Slots = RefObject<HTMLDivElement | null>[]
 
@@ -45,12 +53,18 @@ export function CategoryStage() {
   const slotSets = useSlotSets()
   const [near, setNear] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [canvasReady, setCanvasReady] = useState(false)
+  const [canvasFailed, setCanvasFailed] = useState(false)
+  const onReady = useCallback(() => setCanvasReady(true), [])
+  const onFailure = useCallback(() => {
+    setCanvasReady(false)
+    setCanvasFailed(true)
+  }, [])
   const stageRef = useRef<HTMLDivElement>(null)
-  const activeRef = useRef(DEFAULT_CATEGORY_ID)
-  const [activeId, setActiveId] = useState(DEFAULT_CATEGORY_ID)
+  const activeRef = useRef(DEFAULT_DISCIPLINE_ID)
+  const [activeId, setActiveId] = useState(DEFAULT_DISCIPLINE_ID)
   const [direction, setDirection] = useState<1 | -1>(1)
-  const active =
-    CATALOG_CATEGORIES.find((c) => c.id === activeId) ?? CATALOG_CATEGORIES[2]!
+  const active = DISCIPLINES.find((c) => c.id === activeId) ?? DISCIPLINES[0]!
   activeRef.current = activeId
 
   useEffect(() => {
@@ -62,17 +76,18 @@ export function CategoryStage() {
         setVisible(hit)
         if (hit) setNear(true)
       },
-      { rootMargin: "300px 0px" },
+      { rootMargin: "300px 0px" }
     )
     observer.observe(root)
     return () => observer.disconnect()
   }, [])
 
-  const activate = (id: string) => {
+  const activate = (id: DisciplineId) => {
     if (id === activeRef.current) return
-    const prev = CATALOG_CATEGORIES.findIndex((c) => c.id === activeRef.current)
-    const next = CATALOG_CATEGORIES.findIndex((c) => c.id === id)
+    const prev = DISCIPLINES.findIndex((c) => c.id === activeRef.current)
+    const next = DISCIPLINES.findIndex((c) => c.id === id)
     setDirection(next > prev ? 1 : -1)
+    activeRef.current = id
     setActiveId(id)
   }
 
@@ -83,9 +98,9 @@ export function CategoryStage() {
     const onWheel = (event: WheelEvent) => {
       leftover += event.deltaY
       const dir = leftover === 0 ? 0 : leftover > 0 ? 1 : -1
-      const i = CATALOG_CATEGORIES.findIndex((c) => c.id === activeRef.current)
+      const i = DISCIPLINES.findIndex((c) => c.id === activeRef.current)
       const next = i + dir
-      const canStep = dir !== 0 && next >= 0 && next < CATALOG_CATEGORIES.length
+      const canStep = dir !== 0 && next >= 0 && next < DISCIPLINES.length
 
       if (Math.abs(leftover) < 48) {
         if (canStep) event.preventDefault()
@@ -95,7 +110,7 @@ export function CategoryStage() {
       leftover = 0
       if (!canStep) return
       event.preventDefault()
-      activate(CATALOG_CATEGORIES[next]!.id)
+      activate(DISCIPLINES[next]!.id)
     }
     root.addEventListener("wheel", onWheel, { passive: false })
     return () => root.removeEventListener("wheel", onWheel)
@@ -111,15 +126,19 @@ export function CategoryStage() {
         {[
           "absolute top-[0.25em] left-0 h-[22.75em] w-[17.25em]",
           "absolute top-[0.25em] right-0 h-[13.75em] w-[10.875em]",
-          "absolute top-[10.4em] right-0 h-[13.75em] w-[10.875em]",
+          "absolute top-[14.5em] right-0 h-[13.75em] w-[10.875em]",
         ].map((position, i) => (
           <div
             key={`desktop-${i}`}
             ref={slotSets.desktop[i]}
             role="img"
-            aria-label={FURNITURE_LABELS[active.pieces[i]!]}
+            aria-label={PRODUCT_LABELS[active.pieces[i]!]}
             className={`pointer-events-none hidden lg:block ${position}`}
-          />
+          >
+            {!canvasReady ? (
+              <Image src={active.images[i]!} alt="" fill sizes="25vw" className="object-contain" />
+            ) : null}
+          </div>
         ))}
 
         <div className="mb-[2em] flex justify-center gap-[0.75em] lg:hidden">
@@ -128,39 +147,52 @@ export function CategoryStage() {
               key={`mobile-${i}`}
               ref={slotSets.mobile[i]}
               role="img"
-              aria-label={FURNITURE_LABELS[piece]}
+              aria-label={PRODUCT_LABELS[piece]}
               className="pointer-events-none relative h-[8.5em] w-[6.5em]"
-            />
+            >
+              {!canvasReady ? (
+                <Image
+                  src={active.images[i]!}
+                  alt=""
+                  fill
+                  sizes="30vw"
+                  className="object-contain"
+                />
+              ) : null}
+            </div>
           ))}
         </div>
 
-        {near ? (
-          <CategoryCanvas
-            layout={desktop ? "desktop" : "mobile"}
-            slots={desktop ? slotSets.desktop : slotSets.mobile}
-            pieces={active.pieces}
-            direction={direction}
-            reduced={reduced}
-            running={visible}
-          />
+        {near && !canvasFailed ? (
+          <CanvasBoundary onFailure={onFailure}>
+            <CategoryCanvas
+              layout={desktop ? "desktop" : "mobile"}
+              slots={desktop ? slotSets.desktop : slotSets.mobile}
+              pieces={active.pieces}
+              direction={direction}
+              reduced={reduced}
+              running={visible}
+              onReady={onReady}
+              onFailure={onFailure}
+            />
+          </CanvasBoundary>
         ) : null}
         <div
           role="listbox"
-          aria-label="Furniture categories. Hover or scroll to preview."
+          aria-label="Product disciplines. Hover or scroll to preview."
           tabIndex={0}
           className="relative z-10 flex flex-col items-center gap-[2em] py-[1.875em] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           onKeyDown={(e) => {
             if (e.key === "ArrowDown" || e.key === "ArrowUp") {
               e.preventDefault()
               const dir = e.key === "ArrowDown" ? 1 : -1
-              const i = CATALOG_CATEGORIES.findIndex((c) => c.id === activeId)
-              const next =
-                (i + dir + CATALOG_CATEGORIES.length) % CATALOG_CATEGORIES.length
-              activate(CATALOG_CATEGORIES[next]!.id)
+              const i = DISCIPLINES.findIndex((c) => c.id === activeId)
+              const next = (i + dir + DISCIPLINES.length) % DISCIPLINES.length
+              activate(DISCIPLINES[next]!.id)
             }
           }}
         >
-          {CATALOG_CATEGORIES.map((category) => {
+          {DISCIPLINES.map((category) => {
             const isActive = category.id === activeId
             return (
               <Link
@@ -180,7 +212,9 @@ export function CategoryStage() {
               >
                 <span
                   className={`origin-center font-outfit leading-none font-light tracking-[-0.02em] uppercase text-balance transition-[font-size,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    isActive ? "text-[4.25em] text-[#131111]" : "text-[3.5em] text-[#6B635C] hover:text-[#131111]"
+                    isActive
+                      ? "text-[2.5em] text-[#131111] sm:text-[3.25em] lg:text-[4.25em]"
+                      : "text-[2.25em] text-[#6B635C] hover:text-[#131111] sm:text-[3em] lg:text-[3.5em]"
                   }`}
                 >
                   {category.label}

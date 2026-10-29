@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useId, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
-import { useCartStore } from "@/stores/cart-store"
+import { Menu } from "lucide-react"
+import dynamic from "next/dynamic"
+import { SiteCartControl } from "./site-cart-control"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
 import { siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
 import { useHoverIntent } from "./use-hover-intent"
@@ -18,23 +19,6 @@ const siteNavInkItemClass =
   "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
 
 const inkWordmarkClass = "[&_img]:brightness-0 focus-visible:outline-[#131111]"
-
-function SiteCartControl({ className }: { className?: string }) {
-  const count = useCartStore((s) => s.itemCount())
-  const setDrawerOpen = useCartStore((s) => s.setDrawerOpen)
-
-  return (
-    <button
-      type="button"
-      onClick={() => setDrawerOpen(true)}
-      aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
-      className={className}
-      suppressHydrationWarning
-    >
-      CART ({count})
-    </button>
-  )
-}
 
 function focusMenuItem(panel: HTMLElement | null, index: number | "next" | "prev") {
   const items = Array.from(panel?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
@@ -92,9 +76,7 @@ function NavFlyout({
 
   return (
     <li
-      className={
-        hasMenu ? "pointer-events-auto relative -mx-2 -my-3 px-2 py-3" : "relative"
-      }
+      className={hasMenu ? "pointer-events-auto relative -mx-2 -my-3 px-2 py-3" : "relative"}
       onPointerEnter={
         hasMenu
           ? (event) => {
@@ -251,6 +233,8 @@ export function SiteNav({
   )
 }
 
+const MobileMenu = dynamic(() => import("./mobile-menu").then((m) => m.MobileMenu), { ssr: false })
+
 export function SiteNavMobile({
   categories,
   tone = "light",
@@ -259,94 +243,46 @@ export function SiteNavMobile({
   tone?: SiteNavTone
 }) {
   const [open, setOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuId = useId()
   const links = useMemo(() => siteNavLinks(categories), [categories])
+  const close = useCallback(() => setOpen(false), [])
+  const controlClass =
+    "flex size-11 items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
 
   useEffect(() => {
     if (!open) return
     const original = document.body.style.overflow
     document.body.style.overflow = "hidden"
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false)
-    }
-    window.addEventListener("keydown", onKey)
     return () => {
       document.body.style.overflow = original
-      window.removeEventListener("keydown", onKey)
+      triggerRef.current?.focus()
     }
   }, [open])
 
   return (
     <>
-      <header className="relative z-20 flex items-center justify-between">
+      <header
+        className={`relative flex items-center justify-between ${tone === "ink" ? "text-[#131111]" : "text-white"}`}
+      >
         <HeroWordmark className={tone === "ink" ? inkWordmarkClass : undefined} />
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-label="Open menu"
-          className={
-            tone === "ink"
-              ? "flex size-11 items-center justify-center text-[#131111] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-              : "flex size-11 items-center justify-center text-white focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
-          }
-        >
-          <Menu className="size-6" strokeWidth={1.5} aria-hidden />
-        </button>
-      </header>
-      {open ? (
-        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Navigation menu">
+        <div className="flex items-center gap-1">
+          <SiteCartControl icon className={controlClass} />
           <button
+            ref={triggerRef}
             type="button"
-            className="absolute inset-0 bg-black/50"
-            aria-label="Close menu"
-            onClick={() => setOpen(false)}
-          />
-          <aside className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-[#1C1612] px-6 py-5 text-white">
-            <div className="flex items-center justify-between">
-              <HeroWordmark />
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className="flex size-11 items-center justify-center focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#F2F1EF]"
-              >
-                <X className="size-6" strokeWidth={1.5} aria-hidden />
-              </button>
-            </div>
-            <nav aria-label="Primary" className="mt-8 flex flex-col gap-5 overflow-y-auto">
-              {links.map((item) => (
-                <div key={item.id}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={siteNavItemClass}
-                  >
-                    {item.label}
-                  </Link>
-                  {item.children && item.children.length > 0 ? (
-                    <ul className="mt-2 ml-1 list-none p-0">
-                      {item.children.map((child) => (
-                        <li key={`${item.id}-${child.href}-${child.label}`}>
-                          <Link
-                            href={child.href}
-                            onClick={() => setOpen(false)}
-                            className="block py-1 font-outfit text-[12px] tracking-[0.08em] text-white/70 uppercase transition-opacity hover:text-white"
-                          >
-                            {child.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                </div>
-              ))}
-              <Link href="/search" aria-label="Search" onClick={() => setOpen(false)} className={siteNavItemClass}>
-                SEARCH
-              </Link>
-              <SiteCartControl className={`${siteNavItemClass} text-left`} />
-            </nav>
-          </aside>
+            onClick={() => setOpen(true)}
+            aria-label="Open menu"
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            aria-controls={open ? menuId : undefined}
+            className={controlClass}
+          >
+            <Menu className="size-6" strokeWidth={1.5} aria-hidden />
+          </button>
         </div>
-      ) : null}
+      </header>
+      {open ? <MobileMenu id={menuId} links={links} onClose={close} /> : null}
     </>
   )
 }

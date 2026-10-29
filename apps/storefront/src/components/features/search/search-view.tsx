@@ -6,12 +6,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { listProductsClient } from "@/lib/data/catalog"
-import {
-  FACET_LABELS,
-  facetValueLabel,
-  searchProducts,
-  type SearchHit,
-} from "@/lib/search-client"
+import { FACET_LABELS, facetValueLabel, searchProducts, type SearchHit } from "@/lib/search-client"
 import { track } from "@/lib/analytics"
 
 function productForHit(
@@ -110,7 +105,7 @@ export function SearchView({ regionId }: { regionId?: string }) {
 
       <div className="search-listing-frame mt-[2em]">
         <div className="search-listing-sidebar">
-          <div className="lg:sticky lg:top-[calc(var(--site-header-h)+1.5em)] lg:max-h-[calc(100svh-var(--site-header-h)-3em)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin]">
+          <div className="lg:sticky lg:top-[calc(var(--site-header-h)+1.5em)] lg:max-h-[calc(100svh-var(--site-header-h)-3em)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {facetGroups.length > 0 ? (
               <aside aria-label="Search filters" className="border-t border-[#CDCDCD]">
                 {facetGroups.map(([attr, values]) => (

@@ -1,3 +1,4 @@
+import { studioPiece, type AwardId } from "./studio-pieces"
 import type { Design3DState } from "@legacy-crafts/schemas"
 
 /**
@@ -64,12 +65,60 @@ export type PlateSpec = Option<string> & {
 }
 
 export const PLATES = [
-  { id: "brass", label: "Brushed brass", color: "#c9a45c", metalness: 1, roughness: 0.32, ink: "#2b1d10", brushed: true },
-  { id: "antique", label: "Antique brass", color: "#9c7a3e", metalness: 1, roughness: 0.48, ink: "#1f150a", brushed: true },
-  { id: "rose", label: "Rose gold", color: "#d29a86", metalness: 1, roughness: 0.22, ink: "#3a1c14", brushed: false },
-  { id: "copper", label: "Copper", color: "#b8693e", metalness: 1, roughness: 0.3, ink: "#2a120a", brushed: true },
-  { id: "nickel", label: "Polished nickel", color: "#d4d2cc", metalness: 1, roughness: 0.16, ink: "#1d1c1a", brushed: false },
-  { id: "black", label: "Black bronze", color: "#24211e", metalness: 0.75, roughness: 0.42, ink: "#d9b878", brushed: false },
+  {
+    id: "brass",
+    label: "Brushed brass",
+    color: "#c9a45c",
+    metalness: 1,
+    roughness: 0.32,
+    ink: "#2b1d10",
+    brushed: true,
+  },
+  {
+    id: "antique",
+    label: "Antique brass",
+    color: "#9c7a3e",
+    metalness: 1,
+    roughness: 0.48,
+    ink: "#1f150a",
+    brushed: true,
+  },
+  {
+    id: "rose",
+    label: "Rose gold",
+    color: "#d29a86",
+    metalness: 1,
+    roughness: 0.22,
+    ink: "#3a1c14",
+    brushed: false,
+  },
+  {
+    id: "copper",
+    label: "Copper",
+    color: "#b8693e",
+    metalness: 1,
+    roughness: 0.3,
+    ink: "#2a120a",
+    brushed: true,
+  },
+  {
+    id: "nickel",
+    label: "Polished nickel",
+    color: "#d4d2cc",
+    metalness: 1,
+    roughness: 0.16,
+    ink: "#1d1c1a",
+    brushed: false,
+  },
+  {
+    id: "black",
+    label: "Black bronze",
+    color: "#24211e",
+    metalness: 0.75,
+    roughness: 0.42,
+    ink: "#d9b878",
+    brushed: false,
+  },
 ] as const satisfies readonly PlateSpec[]
 
 export const PLATE_SHAPES = [
@@ -127,9 +176,33 @@ export type FontSpec = Option<string> & {
 }
 
 export const FONTS = [
-  { id: "serif", label: "Editorial serif", cssVar: "--font-playfair", family2d: "Playfair Display", style: "normal", weight: 500, caps: false },
-  { id: "italic", label: "Serif italic", cssVar: "--font-playfair", family2d: "Playfair Display", style: "italic", weight: 400, caps: false },
-  { id: "sans", label: "Modern sans", cssVar: "--font-inter", family2d: "Inter", style: "normal", weight: 500, caps: true },
+  {
+    id: "serif",
+    label: "Editorial serif",
+    cssVar: "--font-playfair",
+    family2d: "Playfair Display",
+    style: "normal",
+    weight: 500,
+    caps: false,
+  },
+  {
+    id: "italic",
+    label: "Serif italic",
+    cssVar: "--font-playfair",
+    family2d: "Playfair Display",
+    style: "italic",
+    weight: 400,
+    caps: false,
+  },
+  {
+    id: "sans",
+    label: "Modern sans",
+    cssVar: "--font-inter",
+    family2d: "Inter",
+    style: "normal",
+    weight: 500,
+    caps: true,
+  },
 ] as const satisfies readonly FontSpec[]
 
 /** Whether the plate shows the three engraving lines or a layout from the 2D editor. */
@@ -334,7 +407,8 @@ function hexLuminance(hex: string) {
   return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255
 }
 
-export const woodInk = (wood: WoodId) => (hexLuminance(getWood(wood).grain[0]) < 0.32 ? WOOD_ETCH : WOOD_BURN)
+export const woodInk = (wood: WoodId) =>
+  hexLuminance(getWood(wood).grain[0]) < 0.32 ? WOOD_ETCH : WOOD_BURN
 
 /** Engraving colour: an explicit fill, else the plate's natural cut colour or the wood burn. */
 export function inkFor(config: PlaqueConfig): string {
@@ -353,7 +427,10 @@ export type PlaqueVariant = {
 }
 
 /** Maps a size option onto the product's Medusa variant by its Size value, then by position. */
-export function resolveVariant(variants: readonly PlaqueVariant[], size: SizeId): PlaqueVariant | undefined {
+export function resolveVariant(
+  variants: readonly PlaqueVariant[],
+  size: SizeId
+): PlaqueVariant | undefined {
   const spec = SIZES.find((s) => s.id === size) ?? SIZES[0]
   const byLabel = variants.find((v) => spec.match.test(v.sizeLabel.trim()))
   if (byLabel) return byLabel
@@ -362,7 +439,10 @@ export function resolveVariant(variants: readonly PlaqueVariant[], size: SizeId)
 }
 
 /** Inverse of resolveVariant: the size option a Medusa variant id stands for. */
-export function sizeForVariant(variants: readonly PlaqueVariant[], variantId: string | undefined): SizeId | undefined {
+export function sizeForVariant(
+  variants: readonly PlaqueVariant[],
+  variantId: string | undefined
+): SizeId | undefined {
   if (!variantId) return undefined
   return SIZES.find((s) => resolveVariant(variants, s.id)?.id === variantId)?.id
 }
@@ -419,27 +499,34 @@ export type FaceLayout = {
 
 /** The option choices alone (no engraving copy), as saved with a design. */
 export function configOptions(config: PlaqueConfig): Record<OptionKey, string> {
-  return Object.fromEntries(OPTION_KEYS.map((key) => [key, config[key]])) as Record<OptionKey, string>
+  return Object.fromEntries(OPTION_KEYS.map((key) => [key, config[key]])) as Record<
+    OptionKey,
+    string
+  >
 }
 
 /**
  * Saved-design payload: a valid Design3DState (validated by the backend) plus
  * a `configurator` block that carries the full plaque spec for the workshop.
  */
-export function buildDesignState(config: PlaqueConfig, layout?: FaceLayout | null) {
+export function buildDesignState(
+  config: PlaqueConfig,
+  layout?: FaceLayout | null,
+  award?: AwardId
+) {
   const lines = engravingLines(config)
   const text = [lines.title, lines.name, lines.detail].filter(Boolean).join(" / ")
   const custom = config.face === "custom" && layout ? layout : null
   const state: Design3DState & {
     configurator: {
-      kind: "plaque"
-      options: Record<OptionKey, string>
+      kind: "plaque" | "trophy"
+      options: Record<OptionKey, string> & { piece?: string }
       lines: Record<LineKey, string>
       layout: { source: "2d"; fabric: unknown } | null
     }
   } = {
     version: 1,
-    baseModelId: "wall-plaque",
+    baseModelId: award ? studioPiece(award).handle : "wall-plaque",
     lod: "auto",
     material: PLATE_TO_MATERIAL[config.plate],
     environment: "studio",
@@ -448,8 +535,8 @@ export function buildDesignState(config: PlaqueConfig, layout?: FaceLayout | nul
       : null,
     logo: null,
     configurator: {
-      kind: "plaque",
-      options: configOptions(config),
+      kind: award ? "trophy" : "plaque",
+      options: { ...configOptions(config), ...(award ? { piece: award } : {}) },
       lines,
       layout: custom ? { source: "2d", fabric: custom.fabric } : null,
     },
@@ -461,18 +548,26 @@ export function buildDesignState(config: PlaqueConfig, layout?: FaceLayout | nul
 export function cartMetadata(
   config: PlaqueConfig,
   design: { id: string; name: string; preview_url: string | null },
+  award?: AwardId
 ) {
   return {
     design_id: design.id,
     design_name: design.name,
     preview_url: design.preview_url,
     customization_mode: "3d",
-    configuration: { ...summarizeConfig(config), engraving: engravingLines(config) },
+    configuration: {
+      ...summarizeConfig(config),
+      ...(award ? { model: studioPiece(award).label, piece: award } : {}),
+      engraving: engravingLines(config),
+    },
   }
 }
 
-export function designName(config: PlaqueConfig): string {
+export function designName(config: PlaqueConfig, award?: AwardId): string {
   const lines = engravingLines(config)
   const lead = lines.name || lines.title || "Custom layout"
-  return `${lead} — ${labelOf(WOODS, config.wood)} plaque`.slice(0, 120)
+  return `${lead} — ${award ? studioPiece(award).label : `${labelOf(WOODS, config.wood)} plaque`}`.slice(
+    0,
+    120
+  )
 }

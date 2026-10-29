@@ -8,8 +8,6 @@ export const FOOTER_BODY =
 export const FOOTER_CTA_LABEL = "Shop the collection"
 export const FOOTER_CTA_HREF = "/shop"
 
-export const FOOTER_WORDMARK = "legacy"
-
 export const FOOTER_NAV = [
   {
     title: "Shop",
@@ -53,30 +51,30 @@ export const FOOTER_NAV = [
 ] as const
 
 /**
- * Transparent cutouts on the footer orbit, in ring order. File names do not all
- * match their subjects (`coffee-table.png` is the dining set and vice versa);
- * the alt text follows the picture.
+ * Transparent cutouts on the footer orbit, in ring order: the sculpture and
+ * award pieces that make up the current collection, cut from the studio
+ * photography. Five cards keep the ring readable at footer width.
  */
 export const FOOTER_ORBIT = [
   {
-    src: "/images/footer/longue-chair.png",
-    alt: "Walnut lounge chair with oatmeal upholstery and brass-capped legs",
+    src: "/images/footer/orbit-loop-sculpture.png",
+    alt: "Verdigris bronze loop sculpture",
   },
   {
-    src: "/images/footer/dining-set.png",
-    alt: "Round oak coffee table with a brass tray and stacked books",
+    src: "/images/footer/orbit-statuette.png",
+    alt: "Gilded figure statuette on a black marble plinth",
   },
   {
-    src: "/images/footer/bookshelf.png",
-    alt: "Walnut and brass bookshelf with lit shelves and a cabinet base",
+    src: "/images/footer/orbit-sunburst-sculpture.png",
+    alt: "Bronze sunburst disc on a marble base",
   },
   {
-    src: "/images/footer/coffee-table.png",
-    alt: "Walnut oval dining table with three cream-seated chairs",
+    src: "/images/footer/orbit-rings-sculpture.png",
+    alt: "Interlocking gilt-bronze rings on a marble foot",
   },
   {
-    src: "/images/footer/armchair.png",
-    alt: "Bouclé armchair with a walnut frame and brass feet",
+    src: "/images/footer/orbit-fluted-sculpture.png",
+    alt: "Fluted bronze oval ring",
   },
 ] as const
 

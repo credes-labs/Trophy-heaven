@@ -32,7 +32,7 @@ import "@/components/features/checkout/checkout.css"
 
 function CheckoutCanvas({ children }: { children: ReactNode }) {
   return (
-    <EditorialShell className="checkout-page bg-[#FBFBF7] font-sans text-[#131111]">
+    <EditorialShell className="checkout-page font-sans text-[#131111]">
       <div className="checkout-veil" aria-hidden="true" />
       <EditorialFrame>{children}</EditorialFrame>
     </EditorialShell>

@@ -1,6 +1,6 @@
 "use client"
 
-import { SiteNav, SiteNavMobile } from "@/components/layout/site-nav/site-nav"
+import { SiteNav } from "@/components/layout/site-nav/site-nav"
 
 /** Overlay header matching the Figma hero: wordmark | 2-col nav | search + cart. */
 export function HeroNav() {
@@ -9,8 +9,4 @@ export function HeroNav() {
       <SiteNav />
     </header>
   )
-}
-
-export function HeroNavMobile() {
-  return <SiteNavMobile />
 }

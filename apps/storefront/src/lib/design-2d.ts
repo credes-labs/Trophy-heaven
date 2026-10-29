@@ -52,7 +52,8 @@ export function buildDesign2DState(
     engravingSafeArea: DEFAULT_SAFE_AREA,
     objects: objects
       .map((o) => {
-        if (o.type === "i-text" || o.type === "text" || o.type === "textbox") {
+        const type = o.type?.toLowerCase()
+        if (type === "i-text" || type === "itext" || type === "text" || type === "textbox") {
           return {
             type: "text" as const,
             id: o.id ?? crypto.randomUUID(),
@@ -61,8 +62,7 @@ export function buildDesign2DState(
             fontSize: o.fontSize ?? 40,
             fill: typeof o.fill === "string" ? o.fill : "#1a1a1a",
             fontWeight: (o.fontWeight === "bold" || o.fontWeight === 700 ? "bold" : "normal") as
-              | "bold"
-              | "normal",
+              "bold" | "normal",
             fontStyle: (o.fontStyle === "italic" ? "italic" : "normal") as "italic" | "normal",
             underline: false,
             textAlign: (["left", "center", "right"].includes(o.textAlign ?? "")
@@ -79,7 +79,7 @@ export function buildDesign2DState(
             visible: o.visible ?? true,
           }
         }
-        if (o.type === "image") {
+        if (type === "image") {
           return {
             type: "image" as const,
             id: o.id ?? crypto.randomUUID(),

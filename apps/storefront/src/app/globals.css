@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../components/globe-demo.tsx";
 
 @theme {
   /* ── Brand Category Colors ── */

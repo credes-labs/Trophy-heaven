@@ -16,14 +16,14 @@ import { createPortal } from "react-dom"
 import * as THREE from "three"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Environment, PerspectiveCamera, Shadow, View } from "@react-three/drei"
-import type { FurnitureKind } from "./constants"
+import type { ProductKind } from "./constants"
 import {
-  FURNITURE,
-  furnitureBounds,
-  retainFurniture,
-  uploadFurnitureTextures,
-  type FurnitureBounds,
-} from "./furniture-models"
+  PRODUCT_MODELS,
+  productBounds,
+  retainProducts,
+  uploadProductTextures,
+  type ProductBounds,
+} from "./product-models"
 
 const CAMERA_Y = 0.85
 const CAMERA_Z = 4.7
@@ -41,7 +41,7 @@ const EXIT = 0.42
 /** Slots never hold more than this many pieces while sweeping across categories. */
 const MAX_PIECES = 3
 
-const KINDS = Object.keys(FURNITURE) as FurnitureKind[]
+const KINDS = Object.keys(PRODUCT_MODELS) as ProductKind[]
 
 const easeOutCubic = (x: number) => 1 - (1 - x) ** 3
 
@@ -58,7 +58,7 @@ const fitted = new Map<string, number>()
  * on the origin) projects inside FILL of a view with this aspect, so no yaw
  * can clip it. Scaling about the centre keeps every enter/exit frame inside too.
  */
-function fitScale(kind: FurnitureKind, b: FurnitureBounds, aspect: number) {
+function fitScale(kind: ProductKind, b: ProductBounds, aspect: number) {
   const key = `${kind}:${aspect.toFixed(3)}`
   const known = fitted.get(key)
   if (known !== undefined) return known
@@ -77,7 +77,8 @@ function fitScale(kind: FurnitureKind, b: FurnitureBounds, aspect: number) {
           .multiplyScalar(scale)
           .applyMatrix4(fitCamera.matrixWorldInverse)
         const depth = -point.z
-        if (depth <= 0 || Math.abs(point.x) > tanX * depth || Math.abs(point.y) > tanY * depth) return false
+        if (depth <= 0 || Math.abs(point.x) > tanX * depth || Math.abs(point.y) > tanY * depth)
+          return false
       }
     }
     return true
@@ -95,21 +96,21 @@ function fitScale(kind: FurnitureKind, b: FurnitureBounds, aspect: number) {
 
 type Entry = {
   id: number
-  kind: FurnitureKind
+  kind: ProductKind
   leaving: boolean
   /** Which way the piece is offset while not fully in: +1 above, -1 below. */
   side: 1 | -1
   delay: number
 }
 
-type SlotState = { kind: FurnitureKind; nextId: number; entries: Entry[] }
+type SlotState = { kind: ProductKind; nextId: number; entries: Entry[] }
 
 function swapEntries(
   state: SlotState,
-  kind: FurnitureKind,
+  kind: ProductKind,
   index: number,
   direction: 1 | -1,
-  reduced: boolean,
+  reduced: boolean
 ): SlotState {
   if (reduced) {
     return {
@@ -126,7 +127,13 @@ function swapEntries(
   })
   let nextId = state.nextId
   if (!revive) {
-    entries.push({ id: nextId++, kind, leaving: false, side: direction, delay: 0.16 + index * 0.07 })
+    entries.push({
+      id: nextId++,
+      kind,
+      leaving: false,
+      side: direction,
+      delay: 0.16 + index * 0.07,
+    })
   }
   while (entries.length > MAX_PIECES) {
     const oldest = entries.findIndex((e) => e.leaving)
@@ -147,18 +154,18 @@ function Piece({
   reduced: boolean
   onExited: (id: number) => void
 }) {
-  const Model = FURNITURE[entry.kind]
+  const Model = PRODUCT_MODELS[entry.kind]
   const group = useRef<THREE.Group>(null)
   const model = useRef<THREE.Group>(null)
   const shadow = useRef<THREE.Group>(null)
-  const bounds = useRef<FurnitureBounds | null>(null)
+  const bounds = useRef<ProductBounds | null>(null)
   const progress = useRef(reduced ? 1 : 0)
   const wait = useRef(entry.delay)
   const phase = useRef(entry.leaving)
   const exited = useRef(false)
 
   useLayoutEffect(() => {
-    if (model.current) bounds.current = furnitureBounds(entry.kind, model.current)
+    if (model.current) bounds.current = productBounds(entry.kind, model.current)
   }, [entry.kind])
 
   useFrame((state, delta) => {
@@ -207,7 +214,7 @@ function Piece({
   return (
     <>
       <group ref={group} rotation={[0, BASE_YAW, 0]} scale={0.0001}>
-        <group ref={model}>
+        <group ref={model} dispose={null}>
           <Model />
         </group>
       </group>
@@ -224,7 +231,7 @@ function Slot({
   direction,
   reduced,
 }: {
-  kind: FurnitureKind
+  kind: ProductKind
   index: number
   direction: 1 | -1
   reduced: boolean
@@ -332,7 +339,7 @@ function Prewarm() {
     let idle: number | undefined
     void gl.compileAsync(scene, camera).then(() => {
       if (cancelled) return
-      uploadFurnitureTextures(gl)
+      uploadProductTextures(gl)
       const next = () => setStep((s) => s + 1)
       idle = window.requestIdleCallback
         ? window.requestIdleCallback(next, { timeout: 500 })
@@ -348,9 +355,9 @@ function Prewarm() {
 
   const kind = KINDS[step]
   if (!kind) return null
-  const Model = FURNITURE[kind]
+  const Model = PRODUCT_MODELS[kind]
   return (
-    <group position={[0, 0, CAMERA_Z + 40]}>
+    <group position={[0, 0, CAMERA_Z + 40]} dispose={null}>
       <Model key={kind} />
     </group>
   )
@@ -360,18 +367,38 @@ function trackRef(slot: RefObject<HTMLDivElement | null>): RefObject<HTMLElement
   return slot as unknown as RefObject<HTMLElement>
 }
 
+function CanvasStatus({ onReady, onFailure }: { onReady: () => void; onFailure: () => void }) {
+  const gl = useThree((s) => s.gl)
+  const painted = useRef(false)
+  useFrame(() => {
+    if (painted.current) return
+    painted.current = true
+    onReady()
+  })
+  useEffect(() => {
+    const canvas = gl.domElement
+    canvas.addEventListener("webglcontextlost", onFailure)
+    return () => canvas.removeEventListener("webglcontextlost", onFailure)
+  }, [gl, onFailure])
+  return null
+}
+
 function Stage({
   layout,
   slots,
   pieces,
   direction,
   reduced,
+  onReady,
+  onFailure,
 }: {
   layout: "desktop" | "mobile"
   slots: readonly RefObject<HTMLDivElement | null>[]
-  pieces: readonly FurnitureKind[]
+  pieces: readonly ProductKind[]
   direction: 1 | -1
   reduced: boolean
+  onReady: () => void
+  onFailure: () => void
 }) {
   const environment = useStudioEnvironment()
   if (!environment) return null
@@ -383,6 +410,7 @@ function Stage({
       <View key={`${layout}-${index}`} track={trackRef(slot)} index={index + 1}>
         <SlotLights environment={environment} />
         <Slot kind={kind} index={index} direction={direction} reduced={reduced} />
+        {index === 0 ? <CanvasStatus onReady={onReady} onFailure={onFailure} /> : null}
         {index === 0 ? <Prewarm /> : null}
       </View>
     )
@@ -396,17 +424,21 @@ export function CategoryCanvas({
   direction,
   reduced,
   running,
+  onReady,
+  onFailure,
 }: {
   layout: "desktop" | "mobile"
   slots: readonly RefObject<HTMLDivElement | null>[]
-  pieces: readonly FurnitureKind[]
+  pieces: readonly ProductKind[]
   direction: 1 | -1
   reduced: boolean
   running: boolean
+  onReady: () => void
+  onFailure: () => void
 }) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  useEffect(() => retainFurniture(), [])
+  useEffect(() => retainProducts(), [])
   if (!mounted) return null
 
   return createPortal(
@@ -415,12 +447,28 @@ export function CategoryCanvas({
       dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: true }}
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
-      style={{ position: "fixed", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 30 }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: 30,
+      }}
       aria-hidden
+      data-category-canvas
     >
       <View.Port />
-      <Stage layout={layout} slots={slots} pieces={pieces} direction={direction} reduced={reduced} />
+      <Stage
+        layout={layout}
+        slots={slots}
+        pieces={pieces}
+        direction={direction}
+        reduced={reduced}
+        onReady={onReady}
+        onFailure={onFailure}
+      />
     </Canvas>,
-    document.body,
+    document.body
   )
 }

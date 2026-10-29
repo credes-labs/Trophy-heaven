@@ -1,5 +1,5 @@
 import Link from "next/link"
-import Image from "next/image"
+import { CategoryHeroModels } from "./category-hero-models"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,20 +7,8 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import type { CategoryAccent, CategoryConfig } from "@/lib/category-config"
+import type { CategoryConfig } from "@/lib/category-config"
 import { cn } from "@/lib/utils"
-
-const HERO_GRADIENT: Record<CategoryAccent, string> = {
-  trophy: "from-trophy/90 via-trophy-dark/50 to-transparent",
-  furniture: "from-furniture/90 via-furniture-dark/50 to-transparent",
-  artwork: "from-artwork/90 via-artwork-dark/50 to-transparent",
-}
-
-const HERO_BASE: Record<CategoryAccent, string> = {
-  trophy: "bg-trophy-dark",
-  furniture: "bg-furniture-dark",
-  artwork: "bg-artwork-dark",
-}
 
 export type CategoryHeroProps = {
   config: CategoryConfig
@@ -31,67 +19,32 @@ export type CategoryHeroProps = {
 export function CategoryHero({ config, productCount, className }: CategoryHeroProps) {
   return (
     <section
-      className={cn(
-        "relative flex h-[40vh] min-h-[240px] w-full items-end overflow-hidden md:h-[50vh]",
-        HERO_BASE[config.accent],
-        className
-      )}
+      className={cn("mx-auto grid w-full max-w-7xl items-center gap-6 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:gap-10 lg:py-14", className)}
+      aria-label={`${config.label} collection`}
     >
-      <Image
-        src={config.imageSrc}
-        alt={config.imageAlt}
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-right"
-      />
-      <div
-        className={cn("absolute inset-0 bg-gradient-to-t", HERO_GRADIENT[config.accent])}
-        aria-hidden
-      />
-      <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-r",
-          HERO_GRADIENT[config.accent]
-        )}
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 30%, oklch(1 0 0 / 0.15), transparent 50%), radial-gradient(circle at 80% 70%, oklch(1 0 0 / 0.08), transparent 40%)",
-        }}
-        aria-hidden
-      />
-
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-8 pt-16 sm:px-6 md:pb-12">
-        <Breadcrumb className="mb-3">
-          <BreadcrumbList className="text-white/70">
+      <div>
+        <Breadcrumb className="mb-5">
+          <BreadcrumbList className="text-[#6B635C]">
             <BreadcrumbItem>
-              <Link href="/" className="transition-colors hover:text-white">
-                Home
-              </Link>
+              <Link href="/" className="transition-colors hover:text-[#131111]">Home</Link>
             </BreadcrumbItem>
-            <BreadcrumbSeparator className="text-white/80" />
+            <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <span className="font-medium text-white" aria-current="page">
-                {config.label}
-              </span>
+              <span className="text-[#131111]" aria-current="page">{config.label}</span>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-
-        <h1 className="font-outfit text-4xl font-semibold text-balance text-white md:text-5xl">
+        <h1 className="font-outfit text-4xl leading-[1.05] font-medium tracking-[-0.035em] text-balance text-[#131111] sm:text-5xl lg:text-6xl">
           {config.headline}
         </h1>
-        <p className="mt-2 max-w-2xl text-pretty text-base text-white/80 md:text-lg">{config.description}</p>
+        <p className="mt-5 max-w-lg text-pretty text-base leading-relaxed text-[#6B635C] md:text-lg">{config.description}</p>
         {typeof productCount === "number" && (
-          <p className="mt-3 text-sm text-white/80">
+          <p className="mt-5 text-sm text-[#6B635C]">
             {productCount} product{productCount === 1 ? "" : "s"}
           </p>
         )}
       </div>
+      <CategoryHeroModels key={config.key} category={config.key} />
     </section>
   )
 }

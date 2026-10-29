@@ -11,10 +11,14 @@ type Stored = FaceLayout & { productId: string }
 
 export function readLayout(productId: string): FaceLayout | null {
   try {
-    const raw = sessionStorage.getItem(KEY)
+    const raw = sessionStorage.getItem(`${KEY}:${productId}`) ?? sessionStorage.getItem(KEY)
     if (!raw) return null
     const stored = JSON.parse(raw) as Partial<Stored>
-    if (stored.productId !== productId || typeof stored.image !== "string" || !stored.image.startsWith("data:image/png")) {
+    if (
+      stored.productId !== productId ||
+      typeof stored.image !== "string" ||
+      !stored.image.startsWith("data:image/png")
+    ) {
       return null
     }
     return { image: stored.image, fabric: stored.fabric ?? null, area: stored.area }
@@ -25,7 +29,10 @@ export function readLayout(productId: string): FaceLayout | null {
 
 export function writeLayout(productId: string, layout: FaceLayout): boolean {
   try {
-    sessionStorage.setItem(KEY, JSON.stringify({ ...layout, productId } satisfies Stored))
+    sessionStorage.setItem(
+      `${KEY}:${productId}`,
+      JSON.stringify({ ...layout, productId } satisfies Stored)
+    )
     return true
   } catch {
     // Quota exceeded or storage disabled.
@@ -33,8 +40,9 @@ export function writeLayout(productId: string, layout: FaceLayout): boolean {
   }
 }
 
-export function clearLayout() {
+export function clearLayout(productId?: string) {
   try {
+    if (productId) sessionStorage.removeItem(`${KEY}:${productId}`)
     sessionStorage.removeItem(KEY)
   } catch {
     // Storage disabled.

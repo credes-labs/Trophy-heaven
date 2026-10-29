@@ -17,6 +17,11 @@ that matches how much you need to know.
 
 | # | Title | Layer-2 anchor |
 |---|-------|----------------|
+| 054 | [Category collection 3D heroes](L3/054-category-collection-heroes.md) | WP-80 |
+| 053 | [Gold contact globe](L3/053-contact-globe.md) | WP-78 |
+| 052 | [Photo-referenced trophy studio](L3/052-trophy-studio.md) | WP-76 |
+| 051 | [Mobile header and menu](L3/051-mobile-navigation.md) | WP-74 |
+| 050 | [Category product WebGL](L3/050-category-product-webgl.md) | WP-73 |
 | 001 | [Brand foundation & design system](L3/001-brand-foundation.md) | WP-01 |
 | 002 | [Backend hardening: Razorpay chain, modules, seeds](L3/002-backend-hardening.md) | WP-02 |
 | 003 | [Storefront commerce wiring](L3/003-commerce-wiring.md) | WP-03 |
@@ -61,6 +66,7 @@ that matches how much you need to know.
 | 039 | [Homepage material specimens](L3/039-materials-specimens.md) | WP-51 |
 | 040 | [Categories 3D furniture](L3/040-category-furniture-3d.md) | WP-52 |
 | 041 | [Category furniture transitions](L3/041-category-furniture-transitions.md) | WP-53 |
+| 049 | [New photography: hero, sculpture collection, campaign set](L3/049-new-photography.md) | WP-70 |
 | 043 | [/customize 3D plaque configurator](L3/043-customize-3d-configurator.md) | WP-56 |
 
 

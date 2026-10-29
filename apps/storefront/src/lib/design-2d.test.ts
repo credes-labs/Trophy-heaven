@@ -28,6 +28,19 @@ describe("buildDesign2DState", () => {
     )
     expect(state.objects[0].type).toBe("image")
   })
+
+  it("keeps Fabric 7 serialized text and image classes when saving", () => {
+    const state = buildDesign2DState(
+      [
+        { ...textInSafeArea, type: "IText" },
+        { type: "Image", id: "logo", src: "data:image/png;base64,AAAA", left: 200, top: 400 },
+      ],
+      { material: "gold" }
+    )
+    expect(state.objects).toHaveLength(2)
+    expect(state.objects[0]).toMatchObject({ type: "text", text: "Champion 2026" })
+    expect(state.objects[1]).toMatchObject({ type: "image", id: "logo" })
+  })
 })
 
 describe("validateDesign2D", () => {
@@ -37,10 +50,7 @@ describe("validateDesign2D", () => {
   })
 
   it("flags text outside the safe area", () => {
-    const state = buildDesign2DState(
-      [{ ...textInSafeArea, left: 5, top: 5 }],
-      { material: null }
-    )
+    const state = buildDesign2DState([{ ...textInSafeArea, left: 5, top: 5 }], { material: null })
     expect(validateDesign2D(state).some((e) => e.includes("safe area"))).toBe(true)
   })
 
@@ -51,10 +61,9 @@ describe("validateDesign2D", () => {
   })
 
   it("flags overly long text", () => {
-    const state = buildDesign2DState(
-      [{ ...textInSafeArea, text: "x".repeat(200) }],
-      { material: null }
-    )
+    const state = buildDesign2DState([{ ...textInSafeArea, text: "x".repeat(200) }], {
+      material: null,
+    })
     expect(validateDesign2D(state).some((e) => e.includes("characters"))).toBe(true)
   })
 })

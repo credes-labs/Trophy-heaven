@@ -375,7 +375,7 @@ export function ShopClient({
 
         <div className="shop-listing-frame">
           <div className="shop-listing-sidebar" aria-hidden={!filtersOpen}>
-            <div className="shop-listing-sidebar-inner lg:sticky lg:top-[calc(var(--site-header-h)+1.5em)] lg:max-h-[calc(100svh-var(--site-header-h)-3em)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin]">
+            <div className="shop-listing-sidebar-inner lg:sticky lg:top-[calc(var(--site-header-h)+1.5em)] lg:max-h-[calc(100svh-var(--site-header-h)-3em)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {filterPanel}
             </div>
           </div>
