@@ -2,7 +2,6 @@
 
 import { Component, useCallback, useState, type ReactNode } from "react"
 import dynamic from "next/dynamic"
-import Image from "next/image"
 import { RotateCcw, RotateCw, Scan } from "lucide-react"
 import { studioPiece, type AwardId } from "@/lib/configurator/studio-pieces"
 import type { PlaqueConfig } from "@/lib/configurator/plaque"
@@ -45,6 +44,7 @@ export function AwardStage({
   return (
     <div
       data-award-stage
+      aria-busy={!ready && !failed}
       className="relative h-full w-full bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]"
     >
       <div
@@ -66,22 +66,11 @@ export function AwardStage({
             </SceneBoundary>
           </div>
         ) : null}
-        {!ready ? (
-          <div className="absolute inset-0 px-[20%] pt-16 pb-16">
-            <Image
-              src={piece.cutout}
-              alt={piece.label}
-              fill
-              sizes="70vw"
-              className="object-contain p-20"
-            />
-            {failed ? (
-              <p className="absolute inset-x-0 bottom-4 m-0 text-center text-xs text-[#6B635C]">
-                3D unavailable. Use 2D design for a live engraving proof.
-              </p>
-            ) : null}
-          </div>
-        ) : null}
+        {failed && (
+          <p role="status" className="absolute inset-x-0 bottom-4 m-0 text-center text-xs text-[#6B635C]">
+            3D unavailable. Use 2D design for a live engraving proof.
+          </p>
+        )}
       </div>
       <div className="absolute right-4 bottom-4 flex gap-2">
         {[

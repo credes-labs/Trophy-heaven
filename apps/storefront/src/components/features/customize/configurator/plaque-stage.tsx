@@ -26,7 +26,7 @@ const noopSubscribe = () => () => {}
 const controlClass =
   "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
-/** 3D stage with orbit + keyboard turn controls; falls back to the flat drawing without WebGL. */
+/** 3D stage with orbit + keyboard turn controls; shows the flat drawing only when WebGL is unavailable. */
 export function PlaqueStage({
   config,
   layoutImage,
@@ -39,7 +39,6 @@ export function PlaqueStage({
   const webgl = useSyncExternalStore(noopSubscribe, detectWebGL, () => null)
   const [view, setView] = useState<StageView>({ yaw: 0, reset: 0 })
   const [active, setActive] = useState(true)
-  const [ready, setReady] = useState(false)
   const frame = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -49,18 +48,6 @@ export function PlaqueStage({
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
-
-  useEffect(() => {
-    if (!webgl) return
-    // Keep the flat drawing up until the scene module has had a frame to paint.
-    let cancelled = false
-    void import("./plaque-scene").then(() => {
-      if (!cancelled) requestAnimationFrame(() => !cancelled && setReady(true))
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [webgl])
 
   const s = summarizeConfig(config)
   const label = `Preview: ${s.form.toLowerCase()} ${s.wood.toLowerCase()} plaque, ${s.finish.toLowerCase()}, ${s.plate.toLowerCase()} ${s.plateShape.toLowerCase()} plate, ${s.mount.toLowerCase()}, ${s.size}.`
@@ -74,14 +61,11 @@ export function PlaqueStage({
         {webgl ? (
           <PlaqueScene config={config} layoutImage={layoutImage} view={view} reduced={reduced} active={active} />
         ) : null}
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-0 flex items-center justify-center p-[6%] transition-opacity duration-700 motion-reduce:duration-0 ${
-            webgl === true && ready ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          <PlaquePreview2D config={config} layoutImage={layoutImage} className="h-full max-h-[34rem] w-full" />
-        </div>
+        {webgl === false ? (
+          <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center p-[6%]">
+            <PlaquePreview2D config={config} layoutImage={layoutImage} className="h-full max-h-[34rem] w-full" />
+          </div>
+        ) : null}
       </div>
 
       {webgl === false ? (

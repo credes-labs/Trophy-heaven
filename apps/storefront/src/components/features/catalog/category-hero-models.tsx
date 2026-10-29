@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import dynamic from "next/dynamic"
-import Image from "next/image"
 import { CanvasBoundary } from "@/components/sections/products-categories/canvas-boundary"
 import { DISCIPLINES, PRODUCT_LABELS, type DisciplineId } from "@/components/sections/products-categories/constants"
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion"
@@ -51,7 +50,7 @@ export function CategoryHeroModels({ category }: { category: CategoryKey }) {
   }, [])
 
   return (
-    <div ref={root} data-category-hero-models={category} className="grid w-full grid-cols-3 items-center gap-2 lg:gap-4">
+    <div ref={root} data-category-hero-models={category} aria-busy={!ready && !failed} className="grid w-full grid-cols-3 items-center gap-2 lg:gap-4">
       {discipline.pieces.map((piece, index) => (
         <div
           key={piece}
@@ -59,12 +58,9 @@ export function CategoryHeroModels({ category }: { category: CategoryKey }) {
           role="img"
           aria-label={PRODUCT_LABELS[piece]}
           className="pointer-events-none relative h-[11rem] min-w-0 sm:h-[16rem] lg:h-[22rem]"
-        >
-          {!ready && (
-            <Image src={discipline.images[index]!} alt="" fill sizes="(min-width: 1024px) 17vw, 30vw" className="object-contain" />
-          )}
-        </div>
+        />
       ))}
+      {failed && <p role="status" className="col-span-3 text-center text-xs text-[#6B635C]">3D preview unavailable.</p>}
       {near && !failed && (
         <CanvasBoundary onFailure={onFailure}>
           <CategoryCanvas

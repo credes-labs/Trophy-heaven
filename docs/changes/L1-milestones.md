@@ -265,3 +265,12 @@ Replaced the large text wordmark with the supplied black vector artwork, scaled 
 
 ## 2026-10-29 - Collection pages use shared 3D products
 Artwork, furniture and trophies replace tinted photo banners with matching category models and share the footer surface. See L2 WP-80.
+
+## 2026-10-29 - Rotating studio choices and mobile trophy hero
+Design Studio choice cards now show rotating award models; mobile homepage uses a trophy-focused photograph with space for legible copy. See L2 WP-81.
+
+## 2026-10-29 - 3D displays load without photo flashes
+Collection, homepage category and studio 3D displays no longer show temporary product photos during WebGL startup. See L2 WP-82.
+
+## 2026-10-29 - Press and careers chair drawing
+/press and /careers heroes now show the barrel-armchair technical sheet from the sign-in/sign-up pages on wide screens. See L2 WP-83.

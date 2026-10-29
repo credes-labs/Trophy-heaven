@@ -2,7 +2,7 @@
 
 import { Component, type ReactNode } from "react"
 
-/** Product photographs remain available when WebGL cannot start. */
+/** Hides a 3D canvas that throws and reports the failure so the parent can show a status. */
 export class CanvasBoundary extends Component<
   { children: ReactNode; onFailure: () => void },
   { failed: boolean }

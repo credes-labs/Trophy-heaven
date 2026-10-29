@@ -32,6 +32,7 @@ export default function CareersPage() {
         watermark="work"
         title="Work at the bench."
         body="Open roles across craft, design, and operations in Bengaluru."
+        illustration
       >
         <EditorialCtaLink href="mailto:careers@legacycrafts.com">Send a CV</EditorialCtaLink>
       </SimplePageHero>

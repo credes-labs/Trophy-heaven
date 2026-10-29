@@ -8,7 +8,6 @@ import {
   type RefObject,
 } from "react"
 import dynamic from "next/dynamic"
-import Image from "next/image"
 import Link from "next/link"
 import { CanvasBoundary } from "./canvas-boundary"
 
@@ -117,7 +116,7 @@ export function CategoryStage() {
   }, [])
 
   return (
-    <div ref={stageRef} className="relative mt-[6.125em] min-h-[35.4em]">
+    <div ref={stageRef} aria-busy={!canvasReady && !canvasFailed} className="relative mt-[6.125em] min-h-[35.4em]">
       <p className="m-0 text-center font-outfit text-[1.5em] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
         {CATEGORY_EYEBROW}
       </p>
@@ -135,9 +134,7 @@ export function CategoryStage() {
             aria-label={PRODUCT_LABELS[active.pieces[i]!]}
             className={`pointer-events-none hidden lg:block ${position}`}
           >
-            {!canvasReady ? (
-              <Image src={active.images[i]!} alt="" fill sizes="25vw" className="object-contain" />
-            ) : null}
+
           </div>
         ))}
 
@@ -149,20 +146,11 @@ export function CategoryStage() {
               role="img"
               aria-label={PRODUCT_LABELS[piece]}
               className="pointer-events-none relative h-[8.5em] w-[6.5em]"
-            >
-              {!canvasReady ? (
-                <Image
-                  src={active.images[i]!}
-                  alt=""
-                  fill
-                  sizes="30vw"
-                  className="object-contain"
-                />
-              ) : null}
-            </div>
+            />
           ))}
         </div>
 
+        {canvasFailed && <p role="status" className="text-center text-xs text-[#6B635C]">3D preview unavailable.</p>}
         {near && !canvasFailed ? (
           <CanvasBoundary onFailure={onFailure}>
             <CategoryCanvas
