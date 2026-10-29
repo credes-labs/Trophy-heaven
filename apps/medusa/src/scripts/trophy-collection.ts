@@ -29,7 +29,7 @@ const PIECES: Trophy[] = [
     description:
       "A gilded figure in a classic stance, standing on a black marble plinth over a mahogany foot.",
     category: "Corporate",
-    image: IMG("trophy-achievement-statuette.jpg"),
+    image: IMG("trophy-achievement-statuette.webp"),
     usd: 180,
     material: "brass",
     shape: "Achieve",
@@ -40,7 +40,7 @@ const PIECES: Trophy[] = [
     description:
       "An open-shouldered figure rising through a ring, cast in brass and set on an octagonal mahogany base.",
     category: "Corporate",
-    image: IMG("trophy-figure-award.jpg"),
+    image: IMG("trophy-figure-award.webp"),
     usd: 240,
     material: "brass",
     shape: "Ascent",

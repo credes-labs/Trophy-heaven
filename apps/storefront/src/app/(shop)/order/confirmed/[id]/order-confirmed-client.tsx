@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { localizeImageUrl } from "@/lib/images"
 import Link from "next/link"
 import type { HttpTypes } from "@medusajs/types"
 import { CheckCircle2, Truck } from "lucide-react"
@@ -140,7 +141,7 @@ export function OrderConfirmedClient({ id }: { id: string }) {
               <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
                 {item.thumbnail ? (
                   // Raw <img> used intentionally (dynamic backend URLs; Next/Image domain config not required here).
-                  <img src={item.thumbnail} alt="" className="h-full w-full object-cover" />
+                  <img src={localizeImageUrl(item.thumbnail)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">

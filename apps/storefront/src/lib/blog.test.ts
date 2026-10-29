@@ -6,9 +6,9 @@ describe("journalCoverSrc", () => {
     expect(
       journalCoverSrc({
         slug: "any",
-        cover_image_url: "http://localhost:3000/images/blog/blog-design.jpg",
+        cover_image_url: "http://localhost:3000/images/blog/blog-design.webp",
       })
-    ).toBe("/images/blog/blog-design.jpg")
+    ).toBe("/images/blog/blog-design.webp")
   })
 
   it("picks a stable workshop fallback when Medusa has no cover", () => {

@@ -16,7 +16,7 @@ export function AboutFeature() {
     <div className="relative mt-[clamp(2em,4.3vw,4.3125em)] w-full">
       <div className="relative aspect-[1360/664] w-full overflow-hidden rounded-[0.125em]">
         <Image
-          src="/images/about/about-legacy-atelier.jpg"
+          src="/images/about/about-legacy-atelier.webp"
           alt="Sculptural walnut sofa in a dark atelier"
           fill
           sizes="(min-width: 90rem) 85rem, 100vw"

@@ -31,13 +31,13 @@ const FEATURED_PRODUCTS = [
   {
     name: "Brass Nesting Tables",
     price: "₹54,400",
-    image: "/images/catalog/table-brass-nesting-1.jpg",
+    image: "/images/catalog/table-brass-nesting-1.webp",
     href: "/products/brass-nesting-tables",
   },
   {
     name: "Achievement Statuette",
     price: "₹15,300",
-    image: "/images/catalog/trophy-achievement-statuette.jpg",
+    image: "/images/catalog/trophy-achievement-statuette.webp",
     href: "/products/achievement-statuette",
   },
 ]

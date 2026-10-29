@@ -31,7 +31,7 @@ const PIECES: FurniturePiece[] = [
     description:
       "A pair of cast-brass tripod tables with shallow tray tops, sized to nest or split apart either side of a sofa.",
     category: "Tables",
-    images: [IMG("table-brass-nesting-1.jpg"), IMG("table-brass-nesting-2.jpg")],
+    images: [IMG("table-brass-nesting-1.webp"), IMG("table-brass-nesting-2.webp")],
     usd: 640,
     material: "brass",
     shape: "Nest",
@@ -42,7 +42,7 @@ const PIECES: FurniturePiece[] = [
     description:
       "A honed marble disc on a slim brass column, weighted by a solid stone foot.",
     category: "Tables",
-    images: [IMG("table-marble-side.jpg")],
+    images: [IMG("table-marble-side.webp")],
     usd: 780,
     material: "marble",
     shape: "Side",
@@ -53,7 +53,7 @@ const PIECES: FurniturePiece[] = [
     description:
       "A hexagonal glass top over a brass frame, sized low enough to sit beside a lounge chair.",
     category: "Tables",
-    images: [IMG("table-brass-hex-glass.jpg")],
+    images: [IMG("table-brass-hex-glass.webp")],
     usd: 920,
     material: "glass",
     shape: "Hex",
@@ -64,7 +64,7 @@ const PIECES: FurniturePiece[] = [
     description:
       "An octagonal marble slab on a brass base, cut so the grain runs uninterrupted across the top.",
     category: "Tables",
-    images: [IMG("table-marble-octagon.jpg")],
+    images: [IMG("table-marble-octagon.webp")],
     usd: 1150,
     material: "marble",
     shape: "Coffee",

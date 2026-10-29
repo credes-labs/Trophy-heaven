@@ -60,12 +60,15 @@ export type ProductCardProps = {
   layout?: "grid" | "list"
   className?: string
   showWishlist?: boolean
+  /** Load the image immediately (first row above the fold). */
+  eager?: boolean
 }
 
 export function ProductCard({
   product,
   accent: accentProp,
   layout = "grid",
+  eager = false,
   className,
   showWishlist = true,
 }: ProductCardProps) {
@@ -185,6 +188,7 @@ export function ProductCard({
               alt={product.title}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
+              loading={eager ? "eager" : undefined}
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ) : (

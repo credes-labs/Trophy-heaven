@@ -12,19 +12,19 @@ export const SHOP_FEATURED_FALLBACK = [
   {
     title: "Brass Nesting Tables",
     href: "/products/brass-nesting-tables",
-    image: "/images/catalog/table-brass-nesting-1.jpg",
+    image: "/images/catalog/table-brass-nesting-1.webp",
     alt: "Pair of brass pedestal nesting tables with tray tops",
   },
   {
     title: "Achievement Statuette",
     href: "/products/achievement-statuette",
-    image: "/images/catalog/trophy-achievement-statuette.jpg",
+    image: "/images/catalog/trophy-achievement-statuette.webp",
     alt: "Gilded figure statuette on a black marble plinth",
   },
 ] as const
 
 export const SHOP_BANNER = {
-  src: "/images/catalog/table-marble-octagon.jpg",
+  src: "/images/catalog/table-marble-octagon.webp",
   alt: "Octagonal marble coffee table on a brass base in an olive-grey room",
 } as const
 

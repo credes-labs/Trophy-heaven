@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { localizeImageUrl } from "@/lib/images"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import type { HttpTypes } from "@medusajs/types"
@@ -182,7 +183,7 @@ export default function OrderDetailPage() {
               <div className="size-[4em] shrink-0 overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
                 {item.thumbnail ? (
                   // Raw <img> used intentionally (dynamic backend URLs; Next/Image domain config not required here).
-                  <img src={item.thumbnail} alt="" className="h-full w-full object-cover" />
+                  <img src={localizeImageUrl(item.thumbnail)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">

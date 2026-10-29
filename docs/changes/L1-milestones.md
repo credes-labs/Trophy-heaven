@@ -277,3 +277,6 @@ Collection, homepage category and studio 3D displays no longer show temporary pr
 
 ## 2026-10-29 - Square images on collection pages
 /artwork, /furniture and /trophies product cards, story photo, related-collection cards and loading skeletons now use square corners. See L2 WP-84.
+
+## 2026-10-30 - WebP imagery and image performance
+Site imagery converted to WebP with sharp (83 MB to 9.3 MB), unused and duplicate photographs removed, legacy URLs remapped/redirected and rewritten in the database, Next 16 image settings tuned. See L2 WP-85.

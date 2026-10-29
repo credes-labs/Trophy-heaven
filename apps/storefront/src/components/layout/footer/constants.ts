@@ -57,23 +57,23 @@ export const FOOTER_NAV = [
  */
 export const FOOTER_ORBIT = [
   {
-    src: "/images/footer/orbit-loop-sculpture.png",
+    src: "/images/footer/orbit-loop-sculpture.webp",
     alt: "Verdigris bronze loop sculpture",
   },
   {
-    src: "/images/footer/orbit-statuette.png",
+    src: "/images/footer/orbit-statuette.webp",
     alt: "Gilded figure statuette on a black marble plinth",
   },
   {
-    src: "/images/footer/orbit-sunburst-sculpture.png",
+    src: "/images/footer/orbit-sunburst-sculpture.webp",
     alt: "Bronze sunburst disc on a marble base",
   },
   {
-    src: "/images/footer/orbit-rings-sculpture.png",
+    src: "/images/footer/orbit-rings-sculpture.webp",
     alt: "Interlocking gilt-bronze rings on a marble foot",
   },
   {
-    src: "/images/footer/orbit-fluted-sculpture.png",
+    src: "/images/footer/orbit-fluted-sculpture.webp",
     alt: "Fluted bronze oval ring",
   },
 ] as const

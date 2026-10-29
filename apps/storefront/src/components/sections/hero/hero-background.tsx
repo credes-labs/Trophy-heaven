@@ -3,8 +3,8 @@ import { getImageProps } from "next/image"
 /** Art-directed sources keep the award visible on portrait screens. */
 export function HeroStudioImage() {
   const shared = { alt: "", fill: true, sizes: "100vw", loading: "eager" as const, fetchPriority: "high" as const }
-  const { props: mobile } = getImageProps({ ...shared, src: "/images/catalog/trophy-figure-award.jpg" })
-  const { props: desktop } = getImageProps({ ...shared, src: "/images/hero/hero-legacy-tables.jpg" })
+  const { props: mobile } = getImageProps({ ...shared, src: "/images/catalog/trophy-figure-award.webp" })
+  const { props: desktop } = getImageProps({ ...shared, src: "/images/hero/hero-legacy-tables.webp" })
   return (
     <div className="absolute inset-0 z-0 bg-[#1C1612]">
       <picture className="absolute inset-x-0 top-0 block h-[65svh] lg:h-full">

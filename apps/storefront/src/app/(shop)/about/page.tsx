@@ -20,21 +20,21 @@ const DISCIPLINES = [
   {
     title: "Trophies",
     href: "/trophies",
-    image: "/images/catalog/trophy-figure-award.jpg",
+    image: "/images/catalog/trophy-figure-award.webp",
     alt: "Gilt figure award on an octagonal mahogany base",
     copy: "Brass, optical crystal, and seasoned timber for ceremonies that should last.",
   },
   {
     title: "Furniture",
     href: "/furniture",
-    image: "/images/catalog/table-brass-nesting-1.jpg",
+    image: "/images/catalog/table-brass-nesting-1.webp",
     alt: "Pair of brass pedestal nesting tables with tray tops",
     copy: "Cast brass, honed marble, and tempered glass — tables meant to be lived with, not replaced.",
   },
   {
     title: "Artwork",
     href: "/artwork",
-    image: "/images/catalog/sculpture-loop-verdigris-1.jpg",
+    image: "/images/catalog/sculpture-loop-verdigris-1.webp",
     alt: "Verdigris bronze loop sculpture on a marble plinth",
     copy: "Cast bronze, marble, and glass objects chosen to quiet a room, not fill it.",
   },
@@ -63,10 +63,10 @@ export default function AboutPage() {
 
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
               <Image
-                src="/images/hero/hero-legacy-tables.jpg"
+                src="/images/hero/hero-legacy-tables.webp"
                 alt="Brass pedestal nesting tables with a bronze vase against a navy wall"
                 fill
-                priority
+                preload
                 sizes="(min-width: 1024px) 48em, 100vw"
                 className="object-cover object-center"
               />
@@ -153,7 +153,7 @@ export default function AboutPage() {
       <section className="relative mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3.5rem,8vw,7em)]">
         <div className="relative aspect-[1360/664] w-full overflow-hidden rounded-[0.125em]">
           <Image
-            src="/images/hero/hero-workshop.jpg"
+            src="/images/hero/hero-workshop.webp"
             alt="Artisan shaping timber in the atelier"
             fill
             sizes="(min-width: 90rem) 85rem, 100vw"

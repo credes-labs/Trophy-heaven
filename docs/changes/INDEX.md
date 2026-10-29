@@ -17,6 +17,7 @@ that matches how much you need to know.
 
 | # | Title | Layer-2 anchor |
 |---|-------|----------------|
+| 056 | [WebP imagery and image performance](L3/056-webp-imagery-performance.md) | WP-85 |
 | 055 | [Studio choices and mobile trophy hero](L3/055-studio-picker-mobile-hero.md) | WP-81 |
 | 054 | [Category collection 3D heroes](L3/054-category-collection-heroes.md) | WP-80 |
 | 053 | [Gold contact globe](L3/053-contact-globe.md) | WP-78 |

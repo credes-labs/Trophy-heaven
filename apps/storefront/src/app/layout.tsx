@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Legacy Crafts",
     locale: "en_IN",
-    images: [{ url: "/images/hero/hero-legacy-tables.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/images/og/og-default.jpg", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
   robots: process.env.VERCEL_ENV === "preview" ? { index: false, follow: false } : undefined,

@@ -92,9 +92,14 @@ pnpm build                                  # before merging
   session amount → `apps/storefront/src/app/api/checkout/verify-razorpay/route.ts`
   HMAC-verifies before cart completion → `apps/medusa/src/api/webhooks/razorpay/`
   handles captured/failed with the `webhook-events` idempotency module.
-- **Imagery**: brand PNG/JPEGs live in `apps/storefront/public/images/` with
+- **Imagery**: site images in `apps/storefront/public/images/` are **WebP** with
   prompts in `manifest.json`; new imagery must match that style and be registered
-  there. No placeholder boxes — ever.
+  there. No placeholder boxes — ever. Drop a JPEG/PNG in, then run
+  `pnpm --filter @legacy-crafts/storefront images:webp --write` (sharp; caps 2560px)
+  and reference the `.webp`. Exceptions: `campaign/` ad units and the `og/` share
+  card stay JPEG. Old `.jpg`/`.png` URLs in the DB are remapped by
+  `localizeImageUrl()` and redirected in `next.config.ts`; rewrite stored URLs with
+  `npx medusa exec ./src/scripts/images-to-webp.ts`.
 - **Deferred on purpose** (`.cursor/plans/KIMI-EXECUTION-STATUS.md`): Google OAuth,
   delete-account, server-persisted notification prefs, listing rating filter,
   Redis-backed rate limiting. Don't "finish" these unasked.

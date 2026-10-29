@@ -5,8 +5,8 @@ export const STUDIO_PIECES = [
     label: "Achievement Statuette",
     shortLabel: "Achievement",
     handle: "achievement-statuette",
-    image: "/images/catalog/trophy-achievement-statuette.jpg",
-    cutout: "/images/footer/orbit-statuette.png",
+    image: "/images/catalog/trophy-achievement-statuette.webp",
+    cutout: "/images/footer/orbit-statuette.webp",
     detail: "Gilded figure · marble plinth",
   },
   {
@@ -14,8 +14,8 @@ export const STUDIO_PIECES = [
     label: "Ascent Figure Award",
     shortLabel: "Ascent",
     handle: "ascent-figure-award",
-    image: "/images/catalog/trophy-figure-award.jpg",
-    cutout: "/images/footer/orbit-figure-award.png",
+    image: "/images/catalog/trophy-figure-award.webp",
+    cutout: "/images/footer/orbit-figure-award.webp",
     detail: "Open-ring figure · walnut base",
   },
   {
@@ -23,8 +23,8 @@ export const STUDIO_PIECES = [
     label: "Engraved Wooden Plaque",
     shortLabel: "Plaque",
     handle: "engraved-wooden-plaque",
-    image: "/images/catalog/plaque-studio.png",
-    cutout: "/images/catalog/plaque-studio.png",
+    image: "/images/catalog/plaque-studio.webp",
+    cutout: "/images/catalog/plaque-studio.webp",
     detail: "Walnut · engraved brass",
   },
 ] as const

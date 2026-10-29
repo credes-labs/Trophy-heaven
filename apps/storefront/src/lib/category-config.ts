@@ -70,7 +70,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-trophy",
     badgeVariant: "trophy",
     buttonVariant: "trophy",
-    imageSrc: "/images/catalog/trophy-figure-award.jpg",
+    imageSrc: "/images/catalog/trophy-figure-award.webp",
     imageAlt: "Gilt figure award on an octagonal mahogany base",
   },
   furniture: {
@@ -102,7 +102,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-furniture",
     badgeVariant: "furniture",
     buttonVariant: "furniture",
-    imageSrc: "/images/catalog/table-brass-nesting-1.jpg",
+    imageSrc: "/images/catalog/table-brass-nesting-1.webp",
     imageAlt: "Pair of brass pedestal nesting tables with tray tops",
   },
   artwork: {
@@ -133,7 +133,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-artwork",
     badgeVariant: "artwork",
     buttonVariant: "artwork",
-    imageSrc: "/images/catalog/sculpture-loop-verdigris-1.jpg",
+    imageSrc: "/images/catalog/sculpture-loop-verdigris-1.webp",
     imageAlt: "Verdigris bronze loop sculpture on a marble plinth",
   },
 }

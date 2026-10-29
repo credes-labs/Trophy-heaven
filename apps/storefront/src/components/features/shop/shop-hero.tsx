@@ -76,7 +76,7 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
               src={slide.image}
               alt={slide.alt}
               fill
-              priority
+              preload
               sizes="(min-width: 1440px) 50em, (min-width: 1024px) 58vw, 100vw"
               className="object-cover"
             />

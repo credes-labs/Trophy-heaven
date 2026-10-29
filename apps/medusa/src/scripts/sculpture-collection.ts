@@ -27,9 +27,9 @@ const PIECES: Sculpture[] = [
     description:
       "Two bronze loops folded through each other, patinated to a deep verdigris and set on a marble plinth.",
     images: [
-      IMG("sculpture-loop-verdigris-1.jpg"),
-      IMG("sculpture-loop-verdigris-2.jpg"),
-      IMG("sculpture-loop-verdigris-3.jpg"),
+      IMG("sculpture-loop-verdigris-1.webp"),
+      IMG("sculpture-loop-verdigris-2.webp"),
+      IMG("sculpture-loop-verdigris-3.webp"),
     ],
     usd: 420,
     material: "bronze",
@@ -41,10 +41,10 @@ const PIECES: Sculpture[] = [
     description:
       "A cast bronze disc cut with almond apertures, its surface formed by hand so no two casts fall alike.",
     images: [
-      IMG("sculpture-disc-pierced-1.jpg"),
-      IMG("sculpture-disc-pierced-2.jpg"),
-      IMG("sculpture-disc-pierced-3.jpg"),
-      IMG("sculpture-disc-pierced-4.jpg"),
+      IMG("sculpture-disc-pierced-1.webp"),
+      IMG("sculpture-disc-pierced-2.webp"),
+      IMG("sculpture-disc-pierced-3.webp"),
+      IMG("sculpture-disc-pierced-4.webp"),
     ],
     usd: 380,
     material: "bronze",
@@ -55,7 +55,7 @@ const PIECES: Sculpture[] = [
     handle: "split-rib-sculpture",
     description:
       "A disc split down its axis, ribbed like a seed pod and finished in blackened bronze.",
-    images: [IMG("sculpture-split-rib.jpg")],
+    images: [IMG("sculpture-split-rib.webp")],
     usd: 340,
     material: "bronze",
     shape: "Disc",
@@ -65,7 +65,7 @@ const PIECES: Sculpture[] = [
     handle: "sunburst-disc-sculpture",
     description:
       "Radiating fins cast from a single centre, realising the sun motif as a tabletop objet.",
-    images: [IMG("sculpture-sunburst-disc.jpg")],
+    images: [IMG("sculpture-sunburst-disc.webp")],
     usd: 395,
     material: "bronze",
     shape: "Disc",
@@ -75,7 +75,7 @@ const PIECES: Sculpture[] = [
     handle: "gilt-burst-objet",
     description:
       "A gilded burst with a quiet centre hole, sitting on a white marble base.",
-    images: [IMG("sculpture-gold-burst.jpg")],
+    images: [IMG("sculpture-gold-burst.webp")],
     usd: 450,
     material: "brass",
     shape: "Disc",
@@ -85,7 +85,7 @@ const PIECES: Sculpture[] = [
     handle: "reef-totem-sculpture",
     description:
       "An openwork totem drawn from reef and branch forms, cast in bronze on a square base.",
-    images: [IMG("sculpture-reef-totem-1.jpg"), IMG("sculpture-reef-totem-2.jpg")],
+    images: [IMG("sculpture-reef-totem-1.webp"), IMG("sculpture-reef-totem-2.webp")],
     usd: 520,
     material: "bronze",
     shape: "Totem",
@@ -95,7 +95,7 @@ const PIECES: Sculpture[] = [
     handle: "verdigris-wave-sculpture",
     description:
       "A crescent of breaking surf rendered in patinated bronze, balanced on a slim marble foot.",
-    images: [IMG("sculpture-verdigris-wave.jpg")],
+    images: [IMG("sculpture-verdigris-wave.webp")],
     usd: 410,
     material: "bronze",
     shape: "Wave",
@@ -105,7 +105,7 @@ const PIECES: Sculpture[] = [
     handle: "ripple-disc-sculpture",
     description:
       "Concentric ripples disturbed by a single aperture, blackened and rubbed back to the gold.",
-    images: [IMG("sculpture-ripple-disc.jpg")],
+    images: [IMG("sculpture-ripple-disc.webp")],
     usd: 360,
     material: "bronze",
     shape: "Disc",
@@ -115,7 +115,7 @@ const PIECES: Sculpture[] = [
     handle: "interlocking-rings-sculpture",
     description:
       "Two studded rings caught mid-orbit, finished in black and gilt and mounted on marble.",
-    images: [IMG("sculpture-interlocking-rings.jpg")],
+    images: [IMG("sculpture-interlocking-rings.webp")],
     usd: 330,
     material: "bronze",
     shape: "Ring",
@@ -125,7 +125,7 @@ const PIECES: Sculpture[] = [
     handle: "fluted-oval-objet",
     description:
       "An oval aperture ringed with fine flutes, glazed deep green over a stone body.",
-    images: [IMG("sculpture-fluted-oval.jpg")],
+    images: [IMG("sculpture-fluted-oval.webp")],
     usd: 300,
     material: "stone",
     shape: "Oval",
@@ -135,7 +135,7 @@ const PIECES: Sculpture[] = [
     handle: "obsidian-totem-sculpture",
     description:
       "Stacked organic volumes pierced with three windows, textured and darkened to near black.",
-    images: [IMG("sculpture-black-totem.jpg")],
+    images: [IMG("sculpture-black-totem.webp")],
     usd: 480,
     material: "bronze",
     shape: "Totem",
@@ -145,7 +145,7 @@ const PIECES: Sculpture[] = [
     handle: "verdigris-wreath-sculpture",
     description:
       "A wreath of cast foliage, broken open at one edge and patinated to a garden green.",
-    images: [IMG("sculpture-green-wreath.jpg")],
+    images: [IMG("sculpture-green-wreath.webp")],
     usd: 440,
     material: "bronze",
     shape: "Wreath",

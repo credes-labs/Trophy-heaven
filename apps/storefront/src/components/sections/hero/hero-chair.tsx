@@ -12,7 +12,7 @@ export function HeroChair() {
       className="pointer-events-none relative z-20 -mt-16 ml-auto w-[min(78%,18rem)] lg:absolute lg:top-[54%] lg:right-auto lg:bottom-auto lg:left-[30%] lg:mt-0 lg:ml-0 lg:w-[min(38vw,34rem)]"
     >
       <Image
-        src="/images/hero/chair.png"
+        src="/images/hero/chair.webp"
         alt=""
         width={757}
         height={633}

@@ -265,9 +265,9 @@ export function CategoryPageClient({
               initial="hidden"
               animate="visible"
             >
-              {firstBatch.map((p) => (
+              {firstBatch.map((p, i) => (
                 <motion.div key={p.id} variants={fadeUp}>
-                  <ProductCard product={p} accent={config.accent} />
+                  <ProductCard product={p} accent={config.accent} eager={i < 4} />
                 </motion.div>
               ))}
             </motion.div>
