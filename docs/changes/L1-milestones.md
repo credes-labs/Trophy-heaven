@@ -274,3 +274,6 @@ Collection, homepage category and studio 3D displays no longer show temporary pr
 
 ## 2026-10-29 - Press and careers chair drawing
 /press and /careers heroes now show the barrel-armchair technical sheet from the sign-in/sign-up pages on wide screens. See L2 WP-83.
+
+## 2026-10-29 - Square images on collection pages
+/artwork, /furniture and /trophies product cards, story photo, related-collection cards and loading skeletons now use square corners. See L2 WP-84.

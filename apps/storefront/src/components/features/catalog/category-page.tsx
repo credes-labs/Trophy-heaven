@@ -79,7 +79,7 @@ function CategoryFallback() {
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square rounded-lg" />
+            <Skeleton key={i} className="aspect-square rounded-none" />
           ))}
         </div>
       </div>

@@ -103,13 +103,13 @@ export function ProductCard({
     return (
       <article
         className={cn(
-          "group flex gap-4 overflow-hidden rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] p-3",
+          "group flex gap-4 overflow-hidden border border-[#131111]/15 bg-[#FBFBF7] p-3",
           className
         )}
       >
         <Link
           href={href}
-          className="relative h-28 w-28 shrink-0 overflow-hidden rounded-[0.125em] bg-[#D9D9D9] sm:h-36 sm:w-36"
+          className="relative h-28 w-28 shrink-0 overflow-hidden bg-[#D9D9D9] sm:h-36 sm:w-36"
         >
           {product.thumbnail ? (
             <Image
@@ -173,7 +173,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group flex flex-col overflow-hidden rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7]",
+        "group flex flex-col overflow-hidden border border-[#131111]/15 bg-[#FBFBF7]",
         className
       )}
     >
