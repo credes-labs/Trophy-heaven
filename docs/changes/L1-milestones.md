@@ -280,3 +280,6 @@ Collection, homepage category and studio 3D displays no longer show temporary pr
 
 ## 2026-10-30 - WebP imagery and image performance
 Site imagery converted to WebP with sharp (83 MB to 9.3 MB), unused and duplicate photographs removed, legacy URLs remapped/redirected and rewritten in the database, Next 16 image settings tuned. See L2 WP-85.
+
+## 2026-10-31 - Mixed-product silhouette mosaic
+Replaced the shared silhouette grid with the supplied furniture, trophy and sculpture version. See L2 WP-86.

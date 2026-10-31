@@ -4,7 +4,10 @@
  * SilhouetteGrid  (horizontal, transparent)
  * -----------------------------------------
  * The poster mosaic of thin-lined boxes, stretched into a landscape band. Each box
- * holds a furniture piece that turns a full 360 degrees on a turntable.
+ * holds a furniture piece, trophy or sculpture that turns a full 360 degrees on a turntable.
+ * Models available: bottle, vase1, vase2, table, daybed, chair, bench, console, lamp, stool,
+ * armchair, lounger, cart, sofa, lounge (furniture) and fan, figure, rings, oscar, rock, knot
+ * (sculptures and trophies). Swap `kind` in CELLS to change any box.
  * The background is clear: only the grid lines and the furniture are drawn, so
  * whatever is behind the component shows through.
  *
@@ -51,17 +54,17 @@ const CELLS: Cell[] = [
   { kind: "vase1", fit: { h: 0.62 }, area: [3, 5, 1, 2], still: true },
   { kind: "vase2", fit: { h: 0.6 }, area: [5, 7, 1, 2], still: true },
   { kind: "table", fit: { h: 0.6 }, area: [3, 7, 2, 3] },
-  { kind: "daybed", fit: { w: 0.7 }, area: [7, 11, 1, 3] },
-  { kind: "chair", fit: { h: 0.5 }, area: [11, 13, 1, 3] },
-  { kind: "bench", fit: { h: 0.5 }, area: [1, 4, 3, 4] },
+  { kind: "fan", fit: { h: 0.84 }, area: [7, 11, 1, 3] },
+  { kind: "figure", fit: { h: 0.9 }, area: [11, 13, 1, 3] },
+  { kind: "rings", fit: { h: 0.8 }, area: [1, 4, 3, 4] },
   { kind: "console", fit: { h: 0.62 }, area: [4, 9, 3, 4] },
-  { kind: "lamp", fit: { h: 0.88 }, area: [9, 11, 3, 7] },
-  { kind: "stool", fit: { h: 0.6 }, area: [11, 13, 3, 5] },
+  { kind: "oscar", fit: { h: 0.9 }, area: [9, 11, 3, 7] },
+  { kind: "rock", fit: { h: 0.88 }, area: [11, 13, 3, 5] },
   { kind: "armchair", fit: { h: 0.6 }, area: [1, 5, 4, 6] },
   { kind: "lounger", fit: { h: 0.62 }, area: [5, 9, 4, 6] },
   { kind: "cart", fit: { h: 0.75 }, area: [1, 5, 6, 7] },
   { kind: "sofa", fit: { h: 0.7 }, area: [5, 9, 6, 7] },
-  { kind: "lounge", fit: { h: 0.6 }, area: [11, 13, 5, 7] },
+  { kind: "knot", fit: { h: 0.8 }, area: [11, 13, 5, 7] },
 ];
 
 let INK: THREE.ShaderMaterial | null = null;
@@ -116,6 +119,45 @@ function cyl(rTop: number, rBot: number, h: number, x: number, y: number, z: num
 
 function lathe(pts: [number, number][]): THREE.Mesh {
   return new THREE.Mesh(new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), 64), ink());
+}
+
+/** Mesh from any geometry, placed and rotated. */
+function put(geo: THREE.BufferGeometry, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0): THREE.Mesh {
+  const m = new THREE.Mesh(geo, ink());
+  m.position.set(x, y, z);
+  m.rotation.set(rx, ry, rz);
+  return m;
+}
+
+/** Smooth curve through points, as vectors. */
+function curve(pts: [number, number][], divisions: number): THREE.Vector2[] {
+  return new THREE.SplineCurve(pts.map((p) => new THREE.Vector2(p[0], p[1]))).getPoints(divisions);
+}
+
+/** Extrude a flat shape and centre it front to back. */
+function extrude(shape: THREE.Shape, depth: number, bevel = 0.012): THREE.BufferGeometry {
+  const g = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: bevel > 0,
+    bevelThickness: bevel,
+    bevelSize: bevel,
+    bevelSegments: 2,
+    curveSegments: 48,
+  });
+  g.computeBoundingBox();
+  const bb = g.boundingBox as THREE.Box3;
+  g.translate(0, 0, -(bb.min.z + bb.max.z) / 2);
+  return g;
+}
+
+/** Flat oval band: outer radii (rx, ry), hole radii (hx, hy). */
+function ovalRing(rx: number, ry: number, hx: number, hy: number, depth: number): THREE.BufferGeometry {
+  const s = new THREE.Shape();
+  s.absellipse(0, 0, rx, ry, 0, Math.PI * 2, false, 0);
+  const h = new THREE.Path();
+  h.absellipse(0, 0, hx, hy, 0, Math.PI * 2, true, 0);
+  s.holes.push(h);
+  return extrude(s, depth);
 }
 
 const SIGNS = [-1, 1];
@@ -229,6 +271,85 @@ const MODELS: Record<string, (g: THREE.Group) => void> = {
     for (const sx of SIGNS) for (const sz of SIGNS) g.add(rod([sx * 0.34, 0, sz * 0.3], [sx * 0.28, 0.24, sz * 0.24], 0.016, 0.02));
   },
 };
+
+// Sculptures and trophies. Heights use the same units as the furniture.
+Object.assign(MODELS, {
+  fan: (g: THREE.Group) => {
+    g.add(box(0.62, 0.06, 0.5, 0, 0.03, 0));
+    g.add(rod([0, 0.06, 0], [0, 0.36, 0], 0.045, 0.028));
+    g.add(put(new THREE.SphereGeometry(0.06, 24, 16), 0, 0.12, 0));
+    const cy = 0.83;
+    const face = new THREE.RingGeometry(0.004, 0.5, 112, 8);
+    const p = face.attributes.position as THREE.BufferAttribute;
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i);
+      const y = p.getY(i);
+      p.setZ(i, 0.035 + 0.03 * Math.cos(28 * Math.atan2(y, x)) * (Math.hypot(x, y) / 0.5));
+    }
+    face.computeVertexNormals();
+    g.add(put(face, 0, cy, 0));
+    g.add(put(new THREE.CircleGeometry(0.5, 112), 0, cy, -0.035));
+    const edge = new THREE.CylinderGeometry(0.5, 0.5, 0.07, 112, 1, true);
+    edge.rotateX(Math.PI / 2);
+    g.add(put(edge, 0, cy, 0));
+  },
+
+  figure: (g: THREE.Group) => {
+    const R: [number, number][] = [[0, 1.0], [0.05, 0.99], [0.07, 0.95], [0.058, 0.905], [0.04, 0.88], [0.085, 0.858], [0.15, 0.825], [0.195, 0.775], [0.2, 0.71], [0.175, 0.64], [0.125, 0.57], [0.1, 0.47], [0.115, 0.37], [0.1, 0.27], [0.075, 0.18], [0.07, 0.12], [0.1, 0.05], [0.115, 0.01]];
+    const L: [number, number][] = [[-0.24, 0], [-0.13, 0.06], [-0.078, 0.13], [-0.1, 0.27], [-0.115, 0.37], [-0.1, 0.47], [-0.105, 0.54], [-0.13, 0.61], [-0.19, 0.69], [-0.21, 0.76], [-0.17, 0.82], [-0.1, 0.855], [-0.04, 0.88], [-0.058, 0.905], [-0.07, 0.95], [-0.05, 0.99]];
+    const shape = new THREE.Shape(curve(R, 150).concat(curve(L, 150)));
+    const hole = new THREE.Path();
+    hole.absarc(0, 0.72, 0.085, 0, Math.PI * 2, true);
+    shape.holes.push(hole);
+    g.add(put(extrude(shape, 0.14), 0, 0.3, 0));
+    g.add(put(new THREE.CylinderGeometry(0.19, 0.2, 0.22, 8), 0, 0.19, 0, 0, Math.PI / 8, 0));
+    g.add(put(new THREE.CylinderGeometry(0.26, 0.28, 0.08, 8), 0, 0.04, 0, 0, Math.PI / 8, 0));
+  },
+
+  rings: (g: THREE.Group) => {
+    g.add(cyl(0.34, 0.34, 0.07, 0, 0.035, 0));
+    g.add(cyl(0.03, 0.03, 0.12, 0, 0.13, 0));
+    const cy = 0.71;
+    g.add(put(ovalRing(0.42, 0.52, 0.3, 0.4, 0.07), 0, cy, 0));
+    g.add(put(ovalRing(0.3, 0.38, 0.19, 0.27, 0.07), 0, cy + 0.02, 0, 0, (60 * Math.PI) / 180, 0));
+    g.add(put(ovalRing(0.26, 0.3, 0.15, 0.2, 0.07), 0, cy - 0.06, 0, 0, (-45 * Math.PI) / 180, 0));
+  },
+
+  oscar: (g: THREE.Group) => {
+    const prof: [number, number][] = [[0, 0], [0.11, 0], [0.115, 0.025], [0.1, 0.05], [0.065, 0.075], [0.06, 0.2], [0.075, 0.33], [0.095, 0.44], [0.09, 0.52], [0.105, 0.6], [0.15, 0.68], [0.19, 0.76], [0.2, 0.8], [0.15, 0.84], [0.07, 0.865], [0.045, 0.885], [0.055, 0.915], [0.075, 0.945], [0.07, 0.98], [0, 1.0]];
+    const body = new THREE.LatheGeometry(prof.map((q) => new THREE.Vector2(q[0], q[1])), 48);
+    body.scale(1, 1, 0.55);
+    g.add(put(body, 0, 0.84, 0));
+    g.add(cyl(0.16, 0.16, 0.25, 0, 0.715, 0));
+    g.add(box(0.51, 0.37, 0.51, 0, 0.405, 0));
+    g.add(box(0.58, 0.03, 0.58, 0, 0.205, 0));
+    g.add(box(0.67, 0.08, 0.67, 0, 0.15, 0));
+    g.add(box(0.78, 0.11, 0.78, 0, 0.055, 0));
+  },
+
+  rock: (g: THREE.Group) => {
+    g.add(box(0.6, 0.06, 0.32, 0, 0.03, 0));
+    const loops: [number, number, number, number, number][] = [
+      [0, 0.13, 0.13, 0.045, 20],
+      [0, 0.28, 0.1, 0.04, -50],
+      [0.07, 0.45, 0.15, 0.045, 70],
+      [-0.04, 0.62, 0.13, 0.045, 10],
+      [0.05, 0.78, 0.12, 0.04, -30],
+      [-0.06, 0.92, 0.1, 0.04, 60],
+    ];
+    for (const [x, y, r, t, a] of loops) g.add(put(new THREE.TorusGeometry(r, t, 16, 48), x, y + 0.06, 0, 0, (a * Math.PI) / 180, 0));
+  },
+
+  knot: (g: THREE.Group) => {
+    g.add(box(0.9, 0.07, 0.7, 0, 0.035, 0));
+    const a = new THREE.TorusGeometry(0.3, 0.15, 32, 72);
+    a.scale(1, 1, 0.6);
+    const b = new THREE.TorusGeometry(0.26, 0.14, 32, 72);
+    b.scale(1, 1, 0.6);
+    g.add(put(a, 0, 0.87, 0, -0.17, 0.26, 0));
+    g.add(put(b, 0.06, 0.49, 0, 0.35, -0.52, 0));
+  },
+});
 
 type Live = {
   el: HTMLElement;
@@ -408,7 +529,7 @@ export default function SilhouetteGrid({
     <div
       ref={wrap}
       role="img"
-      aria-label="Furniture silhouettes turning on a turntable"
+      aria-label="Furniture, trophy and sculpture silhouettes turning on a turntable"
       className={`relative w-full ${className}`}
       style={{ borderTop: line, borderLeft: line }} // no background: the page shows through
     >
