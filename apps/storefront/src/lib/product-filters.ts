@@ -1,3 +1,4 @@
+import { studioPieceForHandle } from "./configurator/studio-pieces"
 import type { HttpTypes } from "@medusajs/types"
 import { isCustomizable } from "@/lib/format"
 
@@ -14,10 +15,7 @@ export function productPrice(product: HttpTypes.StoreProduct): number | null {
  * Loose material match: prefers metadata.material, falls back to a text
  * haystack so seeded values like "oak"/"walnut" still match "Wood".
  */
-export function matchesMaterial(
-  product: HttpTypes.StoreProduct,
-  material: string
-): boolean {
+export function matchesMaterial(product: HttpTypes.StoreProduct, material: string): boolean {
   const meta = product.metadata?.material
   if (typeof meta === "string" && meta.toLowerCase() === material.toLowerCase()) return true
   const hay = [
@@ -81,5 +79,8 @@ export function cheapestInStockVariant(
 }
 
 export function isCustomizableProduct(product: HttpTypes.StoreProduct): boolean {
-  return isCustomizable((product.metadata?.customization_level as string) ?? "none")
+  return (
+    Boolean(studioPieceForHandle(product.handle)) ||
+    isCustomizable((product.metadata?.customization_level as string) ?? "none")
+  )
 }

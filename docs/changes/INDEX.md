@@ -17,6 +17,14 @@ that matches how much you need to know.
 
 | # | Title | Layer-2 anchor |
 |---|-------|----------------|
+| 057 | [Mixed-product silhouette mosaic](L3/057-silhouette-mosaic.md) | WP-86 |
+| 056 | [WebP imagery and image performance](L3/056-webp-imagery-performance.md) | WP-85 |
+| 055 | [Studio choices and mobile trophy hero](L3/055-studio-picker-mobile-hero.md) | WP-81 |
+| 054 | [Category collection 3D heroes](L3/054-category-collection-heroes.md) | WP-80 |
+| 053 | [Gold contact globe](L3/053-contact-globe.md) | WP-78 |
+| 052 | [Photo-referenced trophy studio](L3/052-trophy-studio.md) | WP-76 |
+| 051 | [Mobile header and menu](L3/051-mobile-navigation.md) | WP-74 |
+| 050 | [Category product WebGL](L3/050-category-product-webgl.md) | WP-73 |
 | 001 | [Brand foundation & design system](L3/001-brand-foundation.md) | WP-01 |
 | 002 | [Backend hardening: Razorpay chain, modules, seeds](L3/002-backend-hardening.md) | WP-02 |
 | 003 | [Storefront commerce wiring](L3/003-commerce-wiring.md) | WP-03 |
@@ -49,6 +57,20 @@ that matches how much you need to know.
 | 032 | [Vercel production hardening](L3/032-vercel-production-hardening.md) | WP-35 |
 | 033 | [Editorial contrast and type](L3/033-editorial-contrast.md) | WP-36 |
 | 034 | [Homepage hero poster](L3/034-hero-poster.md) | WP-37 |
+| 044 | [Catalogue hero: turning silhouette grid](L3/044-shop-silhouette-hero.md) | WP-64 |
+| 045 | [Plaque studio: fullscreen, wood art, panel spacing](L3/045-customize-studio.md) | WP-65 |
+| 046 | [Seamless editorial headers + chair sheet on auth pages](L3/046-seamless-headers-auth-chair-sheet.md) | WP-66 |
+| 047 | [Product pages: seamless nav and paper gallery](L3/047-pdp-seamless-nav-paper-gallery.md) | WP-68 |
+| 048 | [Checkout editorial layout](L3/048-checkout-editorial.md) | WP-69 |
+| 035 | [Footer wordmark and column padding](L3/035-footer-wordmark.md) | WP-38 |
+| 036 | [Footer 3D orbit](L3/036-footer-orbit.md) | WP-39 |
+| 037 | [Letter form and trust row](L3/037-signup-trust-row.md) | WP-41 |
+| 038 | [Hero chair and sticky filters](L3/038-hero-chair-sticky-filters.md) | WP-47 |
+| 039 | [Homepage material specimens](L3/039-materials-specimens.md) | WP-51 |
+| 040 | [Categories 3D furniture](L3/040-category-furniture-3d.md) | WP-52 |
+| 041 | [Category furniture transitions](L3/041-category-furniture-transitions.md) | WP-53 |
+| 049 | [New photography: hero, sculpture collection, campaign set](L3/049-new-photography.md) | WP-70 |
+| 043 | [/customize 3D plaque configurator](L3/043-customize-3d-configurator.md) | WP-56 |
 
 
 

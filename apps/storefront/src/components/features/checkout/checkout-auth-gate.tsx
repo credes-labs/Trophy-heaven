@@ -3,20 +3,9 @@
 import { useState } from "react"
 import Link from "next/link"
 import { AuthAlert } from "@/components/features/account/auth-frame"
-import {
-  EditorialCtaButton,
-  EditorialTextLink,
-  editorialFieldClass,
-  editorialLabelClass,
-} from "@/components/layout/editorial/editorial-cta"
+import { CheckoutSubmit } from "@/components/features/checkout/checkout-actions"
 import { PasswordField } from "@/components/ui/password-field"
 import { useAuthStore } from "@/stores/auth-store"
-import { cn } from "@/lib/utils"
-
-const fieldClass = cn(
-  editorialFieldClass,
-  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-[#131111]",
-)
 
 const REGISTER_HREF = "/account/register?next=/checkout"
 
@@ -38,17 +27,15 @@ export function CheckoutAuthGate() {
   }
 
   return (
-    <div className="mt-[2.5em] max-w-[32em]">
-      <h2 className="m-0 font-outfit text-[1.75em] leading-[1.2] font-normal tracking-[-0.03em] text-balance text-[#131111]">
-        Sign in to continue
-      </h2>
-      <p className="mt-[0.75em] m-0 max-w-[68ch] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-pretty text-[#131111]/70">
+    <div className="checkout-step">
+      <h2 className="checkout-section-title">Sign in to continue</h2>
+      <p className="checkout-help">
         Cart items stay. Sign in or create an account to choose a delivery address.
       </p>
       {error ? <AuthAlert>{error}</AuthAlert> : null}
-      <form onSubmit={(e) => void onSubmit(e)} className="mt-[2em] space-y-[1.75em]">
-        <div>
-          <label htmlFor="checkout-login-email" className={editorialLabelClass}>
+      <form onSubmit={(e) => void onSubmit(e)} className="checkout-form">
+        <div className="checkout-field">
+          <label htmlFor="checkout-login-email" className="checkout-label">
             Email
           </label>
           <input
@@ -57,11 +44,10 @@ export function CheckoutAuthGate() {
             type="email"
             required
             autoComplete="email"
-            className={fieldClass}
           />
         </div>
-        <div>
-          <label htmlFor="checkout-login-password" className={editorialLabelClass}>
+        <div className="checkout-field">
+          <label htmlFor="checkout-login-password" className="checkout-label">
             Password
           </label>
           <PasswordField
@@ -69,22 +55,18 @@ export function CheckoutAuthGate() {
             name="password"
             required
             autoComplete="current-password"
-            className={fieldClass}
           />
         </div>
-        <EditorialCtaButton disabled={loading}>{loading ? "Signing in" : "Sign in"}</EditorialCtaButton>
+        <CheckoutSubmit disabled={loading}>{loading ? "Signing in" : "Sign in"}</CheckoutSubmit>
       </form>
-      <p className="mt-[1.75em] m-0 max-w-[68ch] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-pretty text-[#131111]/70">
+      <p className="checkout-help">
         New here?{" "}
-        <EditorialTextLink href={REGISTER_HREF} className="text-[1em]">
+        <Link href={REGISTER_HREF} className="checkout-text-link">
           Create an account
-        </EditorialTextLink>
+        </Link>
       </p>
-      <p className="mt-[0.75em] m-0">
-        <Link
-          href="/account/forgot-password"
-          className="font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111]/70 underline underline-offset-[0.15em]"
-        >
+      <p className="checkout-link-row">
+        <Link href="/account/forgot-password" className="checkout-text-link">
           Forgot password?
         </Link>
       </p>

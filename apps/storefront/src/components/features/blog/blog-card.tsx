@@ -27,7 +27,7 @@ export function BlogCard({ post, categories = [], featured = false, className }:
       <article className={cn("group", className)}>
         <Link href={href} className="grid items-center gap-[2em] no-underline lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <CoverImage src={src} alt="" className="aspect-[16/9]" priority />
+            <CoverImage src={src} alt="" className="aspect-[16/9]" preload />
           </div>
           <div className="lg:col-span-5">
             <MetaLine category={category} date={date} readTime={post.read_time_minutes} />
@@ -98,12 +98,12 @@ function CoverImage({
   src,
   alt,
   className,
-  priority,
+  preload,
 }: {
   src: string
   alt: string
   className?: string
-  priority?: boolean
+  preload?: boolean
 }) {
   return (
     <div className={cn("relative overflow-hidden rounded-[0.125em] bg-[#D9D9D9]", className)}>
@@ -113,7 +113,7 @@ function CoverImage({
         fill
         className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         sizes="(max-width: 768px) 100vw, 50vw"
-        priority={priority}
+        preload={preload}
       />
     </div>
   )

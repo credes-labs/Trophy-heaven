@@ -1,5 +1,7 @@
 "use client"
 
+import { studioPieceForHandle } from "@/lib/configurator/studio-pieces"
+
 import { useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Heart } from "lucide-react"
@@ -28,9 +30,7 @@ function firstOptionSelection(
     const preferred =
       values.find((val) => {
         const matching = variants.filter((v) =>
-          (v.options ?? []).some(
-            (o) => o.option_id === option.id && o.value === val.value
-          )
+          (v.options ?? []).some((o) => o.option_id === option.id && o.value === val.value)
         )
         return matching.length === 0 || matching.some(variantInStock)
       }) ?? values[0]
@@ -39,11 +39,7 @@ function firstOptionSelection(
   return selected
 }
 
-export function ProductActions({
-  product,
-}: {
-  product: HttpTypes.StoreProduct
-}) {
+export function ProductActions({ product }: { product: HttpTypes.StoreProduct }) {
   const options = product.options ?? []
   const variants = product.variants ?? []
   const addItem = useCartStore((s) => s.addItem)
@@ -69,9 +65,7 @@ export function ProductActions({
     for (const option of options) {
       for (const val of option.values ?? []) {
         const withValue = variants.filter((v) =>
-          (v.options ?? []).some(
-            (o) => o.option_id === option.id && o.value === val.value
-          )
+          (v.options ?? []).some((o) => o.option_id === option.id && o.value === val.value)
         )
         if (withValue.length > 0 && !withValue.some(variantInStock)) {
           set.add(`${option.id}:${val.value}`)
@@ -95,11 +89,12 @@ export function ProductActions({
     price?.calculated_amount != null && price.calculated_amount > 5000
       ? Math.round(price.calculated_amount / 12)
       : null
-  const level = (product.metadata?.customization_level as string) ?? "none"
+  const level = studioPieceForHandle(product.handle)
+    ? "full_3d"
+    : ((product.metadata?.customization_level as string) ?? "none")
   const customizable = isCustomizable(level)
   const canAdd = Boolean(activeVariant && variantInStock(activeVariant))
-  const lineTotal =
-    price?.calculated_amount != null ? price.calculated_amount * quantity : null
+  const lineTotal = price?.calculated_amount != null ? price.calculated_amount * quantity : null
 
   async function handleAdd() {
     if (!activeVariant || !variantInStock(activeVariant)) return
@@ -191,7 +186,13 @@ export function ProductActions({
           className="pdp-atc"
           style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
         >
-          {added ? "Added" : canAdd ? "Add to cart" : activeVariant ? "Out of stock" : "Select options"}
+          {added
+            ? "Added"
+            : canAdd
+              ? "Add to cart"
+              : activeVariant
+                ? "Out of stock"
+                : "Select options"}
         </Button>
         <button
           type="button"

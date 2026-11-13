@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import type { HttpTypes } from "@medusajs/types"
 import { AddressForm } from "@/components/features/checkout/address-form"
-import { EditorialCtaButton } from "@/components/layout/editorial/editorial-cta"
+import { CheckoutSubmit } from "@/components/features/checkout/checkout-actions"
 import {
   customerAddressToFormValues,
   type DeliveryAddressValues,
@@ -61,50 +61,40 @@ export function CheckoutAddressStep({
 
   if (loading) {
     return (
-      <div className="mt-[2em] space-y-[1em]" aria-busy="true">
-        <div className="h-[1.25em] w-[10em] rounded-[0.125em] bg-[#D9D9D9]" />
-        <div className="h-[6em] w-full rounded-[0.125em] bg-[#D9D9D9]" />
+      <div className="checkout-skeleton" aria-busy="true">
+        <span />
+        <span />
       </div>
     )
   }
 
   return (
-    <div className="mt-[2em]">
-      <h2 className="m-0 font-outfit text-[1.5em] leading-[1.2] font-normal tracking-[-0.03em] text-balance text-[#131111]">
-        Delivery address
-      </h2>
-      <p className="mt-[0.5em] m-0 max-w-[68ch] font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-pretty text-[#131111]/70">
+    <div className="checkout-step">
+      <h2 className="checkout-section-title">Delivery address</h2>
+      <p className="checkout-help">
         {addresses.length
           ? "Use a saved address or add another."
           : "Add an address to continue. It is saved to your account."}
       </p>
 
       {addresses.length > 0 && mode === "pick" ? (
-        <div className="mt-[1.5em]">
-          <ul className="m-0 list-none space-y-[0.75em] p-0">
+        <div>
+          <ul className="checkout-saved">
             {addresses.map((address) => {
               const active = address.id === selectedId
               const label = address.address_name || "Address"
               return (
                 <li key={address.id}>
-                  <label
-                    className={cn(
-                      "flex cursor-pointer gap-[0.85em] border-b border-[#CDCDCD] py-[0.9em]",
-                      active ? "text-[#131111]" : "text-[#131111]/70"
-                    )}
-                  >
+                  <label className={cn("checkout-choice", active && "is-active")}>
                     <input
                       type="radio"
                       name="saved-address"
                       checked={active}
                       onChange={() => setSelectedId(address.id)}
-                      className="mt-[0.3em] accent-[#131111]"
                     />
-                    <span>
-                      <span className="block font-outfit text-[0.75em] tracking-[-0.02em] uppercase">
-                        {label}
-                      </span>
-                      <span className="mt-[0.25em] block font-outfit text-[1em] leading-[1.4] tracking-[-0.02em]">
+                    <span className="checkout-choice-body">
+                      <span className="checkout-label">{label}</span>
+                      <span className="checkout-choice-title">
                         {[address.address_1, address.address_2, address.city, address.province, address.postal_code]
                           .filter(Boolean)
                           .join(", ")}
@@ -115,15 +105,11 @@ export function CheckoutAddressStep({
               )
             })}
           </ul>
-          <div className="mt-[1.75em] flex flex-col items-start gap-[1em]">
-            <EditorialCtaButton type="button" disabled={busy || !selected} onClick={useSelected}>
+          <div className="checkout-actions is-follow">
+            <CheckoutSubmit type="button" disabled={busy || !selected} onClick={useSelected}>
               {busy ? "Saving" : "Continue"}
-            </EditorialCtaButton>
-            <button
-              type="button"
-              onClick={() => setMode("create")}
-              className="cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em]"
-            >
+            </CheckoutSubmit>
+            <button type="button" onClick={() => setMode("create")} className="checkout-text-link">
               Add a new address
             </button>
           </div>
@@ -131,13 +117,11 @@ export function CheckoutAddressStep({
       ) : (
         <>
           {addresses.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => setMode("pick")}
-              className="mt-[1em] cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em]"
-            >
-              Use a saved address
-            </button>
+            <p className="checkout-link-row">
+              <button type="button" onClick={() => setMode("pick")} className="checkout-text-link">
+                Use a saved address
+              </button>
+            </p>
           ) : null}
           <AddressForm
             busy={busy}

@@ -20,23 +20,23 @@ const DISCIPLINES = [
   {
     title: "Trophies",
     href: "/trophies",
-    image: "/images/hero/hero-workshop.jpg",
-    alt: "Workshop bench with timber and brass tools",
+    image: "/images/catalog/trophy-figure-award.webp",
+    alt: "Gilt figure award on an octagonal mahogany base",
     copy: "Brass, optical crystal, and seasoned timber for ceremonies that should last.",
   },
   {
     title: "Furniture",
     href: "/furniture",
-    image: "/images/categories/cat-furniture.jpg",
-    alt: "Oak grain close-up",
-    copy: "Kiln-dried teak, oak, and walnut — pieces meant to be lived with, not replaced.",
+    image: "/images/catalog/table-brass-nesting-1.webp",
+    alt: "Pair of brass pedestal nesting tables with tray tops",
+    copy: "Cast brass, honed marble, and tempered glass — tables meant to be lived with, not replaced.",
   },
   {
     title: "Artwork",
     href: "/artwork",
-    image: "/images/categories/cat-artwork.jpg",
-    alt: "Ceramic and brass still life",
-    copy: "Wall textiles, bronze, and studio ceramics chosen to quiet a room, not fill it.",
+    image: "/images/catalog/sculpture-loop-verdigris-1.webp",
+    alt: "Verdigris bronze loop sculpture on a marble plinth",
+    copy: "Cast bronze, marble, and glass objects chosen to quiet a room, not fill it.",
   },
 ] as const
 
@@ -63,10 +63,10 @@ export default function AboutPage() {
 
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
               <Image
-                src="/images/about/about-legacy-atelier.jpg"
-                alt="Sculptural walnut sofa in a dark atelier"
+                src="/images/hero/hero-legacy-tables.webp"
+                alt="Brass pedestal nesting tables with a bronze vase against a navy wall"
                 fill
-                priority
+                preload
                 sizes="(min-width: 1024px) 48em, 100vw"
                 className="object-cover object-center"
               />
@@ -114,9 +114,10 @@ export default function AboutPage() {
               Built to last, not to replace
             </h2>
             <p className="m-0 max-w-[36em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70 lg:col-span-7">
-              Kiln-dried teak, oak, and walnut. Optical crystal and brass we can stand behind. Pieces
-              leave the workshop finished by hand so they can be lived with — not discarded next
-              season. Timber offcuts become samples; packing is sized to the piece, not the pallet.
+              Cast brass, honed marble, tempered glass. Optical crystal and brass we can stand
+              behind. Pieces leave the workshop finished by hand so they can be lived with — not
+              discarded next season. Offcuts become samples; packing is sized to the piece, not the
+              pallet.
             </p>
           </div>
         </EditorialFrame>
@@ -152,7 +153,7 @@ export default function AboutPage() {
       <section className="relative mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3.5rem,8vw,7em)]">
         <div className="relative aspect-[1360/664] w-full overflow-hidden rounded-[0.125em]">
           <Image
-            src="/images/hero/hero-workshop.jpg"
+            src="/images/hero/hero-workshop.webp"
             alt="Artisan shaping timber in the atelier"
             fill
             sizes="(min-width: 90rem) 85rem, 100vw"

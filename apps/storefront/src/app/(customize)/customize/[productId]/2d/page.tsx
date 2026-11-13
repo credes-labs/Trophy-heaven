@@ -1,38 +1,48 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { getProductById } from "@/lib/data/catalog"
+import { EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { Editor2DLoader } from "@/components/features/customize/editor-2d-loader"
+import { studioPieceForHandle } from "@/lib/configurator/studio-pieces"
 
 export const metadata: Metadata = {
   title: "Customize your design",
   robots: { index: false },
 }
 
+const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)
+
 export default async function Customize2DPage({
   params,
   searchParams,
 }: {
   params: Promise<{ productId: string }>
-  searchParams: Promise<{ design?: string; variant?: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const { productId } = await params
-  const { design, variant } = await searchParams
+  const [{ productId }, query] = await Promise.all([params, searchParams])
   const product = await getProductById(productId)
   if (!product) notFound()
 
+  // The engraved plaque's 2D layout lives inside the studio, next to its 3D preview.
+  const piece = studioPieceForHandle(product.handle)
+  if (piece) {
+    const next = new URLSearchParams()
+    next.set("piece", piece.id)
+    for (const [key, value] of Object.entries(query)) {
+      const v = first(value)
+      if (v != null && key !== "mode") next.set(key, v)
+    }
+    next.set("mode", "2d")
+    redirect(`/customize?${next.toString()}`)
+  }
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="mb-6">
-        <Link href={`/products/${product.handle}`} className="font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-          Back to {product.title}
-        </Link>
-        <h1 className="mt-[0.75em] font-outfit text-[clamp(1.75rem,3vw,2.25em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance text-[#131111]">Design your {product.title}</h1>
-        <p className="mt-[0.5em] font-outfit text-[1em] leading-[1.45] text-[#6B635C]">
-          Add engraving text and your logo, pick a material finish, then save or add to cart.
-        </p>
-      </div>
-      <Editor2DLoader product={product} designId={design} preferredVariantId={variant} />
-    </div>
+    <EditorialShell className="h-dvh overflow-hidden">
+      <Editor2DLoader
+        product={product}
+        designId={first(query.design)}
+        preferredVariantId={first(query.variant)}
+      />
+    </EditorialShell>
   )
 }

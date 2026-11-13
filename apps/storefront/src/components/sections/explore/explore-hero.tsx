@@ -9,7 +9,6 @@ export function ExploreHero() {
         src={EXPLORE_HERO.src}
         alt={EXPLORE_HERO.alt}
         fill
-        priority={false}
         sizes="(min-width: 1024px) 85em, 100vw"
         className="object-cover object-center motion-safe:animate-[exploreKenBurns_22s_ease-out_forwards]"
       />

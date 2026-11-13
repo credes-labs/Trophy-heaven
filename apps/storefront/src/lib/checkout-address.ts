@@ -1,3 +1,5 @@
+import { isValidIndianPincode } from "@/lib/pincode"
+
 export type AddressSaveAs = "Home" | "Work"
 
 export type DeliveryAddressValues = {
@@ -67,4 +69,45 @@ export function toCustomerAddressPayload(values: DeliveryAddressValues) {
     ...toCartShippingAddress(values),
     address_name: values.save_as,
   }
+}
+
+export type AddressFieldErrors = Partial<Record<keyof DeliveryAddressValues, string>>
+
+const FIELD_ORDER = [
+  "postal_code",
+  "city",
+  "state",
+  "address_1",
+  "address_2",
+  "full_name",
+  "email",
+  "phone",
+] as const satisfies readonly (keyof DeliveryAddressValues)[]
+
+export function validateDeliveryAddress(
+  values: DeliveryAddressValues,
+  options?: { emailRequired?: boolean }
+): AddressFieldErrors {
+  const errors: AddressFieldErrors = {}
+  const emailRequired = options?.emailRequired !== false
+
+  if (!isValidIndianPincode(values.postal_code)) {
+    errors.postal_code = "Enter a 6-digit PIN code."
+  }
+  if (!values.city.trim()) errors.city = "Enter the city."
+  if (!values.state.trim()) errors.state = "Enter the state."
+  if (!values.address_1.trim()) errors.address_1 = "Enter the flat or house number."
+  if (!values.address_2?.trim()) errors.address_2 = "Enter the apartment, area, or sector."
+  if (!values.full_name.trim()) errors.full_name = "Enter the full name."
+  if (emailRequired) {
+    const email = values.email.trim()
+    if (!email) errors.email = "Enter an email address."
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email address."
+  }
+
+  return errors
+}
+
+export function firstAddressError(errors: AddressFieldErrors): keyof DeliveryAddressValues | null {
+  return FIELD_ORDER.find((key) => errors[key]) ?? null
 }

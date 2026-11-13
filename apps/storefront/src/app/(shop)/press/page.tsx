@@ -18,6 +18,7 @@ export default function PressPage() {
         watermark="press"
         title="Press & media."
         body="Brand assets, workshop notes, and contact for coverage."
+        illustration
       >
         <EditorialCtaLink href="mailto:press@legacycrafts.com">Email press</EditorialCtaLink>
       </SimplePageHero>

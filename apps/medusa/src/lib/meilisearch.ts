@@ -56,11 +56,31 @@ export function priceTier(price: number): string {
   return "15000_plus"
 }
 
+/** Major-unit amount. Query graph may return a number or a Medusa BigNumber. */
+export function asMajorAmount(amount: unknown): number | null {
+  if (typeof amount === "number" && Number.isFinite(amount)) return amount
+  if (typeof amount === "string" && amount !== "" && Number.isFinite(Number(amount))) {
+    return Number(amount)
+  }
+  if (amount && typeof amount === "object") {
+    const record = amount as { numeric?: unknown; value?: unknown }
+    if (typeof record.numeric === "number" && Number.isFinite(record.numeric)) return record.numeric
+    if (typeof record.value === "string" && record.value !== "" && Number.isFinite(Number(record.value))) {
+      return Number(record.value)
+    }
+  }
+  return null
+}
+
 export function lowestInrPrice(
-  variants: Array<{ prices?: Array<{ currency_code: string; amount: number }> }>
+  variants: Array<{ prices?: Array<{ currency_code?: string | null; amount?: unknown }> | null }>
 ): number {
   const amounts = variants.flatMap((variant) =>
-    (variant.prices ?? []).filter((p) => p.currency_code === "inr").map((p) => p.amount)
+    (variant.prices ?? []).flatMap((price) => {
+      if (price.currency_code?.toLowerCase() !== "inr") return []
+      const amount = asMajorAmount(price.amount)
+      return amount == null ? [] : [amount]
+    })
   )
   return amounts.length ? Math.min(...amounts) : 0
 }

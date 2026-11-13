@@ -25,24 +25,20 @@ const TROPHY_SUBCATEGORIES = [
 
 const FURNITURE_SUBCATEGORIES = [
   { label: "Tables", href: "/categories/furniture/tables" },
-  { label: "Chairs", href: "/categories/furniture/chairs" },
-  { label: "Shelves", href: "/categories/furniture/shelves" },
-  { label: "Cabinets", href: "/categories/furniture/cabinets" },
-  { label: "Stools", href: "/categories/furniture/stools" },
 ]
 
 const FEATURED_PRODUCTS = [
   {
-    name: "Brass Table Lamp",
-    price: "₹2,499",
-    image: "/images/products/art-brass-lamp.jpg",
-    href: "/artwork",
+    name: "Brass Nesting Tables",
+    price: "₹54,400",
+    image: "/images/catalog/table-brass-nesting-1.webp",
+    href: "/products/brass-nesting-tables",
   },
   {
-    name: "Artisan Walnut Table",
-    price: "₹18,999",
-    image: "/images/products/furniture-oak-table.jpg",
-    href: "/furniture",
+    name: "Achievement Statuette",
+    price: "₹15,300",
+    image: "/images/catalog/trophy-achievement-statuette.webp",
+    href: "/products/achievement-statuette",
   },
 ]
 

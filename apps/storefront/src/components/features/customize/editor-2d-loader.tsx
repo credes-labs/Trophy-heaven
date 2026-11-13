@@ -5,23 +5,16 @@ import dynamic from "next/dynamic"
 import type { HttpTypes } from "@medusajs/types"
 import { designApi, type DesignRecord } from "@/lib/design-client"
 
+const loadingFallback = (
+  <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)] font-outfit text-[0.875em] tracking-[0.08em] text-[#6B635C] uppercase">
+    Loading the design studio…
+  </div>
+)
+
 // Fabric.js touches `window`/`document`, so the editor is client-only (ssr:false).
 const Editor2D = dynamic(
   () => import("./editor-2d").then((m) => m.Editor2D),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[#6B635C]">
-        Loading the design studio…
-      </div>
-    ),
-  }
-)
-
-const loadingFallback = (
-  <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[#6B635C]">
-    Loading the design studio…
-  </div>
+  { ssr: false, loading: () => loadingFallback }
 )
 
 export function Editor2DLoader({

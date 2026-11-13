@@ -1,5 +1,6 @@
 "use client"
 
+import { studioPieceForHandle } from "@/lib/configurator/studio-pieces"
 import Link from "next/link"
 import Image from "next/image"
 import { localizeImageUrl } from "@/lib/images"
@@ -9,10 +10,7 @@ import { Heart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatMoney, CUSTOMIZATION_LABELS, isCustomizable } from "@/lib/format"
-import {
-  accentFromProductCategories,
-  type CategoryAccent,
-} from "@/lib/category-config"
+import { accentFromProductCategories, type CategoryAccent } from "@/lib/category-config"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlist } from "@/hooks/use-wishlist"
 import { track } from "@/lib/analytics"
@@ -62,17 +60,22 @@ export type ProductCardProps = {
   layout?: "grid" | "list"
   className?: string
   showWishlist?: boolean
+  /** Load the image immediately (first row above the fold). */
+  eager?: boolean
 }
 
 export function ProductCard({
   product,
   accent: accentProp,
   layout = "grid",
+  eager = false,
   className,
   showWishlist = true,
 }: ProductCardProps) {
   const price = lowestPrice(product)
-  const level = (product.metadata?.customization_level as string) ?? "none"
+  const level = studioPieceForHandle(product.handle)
+    ? "full_3d"
+    : ((product.metadata?.customization_level as string) ?? "none")
   const accent = accentProp ?? accentFromProductCategories(product.categories)
   const label = categoryLabel(product, accent)
   const onSale = Boolean(price?.original)
@@ -103,11 +106,14 @@ export function ProductCard({
     return (
       <article
         className={cn(
-          "group flex gap-4 overflow-hidden rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] p-3",
+          "group flex gap-4 overflow-hidden border border-[#131111]/15 bg-[#FBFBF7] p-3",
           className
         )}
       >
-        <Link href={href} className="relative h-28 w-28 shrink-0 overflow-hidden rounded-[0.125em] bg-[#D9D9D9] sm:h-36 sm:w-36">
+        <Link
+          href={href}
+          className="relative h-28 w-28 shrink-0 overflow-hidden bg-[#D9D9D9] sm:h-36 sm:w-36"
+        >
           {product.thumbnail ? (
             <Image
               src={localizeImageUrl(product.thumbnail)}
@@ -131,11 +137,16 @@ export function ProductCard({
               {label}
             </Badge>
           )}
-          <Link href={href} className="line-clamp-1 font-outfit font-normal tracking-[-0.02em] text-[#131111] text-balance hover:underline">
+          <Link
+            href={href}
+            className="line-clamp-1 font-outfit font-normal tracking-[-0.02em] text-[#131111] text-balance hover:underline"
+          >
             {product.title}
           </Link>
           {product.description && (
-            <p className="line-clamp-2 font-outfit text-sm text-[#6B635C] text-pretty">{product.description}</p>
+            <p className="line-clamp-2 font-outfit text-sm text-[#6B635C] text-pretty">
+              {product.description}
+            </p>
           )}
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-2">
             <span className="font-outfit text-sm text-[#131111] tabular-nums">
@@ -165,7 +176,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group flex flex-col overflow-hidden rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7]",
+        "group flex flex-col overflow-hidden border border-[#131111]/15 bg-[#FBFBF7]",
         className
       )}
     >
@@ -177,6 +188,7 @@ export function ProductCard({
               alt={product.title}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
+              loading={eager ? "eager" : undefined}
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ) : (
@@ -202,9 +214,7 @@ export function ProductCard({
             onClick={() => void toggleWishlist()}
             className="absolute right-2 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#FBFBF7]/90 text-[#131111] transition-colors hover:bg-[#FBFBF7] disabled:opacity-60"
           >
-            <Heart
-              className={cn("h-4 w-4", wishlisted && "fill-[#131111] text-[#131111]")}
-            />
+            <Heart className={cn("h-4 w-4", wishlisted && "fill-[#131111] text-[#131111]")} />
           </button>
         )}
 
@@ -228,7 +238,10 @@ export function ProductCard({
             {label}
           </span>
         )}
-        <Link href={href} className="line-clamp-2 font-outfit text-sm font-normal tracking-[-0.02em] text-[#131111] text-balance hover:underline">
+        <Link
+          href={href}
+          className="line-clamp-2 font-outfit text-sm font-normal tracking-[-0.02em] text-[#131111] text-balance hover:underline"
+        >
           {product.title}
         </Link>
         <p className="font-outfit text-xs text-[#6B635C] text-pretty">

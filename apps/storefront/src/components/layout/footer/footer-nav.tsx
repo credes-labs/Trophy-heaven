@@ -1,9 +1,7 @@
 import Link from "next/link"
+import Image from "next/image"
 
-import { FOOTER_NAV, FOOTER_WORDMARK } from "./constants"
-import "./footer-nav.css"
-
-const COLUMN_LEFT = ["left-[53.625em]", "left-[64.5625em]", "left-[75.9375em]"] as const
+import { FOOTER_NAV } from "./constants"
 
 function NavColumn({
   title,
@@ -33,39 +31,35 @@ function NavColumn({
   )
 }
 
-/** Wordmark + three columns — Frame 2131330794 (1360×259). */
+/** Wordmark fills the space left of the columns. Columns set the row height. */
 export function FooterNav() {
   return (
-    <div className="relative mx-auto w-full max-w-[85em] overflow-x-clip px-[clamp(1.25rem,2.78vw,2.5em)] lg:h-[16.1875em] lg:px-0">
-      <div className="-ml-[0.15em] lg:-ml-[1.833em]">
+    <div className="mx-auto flex w-full max-w-[85em] flex-col gap-10 px-[clamp(1.25rem,2.78vw,2.5em)] pb-8 lg:flex-row lg:items-end lg:gap-[2.5em] lg:px-0 lg:pb-[5.5em]">
+      <div className="min-w-0 lg:mb-[1.75em] lg:flex-1">
         <Link
           href="/"
           aria-label="Legacy home"
-          className="footer-wordmark relative z-0 inline-block max-w-full font-outfit text-balance text-[clamp(3.5rem,18vw,15.143em)] leading-[0.74] font-medium tracking-[-0.104em] text-[#131111] no-underline"
+          className="block w-full max-w-[34rem] no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:max-w-none"
         >
-          <span className="footer-wordmark-l">{FOOTER_WORDMARK.slice(0, 1)}</span>
-          {FOOTER_WORDMARK.slice(1)}
+          <Image
+            src="/images/brand/footer-legacy-crafts.svg"
+            alt=""
+            aria-hidden
+            width={2545}
+            height={1043}
+            className="block h-auto w-full"
+          />
         </Link>
       </div>
 
       <nav
         aria-label="Footer"
-        className="mt-8 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:mt-0"
+        className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:shrink-0 lg:grid-cols-3 lg:gap-x-[4.75em] lg:pb-[0.35em]"
       >
-        {FOOTER_NAV.map((column, index) => (
-          <div
-            key={column.title}
-            className={`relative z-10 lg:absolute lg:top-0 ${COLUMN_LEFT[index]}`}
-          >
-            <NavColumn title={column.title} links={column.links} />
-          </div>
+        {FOOTER_NAV.map((column) => (
+          <NavColumn key={column.title} title={column.title} links={column.links} />
         ))}
       </nav>
-
-      <div
-        className="mt-10 h-px w-full bg-[#131111]/16 lg:absolute lg:right-0 lg:bottom-px lg:left-0 lg:mt-0"
-        aria-hidden
-      />
     </div>
   )
 }

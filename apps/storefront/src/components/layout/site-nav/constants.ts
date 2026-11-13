@@ -81,18 +81,12 @@ export function collectionChildren(categories?: NavCategory[]): SiteNavChild[] {
   ]
 }
 
-export function siteNavColumns(categories?: NavCategory[]): {
+export function siteNavColumns(_categories?: NavCategory[]): {
   col1: SiteNavItem[]
   col2: SiteNavItem[]
 } {
   return {
     col1: [
-      {
-        id: "collection",
-        label: "COLLECTION",
-        href: "/shop",
-        children: collectionChildren(categories),
-      },
       {
         id: "catalog",
         label: "CATALOG",

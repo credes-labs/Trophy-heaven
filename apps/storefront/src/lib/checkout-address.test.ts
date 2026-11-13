@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest"
 import {
   customerAddressToFormValues,
+  firstAddressError,
   splitFullName,
   toCartShippingAddress,
+  validateDeliveryAddress,
+  type DeliveryAddressValues,
 } from "./checkout-address"
 
 describe("splitFullName", () => {
@@ -38,6 +41,43 @@ describe("customerAddressToFormValues", () => {
     expect(values.city).toBe("Mumbai")
     expect(values.state).toBe("Maharashtra")
     expect(values.save_as).toBe("Home")
+  })
+})
+
+describe("validateDeliveryAddress", () => {
+  const valid: DeliveryAddressValues = {
+    email: "asha@example.com",
+    full_name: "Asha Verma",
+    address_1: "Flat 12",
+    address_2: "MG Road",
+    city: "Mumbai",
+    state: "Maharashtra",
+    postal_code: "400001",
+    phone: "",
+    save_as: "Home",
+  }
+
+  it("accepts a complete address and an empty phone", () => {
+    expect(validateDeliveryAddress(valid)).toEqual({})
+  })
+
+  it("places messages on the empty required fields", () => {
+    const errors = validateDeliveryAddress({
+      ...valid,
+      email: "not-an-email",
+      postal_code: "4000",
+      city: " ",
+      address_1: "",
+    })
+    expect(errors.postal_code).toBe("Enter a 6-digit PIN code.")
+    expect(errors.city).toBe("Enter the city.")
+    expect(errors.address_1).toBe("Enter the flat or house number.")
+    expect(errors.email).toBe("Enter a valid email address.")
+    expect(firstAddressError(errors)).toBe("postal_code")
+  })
+
+  it("skips email when the account form hides it", () => {
+    expect(validateDeliveryAddress({ ...valid, email: "" }, { emailRequired: false })).toEqual({})
   })
 })
 

@@ -15,15 +15,25 @@ import {
 import { Modules, ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
 import type { CreateProductWorkflowInputDTO, ExecArgs } from "@medusajs/framework/types"
 import { generateSku } from "../lib/sku"
-import { homepageFurnitureProducts } from "./homepage-furniture"
+import { furnitureCollectionProducts } from "./furniture-collection"
+import { sculptureCollectionProducts } from "./sculpture-collection"
+import { trophyCollectionProducts } from "./trophy-collection"
 
 // Medusa's default local file provider won't serve the storefront assets, so in
 // dev we point product imagery at the storefront origin (see
 // apps/storefront/public/images/manifest.json).
 const STOREFRONT_URL = process.env.STOREFRONT_URL ?? "http://localhost:3000"
 const productImage = (file: string) => `${STOREFRONT_URL}/images/products/${file}`
+const catalogImage = (file: string) => `${STOREFRONT_URL}/images/catalog/${file}`
 
-/** Soft-deleted on each seed so they do not return in admin / store. */
+/**
+ * Soft-deleted on each seed so they do not return in admin / store.
+ *
+ * The chairs, sideboards and lamps listed below were the AI-generated
+ * furniture line: the workshop does not make them, so both the products and
+ * the imagery behind them were retired. Re-seeding a database that holds the
+ * old catalog removes all 24.
+ */
 const RETIRED_SAMPLE_HANDLES = new Set([
   "crystal-star-award",
   "champion-metal-cup",
@@ -31,6 +41,32 @@ const RETIRED_SAMPLE_HANDLES = new Set([
   "walnut-dining-chair",
   "teak-wall-shelf",
   "handmade-ceramic-vase",
+  // Catalog rail + explore pieces (homepage-furniture.ts, now deleted).
+  "luno-210-lounge-chair",
+  "verra-wooden-dining-table",
+  "noir-leather-armchair",
+  "aura-minimal-sideboard",
+  "sola-oval-coffee-table",
+  "orbit-glass-side-table",
+  "kino-boucle-lounge",
+  "halo-walnut-shelf",
+  "mara-dining-chair",
+  "nera-dining-table",
+  "pebble-coffee-table",
+  "lumen-side-table",
+  "oslo-leather",
+  "nova-oak",
+  "aria-minimal",
+  "eclipse-maple",
+  "sierra-fabric",
+  "vertex-glass",
+  "luna-brass",
+  "woven-jute",
+  "haven-pine",
+  // Standard (non-customizable) sample products with the same fake imagery.
+  "oak-side-table",
+  "brass-table-lamp",
+  "handwoven-wall-textile",
 ])
 
 /**
@@ -270,8 +306,10 @@ export default async function seed({ container }: ExecArgs) {
 
     const children: Record<string, string[]> = {
       Trophies: ["Sports", "Corporate", "Academic", "Memorial", "Acrylic", "Crystal", "Metal"],
-      Furniture: ["Tables", "Chairs", "Shelves", "Cabinets", "Stools"],
-      "Home Decor": ["Vases", "Wall Art", "Lamps", "Mirrors", "Clocks", "Planters"],
+      // The workshop makes tables; the other furniture leaves went with the
+      // retired sample products.
+      Furniture: ["Tables"],
+      "Home Decor": ["Sculptures"],
     }
     const childInput = Object.entries(children).flatMap(([parent, subs]) =>
       subs.map((name) => ({ name, parent_category_id: categoryByName[parent], is_active: true }))
@@ -280,6 +318,20 @@ export default async function seed({ container }: ExecArgs) {
       input: { product_categories: childInput },
     })
     for (const c of subCategories) categoryByName[c.name] = c.id
+  }
+
+  // Subcategories added after a database was first seeded: the block above only
+  // runs on a fresh DB, so new leaves have to be backfilled explicitly.
+  const homeDecorId = categoryByName["Home Decor"]
+  if (homeDecorId && !categoryByName["Sculptures"]) {
+    const { result: newSubs } = await createProductCategoriesWorkflow(container).run({
+      input: {
+        product_categories: [
+          { name: "Sculptures", parent_category_id: homeDecorId, is_active: true },
+        ],
+      },
+    })
+    for (const c of newSubs) categoryByName[c.name] = c.id
   }
 
   // ── Publishable API key linked to the sales channel ──────────────────────────
@@ -403,14 +455,19 @@ export default async function seed({ container }: ExecArgs) {
   const productsToCreate: CreateProductWorkflowInputDTO[] = []
 
   if (!productTitles.has("Engraved Wooden Plaque")) {
+    const plaquePrices = [
+      { size: sizes[1]!, usd: 99 },
+      { size: sizes[2]!, usd: 135 },
+    ]
     productsToCreate.push({
       title: "Engraved Wooden Plaque",
       handle: "engraved-wooden-plaque",
       status: ProductStatus.PUBLISHED,
       category_ids: [categoryByName["Academic"]].filter(Boolean),
-      description: "Text-engravable wooden plaque for academic awards.",
-      thumbnail: productImage("furniture-oak-table.jpg"),
-      images: [{ url: productImage("furniture-oak-table.jpg") }],
+      description:
+        "Solid hardwood plaque with a brass engraving plate, laid out in the design studio and cut to order.",
+      thumbnail: catalogImage("plaque-studio.webp"),
+      images: [{ url: catalogImage("plaque-studio.webp") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -419,108 +476,45 @@ export default async function seed({ container }: ExecArgs) {
         shape: "plaque",
       },
       options: [{ title: "Size", values: [sizes[1].label, sizes[2].label] }],
-      variants: [sizes[1], sizes[2]].map((s) => ({
-        title: `Wooden Plaque — ${s.label}`,
-        sku: generateSku({ category: "Acad", shape: "Plaque", material: "Wood", size: s.token }),
-        options: { Size: s.label },
+      variants: plaquePrices.map(({ size, usd }) => ({
+        title: `Wooden Plaque — ${size.label}`,
+        sku: generateSku({ category: "Acad", shape: "Plaque", material: "Wood", size: size.token }),
+        options: { Size: size.label },
         prices: [
-          { amount: 899, currency_code: "inr" },
-          { amount: 1299, currency_code: "usd" },
+          { amount: Math.round(usd * 85), currency_code: "inr" },
+          { amount: usd, currency_code: "usd" },
         ],
         manage_inventory: true,
       })),
     })
   }
 
-  if (!productTitles.has("Oak Side Table")) {
-    productsToCreate.push({
-      title: "Oak Side Table",
-      handle: "oak-side-table",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Tables"]].filter(Boolean),
-      description: "Solid oak side table — a standard (non-customizable) catalog product.",
-      thumbnail: productImage("furniture-oak-table.jpg"),
-      images: [
-        { url: productImage("furniture-oak-table.jpg") },
-        { url: productImage("furniture-walnut-chair.jpg") },
-        { url: productImage("furniture-teak-shelf.jpg") },
-      ],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: { customization_level: "none", material: "oak" },
-      options: [{ title: "Finish", values: ["Natural", "Walnut"] }],
-      variants: ["Natural", "Walnut"].map((finish) => ({
-        title: `Oak Side Table — ${finish}`,
-        sku: generateSku({ category: "Furn", shape: "Table", material: "Oak", size: finish }),
-        options: { Finish: finish },
-        prices: [
-          { amount: 12999, currency_code: "inr" },
-          { amount: 17900, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
+  const collectionSources = [
+    furnitureCollectionProducts({
+      salesChannelId: defaultSalesChannel.id,
+      categoryByName,
+      storefrontUrl: STOREFRONT_URL,
+    }),
+    sculptureCollectionProducts({
+      salesChannelId: defaultSalesChannel.id,
+      categoryByName,
+      storefrontUrl: STOREFRONT_URL,
+    }),
+    trophyCollectionProducts({
+      salesChannelId: defaultSalesChannel.id,
+      categoryByName,
+      storefrontUrl: STOREFRONT_URL,
+    }),
+  ]
+  for (const collection of collectionSources) {
+    productsToCreate.push(
+      ...collection.filter(
+        (product) =>
+          !productTitles.has(product.title) &&
+          !(product.handle && productHandles.has(product.handle)),
+      ),
+    )
   }
-
-  if (!productTitles.has("Brass Table Lamp")) {
-    productsToCreate.push({
-      title: "Brass Table Lamp",
-      handle: "brass-table-lamp",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Lamps"]].filter(Boolean),
-      description: "Brass table lamp with a warm metallic patina, hand-polished in our workshop.",
-      thumbnail: productImage("art-brass-lamp.jpg"),
-      images: [{ url: productImage("art-brass-lamp.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: { customization_level: "none", material: "brass" },
-      options: [{ title: "Shade", values: ["Ivory Linen", "Charcoal Linen"] }],
-      variants: ["Ivory Linen", "Charcoal Linen"].map((shade) => ({
-        title: `Brass Table Lamp — ${shade}`,
-        sku: generateSku({ category: "Deco", shape: "Lamp", material: "Brass", size: shade }),
-        options: { Shade: shade },
-        prices: [
-          { amount: 3999, currency_code: "inr" },
-          { amount: 55, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  if (!productTitles.has("Handwoven Wall Textile")) {
-    productsToCreate.push({
-      title: "Handwoven Wall Textile",
-      handle: "handwoven-wall-textile",
-      status: ProductStatus.PUBLISHED,
-      category_ids: [categoryByName["Wall Art"]].filter(Boolean),
-      description: "Handwoven wall textile in olive and brass tones — a quiet statement piece.",
-      thumbnail: productImage("art-wall-textile.jpg"),
-      images: [{ url: productImage("art-wall-textile.jpg") }],
-      sales_channels: [{ id: defaultSalesChannel.id }],
-      metadata: { customization_level: "none", material: "cotton" },
-      options: [{ title: "Size", values: ["90 × 120 cm", "120 × 180 cm"] }],
-      variants: ["90 × 120 cm", "120 × 180 cm"].map((size) => ({
-        title: `Wall Textile — ${size}`,
-        sku: generateSku({ category: "Deco", shape: "Textile", material: "Cotton", size }),
-        options: { Size: size },
-        prices: [
-          { amount: 5999, currency_code: "inr" },
-          { amount: 83, currency_code: "usd" },
-        ],
-        manage_inventory: true,
-      })),
-    })
-  }
-
-  const homepageFurniture = homepageFurnitureProducts({
-    salesChannelId: defaultSalesChannel.id,
-    categoryByName,
-    storefrontUrl: STOREFRONT_URL,
-  }).filter(
-    (product) =>
-      !productTitles.has(product.title) &&
-      !(product.handle && productHandles.has(product.handle)),
-  )
-  productsToCreate.push(...homepageFurniture)
 
   if (productsToCreate.length) {
     await createProductsWorkflow(container).run({ input: { products: productsToCreate } })
@@ -529,54 +523,26 @@ export default async function seed({ container }: ExecArgs) {
     logger.info("Sample products already present; skipping product create.")
   }
 
-  // ── Backfill imagery for products seeded before thumbnails were set ────────
-  const imageByTitle: Record<string, string> = {
-    "Engraved Wooden Plaque": "furniture-oak-table.jpg",
-    "Oak Side Table": "furniture-oak-table.jpg",
-    "Brass Table Lamp": "art-brass-lamp.jpg",
-    "Handwoven Wall Textile": "art-wall-textile.jpg",
-  }
+  // ── Refresh imagery that still points at retired sample assets ─────────────
+  // Products seeded before the photography change keep their first gallery for
+  // ever otherwise, so the plaque is repointed explicitly on every run.
   const productModule = container.resolve(Modules.PRODUCT)
-  const { data: seededProducts } = await query.graph({
-    entity: "product",
-    fields: ["id", "title", "thumbnail"],
-  })
-  for (const p of seededProducts as Array<{ id: string; title: string; thumbnail?: string | null }>) {
-    const file = imageByTitle[p.title]
-    if (!file || p.thumbnail) continue
-    const url = productImage(file)
-    await productModule.updateProducts(p.id, { thumbnail: url, images: [{ url }] })
-    logger.info(`Backfilled imagery for product: ${p.title}`)
+  const IMAGE_BY_HANDLE: Record<string, string> = {
+    "engraved-wooden-plaque": catalogImage("plaque-studio.webp"),
   }
-
-  // ── Multi-image PDP gallery (Oak Side Table) ───────────
-  const multiImageByTitle: Record<string, string[]> = {
-    "Oak Side Table": [
-      "furniture-oak-table.jpg",
-      "furniture-walnut-chair.jpg",
-      "furniture-teak-shelf.jpg",
-    ],
-  }
-  const { data: galleryProducts } = await query.graph({
+  const { data: imageryProducts } = await query.graph({
     entity: "product",
-    fields: ["id", "title", "thumbnail", "images.id", "images.url"],
+    fields: ["id", "handle", "thumbnail"],
   })
-  for (const p of galleryProducts as Array<{
+  for (const p of imageryProducts as Array<{
     id: string
-    title: string
+    handle?: string | null
     thumbnail?: string | null
-    images?: Array<{ id: string; url: string }>
   }>) {
-    const files = multiImageByTitle[p.title]
-    if (!files) continue
-    const imageCount = p.images?.length ?? 0
-    if (imageCount >= files.length) continue
-    const urls = files.map((file) => productImage(file))
-    await productModule.updateProducts(p.id, {
-      thumbnail: urls[0],
-      images: urls.map((url) => ({ url })),
-    })
-    logger.info(`Attached ${urls.length} gallery image(s) to: ${p.title}`)
+    const url = p.handle ? IMAGE_BY_HANDLE[p.handle] : undefined
+    if (!url || p.thumbnail === url) continue
+    await productModule.updateProducts(p.id, { thumbnail: url, images: [{ url }] })
+    logger.info(`Updated imagery for product: ${p.handle}`)
   }
 
   // ── Inventory levels at the workshop (so manage_inventory variants sell) ────

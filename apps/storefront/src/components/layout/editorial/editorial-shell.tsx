@@ -12,7 +12,7 @@ export function EditorialShell({
   return (
     <div
       className={cn(
-        "overflow-x-clip bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]",
+        "under-site-header overflow-x-clip bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]",
         className
       )}
     >

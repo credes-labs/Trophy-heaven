@@ -46,10 +46,7 @@ export function ImageGallery({
 
   return (
     <div>
-      <div
-        className="pdp-gallery-well"
-        style={{ aspectRatio: "1 / 1", backgroundColor: "#D9D9D9" }}
-      >
+      <div className="pdp-gallery-well">
         <button
           type="button"
           onClick={() => current.url && setLightbox(true)}
@@ -82,7 +79,7 @@ export function ImageGallery({
                       sizes="(max-width: 1024px) 100vw, 55vw"
                       style={{ transformOrigin: zoomOrigin }}
                       className="pdp-gallery-img object-contain transition-transform duration-300 ease-out group-hover:scale-[1.75] motion-reduce:group-hover:scale-100"
-                      priority
+                      preload
                     />
                   </motion.span>
                 ) : (

@@ -52,7 +52,7 @@ export function ShopFilterBanner({ category }: { category: CategoryKey | null })
   return (
     <div className="relative mb-[1.5em] aspect-[1360/280] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
       <Image
-        src={cfg?.imageSrc ?? "/images/explore/hero-atelier.jpg"}
+        src={cfg?.imageSrc ?? "/images/explore/hero-atelier.webp"}
         alt={cfg?.imageAlt ?? "Walnut furniture in a gold-lit atelier"}
         fill
         sizes="(min-width: 1024px) 85em, 100vw"

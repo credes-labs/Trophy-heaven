@@ -48,7 +48,7 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
 
   return (
     <section className="relative overflow-hidden border-b border-[#131111]/10">
-      <div className="mx-auto grid w-full max-w-[90em] items-center gap-[2.5em] px-[clamp(1.25rem,2.78vw,2.5em)] py-[clamp(2.5rem,6vw,5em)] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-16 lg:min-h-[32em]">
+      <div className="mx-auto grid w-full max-w-[90em] items-center gap-[2.5em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2.5rem,6vw,5em)] pb-[clamp(2.5rem,6vw,5em)] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-16 lg:min-h-[32em]">
         <div className="relative z-10 max-w-[28em]">
           <p
             aria-hidden
@@ -70,17 +70,19 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
           </Link>
         </div>
 
-        <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
-          <Image
-            src={slide.image}
-            alt={slide.alt}
-            fill
-            priority
-            sizes="(min-width: 1024px) 48em, 100vw"
-            className="object-contain p-[7%]"
-          />
+        <div className="w-full">
+          <div className="relative aspect-[5/4] w-full overflow-hidden lg:aspect-[6/5]">
+            <Image
+              src={slide.image}
+              alt={slide.alt}
+              fill
+              preload
+              sizes="(min-width: 1440px) 50em, (min-width: 1024px) 58vw, 100vw"
+              className="object-cover"
+            />
+          </div>
           {slides.length > 1 ? (
-            <div className="absolute right-[1em] bottom-[1em] z-10 flex items-center gap-[0.65em] font-outfit text-[0.8125em] tracking-[0.12em] text-[#6B635C] uppercase">
+            <div className="mt-[0.85em] flex items-center justify-end gap-[0.65em] font-outfit text-[0.8125em] tracking-[0.12em] text-[#6B635C] uppercase">
               <button
                 type="button"
                 aria-label="Previous featured piece"

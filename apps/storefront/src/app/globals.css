@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../components/globe-demo.tsx";
 
 @theme {
   /* ── Brand Category Colors ── */
@@ -561,10 +562,11 @@
       row-gap var(--shop-move) var(--shop-ease);
   }
 
+  /* `clip`, not `hidden`: a hidden overflow becomes the scroll container and kills the sticky inner. */
   .shop-listing-sidebar {
     min-width: 0;
     min-height: 0;
-    overflow: hidden;
+    overflow: clip;
     opacity: 0;
     pointer-events: none;
     transition: opacity 320ms var(--shop-ease);
@@ -599,9 +601,57 @@
       row-gap: 0;
     }
 
+    /* Full row height so the sticky inner has a track to travel along the grid. */
+    .shop-listing-sidebar {
+      align-self: stretch;
+    }
+
     .shop-listing-sidebar-inner {
       width: 22.125em;
     }
+  }
+
+  /* Search filters: same sticky track as the shop sidebar. `clip`, not `hidden`. */
+  .search-listing-frame {
+    display: grid;
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.5em;
+    overflow-x: clip;
+  }
+
+  .search-listing-sidebar {
+    min-width: 0;
+    min-height: 0;
+    overflow: clip;
+  }
+
+  @media (min-width: 1024px) {
+    .search-listing-frame {
+      grid-template-columns: 22.125em minmax(0, 1fr);
+      column-gap: 3.25em;
+      row-gap: 0;
+    }
+
+    .search-listing-sidebar {
+      align-self: stretch;
+    }
+  }
+
+  /* Tiles sit on the paper. No card border, fill, shadow, or rounded frame. */
+  .search-page a.group,
+  .search-page a.group:hover {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .search-page a.group > div {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -632,6 +682,27 @@
   --duration-exit: 150ms;
   --duration-enter: 210ms;
   --duration-move: 400ms;
+}
+
+/* Height of the overlay inner-page nav (`SiteHeader`); first sections pad by it. */
+:root {
+  --site-header-h: 4.25rem;
+}
+@media (min-width: 64rem) {
+  :root {
+    --site-header-h: 5rem;
+  }
+}
+
+/* Only routes that render the overlay nav get the clearance (not `/` or bare app screens). */
+[data-site-header] ~ #main {
+  padding-top: var(--site-header-h);
+}
+
+/* Page roots with their own surface colour paint it behind the nav instead of a body-colour strip. */
+[data-site-header] ~ #main > .under-site-header {
+  margin-top: calc(-1 * var(--site-header-h));
+  padding-top: var(--site-header-h);
 }
 
 @keyframes fade {

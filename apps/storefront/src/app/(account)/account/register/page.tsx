@@ -176,6 +176,7 @@ export default function RegisterPage() {
       eyebrow="Account"
       title="Create account"
       lede="Orders, saved designs, and a wishlist that follows you."
+      illustration
     >
       <Suspense fallback={null}>
         <RegisterForm />

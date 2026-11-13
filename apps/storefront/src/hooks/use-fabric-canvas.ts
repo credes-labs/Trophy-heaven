@@ -11,13 +11,14 @@ type FabricModule = typeof import("fabric")
  * to a Fabric `Canvas` instance. Exposes the live instance plus the loaded
  * module so callers can construct `IText`/`FabricImage` objects (FR-2D-1).
  */
-export function useFabricCanvas() {
+export function useFabricCanvas(enabled = true) {
   const elRef = useRef<HTMLCanvasElement | null>(null)
   const canvasRef = useRef<FabricCanvas | null>(null)
   const fabricRef = useRef<FabricModule | null>(null)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    if (!enabled) return
     let disposed = false
     let instance: FabricCanvas | null = null
 
@@ -42,7 +43,7 @@ export function useFabricCanvas() {
       canvasRef.current = null
       setReady(false)
     }
-  }, [])
+  }, [enabled])
 
   const getCanvas = useCallback(() => canvasRef.current, [])
   const getFabric = useCallback(() => fabricRef.current, [])

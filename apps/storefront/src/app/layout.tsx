@@ -6,10 +6,9 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/features/cart/cart-drawer"
-import { MobileNav } from "@/components/layout/mobile-nav"
 import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
-import { SiteChrome } from "@/components/layout/site-chrome"
+import { ChromeGate, SiteChrome } from "@/components/layout/site-chrome"
 import { getSiteUrl } from "@/lib/site-url"
 
 const inter = Inter({
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Legacy Crafts",
     locale: "en_IN",
-    images: [{ url: "/images/hero/hero-workshop.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/images/og/og-default.jpg", width: 1200, height: 630 }],
   },
   twitter: { card: "summary_large_image" },
   robots: process.env.VERCEL_ENV === "preview" ? { index: false, follow: false } : undefined,
@@ -108,9 +107,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer />
+          <ChromeGate>
+            <Footer />
+          </ChromeGate>
           <CartDrawer />
-          <MobileNav />
           <PWARegister />
         </Providers>
         <Analytics />

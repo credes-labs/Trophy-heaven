@@ -10,22 +10,22 @@ export const SHOP_CLEAR_LABEL = "clear filters"
 
 export const SHOP_FEATURED_FALLBACK = [
   {
-    title: "Luno 210 lounge chair",
-    href: "/products/luno-210-lounge-chair",
-    image: "/images/catalog/seating-lounge.jpg",
-    alt: "Walnut lounge chair with oatmeal bouclé upholstery",
+    title: "Brass Nesting Tables",
+    href: "/products/brass-nesting-tables",
+    image: "/images/catalog/table-brass-nesting-1.webp",
+    alt: "Pair of brass pedestal nesting tables with tray tops",
   },
   {
-    title: "Brass Table Lamp",
-    href: "/products/brass-table-lamp",
-    image: "/images/products/art-brass-lamp.jpg",
-    alt: "Brass table lamp with warm metallic patina",
+    title: "Achievement Statuette",
+    href: "/products/achievement-statuette",
+    image: "/images/catalog/trophy-achievement-statuette.webp",
+    alt: "Gilded figure statuette on a black marble plinth",
   },
 ] as const
 
 export const SHOP_BANNER = {
-  src: "/images/catalog/tables-dining.jpg",
-  alt: "Walnut dining table with cream-upholstered chairs in a sunlit room",
+  src: "/images/catalog/table-marble-octagon.webp",
+  alt: "Octagonal marble coffee table on a brass base in an olive-grey room",
 } as const
 
 export const SHOP_QUOTES = [

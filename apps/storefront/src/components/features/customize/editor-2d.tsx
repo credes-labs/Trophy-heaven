@@ -1,41 +1,35 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import type { Canvas as FabricCanvas, FabricObject, IText } from "fabric"
+import { useEffect, useId, useRef, useState } from "react"
+import Link from "next/link"
 import type { HttpTypes } from "@medusajs/types"
-import type { Material2D } from "@legacy-crafts/schemas"
 import { Button } from "@/components/ui/button"
-import { useFabricCanvas } from "@/hooks/use-fabric-canvas"
-import { useEditorStore } from "@/stores/editor-store"
 import { useCartStore } from "@/stores/cart-store"
-import {
-  CANVAS_SIZE,
-  DEFAULT_SAFE_AREA,
-  MATERIALS_2D,
-  MAX_ENGRAVING_CHARS,
-  buildDesign2DState,
-  validateDesign2D,
-} from "@/lib/design-2d"
-import { ENGRAVING_FONTS, loadGoogleFont } from "@/lib/fonts"
-import { designApi, type DesignRecord } from "@/lib/design-client"
+import { useEditorStore } from "@/stores/editor-store"
+import type { DesignRecord } from "@/lib/design-client"
 import { track } from "@/lib/analytics"
-import { isAllowedLogo, sanitizeSvg } from "@/lib/sanitize"
+import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { cheapestInStockVariant } from "@/lib/product-filters"
+import {
+  LayoutComposePanel,
+  LayoutEditorProvider,
+  LayoutLibraryPanel,
+  LayoutStage,
+  type LayoutController,
+} from "./layout/layout-editor"
+import { StudioTopBar } from "./configurator/studio-top-bar"
 
-type FabricObjectLike = FabricObject & { id?: string; text?: string; fontFamily?: string }
+const TABS = [
+  { id: "compose", label: "Compose" },
+  { id: "library", label: "Library" },
+] as const
+type TabId = (typeof TABS)[number]["id"]
 
-/** Attaches a stable id to every object so it survives serialization. */
-function ensureId(obj: FabricObjectLike): string {
-  if (!obj.id) obj.id = crypto.randomUUID()
-  return obj.id
-}
+const panelX = "px-[clamp(1.25rem,2.5vw,2.25em)]"
+const ringFocus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
-/** Snapshot including custom `id` props (undo/redo + save). */
-function serialize(canvas: FabricCanvas): string {
-  return JSON.stringify(canvas.toObject(["id"]))
-}
-
+/** Fullscreen 2D editor for products without a 3D studio (the plaque's 2D layout lives in its studio). */
 export function Editor2D({
   product,
   initialDesign,
@@ -45,337 +39,35 @@ export function Editor2D({
   initialDesign?: DesignRecord | null
   preferredVariantId?: string
 }) {
-  const { elRef, getCanvas, getFabric, ready } = useFabricCanvas()
-  const {
-    material,
-    validationErrors,
-    saving,
-    setMeta,
-    setSelected,
-    setSaving,
-    setValidationErrors,
-    pushSnapshot,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-    reset,
-  } = useEditorStore()
-
   const addItem = useCartStore((s) => s.addItem)
-  const [name, setName] = useState(initialDesign?.name ?? "Untitled design")
-  const [designId, setDesignId] = useState<string | null>(initialDesign?.id ?? null)
-  const [selectedFont, setSelectedFont] = useState<string>(ENGRAVING_FONTS[0])
-  const [fillColor, setFillColor] = useState("#1a1a1a")
-  const [layers, setLayers] = useState<{ id: string; label: string; visible: boolean }[]>([])
-  const [gallery, setGallery] = useState<DesignRecord[]>([])
-  const [addedMsg, setAddedMsg] = useState<string | null>(null)
-  // Track uploaded logo intrinsic resolution for the DPI check (FR-2D-9).
-  const logoMetaRef = useRef<Record<string, { naturalWidth: number }>>({})
-  const skipHistoryRef = useRef(false)
+  const saving = useEditorStore((s) => s.saving)
+  const [tab, setTab] = useState<TabId>("compose")
+  const [message, setMessage] = useState<string | null>(null)
+  const controllerRef = useRef<LayoutController | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tabsId = useId()
 
   const variantId =
-    product.variants?.find((v) => v.id === preferredVariantId)?.id ??
-    cheapestInStockVariant(product)?.id
+    product.variants?.find((v) => v.id === preferredVariantId)?.id ?? cheapestInStockVariant(product)?.id
+  const variant = product.variants?.find((v) => v.id === variantId)
+  const price =
+    variant?.calculated_price?.calculated_amount != null
+      ? formatMoney(variant.calculated_price.calculated_amount, variant.calculated_price.currency_code ?? "inr")
+      : null
 
-  const refreshLayers = useCallback(() => {
-    const canvas = getCanvas()
-    if (!canvas) return
-    setLayers(
-      canvas
-        .getObjects()
-        .map((o) => {
-          const obj = o as FabricObjectLike
-          const id = ensureId(obj)
-          const label =
-            obj.type === "i-text" || obj.type === "text"
-              ? `Text: ${(obj.text ?? "").slice(0, 18) || "(empty)"}`
-              : obj.type === "image"
-                ? "Logo / image"
-                : obj.type ?? "layer"
-          return { id, label, visible: obj.visible !== false }
-        })
-        .reverse()
-    )
-  }, [getCanvas])
-
-  const snapshot = useCallback(() => {
-    const canvas = getCanvas()
-    if (!canvas || skipHistoryRef.current) return
-    pushSnapshot(serialize(canvas))
-    refreshLayers()
-  }, [getCanvas, pushSnapshot, refreshLayers])
-
-  // Wire Fabric events -> history + selection once the canvas is ready.
-  useEffect(() => {
-    const canvas = getCanvas()
-    if (!ready || !canvas) return
-
-    const onModified = () => snapshot()
-    const onSelection = () => {
-      const active = canvas.getActiveObject() as FabricObjectLike | undefined
-      setSelected(active ? ensureId(active) : null)
-      if (active && (active.type === "i-text" || active.type === "text")) {
-        setSelectedFont((active.fontFamily as string) ?? ENGRAVING_FONTS[0])
-      }
-    }
-    const onCleared = () => setSelected(null)
-
-    canvas.on("object:added", onModified)
-    canvas.on("object:modified", onModified)
-    canvas.on("object:removed", onModified)
-    canvas.on("selection:created", onSelection)
-    canvas.on("selection:updated", onSelection)
-    canvas.on("selection:cleared", onCleared)
-
-    // Load an existing design (edit/clone flow) or seed the first history entry.
-    if (initialDesign && initialDesign.state_json) {
-      skipHistoryRef.current = true
-      canvas.loadFromJSON(initialDesign.state_json as object).then(() => {
-        canvas.getObjects().forEach((o) => ensureId(o as FabricObjectLike))
-        canvas.requestRenderAll()
-        skipHistoryRef.current = false
-        pushSnapshot(serialize(canvas))
-        refreshLayers()
-      })
-      const stateMaterial = (initialDesign.state_json as { materialOverlay?: Material2D })
-        .materialOverlay
-      if (stateMaterial) setMeta({ material: stateMaterial })
-    } else {
-      pushSnapshot(serialize(canvas))
-    }
-    setMeta({ productId: product.id, name })
-
-    return () => {
-      canvas.off("object:added", onModified)
-      canvas.off("object:modified", onModified)
-      canvas.off("object:removed", onModified)
-      canvas.off("selection:created", onSelection)
-      canvas.off("selection:updated", onSelection)
-      canvas.off("selection:cleared", onCleared)
-    }
-  }, [ready])
-
-  // Reflect material choice as a canvas background tint (FR-2D-7 overlay).
-  useEffect(() => {
-    const canvas = getCanvas()
-    if (!canvas) return
-    const tint = MATERIALS_2D.find((m) => m.value === material)?.tint ?? "#ffffff"
-    canvas.backgroundColor = tint
-    canvas.requestRenderAll()
-  }, [material, getCanvas, ready])
-
-  useEffect(() => {
-    track("design_started", { mode: "2d", product_id: product.id })
-    return () => reset()
-  }, [reset, product.id])
-
-  async function addText() {
-    const canvas = getCanvas()
-    const fabric = getFabric()
-    if (!canvas || !fabric) return
-    await loadGoogleFont(selectedFont)
-    const text = new fabric.IText("Your Text", {
-      left: DEFAULT_SAFE_AREA.x + DEFAULT_SAFE_AREA.width / 2,
-      top: DEFAULT_SAFE_AREA.y + DEFAULT_SAFE_AREA.height / 2,
-      originX: "center",
-      originY: "center",
-      fontFamily: selectedFont,
-      fontSize: 48,
-      fill: fillColor,
-      textAlign: "center",
-    }) as IText & FabricObjectLike
-    ensureId(text)
-    canvas.add(text)
-    canvas.setActiveObject(text)
-    canvas.requestRenderAll()
+  function flash(text: string) {
+    if (timer.current) clearTimeout(timer.current)
+    setMessage(text)
+    timer.current = setTimeout(() => setMessage(null), 2500)
   }
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current)
+  }, [])
 
-  async function onUploadLogo(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    const canvas = getCanvas()
-    const fabric = getFabric()
-    if (!file || !canvas || !fabric) return
-    if (!isAllowedLogo(file)) {
-      setValidationErrors(["Unsupported file type. Upload a PNG, JPG, or SVG."])
-      return
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setValidationErrors(["Logo exceeds 5MB. Please upload a smaller file."])
-      return
-    }
-    let url: string
-    if (file.type === "image/svg+xml") {
-      // Sanitize SVGs before use (strip scripts/handlers/external refs).
-      const raw = await file.text()
-      const clean = sanitizeSvg(raw)
-      url = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(clean)))}`
-    } else {
-      url = await new Promise<string>((resolve) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.readAsDataURL(file)
-      })
-    }
-    const img = await fabric.FabricImage.fromURL(url, { crossOrigin: "anonymous" })
-    const imgLike = img as FabricObjectLike & { width?: number }
-    const naturalWidth = imgLike.width ?? 0
-    const maxW = DEFAULT_SAFE_AREA.width * 0.6
-    if (naturalWidth > maxW) img.scale(maxW / naturalWidth)
-    img.set({
-      left: DEFAULT_SAFE_AREA.x + DEFAULT_SAFE_AREA.width / 2,
-      top: DEFAULT_SAFE_AREA.y + DEFAULT_SAFE_AREA.height / 2,
-      originX: "center",
-      originY: "center",
-    })
-    const id = ensureId(img as FabricObjectLike)
-    logoMetaRef.current[id] = { naturalWidth }
-    canvas.add(img)
-    canvas.setActiveObject(img)
-    canvas.requestRenderAll()
-    e.target.value = ""
-  }
-
-  function applyFontToSelection(font: string) {
-    setSelectedFont(font)
-    const canvas = getCanvas()
-    const active = canvas?.getActiveObject() as (IText & FabricObjectLike) | undefined
-    if (canvas && active && (active.type === "i-text" || active.type === "text")) {
-      loadGoogleFont(font).then(() => {
-        active.set("fontFamily", font)
-        canvas.requestRenderAll()
-        snapshot()
-      })
-    }
-  }
-
-  function applyColorToSelection(color: string) {
-    setFillColor(color)
-    const canvas = getCanvas()
-    const active = canvas?.getActiveObject() as (IText & FabricObjectLike) | undefined
-    if (canvas && active && (active.type === "i-text" || active.type === "text")) {
-      active.set("fill", color)
-      canvas.requestRenderAll()
-      snapshot()
-    }
-  }
-
-  function toggleStyle(prop: "fontWeight" | "fontStyle" | "underline") {
-    const canvas = getCanvas()
-    const active = canvas?.getActiveObject() as (IText & FabricObjectLike) | undefined
-    if (!canvas || !active || (active.type !== "i-text" && active.type !== "text")) return
-    if (prop === "fontWeight") active.set("fontWeight", active.fontWeight === "bold" ? "normal" : "bold")
-    if (prop === "fontStyle") active.set("fontStyle", active.fontStyle === "italic" ? "normal" : "italic")
-    if (prop === "underline") active.set("underline", !active.underline)
-    canvas.requestRenderAll()
-    snapshot()
-  }
-
-  function selectLayer(id: string) {
-    const canvas = getCanvas()
-    if (!canvas) return
-    const obj = canvas.getObjects().find((o) => (o as FabricObjectLike).id === id)
-    if (obj) {
-      canvas.setActiveObject(obj)
-      canvas.requestRenderAll()
-    }
-  }
-
-  function toggleLayerVisible(id: string) {
-    const canvas = getCanvas()
-    if (!canvas) return
-    const obj = canvas.getObjects().find((o) => (o as FabricObjectLike).id === id)
-    if (obj) {
-      obj.visible = obj.visible === false
-      canvas.requestRenderAll()
-      snapshot()
-    }
-  }
-
-  function deleteLayer(id: string) {
-    const canvas = getCanvas()
-    if (!canvas) return
-    const obj = canvas.getObjects().find((o) => (o as FabricObjectLike).id === id)
-    if (obj) {
-      canvas.remove(obj)
-      canvas.requestRenderAll()
-    }
-  }
-
-  function restore(json: string | null) {
-    const canvas = getCanvas()
-    if (!canvas || !json) return
-    skipHistoryRef.current = true
-    canvas.loadFromJSON(JSON.parse(json)).then(() => {
-      canvas.getObjects().forEach((o) => ensureId(o as FabricObjectLike))
-      canvas.backgroundColor =
-        MATERIALS_2D.find((m) => m.value === material)?.tint ?? "#ffffff"
-      canvas.requestRenderAll()
-      skipHistoryRef.current = false
-      refreshLayers()
-    })
-  }
-
-  function collectState() {
-    const canvas = getCanvas()
-    if (!canvas) return null
-    const objects = canvas.getObjects().map((o) => {
-      const obj = o as FabricObjectLike & Record<string, unknown>
-      return { ...obj.toObject(["id"]), id: obj.id }
-    })
-    return buildDesign2DState(objects as never, {
-      material,
-      baseImageUrl: product.thumbnail ?? null,
-    })
-  }
-
-  function runValidation(): { state: ReturnType<typeof collectState>; ok: boolean } {
-    const state = collectState()
-    if (!state) return { state: null, ok: false }
-    const logoMeta = Object.values(logoMetaRef.current).map((m) => ({
-      naturalWidth: m.naturalWidth,
-      displayWidthInches: 2, // engraving plate ~2in; conservative for the DPI gate
-    }))
-    const errors = validateDesign2D(state, logoMeta)
-    setValidationErrors(errors)
-    return { state, ok: errors.length === 0 }
-  }
-
-  async function handleSave(): Promise<DesignRecord | null> {
-    const { state, ok } = runValidation()
-    if (!state || !ok) return null
-    setSaving(true)
-    try {
-      let record: DesignRecord
-      if (designId) {
-        const res = await designApi.update(designId, { name, state_json: state })
-        record = res.design
-      } else {
-        const res = await designApi.create({
-          name,
-          mode: "2d",
-          product_id: product.id,
-          variant_id: variantId,
-          state_json: state,
-        })
-        record = res.design
-        setDesignId(record.id)
-        setMeta({ designId: record.id })
-      }
-      // Generate/refresh the server-side preview for the gallery + cart.
-      try {
-        const { preview_url } = await designApi.preview(record.id)
-        record = { ...record, preview_url }
-      } catch {
-        // preview is best-effort
-      }
-      track("design_saved", { design_id: record.id, mode: "2d", product_id: product.id })
-      setAddedMsg("Saved to your gallery")
-      setTimeout(() => setAddedMsg(null), 2500)
-      return record
-    } finally {
-      setSaving(false)
-    }
+  async function handleSave() {
+    const record = await controllerRef.current?.save()
+    if (record) flash("Saved to your gallery")
+    return record ?? null
   }
 
   async function handleAddToCart() {
@@ -388,202 +80,119 @@ export function Editor2D({
       customization_mode: "2d",
     })
     track("design_added_to_cart", { design_id: record.id, mode: "2d", product_id: product.id })
-    setAddedMsg("Added to cart with your design")
-    setTimeout(() => setAddedMsg(null), 2500)
-  }
-
-  async function loadGallery() {
-    try {
-      const { designs } = await designApi.list()
-      setGallery(designs.filter((d) => d.mode === "2d"))
-    } catch {
-      setGallery([])
-    }
+    flash("Added to cart with your design")
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_1fr_300px]">
-      {/* Left: tools */}
-      <aside className="space-y-6 rounded-lg border border-border bg-card p-4">
-        <div>
-          <label className="mb-1 block text-sm font-medium">Design name</label>
-          <input
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value)
-              setMeta({ name: e.target.value })
-            }}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-          />
+    <LayoutEditorProvider
+      product={{ id: product.id, thumbnail: product.thumbnail }}
+      variantId={variantId}
+      initialDesign={initialDesign}
+      controllerRef={controllerRef}
+    >
+      <section
+        aria-labelledby="editor-2d-heading"
+        className="grid h-full grid-rows-[40dvh_minmax(0,1fr)] text-[clamp(12px,1.75dvh,16px)] lg:grid-cols-[minmax(0,1fr)_minmax(22rem,27em)] lg:grid-rows-1"
+      >
+        <div className="relative min-h-0 w-full overflow-hidden">
+          <LayoutStage />
+          <StudioTopBar mode="2d" />
         </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Text</p>
-          <select
-            value={selectedFont}
-            onChange={(e) => applyFontToSelection(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-          >
-            {ENGRAVING_FONTS.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={fillColor}
-              onChange={(e) => applyColorToSelection(e.target.value)}
-              aria-label="Text color"
-              className="h-9 w-9 cursor-pointer rounded border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-            />
-            <button type="button" onClick={() => toggleStyle("fontWeight")} aria-label="Bold" className="rounded border border-border px-2 py-1 text-sm font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">B</button>
-            <button type="button" onClick={() => toggleStyle("fontStyle")} aria-label="Italic" className="rounded border border-border px-2 py-1 text-sm italic focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">I</button>
-            <button type="button" onClick={() => toggleStyle("underline")} aria-label="Underline" className="rounded border border-border px-2 py-1 text-sm underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">U</button>
+        <div className="flex min-h-0 flex-col overflow-hidden border-t border-[#131111]/10 bg-[#FBFBF7] lg:border-t-0 lg:border-l">
+          <div className={cn("shrink-0 pt-[0.8em] lg:pt-[1.5em]", panelX)}>
+            <p className="m-0 hidden font-outfit text-[0.6875em] tracking-[0.14em] text-[#6B635C] uppercase lg:block">
+              Design studio · 2D layout
+            </p>
+            <h1
+              id="editor-2d-heading"
+              className="m-0 font-outfit text-[1.375em] leading-[1.05] font-normal tracking-[-0.04em] text-balance text-[#131111] lg:mt-[0.3em] lg:text-[1.875em]"
+            >
+              Design your {product.title}
+            </h1>
+            <div role="tablist" aria-label="Layout tools" className="mt-[0.7em] flex border-b border-[#131111]/10 lg:mt-[1em]">
+              {TABS.map((t) => {
+                const selected = t.id === tab
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="tab"
+                    id={`${tabsId}-tab-${t.id}`}
+                    aria-selected={selected}
+                    aria-controls={`${tabsId}-panel`}
+                    tabIndex={selected ? 0 : -1}
+                    onClick={() => setTab(t.id)}
+                    onKeyDown={(e) => {
+                      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
+                      e.preventDefault()
+                      setTab(tab === "compose" ? "library" : "compose")
+                    }}
+                    className={cn(
+                      "-mb-px min-w-0 flex-1 border-b-[1.5px] px-[0.3em] pt-[0.3em] pb-[0.65em] font-outfit text-[0.6875em] font-medium tracking-[0.12em] uppercase transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#131111]",
+                      selected ? "border-[#131111] text-[#131111]" : "border-transparent text-[#6B635C] hover:text-[#131111]"
+                    )}
+                  >
+                    {t.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-          <Button onClick={addText} size="sm" className="w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid">
-            Add text
-          </Button>
-        </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Logo</p>
-          <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-border px-3 py-4 text-sm text-[#6B635C] hover:bg-muted">
-            Upload PNG/JPG/SVG
-            <input type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={onUploadLogo} className="hidden" />
-          </label>
-        </div>
+          <div
+            role="tabpanel"
+            id={`${tabsId}-panel`}
+            aria-labelledby={`${tabsId}-tab-${tab}`}
+            className={cn("relative min-h-0 flex-1 overflow-hidden pt-[1em]", panelX)}
+          >
+            {tab === "compose" ? <LayoutComposePanel /> : <LayoutLibraryPanel />}
+          </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Material</p>
-          <div className="grid grid-cols-3 gap-2">
-            {MATERIALS_2D.map((m) => (
+          <div className={cn("relative shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] pt-[0.8em] pb-[max(0.6em,env(safe-area-inset-bottom))] lg:py-[1em]", panelX)}>
+            <p
+              role="status"
+              className={cn(
+                "pointer-events-none absolute bottom-[calc(100%+0.6em)] left-1/2 m-0 w-max max-w-[calc(100%-2.5em)] -translate-x-1/2 rounded-[0.5em] bg-[#131111] px-[0.9em] py-[0.5em] font-outfit text-[0.75em] leading-[1.35] text-[#F2F1EF] transition-opacity duration-200",
+                message ? "opacity-100" : "opacity-0"
+              )}
+            >
+              {message ?? ""}
+            </p>
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="m-0 min-w-0 truncate font-outfit text-[0.8125em] tracking-[-0.01em] text-[#6B635C]">
+                <Link href={`/products/${product.handle}`} className="text-[#6B635C] underline underline-offset-[0.2em] hover:text-[#131111]">
+                  {product.title}
+                </Link>
+              </p>
+              <p className="m-0 font-outfit text-[1.375em] tracking-[-0.03em] text-[#131111] tabular-nums" aria-live="polite">
+                {price ?? "—"}
+              </p>
+            </div>
+            <div className="mt-[0.75em] flex items-center gap-2">
+              <Button
+                onClick={handleAddToCart}
+                disabled={saving || !variantId}
+                className={cn("h-[3em] min-w-0 flex-1 rounded-full font-outfit text-[0.8125em] tracking-[0.08em] uppercase", ringFocus)}
+                style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
+              >
+                Add to cart
+              </Button>
               <button
-                key={m.value}
-                onClick={() => setMeta({ material: m.value })}
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
                 className={cn(
-                  "rounded-md border p-2 text-xs text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]",
-                  material === m.value ? "border-accent ring-2 ring-accent" : "border-border"
+                  "flex h-[3em] items-center justify-center rounded-full border border-[#131111]/25 px-[1.2em] font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 disabled:opacity-50",
+                  ringFocus
                 )}
               >
-                <span className="mb-1 block h-6 w-full rounded" style={{ backgroundColor: m.tint }} />
-                {m.label}
+                {saving ? "Saving…" : "Save"}
               </button>
-            ))}
+            </div>
           </div>
         </div>
-      </aside>
-
-      {/* Center: canvas */}
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => restore(undo())} disabled={!canUndo()}>
-            Undo
-          </Button>
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => restore(redo())} disabled={!canRedo()}>
-            Redo
-          </Button>
-          <div className="flex-1" />
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={() => runValidation()}>
-            Validate
-          </Button>
-          <Button size="sm" variant="outline" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving…" : "Save"}
-          </Button>
-          <Button size="sm" variant="accent" className="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] focus-visible:outline-solid" onClick={handleAddToCart} disabled={saving || !variantId}>
-            Add to cart
-          </Button>
-        </div>
-
-        <div className="relative mx-auto w-fit rounded-lg border border-border bg-white shadow-sm">
-          {/* Safe-area guide overlay (FR-2D-9) */}
-          <div
-            className="pointer-events-none absolute z-10 rounded border-2 border-dashed border-accent/40"
-            style={{
-              left: `${(DEFAULT_SAFE_AREA.x / CANVAS_SIZE) * 100}%`,
-              top: `${(DEFAULT_SAFE_AREA.y / CANVAS_SIZE) * 100}%`,
-              width: `${(DEFAULT_SAFE_AREA.width / CANVAS_SIZE) * 100}%`,
-              height: `${(DEFAULT_SAFE_AREA.height / CANVAS_SIZE) * 100}%`,
-            }}
-          />
-          <canvas ref={elRef} width={CANVAS_SIZE} height={CANVAS_SIZE} className="max-w-full" />
-        </div>
-
-        {addedMsg && (
-          <p className="rounded-md bg-accent/10 px-4 py-2 text-center text-sm text-accent-foreground">{addedMsg}</p>
-        )}
-        {validationErrors.length > 0 && (
-          <ul className="space-y-1 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
-            {validationErrors.map((err, i) => (
-              <li key={i}>• {err}</li>
-            ))}
-          </ul>
-        )}
-        <p className="text-center text-xs text-[#6B635C]">
-          Keep text within the dashed safe area. Max {MAX_ENGRAVING_CHARS} characters per line.
-        </p>
-      </div>
-
-      {/* Right: layers + gallery */}
-      <aside className="space-y-6 rounded-lg border border-border bg-card p-4">
-        <div>
-          <p className="mb-2 text-sm font-medium">Layers</p>
-          {layers.length === 0 ? (
-            <p className="text-xs text-[#6B635C]">No layers yet. Add text or a logo.</p>
-          ) : (
-            <ul className="space-y-1">
-              {layers.map((l) => (
-                <li key={l.id} className="flex items-center gap-2 rounded-md border border-border px-2 py-1.5 text-sm">
-                  <button type="button" onClick={() => selectLayer(l.id)} className="flex-1 truncate text-left text-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-                    {l.label}
-                  </button>
-                  <button type="button" onClick={() => toggleLayerVisible(l.id)} aria-label="Toggle visibility" className="text-xs text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-                    {l.visible ? "Hide" : "Show"}
-                  </button>
-                  <button type="button" onClick={() => deleteLayer(l.id)} aria-label="Delete layer" className="text-xs text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-medium">My designs</p>
-            <button type="button" onClick={loadGallery} className="text-xs text-[#131111] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]">
-              Refresh
-            </button>
-          </div>
-          {gallery.length === 0 ? (
-            <p className="text-xs text-[#6B635C]">Saved designs appear here.</p>
-          ) : (
-            <ul className="grid grid-cols-2 gap-2">
-              {gallery.map((d) => (
-                <li key={d.id}>
-                  <button
-                    onClick={() => {
-                      setDesignId(d.id)
-                      setName(d.name)
-                      restore(JSON.stringify(d.state_json))
-                    }}
-                    className="w-full overflow-hidden rounded-md border border-border text-left text-[#131111] hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-                  >
-                    {d.preview_url ? (
-                      <img src={d.preview_url} alt={d.name} className="aspect-square w-full object-cover" />
-                    ) : (
-                      <span className="flex aspect-square w-full items-center justify-center bg-muted text-xs">No preview</span>
-                    )}
-                    <span className="block truncate px-1 py-1 text-xs">{d.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </aside>
-    </div>
+      </section>
+    </LayoutEditorProvider>
   )
 }

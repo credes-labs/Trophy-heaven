@@ -97,6 +97,7 @@ export default function LoginPage() {
       eyebrow="Account"
       title="Welcome back"
       lede="Sign in to orders, designs, and pieces you saved."
+      illustration
     >
       <Suspense fallback={null}>
         <LoginForm />

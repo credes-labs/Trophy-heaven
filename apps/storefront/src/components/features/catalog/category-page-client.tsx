@@ -249,7 +249,7 @@ export function CategoryPageClient({
         {loading && products.length === 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-square rounded-lg" />
+              <Skeleton key={i} className="aspect-square rounded-none" />
             ))}
           </div>
         ) : products.length === 0 ? (
@@ -265,15 +265,15 @@ export function CategoryPageClient({
               initial="hidden"
               animate="visible"
             >
-              {firstBatch.map((p) => (
+              {firstBatch.map((p, i) => (
                 <motion.div key={p.id} variants={fadeUp}>
-                  <ProductCard product={p} accent={config.accent} />
+                  <ProductCard product={p} accent={config.accent} eager={i < 4} />
                 </motion.div>
               ))}
             </motion.div>
 
             <section className="my-16 grid items-center gap-10 md:grid-cols-5">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-xl md:col-span-3">
+              <div className="relative aspect-[4/3] overflow-hidden md:col-span-3">
                 <Image
                   src={config.imageSrc}
                   alt={config.imageAlt}
@@ -355,7 +355,7 @@ export function CategoryPageClient({
                 key={cat.key}
                 href={cat.href}
                 className={cn(
-                  "group overflow-hidden rounded-xl border border-border transition-shadow hover:shadow-lg",
+                  "group overflow-hidden border border-border transition-shadow hover:shadow-lg",
                   cat.borderClass
                 )}
                 style={{ borderBottomWidth: 4 }}

@@ -8,6 +8,7 @@ import {
   PRODUCT_INDEX,
   type ProductDoc,
 } from "../../../../lib/meilisearch"
+import { inrPriceByProductId } from "../../../../lib/product-index-prices"
 
 /** POST /admin/search/reindex — rebuild the Meilisearch product index (FR-SRCH-1). */
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
@@ -26,12 +27,25 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       { relations: ["categories", "variants", "variants.prices"], take: pageSize, skip }
     )
     if (!products.length) break
-    for (const product of products) {
-      const price = lowestInrPrice(
-        (product.variants ?? []) as Array<{
-          prices?: Array<{ currency_code: string; amount: number }>
-        }>
+    let priced = new Map<string, number>()
+    try {
+      priced = await inrPriceByProductId(
+        req.scope,
+        products.map((product) => product.id)
       )
+    } catch {
+      priced = new Map()
+    }
+    for (const product of products) {
+      const fromPricing = priced.get(product.id)
+      const price =
+        fromPricing != null && fromPricing > 0
+          ? fromPricing
+          : lowestInrPrice(
+              (product.variants ?? []) as Array<{
+                prices?: Array<{ currency_code: string; amount: number }>
+              }>
+            )
       docs.push({
         id: product.id,
         title: product.title,

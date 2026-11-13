@@ -158,7 +158,7 @@ export default async function ProductPage({ params }: Props) {
   }
 
   return (
-    <div className="pdp-page">
+    <div className="pdp-page under-site-header">
       <div className="pdp-shell">
         <script
           type="application/ld+json"

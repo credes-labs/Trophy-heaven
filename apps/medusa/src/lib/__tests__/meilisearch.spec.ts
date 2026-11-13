@@ -17,4 +17,13 @@ describe("lowestInrPrice", () => {
       ])
     ).toBe(1299)
   })
+
+  it("reads major-unit INR from a BigNumber and ignores other currencies", () => {
+    expect(
+      lowestInrPrice([
+        { prices: [{ currency_code: "USD", amount: 55 }] },
+        { prices: [{ currency_code: "INR", amount: { numeric: 3999, value: "3999" } }] },
+      ])
+    ).toBe(3999)
+  })
 })

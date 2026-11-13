@@ -1,37 +1,52 @@
 "use client"
 
 import { useEffect, useRef, useState, type ReactNode } from "react"
+import { CheckoutSubmit } from "@/components/features/checkout/checkout-actions"
 import {
-  EditorialCtaButton,
-  editorialFieldClass,
-  editorialLabelClass,
-} from "@/components/layout/editorial/editorial-cta"
-import {
+  firstAddressError,
+  validateDeliveryAddress,
+  type AddressFieldErrors,
   type AddressSaveAs,
   type DeliveryAddressValues,
 } from "@/lib/checkout-address"
 import { isValidIndianPincode, lookupIndianPincode } from "@/lib/pincode"
 import { cn } from "@/lib/utils"
+import "./checkout.css"
 
-const fieldClass = cn(
-  editorialFieldClass,
-  "placeholder:text-[#6B635C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-[#131111]",
-)
-
-function FieldLabel({
-  htmlFor,
-  children,
+function Field({
+  id,
+  label,
   required,
+  error,
+  hint,
+  children,
 }: {
-  htmlFor: string
-  children: string
+  id: string
+  label: string
   required?: boolean
+  error?: string
+  hint?: string | null
+  children: ReactNode
 }) {
+  const errorId = `${id}-error`
+  const hintId = `${id}-hint`
   return (
-    <label htmlFor={htmlFor} className={editorialLabelClass}>
+    <div className="checkout-field">
+      <label htmlFor={id} className="checkout-label">
+        {label}
+        {required ? <span aria-hidden="true"> *</span> : null}
+      </label>
       {children}
-      {required ? <span className="text-[#8A2D25]"> *</span> : null}
-    </label>
+      {error ? (
+        <p id={errorId} className="checkout-error" role="alert">
+          {error}
+        </p>
+      ) : hint ? (
+        <p id={hintId} className="checkout-hint">
+          {hint}
+        </p>
+      ) : null}
+    </div>
   )
 }
 
@@ -63,6 +78,7 @@ export function AddressForm({
   const [state, setState] = useState(defaults?.state ?? "")
   const [saveAs, setSaveAs] = useState<AddressSaveAs>(defaults?.save_as ?? "Home")
   const [lookupHint, setLookupHint] = useState<string | null>(null)
+  const [errors, setErrors] = useState<AddressFieldErrors>({})
   const skipLookup = useRef(Boolean(defaults?.city && defaults?.state))
 
   useEffect(() => {
@@ -95,10 +111,19 @@ export function AddressForm({
     }
   }, [postal])
 
+  function clearError(key: keyof AddressFieldErrors) {
+    setErrors((curr) => {
+      if (!curr[key]) return curr
+      const next = { ...curr }
+      delete next[key]
+      return next
+    })
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
-    void onSubmit({
+    const values: DeliveryAddressValues = {
       email: showEmail ? String(form.get("email") ?? "") : (defaults?.email ?? ""),
       full_name: String(form.get("full_name") ?? ""),
       address_1: String(form.get("address_1") ?? ""),
@@ -108,7 +133,15 @@ export function AddressForm({
       postal_code: String(form.get("postal_code") ?? postal),
       phone: String(form.get("phone") ?? "") || undefined,
       save_as: saveAs,
-    })
+    }
+    const nextErrors = validateDeliveryAddress(values, { emailRequired: showEmail })
+    setErrors(nextErrors)
+    const first = firstAddressError(nextErrors)
+    if (first) {
+      e.currentTarget.querySelector<HTMLElement>(`[name="${first}"]`)?.focus()
+      return
+    }
+    void onSubmit(values)
   }
 
   const pinId = `${idPrefix}-pincode`
@@ -120,16 +153,23 @@ export function AddressForm({
   const emailId = `${idPrefix}-email`
   const phoneId = `${idPrefix}-phone`
 
+  const described = (id: string, error?: string, hint?: string | null) =>
+    error ? `${id}-error` : hint ? `${id}-hint` : undefined
+
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn("mt-[1.75em] space-y-[1.5em]", className)}
+      className={cn("checkout-form", className)}
       aria-label={ariaLabel}
+      noValidate
     >
-      <div>
-        <FieldLabel htmlFor={pinId} required>
-          Pincode
-        </FieldLabel>
+      <Field
+        id={pinId}
+        label="Pincode"
+        required
+        error={errors.postal_code}
+        hint={lookupHint}
+      >
         <input
           id={pinId}
           name="postal_code"
@@ -138,94 +178,94 @@ export function AddressForm({
           autoComplete="postal-code"
           maxLength={6}
           value={postal}
-          onChange={(e) => setPostal(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          className={fieldClass}
+          aria-invalid={errors.postal_code ? true : undefined}
+          aria-describedby={described(pinId, errors.postal_code, lookupHint)}
+          onChange={(e) => {
+            setPostal(e.target.value.replace(/\D/g, "").slice(0, 6))
+            clearError("postal_code")
+          }}
         />
-        {lookupHint ? (
-          <p className="mt-[0.35em] m-0 max-w-[68ch] font-outfit text-[0.75em] tracking-[-0.02em] text-pretty text-[#6B635C]">
-            {lookupHint}
-          </p>
-        ) : null}
-      </div>
+      </Field>
 
-      <div className="grid grid-cols-1 gap-[1.5em] sm:grid-cols-2">
-        <div>
-          <FieldLabel htmlFor={cityId} required>
-            City
-          </FieldLabel>
+      <div className="checkout-split">
+        <Field id={cityId} label="City" required error={errors.city}>
           <input
             id={cityId}
             name="city"
             required
             autoComplete="address-level2"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className={fieldClass}
+            aria-invalid={errors.city ? true : undefined}
+            aria-describedby={described(cityId, errors.city)}
+            onChange={(e) => {
+              setCity(e.target.value)
+              clearError("city")
+            }}
           />
-        </div>
-        <div>
-          <FieldLabel htmlFor={stateId} required>
-            State
-          </FieldLabel>
+        </Field>
+        <Field id={stateId} label="State" required error={errors.state}>
           <input
             id={stateId}
             name="state"
             required
             autoComplete="address-level1"
             value={state}
-            onChange={(e) => setState(e.target.value)}
-            className={fieldClass}
+            aria-invalid={errors.state ? true : undefined}
+            aria-describedby={described(stateId, errors.state)}
+            onChange={(e) => {
+              setState(e.target.value)
+              clearError("state")
+            }}
           />
-        </div>
+        </Field>
       </div>
 
-      <div>
-        <FieldLabel htmlFor={line1Id} required>
-          Flat, House no.
-        </FieldLabel>
+      <Field id={line1Id} label="Flat, house no." required error={errors.address_1}>
         <input
           id={line1Id}
           name="address_1"
           required
           autoComplete="address-line1"
           defaultValue={defaults?.address_1}
-          className={fieldClass}
+          aria-invalid={errors.address_1 ? true : undefined}
+          aria-describedby={described(line1Id, errors.address_1)}
+          onChange={() => clearError("address_1")}
         />
-      </div>
+      </Field>
 
-      <div>
-        <FieldLabel htmlFor={line2Id} required>
-          Apartment, Area, Sector, Village
-        </FieldLabel>
+      <Field
+        id={line2Id}
+        label="Apartment, area, sector, village"
+        required
+        error={errors.address_2}
+      >
         <input
           id={line2Id}
           name="address_2"
           required
           autoComplete="address-line2"
           defaultValue={defaults?.address_2}
-          className={fieldClass}
+          aria-invalid={errors.address_2 ? true : undefined}
+          aria-describedby={described(line2Id, errors.address_2)}
+          onChange={() => clearError("address_2")}
         />
-      </div>
+      </Field>
 
-      <div>
-        <FieldLabel htmlFor={nameId} required>
-          Full Name
-        </FieldLabel>
+      <Field id={nameId} label="Full name" required error={errors.full_name}>
         <input
           id={nameId}
           name="full_name"
           required
           autoComplete="name"
           defaultValue={defaults?.full_name}
-          className={fieldClass}
+          aria-invalid={errors.full_name ? true : undefined}
+          aria-describedby={described(nameId, errors.full_name)}
+          onChange={() => clearError("full_name")}
         />
-      </div>
+      </Field>
 
       {showEmail ? (
-        <div>
-          <FieldLabel htmlFor={emailId} required>
-            Email Address
-          </FieldLabel>
+        <Field id={emailId} label="Email address" required error={errors.email}>
           <input
             id={emailId}
             name="email"
@@ -233,13 +273,14 @@ export function AddressForm({
             required
             autoComplete="email"
             defaultValue={defaults?.email}
-            className={fieldClass}
+            aria-invalid={errors.email ? true : undefined}
+            aria-describedby={described(emailId, errors.email)}
+            onChange={() => clearError("email")}
           />
-        </div>
+        </Field>
       ) : null}
 
-      <div>
-        <FieldLabel htmlFor={phoneId}>Phone</FieldLabel>
+      <Field id={phoneId} label="Phone">
         <input
           id={phoneId}
           name="phone"
@@ -247,13 +288,12 @@ export function AddressForm({
           autoComplete="tel"
           placeholder="10-digit mobile"
           defaultValue={defaults?.phone}
-          className={fieldClass}
         />
-      </div>
+      </Field>
 
-      <fieldset className="m-0 border-0 p-0">
-        <legend className={cn(editorialLabelClass, "mb-[0.75em]")}>Save address as</legend>
-        <div className="flex flex-wrap gap-[0.75em]">
+      <fieldset className="checkout-saveas">
+        <legend className="checkout-label">Save address as</legend>
+        <div className="checkout-chip-row">
           {(["Home", "Work"] as const).map((label) => {
             const selected = saveAs === label
             return (
@@ -262,20 +302,9 @@ export function AddressForm({
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setSaveAs(label)}
-                className={cn(
-                  "inline-flex cursor-pointer items-center gap-[0.6em] rounded-full border bg-transparent px-[1.1em] py-[0.55em] font-outfit text-[0.875em] tracking-[-0.02em] uppercase",
-                  selected
-                    ? "border-[#131111] text-[#131111]"
-                    : "border-[#CDCDCD] text-[#6B635C]"
-                )}
+                className={cn("checkout-chip", selected && "is-selected")}
               >
-                <span
-                  className={cn(
-                    "size-[0.7em] rounded-full border",
-                    selected ? "border-[#131111] bg-[#131111]" : "border-[#CDCDCD] bg-transparent"
-                  )}
-                  aria-hidden
-                />
+                <span className="checkout-chip-mark" aria-hidden />
                 {label}
               </button>
             )
@@ -285,14 +314,10 @@ export function AddressForm({
 
       {children}
 
-      <div className="flex flex-col items-start gap-[1em]">
-        <EditorialCtaButton disabled={busy}>{busy ? "Saving" : submitLabel}</EditorialCtaButton>
+      <div className="checkout-actions">
+        <CheckoutSubmit disabled={busy}>{busy ? "Saving" : submitLabel}</CheckoutSubmit>
         {onCancel ? (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#131111] uppercase underline underline-offset-[0.15em]"
-          >
+          <button type="button" onClick={onCancel} className="checkout-back">
             Cancel
           </button>
         ) : null}
