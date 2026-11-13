@@ -6,7 +6,7 @@ import { ReturnsForm } from "@/components/features/orders/returns-form"
 
 export const metadata: Metadata = {
   title: "Start a Return",
-  description: "Start a return or exchange with Legacy Crafts. See shipping-returns for policy details.",
+  description: "Start a return or exchange with Trophy Heaven. See shipping-returns for policy details.",
   alternates: { canonical: "/returns" },
 }
 

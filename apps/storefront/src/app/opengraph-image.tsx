@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og"
 
 export const runtime = "edge"
-export const alt = "Legacy Crafts — Custom Trophies, Furniture & Artwork"
+export const alt = "Trophy Heaven — Custom Trophies & Awards"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -22,14 +22,14 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ fontSize: 28, letterSpacing: 4, textTransform: "uppercase", opacity: 0.7 }}>
-          Legacy Crafts
+          Trophy Heaven
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ fontSize: 64, lineHeight: 1.1, maxWidth: 900 }}>
             Crafted with intention. Built to last.
           </div>
           <div style={{ fontSize: 28, opacity: 0.7 }}>
-            Trophies · Furniture · Artwork — Bengaluru
+            Trophies · Awards · Plaques — Bengaluru
           </div>
         </div>
       </div>

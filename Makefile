@@ -1,4 +1,4 @@
-# Legacy Crafts local development helpers.
+# Trophy Heaven local development helpers.
 # Prefer host services on this VM (Postgres/Redis already installed + Meilisearch binary).
 # On a Docker-capable machine: `make docker-up` / `make docker-apps`.
 
@@ -11,7 +11,7 @@ help:
 	@echo "  make migrate      Run Medusa DB migrations"
 	@echo "  make seed         Idempotent catalog/fulfillment/inventory seed"
 	@echo "  make reindex      Rebuild Meilisearch product index"
-	@echo "  make schemas      Build @legacy-crafts/schemas"
+	@echo "  make schemas      Build @trophy-heaven/schemas"
 	@echo "  make typecheck    Typecheck workspace packages"
 	@echo "  make test         Run unit tests"
 	@echo "  make docker-up    docker compose up -d (backing services)"
@@ -33,7 +33,7 @@ reindex:
 	./scripts/reindex-search.sh
 
 schemas:
-	pnpm --filter @legacy-crafts/schemas build
+	pnpm --filter @trophy-heaven/schemas build
 
 typecheck:
 	pnpm -r typecheck

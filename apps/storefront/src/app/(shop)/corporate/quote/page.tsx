@@ -6,7 +6,7 @@ import { QuoteRequestForm } from "@/components/features/corporate/quote-request-
 export const metadata: Metadata = {
   title: "Request a Quote",
   description:
-    "Request a corporate quote from Legacy Crafts — bulk trophies, GST invoicing, and split dispatch across India.",
+    "Request a corporate quote from Trophy Heaven — bulk trophies, GST invoicing, and split dispatch across India.",
   alternates: { canonical: "/corporate/quote" },
 }
 

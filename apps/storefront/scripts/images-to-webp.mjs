@@ -2,8 +2,8 @@
 /**
  * Converts site imagery in public/images from JPEG/PNG to WebP with sharp.
  *
- *   pnpm --filter @legacy-crafts/storefront images:webp            # dry run: report sizes only
- *   pnpm --filter @legacy-crafts/storefront images:webp --write    # write .webp, delete originals
+ *   pnpm --filter @trophy-heaven/storefront images:webp            # dry run: report sizes only
+ *   pnpm --filter @trophy-heaven/storefront images:webp --write    # write .webp, delete originals
  *
  * - Long edge is capped at MAX_EDGE (never enlarged); next/image still makes the
  *   smaller responsive sizes from this master.

@@ -11,8 +11,6 @@ const badgeVariants = cva(
         outline: "border border-border bg-transparent text-foreground",
         gold: "bg-gold/15 text-walnut",
         trophy: "bg-trophy text-trophy-foreground",
-        furniture: "bg-furniture text-white",
-        artwork: "bg-artwork text-white",
         sale: "bg-destructive text-destructive-foreground",
         success: "bg-success/15 text-ink",
       },

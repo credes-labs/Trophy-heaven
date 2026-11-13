@@ -1,6 +1,6 @@
 import { BRAND } from "@/lib/brand-facts"
 
-export const HERO_EYEBROW = "//trophies · furniture · artwork"
+export const HERO_EYEBROW = "//trophies · awards · plaques"
 
 export const HERO_HEADLINE = BRAND.tagline
 
@@ -8,7 +8,7 @@ export const HERO_HEADLINE = BRAND.tagline
 export const HERO_HEADLINE_LINES = ["Crafted with", "intention.", "Built to last."] as const
 
 export const HERO_COPY =
-  `${BRAND.name} is a ${BRAND.city} atelier that makes three things well — trophies that mark a moment, furniture that outlives a trend, and artwork that quiets a room.`
+  `${BRAND.name} is a ${BRAND.city} trophy atelier — crystal, metal, and hardwood awards made to mark a moment and engraved to the name.`
 
 export const HERO_CTA = "Browse the collection"
 export const HERO_CTA_HREF = "/shop"

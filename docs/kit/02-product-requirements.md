@@ -8,7 +8,7 @@ Requirement IDs follow `FR-<module>-<n>`; non-functional ones live in [2.11](#21
 
 **Functional requirements**
 
-- `FR-CAT-1` (P0) Hierarchical categories: **Trophies** (Sports, Corporate, Academic, Memorial, Acrylic, Crystal, Metal), **Furniture** (Tables, Chairs, Shelves, Cabinets, Stools), **Home Decor** (Vases, Wall Art, Lamps, Mirrors, Clocks, Planters), **Gift Sets**. Nesting to at least 2 levels; a product may sit in one primary + multiple secondary categories.
+- `FR-CAT-1` (P0) Hierarchical categories: **Trophies** (Sports, Corporate, Academic, Memorial, Acrylic, Crystal, Metal) and **Gift Sets**. Trophy Heaven is trophy-only; the Legacy Crafts Furniture and Home Decor trees were removed (WP-87).
 - `FR-CAT-2` (P0) Variants with options: size, material, finish, color. Variant-level price, SKU (auto-generated `LC-{category}-{shape}-{material}-{size}`), and inventory.
 - `FR-CAT-3` (P0) Media: hero image, gallery, 360° spin video, 3D model files (`.glb`/`.gltf`), 2D template overlays. Media ordered and per-variant assignable.
 - `FR-CAT-4` (P0) Attributes: dimensions (mm), weight (g), material composition, care instructions, shipping class.
@@ -17,7 +17,7 @@ Requirement IDs follow `FR-<module>-<n>`; non-functional ones live in [2.11](#21
 - `FR-CAT-7` (P1) Bulk import/export via CSV/Excel with column mapping + a downloadable template; import returns a per-row error report.
 - `FR-CAT-8` (P0) Inventory reservation during active cart sessions, backed by Redis with TTL; released on cart expiry/abandonment.
 - `FR-CAT-9` (P1) Low-stock alerts (admin) and auto-hide out-of-stock variants (configurable threshold).
-- `FR-CAT-10` (P1) Relationships: "You may also need" (trophy + engraving plate), "Complete the look" (furniture sets), "Similar designs."
+- `FR-CAT-10` (P1) Relationships: "You may also need" (trophy + engraving plate), "Complete the set" (matching awards for a programme), "Similar designs."
 - `FR-CAT-11` (P1) Tiered/bulk pricing rules per variant (quantity breakpoints).
 
 **User stories**
@@ -189,7 +189,7 @@ The engine has three faces: a 2D editor, a 3D simulator, and a guided input flow
 - `FR-SRCH-1` (P1) Full-text search with typo tolerance (Meilisearch).
 - `FR-SRCH-2` (P1) Faceted filters: category, price, material, occasion, customization level, rating, availability.
 - `FR-SRCH-3` (P2) Visual search: upload image → similar products (color histogram MVP, embeddings later).
-- `FR-SRCH-4` (P3) "Shop the Room" AR furniture placement.
+- `FR-SRCH-4` (P3) AR preview of a trophy on a desk or shelf.
 - `FR-SRCH-5` (P1) Recently viewed; trending/bestsellers.
 - `FR-SRCH-6` (P2) Personalized recommendations (category-based MVP).
 - `FR-SRCH-7` (P0) SEO-optimized pages with JSON-LD structured data.

@@ -1,5 +1,5 @@
-export type CategoryAccent = "trophy" | "furniture" | "artwork"
-export type CategoryKey = "trophies" | "furniture" | "artwork"
+export type CategoryAccent = "trophy"
+export type CategoryKey = "trophies"
 
 export type CategoryStory = {
   eyebrow: string
@@ -35,8 +35,8 @@ export type CategoryConfig = {
 }
 
 /**
- * Storefront category map. Seed creates Trophies / Furniture / Home Decor;
- * artwork routes map to the `home-decor` Medusa handle.
+ * Storefront category map. Trophy Heaven sells one discipline — trophies —
+ * backed by the seeded `trophies` Medusa category and its children.
  */
 export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
   trophies: {
@@ -50,7 +50,7 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     href: "/trophies",
     subcategories: ["Sports", "Corporate", "Academic", "Memorial", "Crystal", "Metal", "Acrylic"],
     story: {
-      eyebrow: "WHY LEGACY CRAFTS",
+      eyebrow: "WHY TROPHY HEAVEN",
       title: "Crafted for Generations",
       body: "Each trophy begins as raw material in the hands of artisans who understand that recognition deserves permanence. Crystal is cut and polished until light itself becomes part of the award; metal is cast and finished for a lifetime of display.",
       features: [
@@ -72,69 +72,6 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     buttonVariant: "trophy",
     imageSrc: "/images/catalog/trophy-figure-award.webp",
     imageAlt: "Gilt figure award on an octagonal mahogany base",
-  },
-  furniture: {
-    key: "furniture",
-    medusaHandle: "furniture",
-    label: "Furniture",
-    headline: "Artisan Furniture",
-    description:
-      "Brass, marble, and glass. Tables built to be lived with, not replaced.",
-    accent: "furniture",
-    href: "/furniture",
-    subcategories: ["Tables", "Side Tables", "Coffee Tables"],
-    story: {
-      eyebrow: "WHY LEGACY CRAFTS",
-      title: "Built to Be Lived With",
-      body: "Brass cast in the workshop, marble cut to the slab, glass set into a hand-welded frame. Every table is assembled and finished by hand, so the joint you see is the joint that holds it together.",
-      features: [
-        "Cast brass, honed marble, tempered glass",
-        "Sized for Indian homes and offices",
-        "Custom dimensions available",
-      ],
-      ctaLabel: "Explore Collections",
-      ctaHref: "/shop?category=furniture",
-    },
-    slug: "furniture",
-    title: "Artisan Furniture",
-    colorClass: "bg-furniture",
-    textClass: "text-furniture",
-    borderClass: "border-furniture",
-    badgeVariant: "furniture",
-    buttonVariant: "furniture",
-    imageSrc: "/images/catalog/table-brass-nesting-1.webp",
-    imageAlt: "Pair of brass pedestal nesting tables with tray tops",
-  },
-  artwork: {
-    key: "artwork",
-    medusaHandle: "home-decor",
-    label: "Artwork",
-    headline: "Curated Artwork & Decor",
-    description: "Objects of quiet beauty — handpicked to elevate any space",
-    accent: "artwork",
-    href: "/artwork",
-    subcategories: ["Sculptures", "Wall Art"],
-    story: {
-      eyebrow: "WHY LEGACY CRAFTS",
-      title: "Curated Across India",
-      body: "Our curators travel across India to find makers whose work carries a sense of place — cast bronze, marble, and glass objects that feel collected rather than manufactured.",
-      features: [
-        "Patinated bronze and gilt sculpture",
-        "Marble and brass table objects",
-        "New arrivals every season",
-      ],
-      ctaLabel: "Shop New Arrivals",
-      ctaHref: "/shop?category=artwork&sort=newest",
-    },
-    slug: "artwork",
-    title: "Curated Artwork",
-    colorClass: "bg-artwork",
-    textClass: "text-artwork",
-    borderClass: "border-artwork",
-    badgeVariant: "artwork",
-    buttonVariant: "artwork",
-    imageSrc: "/images/catalog/sculpture-loop-verdigris-1.webp",
-    imageAlt: "Verdigris bronze loop sculpture on a marble plinth",
   },
 }
 
@@ -179,22 +116,6 @@ export function accentFromProductCategories(
     ) {
       return "trophy"
     }
-    if (
-      handle === "furniture" ||
-      name.includes("furniture") ||
-      ["tables", "chairs", "shelves", "cabinets", "stools", "beds", "dining"].includes(handle)
-    ) {
-      return "furniture"
-    }
-    if (
-      handle === "home-decor" ||
-      handle === "artwork" ||
-      name.includes("decor") ||
-      name.includes("artwork") ||
-      ["vases", "wall-art", "lamps", "mirrors", "clocks", "planters"].includes(handle)
-    ) {
-      return "artwork"
-    }
   }
   return undefined
 }
@@ -202,8 +123,6 @@ export function accentFromProductCategories(
 export function categoryKeyFromHandle(handle: string): CategoryKey | undefined {
   const h = handle.toLowerCase()
   if (h === "trophies") return "trophies"
-  if (h === "furniture") return "furniture"
-  if (h === "home-decor" || h === "artwork") return "artwork"
   return undefined
 }
 

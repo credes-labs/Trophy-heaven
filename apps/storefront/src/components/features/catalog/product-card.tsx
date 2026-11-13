@@ -49,8 +49,6 @@ function categoryLabel(
   const primary = product.categories?.[0]
   if (primary?.name) return primary.name
   if (accent === "trophy") return "Trophies"
-  if (accent === "furniture") return "Furniture"
-  if (accent === "artwork") return "Artwork"
   return undefined
 }
 
@@ -124,7 +122,7 @@ export function ProductCard({
             />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <span className="font-outfit text-xl text-[#6B635C]">LC</span>
+              <span className="font-outfit text-xl text-[#6B635C]">TH</span>
             </div>
           )}
         </Link>
@@ -193,7 +191,7 @@ export function ProductCard({
             />
           ) : (
             <div className="flex h-full items-center justify-center">
-              <span className="font-outfit text-2xl text-[#6B635C]">LC</span>
+              <span className="font-outfit text-2xl text-[#6B635C]">TH</span>
             </div>
           )}
         </Link>

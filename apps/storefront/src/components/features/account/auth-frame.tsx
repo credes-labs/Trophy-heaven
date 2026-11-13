@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import ChairSheet from "@/components/features/account/chair-sheet"
+import TrophySheet from "@/components/features/account/trophy-sheet"
 import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
@@ -16,7 +16,7 @@ export function AuthFrame({
   eyebrow: string
   title: string
   lede: string
-  /** Show the barrel-armchair technical sheet beside the form on wide screens. */
+  /** Show the trophy-cup technical sheet beside the form on wide screens. */
   illustration?: boolean
   children: ReactNode
 }) {
@@ -44,7 +44,7 @@ export function AuthFrame({
             </div>
             {illustration ? (
               <div className="hidden w-full xl:block">
-                <ChairSheet
+                <TrophySheet
                   ink="#131111"
                   paper="#F2F1EF"
                   className="ml-auto w-full max-w-[44em]"

@@ -83,7 +83,7 @@ export function ImageGallery({
                     />
                   </motion.span>
                 ) : (
-                  <span className="pdp-gallery-placeholder">LC</span>
+                  <span className="pdp-gallery-placeholder">TH</span>
                 )}
               </AnimatePresence>
             </span>

@@ -18,9 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export async function buildCategoryMetadata(key: CategoryKey): Promise<Metadata> {
   const config = CATEGORY_CONFIG[key]
   const titles: Record<CategoryKey, string> = {
-    trophies: "Custom Trophies & Awards — Legacy Crafts",
-    furniture: "Handcrafted Furniture — Legacy Crafts",
-    artwork: "Artwork & Home Decor — Legacy Crafts",
+    trophies: "Custom Trophies & Awards — Trophy Heaven",
   }
   return {
     title: titles[key],

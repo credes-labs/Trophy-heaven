@@ -1,8 +1,8 @@
 {
-  "name": "@legacy-crafts/config",
+  "name": "@trophy-heaven/config",
   "version": "0.1.0",
   "private": true,
-  "description": "Shared TypeScript / ESLint / Prettier config for the Legacy Crafts monorepo.",
+  "description": "Shared TypeScript / ESLint / Prettier config for the Trophy Heaven monorepo.",
   "files": [
     "tsconfig.base.json",
     "eslint.base.cjs"

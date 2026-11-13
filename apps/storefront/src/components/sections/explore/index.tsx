@@ -14,9 +14,9 @@ import { ExploreHero } from "./explore-hero"
 import { ExploreToolbar } from "./explore-toolbar"
 
 function matchesPrice(amount: number, option: string) {
-  if (option === "Under ₹50,000") return amount < 50_000
-  if (option === "₹50,000 – ₹1,00,000") return amount >= 50_000 && amount <= 100_000
-  return amount > 100_000
+  if (option === "Under ₹10,000") return amount < 10_000
+  if (option === "₹10,000 – ₹20,000") return amount >= 10_000 && amount <= 20_000
+  return amount > 20_000
 }
 
 function matchesRating(rating: number, option: string) {

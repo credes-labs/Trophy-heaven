@@ -4,7 +4,7 @@
 
 ## Automation File
 
-**Path:** `.cursor/automations/build-legacy-crafts.md`
+**Path:** `.cursor/automations/build-trophy-heaven.md`
 
 This automation is the single entry point. When triggered, it reads the plan and orchestrates the full build using parallel subagents.
 

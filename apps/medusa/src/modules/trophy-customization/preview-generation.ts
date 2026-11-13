@@ -1,4 +1,4 @@
-import type { Design2DState } from "@legacy-crafts/schemas"
+import type { Design2DState } from "@trophy-heaven/schemas"
 
 /**
  * PreviewGenerationService — renders a Design2DState to an 800×800 preview

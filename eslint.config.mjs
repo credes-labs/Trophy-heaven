@@ -1,7 +1,7 @@
 import tseslint from "typescript-eslint"
 
 /**
- * Root flat ESLint config for the Legacy Crafts monorepo. Packages/apps run
+ * Root flat ESLint config for the Trophy Heaven monorepo. Packages/apps run
  * `eslint src`, and ESLint resolves up to this config. Apps may add their own
  * eslint.config.* to layer framework rules (Next.js) on top.
  */

@@ -13,7 +13,7 @@ const SalesOverviewWidget = () => {
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">Sales overview</Heading>
         <Text size="small" className="text-ui-fg-subtle">
-          Legacy Crafts
+          Trophy Heaven
         </Text>
       </div>
       <div className="grid grid-cols-2 gap-4 px-6 py-4 md:grid-cols-4">

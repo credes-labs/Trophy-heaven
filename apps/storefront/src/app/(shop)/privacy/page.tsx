@@ -6,7 +6,7 @@ import { EditorialWatermark } from "@/components/layout/editorial/editorial-wate
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How Legacy Crafts collects, uses, and protects your personal information.",
+  description: "How Trophy Heaven collects, uses, and protects your personal information.",
   alternates: { canonical: "/privacy" },
 }
 
@@ -44,12 +44,12 @@ const SECTIONS = [
   {
     id: "rights",
     title: "Your rights",
-    body: "Under the Digital Personal Data Protection Act, 2023 you may request access, correction, or erasure, and withdraw marketing consent. Write to privacy@legacycrafts.com or hello@legacycrafts.com.",
+    body: "Under the Digital Personal Data Protection Act, 2023 you may request access, correction, or erasure, and withdraw marketing consent. Write to privacy@trophyheaven.com or hello@trophyheaven.com.",
   },
   {
     id: "contact",
     title: "Contact & grievance",
-    body: "Legacy Crafts, Indiranagar, Bangalore 560038, India. Email: hello@legacycrafts.com. Phone: +91 80 1234 5678.",
+    body: "Trophy Heaven, Indiranagar, Bangalore 560038, India. Email: hello@trophyheaven.com. Phone: +91 80 1234 5678.",
   },
 ] as const
 

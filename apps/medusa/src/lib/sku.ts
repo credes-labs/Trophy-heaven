@@ -1,5 +1,5 @@
 /**
- * Auto-generated SKU per FR-CAT-2: `LC-{category}-{shape}-{material}-{size}`.
+ * Auto-generated SKU per FR-CAT-2: `TH-{category}-{shape}-{material}-{size}`.
  * Each segment is uppercased, alphanumeric-only, and truncated for readability.
  */
 export function generateSku(parts: {
@@ -14,7 +14,7 @@ export function generateSku(parts: {
       .replace(/[^A-Z0-9]/g, "")
       .slice(0, len) || "NA"
 
-  return ["LC", seg(parts.category, 4), seg(parts.shape), seg(parts.material), seg(parts.size, 4)].join(
+  return ["TH", seg(parts.category, 4), seg(parts.shape), seg(parts.material), seg(parts.size, 4)].join(
     "-"
   )
 }

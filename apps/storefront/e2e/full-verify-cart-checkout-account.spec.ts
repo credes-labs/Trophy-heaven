@@ -69,7 +69,7 @@ async function cartItemCount(page: Page): Promise<number> {
   })
 }
 
-async function addProductFromPdp(page: Page, handle = "oak-side-table"): Promise<void> {
+async function addProductFromPdp(page: Page, handle = "achievement-statuette"): Promise<void> {
   await page.goto(`/products/${handle}`)
   await expect(page.getByRole("heading", { name: new RegExp(handle.replace(/-/g, " "), "i") })).toBeVisible({
     timeout: 20_000,
@@ -275,7 +275,7 @@ test.describe("full-verify cart checkout account", () => {
     const shots: string[] = []
     try {
       await clearCartStorage(page)
-      await page.goto("/products/oak-side-table")
+      await page.goto("/products/achievement-statuette")
       await expect(page.getByRole("heading", { name: /champion metal cup/i })).toBeVisible({
         timeout: 20_000,
       })
@@ -319,7 +319,7 @@ test.describe("full-verify cart checkout account", () => {
     const shots: string[] = []
     try {
       await clearCartStorage(page)
-      await page.goto("/products/oak-side-table")
+      await page.goto("/products/achievement-statuette")
       const sizeM = page.getByRole("button", { name: /M \(8/i })
       if (await sizeM.isVisible().catch(() => false)) await sizeM.click()
 
@@ -477,7 +477,7 @@ test.describe("full-verify cart checkout account", () => {
 
     try {
       await clearCartStorage(page)
-      await addProductFromPdp(page, "brass-table-lamp")
+      await addProductFromPdp(page, "ascent-figure-award")
       await page.keyboard.press("Escape").catch(() => undefined)
       const guestCartId = await page.evaluate(() => localStorage.getItem("lc_cart_id"))
       expect(guestCartId).toBeTruthy()
@@ -496,7 +496,7 @@ test.describe("full-verify cart checkout account", () => {
       shots.push(await shot(page, "08-05-after-logout.png"))
 
       await clearCartStorage(page)
-      await addProductFromPdp(page, "halo-walnut-shelf")
+      await addProductFromPdp(page, "ascent-figure-award")
       await page.keyboard.press("Escape").catch(() => undefined)
       shots.push(await shot(page, "08-05-guest-cart-before-relogin.png"))
 

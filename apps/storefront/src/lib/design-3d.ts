@@ -1,4 +1,4 @@
-import type { Design3DState, Material3D, Material2D } from "@legacy-crafts/schemas"
+import type { Design3DState, Material3D, Material2D } from "@trophy-heaven/schemas"
 
 /** The six selectable trophy bases (FR-3D-2). `modelUrl` is used when a GLB
  * asset exists; otherwise the viewer renders procedural geometry of `shape`. */

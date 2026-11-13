@@ -18,7 +18,7 @@ const textBtn =
   "cursor-pointer border-0 bg-transparent p-0 font-outfit text-[0.875em] tracking-[-0.02em] uppercase underline underline-offset-[0.15em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111] disabled:opacity-50"
 
 function orderLabel(order: HttpTypes.StoreOrder) {
-  return order.display_id != null ? `#LC-${order.display_id}` : order.id.slice(0, 12)
+  return order.display_id != null ? `#TH-${order.display_id}` : order.id.slice(0, 12)
 }
 
 function formatDate(value: string | Date) {

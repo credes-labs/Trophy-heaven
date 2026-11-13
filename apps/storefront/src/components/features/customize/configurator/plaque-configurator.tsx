@@ -774,7 +774,7 @@ export function PlaqueConfigurator({
     try {
       if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
         await navigator.share({
-          title: award ? studioPiece(award).label : "My Legacy Crafts plaque",
+          title: award ? studioPiece(award).label : "My Trophy Heaven plaque",
           url,
         })
         return

@@ -15,7 +15,7 @@ export const BlogPost = model.define("blog_post", {
   excerpt: model.text().nullable(),
   content_md: model.text(),
   cover_image_url: model.text().nullable(),
-  author_name: model.text().default("Legacy Crafts"),
+  author_name: model.text().default("Trophy Heaven"),
   author_avatar_url: model.text().nullable(),
   tags: model.json().default([] as unknown as Record<string, unknown>),
   status: model.enum(["draft", "published", "archived"]).default("draft"),

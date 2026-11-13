@@ -6,7 +6,7 @@ import { BACKEND_URL, PUBLISHABLE_KEY } from "@/lib/medusa"
 
 export const metadata: Metadata = {
   title: "Shared Design",
-  description: "A Legacy Crafts trophy design shared for review.",
+  description: "A Trophy Heaven trophy design shared for review.",
   robots: { index: false, follow: false },
 }
 

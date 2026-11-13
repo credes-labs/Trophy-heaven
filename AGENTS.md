@@ -1,4 +1,4 @@
-# AGENTS.md — AI readme for the Legacy Crafts repo
+# AGENTS.md — AI readme for the Trophy Heaven repo
 
 Read before changing anything. Records what is *not* inferable from filenames: the
 gate order, the traps that already cost a debugging session, and the mandatory
@@ -6,7 +6,7 @@ change-log process.
 
 ## What this repo is
 
-Premium ecommerce for trophies / furniture / artwork: Next.js 16 storefront
+Premium ecommerce for trophies and awards only: Next.js 16 storefront
 (`apps/storefront`, :3000) + Medusa v2.18 (`apps/medusa`, :9000) + `packages/*`
 (`schemas` = shared Zod contracts, `observability`, `config`). Razorpay for payments.
 Node 24 (`.nvmrc`), pnpm 10.33.3, pnpm workspaces.
@@ -22,21 +22,21 @@ pnpm build                                  # before merging
 
 - **Use the root scripts, not `pnpm -r typecheck`.** Root `typecheck`/`build`
   run `pnpm schemas:build` first; `packages/*` resolve each other through
-  `dist/`, so a stale or missing `@legacy-crafts/schemas/dist` breaks typecheck,
+  `dist/`, so a stale or missing `@trophy-heaven/schemas/dist` breaks typecheck,
   tests and the storefront in confusing ways.
 - `pnpm dev` runs both apps in parallel. `next dev` allows only ONE dev server
   per project directory.
 - Single test: storefront/schemas are **Vitest**, medusa is **Jest** — different
   filename patterns, so a test file in the wrong place silently never runs.
-  - storefront: `pnpm --filter @legacy-crafts/storefront exec vitest run src/lib/foo.test.ts`
+  - storefront: `pnpm --filter @trophy-heaven/storefront exec vitest run src/lib/foo.test.ts`
   - schemas: `pnpm schemas:test`
-  - medusa: `pnpm --filter @legacy-crafts/medusa test` — but its script sets
+  - medusa: `pnpm --filter @trophy-heaven/medusa test` — but its script sets
     `TEST_TYPE=unit` with POSIX syntax, so **on Windows it fails**; use
     `cd apps/medusa; $env:TEST_TYPE="unit"; npx jest --runInBand --forceExit`
     (add `--testPathPattern=<name>` to narrow). `test:integration` has the same
     problem and needs a live Postgres at `DATABASE_URL`; it only runs
     `src/modules` tests.
-- e2e: `pnpm --filter @legacy-crafts/storefront test:e2e`. Playwright's `webServer`
+- e2e: `pnpm --filter @trophy-heaven/storefront test:e2e`. Playwright's `webServer`
   runs `pnpm start` (production) unless `E2E_BASE_URL` is set, so `next build`
   must exist; a dev server on :3000 is reused locally. One spec:
   `... exec playwright test e2e/smoke.spec.ts --project=chromium`.
@@ -95,7 +95,7 @@ pnpm build                                  # before merging
 - **Imagery**: site images in `apps/storefront/public/images/` are **WebP** with
   prompts in `manifest.json`; new imagery must match that style and be registered
   there. No placeholder boxes — ever. Drop a JPEG/PNG in, then run
-  `pnpm --filter @legacy-crafts/storefront images:webp --write` (sharp; caps 2560px)
+  `pnpm --filter @trophy-heaven/storefront images:webp --write` (sharp; caps 2560px)
   and reference the `.webp`. Exceptions: `campaign/` ad units and the `og/` share
   card stay JPEG. Old `.jpg`/`.png` URLs in the DB are remapped by
   `localizeImageUrl()` and redirected in `next.config.ts`; rewrite stored URLs with
@@ -107,8 +107,12 @@ pnpm build                                  # before merging
 ## Brand contract (do not dilute)
 
 Champagne `#FBFBF7` / cream `#E0D8C3` surfaces, walnut `#331207` text, gold
-`#B89E6B` accents. Category accents: burgundy `#8A2D25` trophies, midnight blue
-`#191D26` furniture, olive/brass artwork. Playfair Display headlines, Inter body.
+`#B89E6B` accents, burgundy `#8A2D25` trophy accent. Playfair Display headlines,
+Inter body. Trophy Heaven is a trophy-only fork of Legacy Crafts: do not reintroduce
+furniture, artwork/home-decor or sculpture products, routes, copy or imagery
+(`/furniture` and `/artwork` 308 to `/trophies`). "Artwork" in the configurator means
+the customer's plaque art/logo and stays. The "T" monogram and wordmark are interim
+live text until the supplied brand assets arrive.
 Tone: minimal, elegant, editorial — "Crafted with intention. Built to last."
 Tokens: `apps/storefront/src/app/globals.css`. Spec: `.cursor/plans/00-master-plan.md`.
 
@@ -129,7 +133,7 @@ with the change, not after. Never edit history — corrections are new entries.
 | Category configs (copy/accents/images) | `apps/storefront/src/lib/category-config.ts` |
 | Medusa custom modules | `apps/medusa/src/modules/` (blog, reviews, wishlist, razorpay, bulk-order, corporate-account, trophy-customization, production-workflow, webhook-events, msg91, resend) |
 | Store API routes | `apps/medusa/src/api/store/` |
-| Seeds | `apps/medusa/src/scripts/{seed,seed-content,homepage-furniture}.ts` |
+| Seeds | `apps/medusa/src/scripts/{seed,seed-content,trophy-collection,seed-studio-trophies}.ts` |
 | Product/tech spec (source of truth) | `docs/kit/` |
 | Design/page spec + build tracker | `.cursor/plans/` |
 | Change log | `docs/changes/` |

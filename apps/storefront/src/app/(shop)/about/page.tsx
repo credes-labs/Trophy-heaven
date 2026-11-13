@@ -10,7 +10,7 @@ import { BRAND, BRAND_STATS } from "@/lib/brand-facts"
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Legacy Crafts is a Bengaluru atelier crafting trophies, furniture, and artwork with Indian heritage craftsmanship.",
+    "Trophy Heaven is a Bengaluru trophy atelier crafting crystal, metal, and hardwood awards with Indian heritage craftsmanship.",
   alternates: { canonical: "/about" },
 }
 
@@ -18,25 +18,25 @@ const STATS = BRAND_STATS
 
 const DISCIPLINES = [
   {
-    title: "Trophies",
-    href: "/trophies",
+    title: "Figure awards",
+    href: "/products/ascent-figure-award",
     image: "/images/catalog/trophy-figure-award.webp",
     alt: "Gilt figure award on an octagonal mahogany base",
-    copy: "Brass, optical crystal, and seasoned timber for ceremonies that should last.",
+    copy: "Cast and gilded figures on hardwood plinths, for ceremonies that should last.",
   },
   {
-    title: "Furniture",
-    href: "/furniture",
-    image: "/images/catalog/table-brass-nesting-1.webp",
-    alt: "Pair of brass pedestal nesting tables with tray tops",
-    copy: "Cast brass, honed marble, and tempered glass — tables meant to be lived with, not replaced.",
+    title: "Statuettes",
+    href: "/products/achievement-statuette",
+    image: "/images/catalog/trophy-achievement-statuette.webp",
+    alt: "Gilded figure statuette on a black marble plinth",
+    copy: "Polished brass on marble — the award that sits on a desk for decades.",
   },
   {
-    title: "Artwork",
-    href: "/artwork",
-    image: "/images/catalog/sculpture-loop-verdigris-1.webp",
-    alt: "Verdigris bronze loop sculpture on a marble plinth",
-    copy: "Cast bronze, marble, and glass objects chosen to quiet a room, not fill it.",
+    title: "Engraved plaques",
+    href: "/customize",
+    image: "/images/catalog/plaque-studio.webp",
+    alt: "Engraved wooden award plaque with a brass plate",
+    copy: "Seasoned hardwood and a brass plate, laid out by you in the design studio.",
   },
 ] as const
 
@@ -47,14 +47,14 @@ export default function AboutPage() {
         <EditorialFrame className="pt-[clamp(2.5rem,6vw,5em)] pb-[clamp(2.5rem,6vw,5em)]">
           <div className="grid items-center gap-[2.5em] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:min-h-[32em] lg:gap-16">
             <div className="relative z-10 max-w-[32em]">
-              <EditorialWatermark>legacy</EditorialWatermark>
+              <EditorialWatermark>heaven</EditorialWatermark>
               <EditorialEyebrow>What we do & about us</EditorialEyebrow>
               <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
                 Crafted with intention. Built to last.
               </h1>
               <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]/70">
-                A {BRAND.city} atelier where trophies, furniture, and artwork are made with patience —
-                for ceremonies, homes, and collections that deserve permanence.
+                A {BRAND.city} atelier where trophies and awards are made with patience — for
+                ceremonies, teams, and achievements that deserve permanence.
               </p>
               <div className="mt-[2em]">
                 <EditorialTextLink href="/shop">Shop the collection →</EditorialTextLink>
@@ -63,8 +63,8 @@ export default function AboutPage() {
 
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
               <Image
-                src="/images/hero/hero-legacy-tables.webp"
-                alt="Brass pedestal nesting tables with a bronze vase against a navy wall"
+                src="/images/hero/hero-workshop.webp"
+                alt="Trophy workshop bench with brass tools in warm, low light"
                 fill
                 preload
                 sizes="(min-width: 1024px) 48em, 100vw"
@@ -78,7 +78,7 @@ export default function AboutPage() {
       <section className="border-b border-[#131111]/10">
         <EditorialFrame className="pt-[clamp(2.5rem,5vw,4.25em)] pb-[clamp(2.5rem,5vw,4.25em)]">
           <p className="m-0 font-outfit text-[clamp(0.875em,1.39vw,1.25em)] leading-[1.25em] font-normal tracking-[-0.02em] text-[#131111] uppercase">
-            //Legacy in numbers
+            //Trophy Heaven in numbers
           </p>
           <div className="mt-[2em] flex flex-wrap items-start justify-between gap-y-[1.25em] sm:flex-nowrap">
             {STATS.map((stat, i) => (
@@ -114,9 +114,9 @@ export default function AboutPage() {
               Built to last, not to replace
             </h2>
             <p className="m-0 max-w-[36em] font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70 lg:col-span-7">
-              Cast brass, honed marble, tempered glass. Optical crystal and brass we can stand
-              behind. Pieces leave the workshop finished by hand so they can be lived with — not
-              discarded next season. Offcuts become samples; packing is sized to the piece, not the
+              Cast brass, optical crystal, seasoned hardwood. Materials we can stand behind.
+              Awards leave the workshop finished by hand so they can be displayed for decades — not
+              boxed up after the ceremony. Offcuts become samples; packing is sized to the piece, not the
               pallet.
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function AboutPage() {
 
       <EditorialFrame>
         <h2 className="m-0 max-w-[22em] font-outfit text-[clamp(1.75em,4vw,3.375em)] leading-[1.2] font-normal tracking-[-0.02em] text-balance text-[#131111]">
-          Three expressions of the same standard
+          One standard, every award
         </h2>
         <div className="mt-[clamp(2em,4vw,3.75em)] grid grid-cols-1 gap-[2em] lg:grid-cols-3">
           {DISCIPLINES.map((item) => (

@@ -13,7 +13,7 @@ const fieldClass = cn(
 const SUBJECTS = [
   "General inquiry",
   "Custom trophy / bulk order",
-  "Furniture commission",
+  "Corporate awards programme",
   "Order support",
   "Press & partnerships",
 ]

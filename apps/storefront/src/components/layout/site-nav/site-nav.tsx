@@ -18,7 +18,7 @@ export type SiteNavTone = "light" | "ink"
 const siteNavInkItemClass =
   "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
 
-const inkWordmarkClass = "[&_img]:brightness-0 focus-visible:outline-[#131111]"
+const inkWordmarkClass = "text-[#131111] focus-visible:outline-[#131111]"
 
 function focusMenuItem(panel: HTMLElement | null, index: number | "next" | "prev") {
   const items = Array.from(panel?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])

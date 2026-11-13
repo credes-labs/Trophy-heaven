@@ -37,7 +37,7 @@ function pdpAtc(page: Page) {
   return page.locator(".pdp-buy-row button.pdp-atc")
 }
 
-async function openPdp(page: Page, handle = "oak-side-table") {
+async function openPdp(page: Page, handle = "achievement-statuette") {
   await page.goto(`/products/${handle}`, { waitUntil: "domcontentloaded" })
   await expect(page).toHaveURL(new RegExp(`/products/${handle}`))
   await expect(pdpAtc(page)).toBeVisible({ timeout: 20_000 })
@@ -112,7 +112,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
       await route.continue()
     })
 
-    await openPdp(page, "oak-side-table")
+    await openPdp(page, "achievement-statuette")
     if (await pdpAtc(page).isDisabled()) {
       test.info().annotations.push({ type: "note", description: "ATC disabled" })
       return
@@ -154,7 +154,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
     await page.goto("/cart", { waitUntil: "domcontentloaded" })
     await expect(page.getByText(/your cart is empty/i).first()).toBeVisible({ timeout: 20_000 })
 
-    await openPdp(page, "brass-table-lamp")
+    await openPdp(page, "ascent-figure-award")
     if (await pdpAtc(page).isDisabled()) {
       test.info().annotations.push({ type: "note", description: "ATC disabled" })
       return
@@ -169,7 +169,7 @@ test.describe("logic-layer shop/cart/PDP", () => {
 
   test("9. Drawer stepper disabled while pending", async ({ page }) => {
     await clearCartStorage(page)
-    await openPdp(page, "halo-walnut-shelf")
+    await openPdp(page, "ascent-figure-award")
     if (await pdpAtc(page).isDisabled()) {
       test.info().annotations.push({ type: "note", description: "ATC disabled" })
       return

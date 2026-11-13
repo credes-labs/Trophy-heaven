@@ -13,7 +13,7 @@ Post-MVP capabilities and the architectural hooks that keep them cheap to add la
 | 7 | **3D-printing integration** (direct-to-print) | 3D design state + validated glTF pipeline feed a print provider; add a fulfillment provider like any other. |
 | 8 | **Loyalty & gamification** (points for shares/referrals/repeat) | Emit the funnel events from [11](./11-success-metrics.md) now; a points ledger consumes them later. |
 | 9 | **Multi-language & multi-currency** (Hindi, Tamil; currency switcher) | Next.js i18n routing + Medusa region/currency support; avoid hardcoded copy and single-currency assumptions. |
-| 10 | **Advanced AR** (room-scale furniture with occlusion/lighting) | WebXR abstraction from Phase 3 isolates AR; upgrade the AR module without touching commerce. |
+| 10 | **Advanced AR** (room-scale trophy display with occlusion/lighting) | WebXR abstraction from Phase 3 isolates AR; upgrade the AR module without touching commerce. |
 
 **Extensibility principles**
 - New behavior arrives as a **Medusa module + subscribers**, not by editing core.

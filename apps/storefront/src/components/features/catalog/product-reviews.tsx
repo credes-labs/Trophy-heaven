@@ -47,7 +47,7 @@ function formatReviewDate(value: string) {
 
 function reviewInitial(title: string | null) {
   const ch = title?.trim().charAt(0)
-  return ch ? ch.toUpperCase() : "LC"
+  return ch ? ch.toUpperCase() : "TH"
 }
 
 function ReviewForm({ productId, onSubmitted }: { productId: string; onSubmitted: () => void }) {

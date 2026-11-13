@@ -1,5 +1,5 @@
 import { studioPiece, type AwardId } from "./studio-pieces"
-import type { Design3DState } from "@legacy-crafts/schemas"
+import type { Design3DState } from "@trophy-heaven/schemas"
 
 /**
  * Option model for the /customize plaque configurator. Pure (no React/three) so

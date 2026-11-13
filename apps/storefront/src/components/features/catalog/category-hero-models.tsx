@@ -13,9 +13,7 @@ const CategoryCanvas = dynamic(
 )
 
 const disciplineForCategory: Record<CategoryKey, DisciplineId> = {
-  artwork: "sculptures",
-  furniture: "tables",
-  trophies: "trophies",
+  trophies: "awards",
 }
 
 export function CategoryHeroModels({ category }: { category: CategoryKey }) {

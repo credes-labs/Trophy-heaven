@@ -13,7 +13,7 @@ const CategoryCanvas = dynamic(
   () => import("@/components/sections/products-categories/category-canvas").then((m) => m.CategoryCanvas),
   { ssr: false }
 )
-const trophies = DISCIPLINES.find((discipline) => discipline.id === "trophies")!
+const trophies = DISCIPLINES.find((discipline) => discipline.id === "awards")!
 
 export function StudioPiecePicker({ value }: { value: StudioPieceId }) {
   const root = useRef<HTMLElement>(null)

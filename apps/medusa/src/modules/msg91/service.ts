@@ -35,7 +35,7 @@ class Msg91NotificationService extends AbstractNotificationProviderService {
   ): Promise<ProviderSendNotificationResultsDTO> {
     const message =
       (notification.content?.text as string) ||
-      `Legacy Crafts: ${notification.template} ${JSON.stringify(notification.data ?? {})}`.slice(0, 300)
+      `Trophy Heaven: ${notification.template} ${JSON.stringify(notification.data ?? {})}`.slice(0, 300)
 
     try {
       const res = await fetch("https://control.msg91.com/api/v5/flow/", {

@@ -1,4 +1,9 @@
-# Legacy Crafts — Master Implementation Plan
+# Trophy Heaven — Master Implementation Plan
+
+> **Trophy Heaven fork (2026-11-13, WP-87):** this plan was written for Legacy Crafts
+> (trophies + furniture + artwork). Trophy Heaven sells trophies only. Ignore every
+> furniture, artwork/home-decor, sculpture, midnight-blue and olive/brass instruction
+> below; the trophy, customizer, corporate, checkout and brand-token guidance still applies.
 
 ## Vision
 

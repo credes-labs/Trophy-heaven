@@ -9,14 +9,16 @@ const backendHost = (() => {
 })()
 
 // Site imagery was recoded to WebP (WP-85); old links (emails, shared URLs, caches)
-// still ask for .jpg/.png. Five explore photographs duplicated catalog ones.
-const WEBP_DIRS = "products|catalog|explore|blog|about|footer|hero"
-const DEDUPED_IMAGES: Array<[string, string]> = [
-  ["explore/sierra-fabric", "catalog/seating-armchair"],
-  ["explore/oslo-leather", "catalog/seating-lounge"],
-  ["explore/aria-minimal", "catalog/storage-shelf"],
-  ["explore/nova-oak", "catalog/tables-coffee"],
-  ["explore/vertex-glass", "catalog/tables-side"],
+// still ask for .jpg/.png.
+const WEBP_DIRS = "products|catalog|blog|about|footer|hero"
+
+// Trophy Heaven sells trophies only; the Legacy Crafts furniture and artwork
+// landings (and their catch-all category paths) fold into the trophy collection.
+const RETIRED_CATEGORY_PATHS = [
+  "/furniture",
+  "/artwork",
+  "/categories/furniture/:path*",
+  "/categories/home-decor/:path*",
 ]
 
 const nextConfig: NextConfig = {
@@ -41,9 +43,9 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      ...DEDUPED_IMAGES.map(([from, to]) => ({
-        source: `/images/${from}.:ext(jpg|jpeg|png|webp)`,
-        destination: `/images/${to}.webp`,
+      ...RETIRED_CATEGORY_PATHS.map((source) => ({
+        source,
+        destination: "/trophies",
         permanent: true,
       })),
       {
@@ -62,7 +64,7 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  transpilePackages: ["@legacy-crafts/schemas"],
+  transpilePackages: ["@trophy-heaven/schemas"],
   experimental: {
     // Keep heavy editor/viewer client chunks out of the server bundle graph.
     optimizePackageImports: ["lucide-react"],

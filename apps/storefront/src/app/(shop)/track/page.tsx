@@ -5,7 +5,7 @@ import { TrackOrderForm } from "@/components/features/orders/track-order-form"
 
 export const metadata: Metadata = {
   title: "Track Order",
-  description: "Track a Legacy Crafts order with your order number and email.",
+  description: "Track a Trophy Heaven order with your order number and email.",
   alternates: { canonical: "/track" },
 }
 

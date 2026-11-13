@@ -7,7 +7,7 @@ import { FaqClient } from "./faq-client"
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Answers about orders, customization, shipping, returns, and payments at Legacy Crafts.",
+    "Answers about orders, customization, shipping, returns, and payments at Trophy Heaven.",
   alternates: { canonical: "/faq" },
 }
 

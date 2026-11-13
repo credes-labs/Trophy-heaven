@@ -12,8 +12,8 @@ import { hrefForCategoryHandle } from "@/lib/category-config"
 const NAV_LINKS = [
   { label: "Shop", href: "/shop", hasMegaMenu: true },
   { label: "Trophies", href: "/trophies" },
-  { label: "Furniture", href: "/furniture" },
-  { label: "Artwork", href: "/artwork" },
+  { label: "Corporate", href: "/corporate" },
+  { label: "Design studio", href: "/customize" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
 ]

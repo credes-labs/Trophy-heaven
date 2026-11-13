@@ -16,14 +16,14 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Our walnut dining table arrived perfectly finished. It feels like a heirloom already — warm, solid, and beautifully made.",
+      "We ordered forty acrylic awards for our cricket league. Every name was spelled right, and they arrived two days before the final.",
     name: "Arjun Desai",
     location: "Bengaluru",
     rating: 5,
   },
   {
     quote:
-      "Legacy Crafts helped us source artwork for our office lobby. The curation was thoughtful and the pieces elevate the space.",
+      "Trophy Heaven handled our sales-kickoff awards end to end — proofs, GST invoice, and split delivery to three offices. Flawless.",
     name: "Sarah Chen",
     location: "Delhi",
     rating: 5,
@@ -37,7 +37,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "The brass lamps we ordered for our restaurant glow exactly as pictured. Packaging, delivery, finish — all impeccable.",
+      "The crystal award for our school's centenary catches the light exactly as pictured. Packaging, engraving, finish — all impeccable.",
     name: "Ananya Iyer",
     location: "Chennai",
     rating: 5,

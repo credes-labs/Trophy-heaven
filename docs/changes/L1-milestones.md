@@ -283,3 +283,6 @@ Site imagery converted to WebP with sharp (83 MB to 9.3 MB), unused and duplicat
 
 ## 2026-10-31 - Mixed-product silhouette mosaic
 Replaced the shared silhouette grid with the supplied furniture, trophy and sculpture version. See L2 WP-86.
+
+## 2026-11-13 - Trophy Heaven rebrand
+Forked from Legacy Crafts: renamed to Trophy Heaven (`@trophy-heaven/*`), removed all furniture, artwork/home-decor and sculpture products, routes, copy and imagery, and re-pointed every homepage section at trophies. See L2 WP-87.

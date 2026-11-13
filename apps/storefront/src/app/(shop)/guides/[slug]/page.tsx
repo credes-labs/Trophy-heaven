@@ -7,29 +7,29 @@ import { EditorialTextLink } from "@/components/layout/editorial/editorial-cta"
 const GUIDES = {
   size: {
     title: "Size guide",
-    body: "Heights, footprints, and podium clearances for trophies and furniture.",
+    body: "Heights, footprints, and podium clearances for trophies and plaques.",
     sections: [
       {
         h: "Trophies",
         p: "Desk awards typically sit 150–250mm. Podium pieces run taller — tell us the stage height when you brief.",
       },
       {
-        h: "Furniture",
-        p: "Dining tables list seating count and clear span. Lounge pieces include seat height and overall depth.",
+        h: "Plaques",
+        p: "Wall plaques list overall size and engraving area. Desk plaques include the depth of the foot.",
       },
     ],
   },
   care: {
     title: "Care guide",
-    body: "How to live with crystal, brass, teak, walnut, and leather without shortening their life.",
+    body: "How to look after crystal, brass, walnut, marble, and acrylic without shortening their life.",
     sections: [
       {
         h: "Crystal & brass",
         p: "Soft cloth, no abrasives. Brass will darken — polish only if you prefer a bright finish.",
       },
       {
-        h: "Timber & leather",
-        p: "Keep out of standing water. Oil teak yearly if it sees sun. Leather wants conditioning, not solvents.",
+        h: "Timber, marble & acrylic",
+        p: "Keep walnut bases out of standing water. Wipe marble dry. Clean acrylic with water and a microfibre cloth — never solvents.",
       },
     ],
   },

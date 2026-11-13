@@ -24,13 +24,8 @@ const COLUMNS: Array<[table: string, column: string]> = [
 
 const RECODE = String.raw`(/images/(products|catalog|explore|blog|about|footer|hero)/[^?#]+)\.(jpe?g|png)`
 
-const DEDUPED: Record<string, string> = {
-  "/images/explore/sierra-fabric.webp": "/images/catalog/seating-armchair.webp",
-  "/images/explore/oslo-leather.webp": "/images/catalog/seating-lounge.webp",
-  "/images/explore/aria-minimal.webp": "/images/catalog/storage-shelf.webp",
-  "/images/explore/nova-oak.webp": "/images/catalog/tables-coffee.webp",
-  "/images/explore/vertex-glass.webp": "/images/catalog/tables-side.webp",
-}
+/** The WP-85 explore duplicates and their catalog copies were all furniture, retired in the Trophy Heaven rebrand. */
+const DEDUPED: Record<string, string> = {}
 
 export default async function imagesToWebp({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)

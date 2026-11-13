@@ -6,7 +6,7 @@ const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379"
 const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
 /**
- * Legacy Crafts Medusa v2.18 configuration.
+ * Trophy Heaven Medusa v2.18 configuration.
  *
  * Core commerce modules (Product, Pricing, Inventory, Cart, Order, Customer,
  * Payment, Fulfillment, Tax, Promotion, Auth, File, Notification) are enabled by
@@ -120,7 +120,7 @@ module.exports = defineConfig({
                   options: {
                     channels: ["email"],
                     api_key: process.env.RESEND_API_KEY,
-                    from: process.env.RESEND_FROM || "Legacy Crafts <orders@legacycrafts.example>",
+                    from: process.env.RESEND_FROM || "Trophy Heaven <orders@trophyheaven.example>",
                   },
                 },
               ]

@@ -1,6 +1,6 @@
 import { medusa } from "./medusa"
 import { BACKEND_URL, PUBLISHABLE_KEY } from "./medusa"
-import type { Design2DState, Design3DState } from "@legacy-crafts/schemas"
+import type { Design2DState, Design3DState } from "@trophy-heaven/schemas"
 
 type DesignRecord = {
   id: string

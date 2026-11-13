@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bring up the Legacy Crafts local stack on host services (no Docker required).
+# Bring up the Trophy Heaven local stack on host services (no Docker required).
 # Starts Meilisearch, Medusa (:9000), and the storefront (:3000) under tmux.
 set -euo pipefail
 
@@ -43,7 +43,7 @@ redis-cli ping | grep -q PONG
 echo "✓ Postgres and Redis accepting connections"
 
 echo "==> Building shared schemas"
-pnpm --filter @legacy-crafts/schemas build
+pnpm --filter @trophy-heaven/schemas build
 
 echo "==> Starting Meilisearch"
 mkdir -p "$ROOT/.data/meilisearch"
@@ -76,12 +76,12 @@ fi
 wait_http http://127.0.0.1:3000 Storefront 90
 
 echo ""
-echo "Legacy Crafts is live:"
+echo "Trophy Heaven is live:"
 echo "  Storefront  http://localhost:3000"
 echo "  Medusa API  http://localhost:9000"
 echo "  Admin       http://localhost:9000/app"
 echo "  Meilisearch http://localhost:7700"
-echo "  Admin login admin@legacycrafts.test / LegacyCrafts!Dev1"
+echo "  Admin login admin@trophyheaven.test / TrophyHeaven!Dev1"
 echo ""
 echo "tmux sessions: meilisearch, medusa, storefront"
 echo "Stop with: scripts/dev-down.sh"

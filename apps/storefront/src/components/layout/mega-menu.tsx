@@ -2,17 +2,14 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Trophy, Armchair, Palette, Gift, Sparkles, LayoutGrid } from "lucide-react"
+import { Trophy, Gift, LayoutGrid } from "lucide-react"
 import { hrefForCategoryHandle } from "@/lib/category-config"
 
 type Category = { id: string; name: string; handle: string }
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   trophies: <Trophy className="h-4 w-4" />,
-  furniture: <Armchair className="h-4 w-4" />,
-  artwork: <Palette className="h-4 w-4" />,
   "gift-sets": <Gift className="h-4 w-4" />,
-  "home-decor": <Sparkles className="h-4 w-4" />,
 }
 
 const TROPHY_SUBCATEGORIES = [
@@ -23,16 +20,19 @@ const TROPHY_SUBCATEGORIES = [
   { label: "Crystal", href: "/categories/trophies/crystal" },
 ]
 
-const FURNITURE_SUBCATEGORIES = [
-  { label: "Tables", href: "/categories/furniture/tables" },
+const BY_MATERIAL = [
+  { label: "Crystal", href: "/categories/trophies/crystal" },
+  { label: "Metal", href: "/categories/trophies/metal" },
+  { label: "Acrylic", href: "/categories/trophies/acrylic" },
+  { label: "Corporate & bulk orders", href: "/corporate" },
 ]
 
 const FEATURED_PRODUCTS = [
   {
-    name: "Brass Nesting Tables",
-    price: "₹54,400",
-    image: "/images/catalog/table-brass-nesting-1.webp",
-    href: "/products/brass-nesting-tables",
+    name: "Ascent Figure Award",
+    price: "₹20,400",
+    image: "/images/catalog/trophy-figure-award.webp",
+    href: "/products/ascent-figure-award",
   },
   {
     name: "Achievement Statuette",
@@ -68,7 +68,7 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
                       </Link>
                     </li>
                   ))
-                : ["Trophies", "Furniture", "Artwork", "Home Decor", "Gift Sets"].map((name) => {
+                : ["Trophies", "Gift Sets"].map((name) => {
                     const handle = name.toLowerCase().replace(/ /g, "-")
                     return (
                       <li key={handle}>
@@ -114,13 +114,13 @@ export function MegaMenu({ categories }: { categories: Category[] }) {
             </ul>
           </div>
 
-          {/* Col 3: Furniture */}
+          {/* Col 3: By material */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-balance text-[#6B635C]">
-              Furniture
+              By material
             </h3>
             <ul className="mt-4 space-y-1">
-              {FURNITURE_SUBCATEGORIES.map((sub) => (
+              {BY_MATERIAL.map((sub) => (
                 <li key={sub.href}>
                   <Link
                     href={sub.href}

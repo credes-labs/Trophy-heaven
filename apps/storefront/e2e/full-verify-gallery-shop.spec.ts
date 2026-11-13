@@ -16,9 +16,9 @@ const REPORT_PATH = path.join(VERIFY_DIR, "07-pw-gallery-shop.md")
 const BASE = process.env.E2E_BASE_URL || "http://localhost:3000"
 
 const GALLERY_HANDLES = [
-  "oak-side-table",
+  "achievement-statuette",
   "engraved-wooden-plaque",
-  "brass-table-lamp",
+  "ascent-figure-award",
 ] as const
 
 type StepResult = {
@@ -115,10 +115,10 @@ test.describe("full-verify gallery + shop", () => {
     const shots: string[] = []
     try {
       await page.goto("/")
-      await expect(page).toHaveTitle(/Legacy Crafts/i)
+      await expect(page).toHaveTitle(/Trophy Heaven/i)
       await expect(page.locator("section").first()).toBeVisible({ timeout: 20_000 })
       await expect(
-        page.getByText(/curated furniture|discover furniture built to inspire/i)
+        page.getByText(/crafted with/i)
       ).toBeVisible({ timeout: 15_000 })
       shots.push(await shot(page, "07-home-before.png"))
       shots.push(await shot(page, "07-home-after.png"))
@@ -165,7 +165,7 @@ test.describe("full-verify gallery + shop", () => {
     }
   })
 
-  for (const slug of ["trophies", "furniture", "artwork"] as const) {
+  for (const slug of ["trophies"] as const) {
     test(`S03-${slug} — Category page loads`, async ({ page }) => {
       const shots: string[] = []
       const id = `S03-${slug}`

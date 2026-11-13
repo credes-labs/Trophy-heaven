@@ -1,13 +1,13 @@
-# Kimi Execution Status — Legacy Crafts
+# Kimi Execution Status — Trophy Heaven
 
 > Living tracker for the `kimi` branch build. Resume with one goal command:
-> `/goal Continue the Legacy Crafts build per .cursor/plans/KIMI-EXECUTION-STATUS.md`
+> `/goal Continue the Trophy Heaven build per .cursor/plans/KIMI-EXECUTION-STATUS.md`
 > Source-of-truth spec: the documents in this directory (`00-master-plan.md` and subfolders).
-> Brand source: Legacy Crafts identity deck (PDF) — see `00-master-plan.md` §Brand DNA.
+> Brand source: Trophy Heaven identity deck (PDF) — see `00-master-plan.md` §Brand DNA.
 
 ## Brand contract (from identity deck)
 
-- Name: **Legacy Crafts** — FURNITURE. DECOR & MORE — Bangalore, India
+- Name: **Trophy Heaven** — FURNITURE. DECOR & MORE — Bangalore, India
 - Mark: four-petal monogram of interconnected lowercase "l" forms (maker's mark)
 - Palette: Stone cream `#E0D8C3` / champagne `#FBFBF7` base, walnut `#331207` text,
   gold `#B89E6B` accents; category accents — **burgundy `#8A2D25` = trophies**,
@@ -164,6 +164,6 @@
 
 ```bash
 pnpm -r typecheck && pnpm -r test && pnpm -r lint && pnpm -r build
-pnpm --filter @legacy-crafts/storefront test:e2e   # needs dev servers; see Makefile
+pnpm --filter @trophy-heaven/storefront test:e2e   # needs dev servers; see Makefile
 make up && make migrate && make seed               # local backing services + seed
 ```

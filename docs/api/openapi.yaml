@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
-  title: Legacy Crafts Custom API
+  title: Trophy Heaven Custom API
   version: 1.0.0
   description: >
     Custom endpoints layered on top of the Medusa v2 Store/Admin APIs for the
-    Legacy Crafts platform: designs, bulk orders, corporate accounts, production
+    Trophy Heaven platform: designs, bulk orders, corporate accounts, production
     workflow, and search. Core commerce endpoints (products, carts, orders,
     customers, auth) follow the standard Medusa Store/Admin API. See
     docs/kit/05-api-specification.md for the source specification.

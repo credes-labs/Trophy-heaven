@@ -13,8 +13,6 @@ const buttonVariants = cva(
         ghost: "hover:bg-muted",
         link: "text-accent underline-offset-4 hover:underline",
         trophy: "bg-trophy text-trophy-foreground hover:bg-trophy-dark",
-        furniture: "bg-furniture text-white hover:bg-furniture-dark",
-        artwork: "bg-artwork text-white hover:bg-artwork-dark",
       },
       size: {
         default: "h-11 px-5 py-2",

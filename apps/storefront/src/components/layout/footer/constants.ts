@@ -3,7 +3,7 @@
 export const FOOTER_HEADLINE = "Begin with a single piece."
 
 export const FOOTER_BODY =
-  "A trophy for Friday's ceremony, or a table you will still own in 2050. Both start the same way."
+  "A trophy for Friday's ceremony, or a hundred for the annual awards. Both start the same way."
 
 export const FOOTER_CTA_LABEL = "Shop the collection"
 export const FOOTER_CTA_HREF = "/shop"
@@ -15,8 +15,7 @@ export const FOOTER_NAV = [
       { label: "Collection", href: "/shop" },
       { label: "New Arrivals", href: "/shop?sort=newest" },
       { label: "Trophies", href: "/trophies" },
-      { label: "Furniture", href: "/furniture" },
-      { label: "Artwork", href: "/artwork" },
+      { label: "Corporate awards", href: "/corporate" },
       { label: "Design studio", href: "/customize" },
     ],
   },
@@ -51,32 +50,21 @@ export const FOOTER_NAV = [
 ] as const
 
 /**
- * Transparent cutouts on the footer orbit, in ring order: the sculpture and
- * award pieces that make up the current collection, cut from the studio
- * photography. Five cards keep the ring readable at footer width.
+ * Transparent cutouts on the footer orbit, in ring order: the award pieces
+ * that make up the current collection, cut from the studio photography. The
+ * two trophy cutouts alternate until more trophy photography lands; four
+ * cards keep the ring readable at footer width.
  */
-export const FOOTER_ORBIT = [
-  {
-    src: "/images/footer/orbit-loop-sculpture.webp",
-    alt: "Verdigris bronze loop sculpture",
-  },
-  {
-    src: "/images/footer/orbit-statuette.webp",
-    alt: "Gilded figure statuette on a black marble plinth",
-  },
-  {
-    src: "/images/footer/orbit-sunburst-sculpture.webp",
-    alt: "Bronze sunburst disc on a marble base",
-  },
-  {
-    src: "/images/footer/orbit-rings-sculpture.webp",
-    alt: "Interlocking gilt-bronze rings on a marble foot",
-  },
-  {
-    src: "/images/footer/orbit-fluted-sculpture.webp",
-    alt: "Fluted bronze oval ring",
-  },
-] as const
+const STATUETTE = {
+  src: "/images/footer/orbit-statuette.webp",
+  alt: "Gilded figure statuette on a black marble plinth",
+} as const
+const FIGURE = {
+  src: "/images/footer/orbit-figure-award.webp",
+  alt: "Gilt figure award on an octagonal mahogany base",
+} as const
+
+export const FOOTER_ORBIT = [STATUETTE, FIGURE, STATUETTE, FIGURE] as const
 
 /** Seconds for one revolution of the footer orbit. */
 export const FOOTER_ORBIT_PERIOD = 36

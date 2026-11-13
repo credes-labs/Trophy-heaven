@@ -19,19 +19,15 @@ export type NavCategory = {
 
 const DEFAULT_DEPARTMENTS: SiteNavChild[] = [
   { label: "Trophies", href: "/trophies" },
-  { label: "Furniture", href: "/furniture" },
-  { label: "Artwork", href: "/artwork" },
 ]
 
 export const CATALOG_CHILDREN: SiteNavChild[] = [
-  { label: "Chairs", href: "/shop?category=furniture&sub=chairs" },
-  { label: "Tables", href: "/shop?category=furniture&sub=tables" },
-  { label: "Shelves", href: "/shop?category=furniture&sub=shelves" },
-  { label: "Cabinets", href: "/shop?category=furniture&sub=cabinets" },
-  { label: "Stools", href: "/shop?category=furniture&sub=stools" },
   { label: "Trophies", href: "/trophies" },
-  { label: "Furniture", href: "/furniture" },
-  { label: "Artwork", href: "/artwork" },
+  { label: "Crystal", href: "/trophies?sub=Crystal" },
+  { label: "Metal", href: "/trophies?sub=Metal" },
+  { label: "Acrylic", href: "/trophies?sub=Acrylic" },
+  { label: "Corporate awards", href: "/trophies?sub=Corporate" },
+  { label: "Sports", href: "/trophies?sub=Sports" },
   { label: "Design studio", href: "/customize" },
 ]
 

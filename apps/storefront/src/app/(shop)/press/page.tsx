@@ -6,7 +6,7 @@ import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
 
 export const metadata: Metadata = {
   title: "Press",
-  description: "Press and media resources for Legacy Crafts — brand assets and workshop notes.",
+  description: "Press and media resources for Trophy Heaven — brand assets and workshop notes.",
   alternates: { canonical: "/press" },
 }
 
@@ -20,7 +20,7 @@ export default function PressPage() {
         body="Brand assets, workshop notes, and contact for coverage."
         illustration
       >
-        <EditorialCtaLink href="mailto:press@legacycrafts.com">Email press</EditorialCtaLink>
+        <EditorialCtaLink href="mailto:press@trophyheaven.com">Email press</EditorialCtaLink>
       </SimplePageHero>
       <EditorialFrame>
         <ul className="m-0 grid list-none gap-[1.5em] p-0 lg:grid-cols-2">

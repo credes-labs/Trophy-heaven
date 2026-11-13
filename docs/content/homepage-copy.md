@@ -1,6 +1,6 @@
 # Homepage & sitemap copy deck
 
-Legacy Crafts — three disciplines, India-first, INR. Voice: calm, material-led, editorial.
+Trophy Heaven — three disciplines, India-first, INR. Voice: calm, material-led, editorial.
 Source of facts: `apps/storefront/src/lib/brand-facts.ts`.
 
 ## Announcement bar
@@ -19,18 +19,18 @@ Source of facts: `apps/storefront/src/lib/brand-facts.ts`.
 
 ## 1. Hero
 
-- Eyebrow: `//trophies · furniture · artwork`
+- Eyebrow: `//trophies · awards · plaques`
 - H1: Crafted with intention. Built to last.
-- Body: Legacy Crafts is a Bengaluru atelier that makes three things well — trophies that mark a moment, furniture that outlives a trend, and artwork that quiets a room.
+- Body: Trophy Heaven is a Bengaluru trophy atelier — crystal, metal, and hardwood awards made to mark a moment and engraved to the name.
 - CTAs: Design a trophy → `/customize` · Browse the collection → `/shop`
 
 ## 2. Three disciplines
 
-- Eyebrow: `//three disciplines`
-- Headline: One workshop, three crafts.
-- Trophies (`#8A2D25`): Awards that hold their weight. / Optical crystal, cast brass, and acrylic honours — engraved to the name, dated to the day. → `/trophies`
-- Furniture (`#191D26`): Furniture that earns its place. / Kiln-dried teak, solid walnut, hand-rubbed oil. Built for decades of use, not seasons of trend. → `/furniture`
-- Artwork (`#4F3516`): Artwork, chosen slowly. / Handwoven textiles, cast brass, and wall pieces that reward a second look. → `/artwork`
+- Eyebrow: `//three collections`
+- Headline: One workshop, every kind of honour.
+- Crystal (`#8A2D25`): Light, cut into form. / Optical crystal faceted and polished until the engraving seems to float inside it. → `/trophies?sub=Crystal`
+- Metal: Awards that hold their weight. / Cast brass and gilt figures on hardwood plinths — engraved to the name, dated to the day. → `/trophies?sub=Metal`
+- Acrylic: Clear, bold, built for teams. / Precision-cut acrylic honours for leagues, schools, and corporate programmes at volume. → `/trophies?sub=Acrylic`
 
 ## 3. Design studio
 
@@ -67,7 +67,7 @@ Source of facts: `apps/storefront/src/lib/brand-facts.ts`.
 
 - Eyebrow: `//the atelier`
 - Headline: A workshop that keeps its own time.
-- Body 1: Legacy Crafts began in a Bengaluru workshop with a simple preference: do fewer things, and do them until they are right. Trophies, furniture, artwork — three disciplines sharing one bench and one unhurried standard.
+- Body 1: Trophy Heaven began in a Bengaluru workshop with a simple preference: do fewer things, and do them until they are right. One discipline — trophies — and one unhurried standard for every award that leaves the bench.
 - Body 2: We name our materials because they matter. Kiln-dried teak and solid walnut. Cast brass and optical crystal. Hand-rubbed oil instead of spray lacquer.
 - CTA: More about us → `/about`
 - Film title: From Concept to Ceremony
@@ -119,7 +119,7 @@ Source of facts: `apps/storefront/src/lib/brand-facts.ts`.
 ## 14. Explore (retained, rewritten)
 
 - Headline: Explore the collection
-- Body: Trophies, furniture, and artwork from the same Bengaluru workshop. Filter by discipline, price, and finish.
+- Body: Figure awards, statuettes, and engraved plaques from one Bengaluru workshop. Filter by collection, price, and finish.
 
 ---
 
@@ -131,7 +131,7 @@ Source of facts: `apps/storefront/src/lib/brand-facts.ts`.
 | `/corporate/quote` | `//organisations` | Tell us the brief. | Quantity, occasion, delivery cities — we reply with a single proof and quote. |
 | `/track` | `//orders` | Track your order. | Enter your order number and email to see where it is. |
 | `/returns` | `//returns` | Start a return. | Within the returns window, request an RMA and we will guide the rest. |
-| `/gift-cards` | `//gifting` | Give a Legacy Crafts gift card. | Let someone choose the piece — trophy, furniture, or artwork. |
+| `/gift-cards` | `//gifting` | Give a Trophy Heaven gift card. | Let someone choose the piece — a trophy, an award, or an engraved plaque. |
 | `/press` | `//press` | Press & media. | Brand assets, workshop notes, and contact for coverage. |
 | `/careers` | `//careers` | Work at the bench. | Open roles across craft, design, and operations in Bengaluru. |
 | `/trade` | `//trade` | For designers & architects. | Trade pricing, samples, and dedicated procurement for interiors projects. |

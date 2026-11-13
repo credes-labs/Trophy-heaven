@@ -1,4 +1,4 @@
-# Legacy Crafts local development stack.
+# Trophy Heaven local development stack.
 #
 # Default (backing services only — matches host-service path on this VM):
 #   docker compose up -d
@@ -12,25 +12,25 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: legacy-crafts-postgres
+    container_name: trophy-heaven-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: medusa
       POSTGRES_PASSWORD: medusa
-      POSTGRES_DB: legacy_crafts
+      POSTGRES_DB: trophy_heaven
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U medusa -d legacy_crafts"]
+      test: ["CMD-SHELL", "pg_isready -U medusa -d trophy_heaven"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   redis:
     image: redis:7-alpine
-    container_name: legacy-crafts-redis
+    container_name: trophy-heaven-redis
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     ports:
@@ -45,7 +45,7 @@ services:
 
   meilisearch:
     image: getmeili/meilisearch:v1.11
-    container_name: legacy-crafts-meilisearch
+    container_name: trophy-heaven-meilisearch
     restart: unless-stopped
     environment:
       MEILI_MASTER_KEY: masterKey_dev_only_change_me
@@ -66,10 +66,10 @@ services:
     build:
       context: .
       dockerfile: apps/medusa/Dockerfile
-    container_name: legacy-crafts-medusa-init
+    container_name: trophy-heaven-medusa-init
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgres://medusa:medusa@postgres:5432/legacy_crafts
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/trophy_heaven
       REDIS_URL: redis://redis:6379
       MEDUSA_BACKEND_URL: http://medusa:9000
       JWT_SECRET: supersecret_dev_jwt
@@ -93,11 +93,11 @@ services:
     build:
       context: .
       dockerfile: apps/medusa/Dockerfile
-    container_name: legacy-crafts-medusa
+    container_name: trophy-heaven-medusa
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgres://medusa:medusa@postgres:5432/legacy_crafts
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/trophy_heaven
       REDIS_URL: redis://redis:6379
       MEDUSA_BACKEND_URL: http://localhost:9000
       JWT_SECRET: supersecret_dev_jwt
@@ -128,7 +128,7 @@ services:
         NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000
         NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-}
         NEXT_PUBLIC_BASE_URL: http://localhost:3000
-    container_name: legacy-crafts-storefront
+    container_name: trophy-heaven-storefront
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000

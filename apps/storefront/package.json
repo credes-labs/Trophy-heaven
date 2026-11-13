@@ -1,12 +1,12 @@
 {
-  "name": "@legacy-crafts/storefront",
+  "name": "@trophy-heaven/storefront",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Legacy Crafts storefront — Next.js 16 App Router with RSC catalog, cart/checkout, and the 2D/3D customization engine.",
+  "description": "Trophy Heaven storefront — Next.js 16 App Router with RSC catalog, cart/checkout, and the 2D/3D customization engine.",
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "pnpm --filter @legacy-crafts/schemas build && next build",
+    "build": "pnpm --filter @trophy-heaven/schemas build && next build",
     "start": "next start -p 3000",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
@@ -15,7 +15,7 @@
     "images:webp": "node scripts/images-to-webp.mjs"
   },
   "dependencies": {
-    "@legacy-crafts/schemas": "workspace:*",
+    "@trophy-heaven/schemas": "workspace:*",
     "@medusajs/js-sdk": "2.18.0",
     "@medusajs/types": "2.18.0",
     "@react-three/drei": "^10.7.8",

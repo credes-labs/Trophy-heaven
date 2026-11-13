@@ -3,7 +3,7 @@ import type { MedusaRequest, MedusaResponse, MedusaNextFunction } from "@medusaj
 
 /**
  * RBAC roles per FR-AUTH-3 / docs/kit/03 §3.7. Missing role is deny, not admin.
- * Medusa dashboard users (`actor_type: "user"`) without an explicit LC role
+ * Medusa dashboard users (`actor_type: "user"`) without an explicit TH role
  * are treated as admin so the stock admin JWT keeps working.
  */
 export type StaffRole = "admin" | "designer" | "production_manager"

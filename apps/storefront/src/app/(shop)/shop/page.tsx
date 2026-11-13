@@ -17,9 +17,9 @@ import { cheapestPricedVariant } from "@/lib/product-filters"
 export const revalidate = 300
 
 export const metadata: Metadata = {
-  title: "Shop All Products — Legacy Crafts",
+  title: "Shop All Products — Trophy Heaven",
   description:
-    "Browse our collection of handcrafted trophies, artisan furniture, and curated artwork.",
+    "Browse our collection of handcrafted trophies, awards, and engraved plaques.",
   alternates: { canonical: "/shop" },
 }
 

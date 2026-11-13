@@ -2,11 +2,11 @@
 
 ## 1.1 Vision
 
-Legacy Crafts is a premium, mobile-first e-commerce platform for **custom trophies, furniture, and home decor**. Its defining capability is an in-browser **trophy customization engine** offering both a **2D canvas editor** and a **3D real-time simulator**, so a buyer designs and previews their exact trophy before paying. Everything else — catalog, cart, checkout, orders — exists to support high-intent, customization-led purchases and bulk/corporate awards programs.
+Trophy Heaven is a premium, mobile-first e-commerce platform for **custom trophies and awards**. Its defining capability is an in-browser **trophy customization engine** offering both a **2D canvas editor** and a **3D real-time simulator**, so a buyer designs and previews their exact trophy before paying. Everything else — catalog, cart, checkout, orders — exists to support high-intent, customization-led purchases and bulk/corporate awards programs.
 
 ## 1.2 The differentiator
 
-Most trophy sellers show a static photo and collect engraving text in a free-text box. Legacy Crafts lets the customer:
+Most trophy sellers show a static photo and collect engraving text in a free-text box. Trophy Heaven lets the customer:
 
 - Pick a base shape, size, material, and finish.
 - Add engraving text (fonts, effects, arch/curve) and upload a logo.
@@ -24,8 +24,8 @@ The core workflows — 2D/3D simulation, design approval pipeline, production qu
 | Tier | Users | Primary need |
 |------|-------|--------------|
 | Primary | Event organizers, sports clubs, corporate HR, academic institutions | Bulk award orders with per-recipient engraving, predictable delivery, invoicing/PO. |
-| Secondary | Individual consumers | Home decor and furniture; occasional single custom trophy/gift. |
-| Tertiary | Interior designers, corporate procurement | Curated furniture/decor, "shop the room," repeat/net-terms purchasing. |
+| Secondary | Individual consumers | Single custom trophies, plaques, and gifts for personal milestones. |
+| Tertiary | Event organisers, corporate procurement | Recurring awards programmes, repeat/net-terms purchasing. |
 
 ## 1.5 Scope posture
 

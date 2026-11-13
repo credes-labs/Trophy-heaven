@@ -25,7 +25,7 @@ export const BlogPost = model.define("blog_post", {
   excerpt: model.text().nullable(),      // 160 chars for SEO description
   content_md: model.text(),              // Markdown body
   cover_image_url: model.text().nullable(),
-  author_name: model.text().default("Legacy Crafts"),
+  author_name: model.text().default("Trophy Heaven"),
   author_avatar_url: model.text().nullable(),
   category_id: model.text().nullable(),
   tags: model.json().default([]),        // string[]

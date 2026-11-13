@@ -11,15 +11,15 @@ const STOREFRONT_URL = process.env.STOREFRONT_URL ?? "http://localhost:3000"
 const COVER_BY_CATEGORY: Record<string, string> = {
   craftsmanship: `${STOREFRONT_URL}/images/blog/blog-craftsmanship.webp`,
   materials: `${STOREFRONT_URL}/images/blog/blog-materials.webp`,
-  design: `${STOREFRONT_URL}/images/blog/blog-design.webp`,
-  stories: `${STOREFRONT_URL}/images/blog/blog-design.webp`,
+  design: `${STOREFRONT_URL}/images/catalog/trophy-figure-award.webp`,
+  stories: `${STOREFRONT_URL}/images/catalog/trophy-achievement-statuette.webp`,
 }
 
 const CATEGORIES = [
   {
     name: "Craftsmanship",
     slug: "craftsmanship",
-    description: "Behind the scenes of how Legacy Crafts pieces are made.",
+    description: "Behind the scenes of how Trophy Heaven pieces are made.",
   },
   {
     name: "Materials",
@@ -64,7 +64,7 @@ Machine sanding gets us close. The last three grits — and the oil — are done
 
 ## What you notice
 
-A Legacy Crafts wooden base should feel settled in the hand: balanced weight, soft edges, and a finish that deepens rather than peels.`,
+A Trophy Heaven wooden base should feel settled in the hand: balanced weight, soft edges, and a finish that deepens rather than peels.`,
   },
   {
     title: "Choosing Metal for Awards That Last",
@@ -173,7 +173,7 @@ export default async function seedContent({ container }: ExecArgs) {
   const reviews = container.resolve<ReviewsService>(REVIEWS)
   const productModule = container.resolve(Modules.PRODUCT)
 
-  logger.info("Seeding Legacy Crafts content (blog + reviews)…")
+  logger.info("Seeding Trophy Heaven content (blog + reviews)…")
 
   const categoryBySlug = new Map<string, string>()
   for (const cat of CATEGORIES) {
@@ -193,10 +193,12 @@ export default async function seedContent({ container }: ExecArgs) {
     if (existing.length) {
       // Backfill imagery/SEO for posts created by earlier seed runs.
       const current = existing[0]
-      if (!current.cover_image_url || !current.seo_title || !current.published_at) {
+      // blog-design.webp (an oak-furniture interior) was retired with the rebrand.
+      const retiredCover = Boolean(current.cover_image_url?.includes("/blog-design."))
+      if (retiredCover || !current.cover_image_url || !current.seo_title || !current.published_at) {
         await blog.updateBlogPosts({
           id: current.id,
-          cover_image_url: current.cover_image_url ?? coverImageUrl,
+          cover_image_url: retiredCover ? coverImageUrl : (current.cover_image_url ?? coverImageUrl),
           seo_title: current.seo_title ?? post.title,
           seo_description: current.seo_description ?? post.excerpt,
           published_at: current.published_at ?? new Date(),

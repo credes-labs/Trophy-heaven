@@ -61,7 +61,7 @@ export async function createShipment(input: ShipmentInput, logger?: Logger): Pro
 
 function fallbackTracking(orderId: string): string {
   const suffix = orderId.replace(/[^a-zA-Z0-9]/g, "").slice(-8).toUpperCase()
-  return `LC${suffix}${Math.floor(Math.random() * 1000)
+  return `TH${suffix}${Math.floor(Math.random() * 1000)
     .toString()
     .padStart(3, "0")}`
 }

@@ -12,6 +12,6 @@ describe("siteNavLinks", () => {
 describe("collectionChildren", () => {
   it("falls back to department links without categories", () => {
     const children = collectionChildren()
-    expect(children.map((child) => child.label)).toContain("Furniture")
+    expect(children.map((child) => child.label)).toContain("Trophies")
   })
 })

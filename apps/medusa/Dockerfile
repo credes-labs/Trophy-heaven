@@ -1,6 +1,6 @@
-# Medusa v2.18 backend image for Legacy Crafts.
+# Medusa v2.18 backend image for Trophy Heaven.
 # Build from the monorepo root:
-#   docker build -f apps/medusa/Dockerfile -t legacy-crafts-medusa .
+#   docker build -f apps/medusa/Dockerfile -t trophy-heaven-medusa .
 FROM node:24-bookworm-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -13,15 +13,15 @@ COPY packages/config/package.json packages/config/
 COPY packages/observability/package.json packages/observability/
 COPY packages/schemas/package.json packages/schemas/
 COPY apps/medusa/package.json apps/medusa/
-RUN pnpm install --frozen-lockfile --filter @legacy-crafts/medusa...
+RUN pnpm install --frozen-lockfile --filter @trophy-heaven/medusa...
 
 FROM base AS build
 COPY --from=deps /app /app
 COPY packages ./packages
 COPY apps/medusa ./apps/medusa
 COPY tsconfig.json ./
-RUN pnpm --filter @legacy-crafts/schemas build \
- && pnpm --filter @legacy-crafts/medusa build
+RUN pnpm --filter @trophy-heaven/schemas build \
+ && pnpm --filter @trophy-heaven/medusa build
 
 FROM base AS runtime
 ENV NODE_ENV=production

@@ -143,7 +143,7 @@ export default function CheckoutPage() {
           key: RAZORPAY_KEY,
           amount: amountPaise,
           currency: (currency || "INR").toUpperCase(),
-          name: "Legacy Crafts",
+          name: "Trophy Heaven",
           description: `Order ${cartId}`,
           order_id: sessionData.orderId,
           prefill: {

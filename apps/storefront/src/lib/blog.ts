@@ -45,7 +45,6 @@ type ListPostsResult = {
 const JOURNAL_FALLBACK_COVERS = [
   "/images/blog/blog-craftsmanship.webp",
   "/images/blog/blog-materials.webp",
-  "/images/blog/blog-design.webp",
 ] as const
 
 const revalidate = { next: { revalidate: 120 } } as const

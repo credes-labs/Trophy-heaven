@@ -1,10 +1,10 @@
-export type MaterialKind = "walnut" | "brass" | "linen" | "teak" | "leather" | "jute"
+export type MaterialKind = "crystal" | "brass" | "walnut" | "marble" | "acrylic" | "gilt"
 
 export const MATERIALS: { kind: MaterialKind; name: string; body: string }[] = [
   {
-    kind: "walnut",
-    name: "Solid walnut",
-    body: "Quarter-sawn for stability. Grain matched across a single piece, never veneered.",
+    kind: "crystal",
+    name: "Optical crystal",
+    body: "Lead-free K9, cut and polished by hand. Engraving sits inside the light, not on top of it.",
   },
   {
     kind: "brass",
@@ -12,23 +12,23 @@ export const MATERIALS: { kind: MaterialKind; name: string; body: string }[] = [
     body: "Sand-cast and hand-buffed. It darkens with handling, which is the point.",
   },
   {
-    kind: "linen",
-    name: "Belgian linen",
-    body: "Washed flax, tightly woven. It softens with sitting and is rated to 50,000 rubs.",
+    kind: "walnut",
+    name: "Solid walnut",
+    body: "Quarter-sawn plinths, oiled by hand. Heavy enough that the award never tips.",
   },
   {
-    kind: "teak",
-    name: "Kiln-dried teak",
-    body: "Dried to ten percent moisture, so a Bengaluru monsoon does not move it.",
+    kind: "marble",
+    name: "Honed marble",
+    body: "Cut from the slab for statuette bases. No two veins run the same way.",
   },
   {
-    kind: "leather",
-    name: "Full-grain leather",
-    body: "Vegetable-tanned. It creases where you sit and nowhere else.",
+    kind: "acrylic",
+    name: "Cast acrylic",
+    body: "Ten-millimetre cast sheet, laser-cut and flame-polished for clear, bright edges.",
   },
   {
-    kind: "jute",
-    name: "Hand-loomed jute",
-    body: "Long-fibre jute, loomed by hand. Coarse at first, softer after the second monsoon.",
+    kind: "gilt",
+    name: "Gold leaf",
+    body: "Hand-laid on cast figures and stars, then sealed so it survives the ceremony and the decade after.",
   },
 ]

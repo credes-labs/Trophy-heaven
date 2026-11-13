@@ -5,14 +5,10 @@ import type { CategoryAccent } from "@/lib/category-config"
 
 const ACTIVE: Record<CategoryAccent, string> = {
   trophy: "bg-trophy text-trophy-foreground border-trophy",
-  furniture: "bg-furniture text-white border-furniture",
-  artwork: "bg-artwork text-white border-artwork",
 }
 
 const INACTIVE: Record<CategoryAccent, string> = {
   trophy: "border-trophy/40 text-trophy hover:bg-trophy/10",
-  furniture: "border-furniture/40 text-furniture hover:bg-furniture/10",
-  artwork: "border-artwork/40 text-artwork hover:bg-artwork/10",
 }
 
 export type SubcategoryNavProps = {

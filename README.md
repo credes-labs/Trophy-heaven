@@ -1,15 +1,15 @@
-# Legacy Crafts
+# Trophy Heaven
 
-Premium e-commerce for **custom trophies, artisanal furniture, and curated artwork** —
-"Furniture. Decor & More." A Next.js 16 storefront backed by Medusa v2, with Razorpay
-payments, an in-browser 2D/3D trophy customizer, corporate/bulk ordering, and a
-brand system derived directly from the Legacy Crafts identity deck.
+Premium e-commerce for **custom trophies and awards**. A Next.js 16 storefront backed
+by Medusa v2, with Razorpay payments, an in-browser 2D/3D trophy customizer, and
+corporate/bulk ordering. Forked from the Legacy Crafts codebase (trophies + furniture +
+artwork); the furniture and artwork lines were removed in WP-87 (see `docs/changes/`).
 
-- Brand: walnut/cream/champagne base, gold accents (`#B89E6B`), category accents —
-  **burgundy `#8A2D25` = trophies**, **midnight blue `#191D26` = furniture**,
-  **olive/brass = artwork**
+- Brand: walnut/cream/champagne base, gold accents (`#B89E6B`), burgundy `#8A2D25`
+  trophy accent. Logo: "T" monogram + "Trophy Heaven" wordmark — interim live-text
+  versions until the supplied logo and imagery land.
 - Type: Playfair Display (serif headlines) + Inter (body)
-- Live catalog seeded: 10 products, 6 blog posts, reviews, promotions (`WELCOME10`, `LEGACY500`)
+- Catalog seeded: 3 trophy products, 6 blog posts, reviews, promotions (`WELCOME10`, `HEAVEN500`)
 
 ## Stack
 
@@ -29,7 +29,7 @@ the design-system spec lives in [`.cursor/plans/`](.cursor/plans/00-master-plan.
 ## Monorepo layout
 
 ```
-legacy-crafts/
+trophy-heaven/
   apps/
     storefront/            # Next.js 16 App Router (port 3000)
     medusa/                # Medusa v2 backend + custom modules (port 9000)
@@ -53,7 +53,7 @@ Prereqs: **Node 24** (`.nvmrc`), **pnpm 10+**, **Docker**.
 pnpm install                                # 1. deps
 docker compose up -d                        # 2. Postgres/Redis/Meilisearch
 cp .env.example .env                        # 3. env (fill secrets; see below)
-pnpm --filter @legacy-crafts/schemas build  # 4. shared packages
+pnpm --filter @trophy-heaven/schemas build  # 4. shared packages
 make migrate                                # 5. DB migrations
 make seed                                   # 6. catalog + content + promotions
 pnpm dev                                    # 7. storefront :3000 + medusa :9000
@@ -78,7 +78,7 @@ Open http://localhost:3000 — seeded products, blog, reviews and promo codes ar
 |---------|------|
 | `pnpm dev` | run all apps in dev |
 | `pnpm build` / `pnpm typecheck` / `pnpm lint` / `pnpm test` | workspace-wide gates (all green) |
-| `pnpm --filter @legacy-crafts/storefront test:e2e` | Playwright smoke + axe a11y (needs dev servers) |
+| `pnpm --filter @trophy-heaven/storefront test:e2e` | Playwright smoke + axe a11y (needs dev servers) |
 | `make up` / `make migrate` / `make seed` / `make reindex` | services + data ops |
 
 ## Testing & quality gates

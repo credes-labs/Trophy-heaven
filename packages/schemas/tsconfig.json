@@ -1,5 +1,5 @@
 {
-  "extends": "@legacy-crafts/config/tsconfig.base.json",
+  "extends": "@trophy-heaven/config/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",

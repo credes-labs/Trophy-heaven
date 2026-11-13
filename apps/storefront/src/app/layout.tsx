@@ -38,14 +38,14 @@ const siteUrl = getSiteUrl()
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Legacy Crafts — Custom Trophies, Furniture & Home Decor",
-    template: "Legacy Crafts | %s",
+    default: "Trophy Heaven — Custom Trophies, Awards & Plaques",
+    template: "Trophy Heaven | %s",
   },
   description:
-    "Premium handcrafted trophies, bespoke furniture, and curated artwork. Designed and made in India with heritage craftsmanship.",
+    "Premium handcrafted trophies, awards, and engraved plaques. Designed and made in India with heritage craftsmanship.",
   openGraph: {
     type: "website",
-    siteName: "Legacy Crafts",
+    siteName: "Trophy Heaven",
     locale: "en_IN",
     images: [{ url: "/images/og/og-default.jpg", width: 1200, height: 630 }],
   },
@@ -58,11 +58,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Legacy Crafts",
+    name: "Trophy Heaven",
     url: baseUrl,
     logo: `${baseUrl}/icon.png`,
     description:
-      "Premium handcrafted trophies, bespoke furniture, and curated artwork. Designed and made in India with heritage craftsmanship.",
+      "Premium handcrafted trophies, awards, and engraved plaques. Designed and made in India with heritage craftsmanship.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Bangalore",
@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Legacy Crafts",
+    name: "Trophy Heaven",
     url: baseUrl,
     potentialAction: {
       "@type": "SearchAction",

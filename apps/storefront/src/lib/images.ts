@@ -14,28 +14,18 @@
 const WEBP_RECODED_PREFIXES = [
   "/images/products/",
   "/images/catalog/",
-  "/images/explore/",
   "/images/blog/",
   "/images/about/",
   "/images/footer/",
   "/images/hero/",
 ]
 
-/** Same photograph was stored twice; the explore copies were removed in WP-85. */
-const DEDUPED: Record<string, string> = {
-  "/images/explore/sierra-fabric.webp": "/images/catalog/seating-armchair.webp",
-  "/images/explore/oslo-leather.webp": "/images/catalog/seating-lounge.webp",
-  "/images/explore/aria-minimal.webp": "/images/catalog/storage-shelf.webp",
-  "/images/explore/nova-oak.webp": "/images/catalog/tables-coffee.webp",
-  "/images/explore/vertex-glass.webp": "/images/catalog/tables-side.webp",
-}
-
 function recodeToWebp(path: string): string {
   const [pathname, query = ""] = path.split(/(?=[?#])/, 2)
   if (!/\.(jpe?g|png)$/i.test(pathname)) return path
   if (!WEBP_RECODED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return path
   const webp = pathname.replace(/\.(jpe?g|png)$/i, ".webp")
-  return (DEDUPED[webp] ?? webp) + query
+  return webp + query
 }
 
 export function localizeImageUrl<T extends string | null | undefined>(url: T): T {

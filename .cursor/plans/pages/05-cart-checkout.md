@@ -209,7 +209,7 @@ sequenceDiagram
   key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
   amount: cart.total * 100, // paise
   currency: "INR",
-  name: "Legacy Crafts",
+  name: "Trophy Heaven",
   description: `Order #${cart.id}`,
   order_id: razorpayOrderId,
   prefill: { email, contact: phone, name },

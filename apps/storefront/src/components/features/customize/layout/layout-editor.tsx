@@ -13,7 +13,7 @@ import {
   type RefObject,
 } from "react"
 import type { Canvas as FabricCanvas, FabricObject, IText } from "fabric"
-import type { Material2D } from "@legacy-crafts/schemas"
+import type { Material2D } from "@trophy-heaven/schemas"
 import {
   Bold,
   ChevronLeft,

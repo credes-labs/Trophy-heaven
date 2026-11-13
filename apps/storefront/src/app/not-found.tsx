@@ -8,7 +8,7 @@ import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebro
 
 export default function NotFound() {
   useEffect(() => {
-    document.title = "Page not found | Legacy Crafts"
+    document.title = "Page not found | Trophy Heaven"
   }, [])
 
   return (

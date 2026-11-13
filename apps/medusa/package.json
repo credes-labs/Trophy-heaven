@@ -1,8 +1,8 @@
 {
-  "name": "@legacy-crafts/medusa",
+  "name": "@trophy-heaven/medusa",
   "version": "0.1.0",
   "private": true,
-  "description": "Legacy Crafts commerce backend — Medusa v2.18 with custom modules (trophy-customization, production-workflow, bulk-order, corporate-account).",
+  "description": "Trophy Heaven commerce backend — Medusa v2.18 with custom modules (trophy-customization, production-workflow, bulk-order, corporate-account).",
   "scripts": {
     "build": "medusa build",
     "dev": "medusa develop",
@@ -15,7 +15,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@legacy-crafts/schemas": "workspace:*",
+    "@trophy-heaven/schemas": "workspace:*",
     "@medusajs/admin-sdk": "2.18.0",
     "@medusajs/admin-shared": "2.18.0",
     "@medusajs/cli": "2.18.0",

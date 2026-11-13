@@ -6,7 +6,7 @@ import type DesignService from "../../../../../modules/trophy-customization/serv
 import { PreviewGenerationService } from "../../../../../modules/trophy-customization/preview-generation"
 import { validateDesignState } from "../../../../../lib/design-validation"
 import { getActorId } from "../../../../../lib/auth-context"
-import type { Design2DState } from "@legacy-crafts/schemas"
+import type { Design2DState } from "@trophy-heaven/schemas"
 import { isDesignOwner, ownerTokenFromRequest } from "../../../../../lib/design-ownership"
 
 const PreviewSchema = z.object({

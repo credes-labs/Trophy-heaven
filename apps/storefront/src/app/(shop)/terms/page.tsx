@@ -6,7 +6,7 @@ import { EditorialWatermark } from "@/components/layout/editorial/editorial-wate
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "Terms of service for shopping and using Legacy Crafts online.",
+  description: "Terms of service for shopping and using Trophy Heaven online.",
   alternates: { canonical: "/terms" },
 }
 
@@ -14,7 +14,7 @@ const SECTIONS = [
   {
     id: "agreement",
     title: "Agreement",
-    body: "These Terms govern your use of legacycrafts.com and any purchase from Legacy Crafts. By browsing or placing an order you agree to these Terms and to our Privacy Policy. The version posted at the time of your order applies to that order.",
+    body: "These Terms govern your use of trophyheaven.com and any purchase from Trophy Heaven. By browsing or placing an order you agree to these Terms and to our Privacy Policy. The version posted at the time of your order applies to that order.",
   },
   {
     id: "products",
@@ -44,12 +44,12 @@ const SECTIONS = [
   {
     id: "ip",
     title: "Intellectual property",
-    body: "Site content, product designs, photography, and branding are the property of Legacy Crafts or its licensors. Logos you supply remain yours; by submitting them you confirm you may use them and grant us a limited license to fulfill the order.",
+    body: "Site content, product designs, photography, and branding are the property of Trophy Heaven or its licensors. Logos you supply remain yours; by submitting them you confirm you may use them and grant us a limited license to fulfill the order.",
   },
   {
     id: "liability",
     title: "Limitation of liability",
-    body: "To the fullest extent permitted by law, Legacy Crafts is not liable for indirect or consequential damages. Aggregate liability for a claim related to an order is limited to the amount you paid for that order. Nothing excludes liability that cannot be excluded under the Consumer Protection Act, 2019.",
+    body: "To the fullest extent permitted by law, Trophy Heaven is not liable for indirect or consequential damages. Aggregate liability for a claim related to an order is limited to the amount you paid for that order. Nothing excludes liability that cannot be excluded under the Consumer Protection Act, 2019.",
   },
   {
     id: "law",

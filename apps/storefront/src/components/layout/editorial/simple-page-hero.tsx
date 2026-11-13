@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import ChairSheet from "@/components/features/account/chair-sheet"
+import TrophySheet from "@/components/features/account/trophy-sheet"
 import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
 import { EditorialFrame } from "@/components/layout/editorial/editorial-shell"
 import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
@@ -17,7 +17,7 @@ export function SimplePageHero({
   watermark?: string
   title: string
   body: string
-  /** Show the barrel-armchair technical sheet (as on the auth pages) on wide screens. */
+  /** Show the trophy-cup technical sheet (as on the auth pages) on wide screens. */
   illustration?: boolean
   children?: ReactNode
 }) {
@@ -44,7 +44,7 @@ export function SimplePageHero({
           </div>
           {illustration ? (
             <div className="hidden w-full xl:block">
-              <ChairSheet ink="#131111" paper="#F2F1EF" className="ml-auto w-full max-w-[44em]" />
+              <TrophySheet ink="#131111" paper="#F2F1EF" className="ml-auto w-full max-w-[44em]" />
             </div>
           ) : null}
         </div>

@@ -9,13 +9,13 @@ import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/ed
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
-  title: "The Legacy Journal",
+  title: "The Trophy Heaven Journal",
   description:
-    "Stories of craft, design, and material from the Legacy Crafts workshop — trophies, furniture, and Indian craftsmanship.",
+    "Stories of craft, design, and material from the Trophy Heaven workshop — trophies, awards, and Indian craftsmanship.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "The Legacy Journal",
-    description: "Stories of craft, design, and material from the Legacy Crafts workshop.",
+    title: "The Trophy Heaven Journal",
+    description: "Stories of craft, design, and material from the Trophy Heaven workshop.",
   },
 }
 

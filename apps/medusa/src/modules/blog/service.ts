@@ -88,7 +88,7 @@ class BlogService extends MedusaService({
       content_md: data.content_md,
       excerpt: data.excerpt ?? null,
       cover_image_url: data.cover_image_url ?? null,
-      author_name: data.author_name ?? "Legacy Crafts",
+      author_name: data.author_name ?? "Trophy Heaven",
       author_avatar_url: data.author_avatar_url ?? null,
       category_id: data.category_id ?? null,
       tags: (data.tags ?? []) as unknown as Record<string, unknown>,

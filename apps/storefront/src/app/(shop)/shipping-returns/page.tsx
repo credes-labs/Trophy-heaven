@@ -6,7 +6,7 @@ import { ShippingReturnsTabs } from "./shipping-returns-tabs"
 
 export const metadata: Metadata = {
   title: "Shipping & Returns",
-  description: "Shipping tiers across India and our returns policy for Legacy Crafts orders.",
+  description: "Shipping tiers across India and our returns policy for Trophy Heaven orders.",
   alternates: { canonical: "/shipping-returns" },
 }
 

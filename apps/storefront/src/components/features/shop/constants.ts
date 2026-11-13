@@ -10,10 +10,10 @@ export const SHOP_CLEAR_LABEL = "clear filters"
 
 export const SHOP_FEATURED_FALLBACK = [
   {
-    title: "Brass Nesting Tables",
-    href: "/products/brass-nesting-tables",
-    image: "/images/catalog/table-brass-nesting-1.webp",
-    alt: "Pair of brass pedestal nesting tables with tray tops",
+    title: "Ascent Figure Award",
+    href: "/products/ascent-figure-award",
+    image: "/images/catalog/trophy-figure-award.webp",
+    alt: "Gilt figure award rising through a ring on a mahogany base",
   },
   {
     title: "Achievement Statuette",
@@ -24,8 +24,8 @@ export const SHOP_FEATURED_FALLBACK = [
 ] as const
 
 export const SHOP_BANNER = {
-  src: "/images/catalog/table-marble-octagon.webp",
-  alt: "Octagonal marble coffee table on a brass base in an olive-grey room",
+  src: "/images/hero/hero-workshop.webp",
+  alt: "Craftsman workshop with warm wood and brass tools in low-key light",
 } as const
 
 export const SHOP_QUOTES = [
@@ -37,13 +37,13 @@ export const SHOP_QUOTES = [
   },
   {
     quote:
-      "Our walnut dining table arrived perfectly finished. It feels like an heirloom already — warm, solid, and beautifully made.",
+      "We ordered forty acrylic awards for our cricket league. Every name was spelled right, and they arrived two days before the final.",
     name: "Arjun Desai",
     location: "Bengaluru",
   },
   {
     quote:
-      "Legacy Crafts helped us source artwork for our office lobby. The curation was thoughtful and the pieces elevate the space.",
+      "Trophy Heaven handled our sales-kickoff awards end to end — proofs, GST invoice, and split delivery to three offices. Flawless.",
     name: "Sarah Chen",
     location: "Delhi",
   },

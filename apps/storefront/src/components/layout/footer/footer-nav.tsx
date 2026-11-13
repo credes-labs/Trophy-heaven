@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Image from "next/image"
 
 import { FOOTER_NAV } from "./constants"
 
@@ -38,17 +37,18 @@ export function FooterNav() {
       <div className="min-w-0 lg:mb-[1.75em] lg:flex-1">
         <Link
           href="/"
-          aria-label="Legacy home"
+          aria-label="Trophy Heaven home"
           className="block w-full max-w-[34rem] no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:max-w-none"
         >
-          <Image
-            src="/images/brand/footer-legacy-crafts.svg"
-            alt=""
+          {/* Interim live-text wordmark until the supplied logo files land. */}
+          <span
             aria-hidden
-            width={2545}
-            height={1043}
-            className="block h-auto w-full"
-          />
+            className="block font-serif text-[clamp(3.5rem,11vw,10rem)] leading-[0.9] font-semibold tracking-[-0.03em] text-[#131111]"
+          >
+            Trophy
+            <br />
+            Heaven
+          </span>
         </Link>
       </div>
 

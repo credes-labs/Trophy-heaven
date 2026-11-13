@@ -1,6 +1,6 @@
-# Legacy Crafts — Product PRD & Implementation Roadmap
+# Trophy Heaven — Product PRD & Implementation Roadmap
 
-> **Product:** Legacy Crafts — premium e-commerce for custom trophies, furniture, and home decor, with a real-time 2D/3D trophy customization engine.
+> **Product:** Trophy Heaven — premium e-commerce for custom trophies and awards, with a real-time 2D/3D trophy customization engine.
 > **Deliverable:** WHAT to build + HOW + WHY. No time estimates, sprints, or Gantt charts.
 > **Audience:** Engineering, product, and design teams implementing the platform (optimized for use as Cursor / AI-agent context).
 

@@ -1,18 +1,19 @@
 /**
- * ChairSheet
- * ----------
- * A 3 x 3 technical drawing sheet of one barrel armchair, as a single SVG.
+ * TrophySheet
+ * -----------
+ * A 3 x 3 technical drawing sheet of one lidded trophy cup, as a single SVG.
  * Row 1: front, side (left), rear
  * Row 2: top, bottom, side (right)
  * Row 3: three perspective views
  *
- * The chair is a small 3D model (a swept, tapering back band, a seat cushion, two rear
- * posts and two front legs, all in centimetres). Each view projects that model and
- * draws only the visible outlines, so the nine drawings always agree with each other.
- * Dimension lines use the model's real size: 75 wide, 85 deep, 73 high, 42 seat height.
+ * The trophy is a small 3D model (a stepped plinth, a turned stem with a knop,
+ * a flared bowl, a domed lid and two ear handles, all in centimetres). Each view
+ * projects that model and draws only the visible outlines, so the nine drawings
+ * always agree with each other. Dimension lines use the model's real size:
+ * 48 wide across the handles, 30 deep, 73 high, 37 to the foot of the bowl.
  *
- * Use:   <ChairSheet />
- *        <ChairSheet ink="#161514" paper="#f2f0ee" grid={false} className="w-full" />
+ * Use:   <TrophySheet />
+ *        <TrophySheet ink="#161514" paper="#f2f0ee" grid={false} className="w-full" />
  *
  *   ink    line and text colour
  *   paper  fill that hides lines behind other parts. Set it to your section background.
@@ -32,10 +33,11 @@ type Group = { id: string; layer: number; prims: Prim[]; details: Detail[] };
 type Cam = { yaw: number; pitch: number };
 
 const D2R = Math.PI / 180;
-const W_CM = 75;
-const D_CM = 85;
+const W_CM = 48;
+const D_CM = 30;
 const H_CM = 73;
-const SEAT_CM = 42;
+/** Height of the bowl's foot above the ground (the "S" dimension). */
+const SEAT_CM = 37;
 
 const CELL_W = 320;
 const CELL_H = 300;
@@ -45,185 +47,98 @@ const LW = 1.35; // outline width in px
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
-/* ---------- the chair ---------- */
+/* ---------- the trophy ---------- */
 
-const BAND = { half: 37.5, t: 11, Rc: 20, zEnd: 48 };
+/** Centre of the trophy's footprint on the floor plane. */
+const CZ = D_CM / 2;
 
-/** Centre line of the back band: left end, round the back, right end. */
-function makeBandPath() {
-  const cx = BAND.half - BAND.t / 2; // 32
-  const zb = BAND.t / 2; // 5.5
-  const zc = zb + BAND.Rc; // 25.5
-  const a = cx - BAND.Rc; // 12
-  const side = BAND.zEnd - zc;
-  const arc = (Math.PI / 2) * BAND.Rc;
-  type Pt = { x: number; z: number; tx: number; tz: number };
-  const segs: { len: number; at: (u: number) => Pt }[] = [
-    { len: side, at: (u) => ({ x: -cx, z: BAND.zEnd - u * side, tx: 0, tz: -1 }) },
-    {
-      len: arc,
-      at: (u) => {
-        const th = Math.PI + (u * Math.PI) / 2;
-        return {
-          x: -a + BAND.Rc * Math.cos(th),
-          z: zc + BAND.Rc * Math.sin(th),
-          tx: -Math.sin(th),
-          tz: Math.cos(th),
-        };
-      },
-    },
-    { len: 2 * a, at: (u) => ({ x: -a + u * 2 * a, z: zb, tx: 1, tz: 0 }) },
-    {
-      len: arc,
-      at: (u) => {
-        const th = 1.5 * Math.PI + (u * Math.PI) / 2;
-        return {
-          x: a + BAND.Rc * Math.cos(th),
-          z: zc + BAND.Rc * Math.sin(th),
-          tx: -Math.sin(th),
-          tz: Math.cos(th),
-        };
-      },
-    },
-    { len: side, at: (u) => ({ x: cx, z: zc + u * side, tx: 0, tz: 1 }) },
-  ];
-  const total = segs.reduce((n, s) => n + s.len, 0);
-  const at = (s: number): Pt => {
-    let rest = Math.min(Math.max(s, 0), total);
-    for (const seg of segs) {
-      if (rest <= seg.len) return seg.at(seg.len === 0 ? 0 : rest / seg.len);
-      rest -= seg.len;
-    }
-    return segs[segs.length - 1].at(1);
-  };
-  return { total, at };
+function circle(y: number, r: number, n = 24): V3[] {
+  return Array.from({ length: n }, (_, i) => {
+    const th = (i / n) * Math.PI * 2;
+    return [r * Math.cos(th), y, CZ + r * Math.sin(th)] as V3;
+  });
 }
 
-/** Band top and bottom heights; the arms slope down toward the front. */
-function bandTop(d: number) {
-  return H_CM - 11 * Math.pow(d, 1.7);
-}
-function bandBottom(d: number) {
-  return 44 + 3 * Math.pow(d, 1.7);
+/** A turned (lathe) section: two rings joined into one convex prim. */
+function frustum(y0: number, y1: number, r0: number, r1: number): Prim {
+  return { c: [0, 0, 0], s: [0, 0, 0], r: 0.4, pts: [...circle(y0, r0), ...circle(y1, r1)] };
 }
 
-function roundedRing(cx: number, cz: number, hw: number, hd: number, r: number, segs = 8) {
-  const out: { x: number; z: number; nx: number; nz: number }[] = [];
-  const corners: [number, number, number][] = [
-    [hw - r, hd - r, 0],
-    [-(hw - r), hd - r, 90],
-    [-(hw - r), -(hd - r), 180],
-    [hw - r, -(hd - r), 270],
-  ];
-  for (const [ox, oz, a0] of corners) {
-    for (let i = 0; i <= segs; i++) {
-      const th = (a0 + (90 * i) / segs) * D2R;
-      out.push({
-        x: cx + ox + r * Math.cos(th),
-        z: cz + oz + r * Math.sin(th),
-        nx: Math.cos(th),
-        nz: Math.sin(th),
-      });
-    }
-  }
-  return out;
+/** A visible engraved line running round the body at height y. */
+function band(y: number, r: number): Detail {
+  const n = 48
+  const pts = circle(y, r, n)
+  const normals = pts.map(([x, , z]) => [x / r, 0, (z - CZ) / r] as V3)
+  return { pts, normals, closed: true }
 }
 
-function buildChair(): Group[] {
+function buildTrophy(): Group[] {
   const groups: Group[] = [];
 
-  // back band: many thin slices swept along the path, drawn as one outline
-  const path = makeBandPath();
-  const N = 48;
-  const slices: Prim[] = [];
-  for (let i = 0; i < N; i++) {
-    // each slice is a quad whose corners follow the true top and bottom of the band
-    const rr = i === 0 || i === N - 1 ? 2.4 : 0.7; // rounded arm ends, softly rounded joins
-    const sA = i === 0 ? rr : (i / N) * path.total;
-    const sB = i === N - 1 ? path.total - rr : ((i + 1) / N) * path.total;
-    const pts: V3[] = [];
-    for (const sv of [sA, sB]) {
-      const p = path.at(sv);
-      const d = Math.abs(sv / path.total - 0.5) * 2;
-      const nx = p.tz;
-      const nz = -p.tx;
-      const rad = BAND.t / 2 - rr;
-      for (const k of [-1, 1])
-        for (const y of [bandBottom(d) + rr, bandTop(d) - rr])
-          pts.push([p.x + nx * rad * k, y, p.z + nz * rad * k]);
-    }
-    slices.push({ c: [0, 0, 0], s: [0, 0, 0], r: rr, pts });
-  }
-
-  const bandDetails: Detail[] = [];
-  const rim: V3[] = [];
-  const inner: V3[] = [];
-  const M = 120;
-  for (let i = 0; i <= M; i++) {
-    const s = (i / M) * path.total;
-    const p = path.at(s);
-    const d = Math.abs(i / M - 0.5) * 2;
-    const nx = p.tz;
-    const nz = -p.tx;
-    rim.push([p.x + (nx * BAND.t) / 2, bandTop(d), p.z + (nz * BAND.t) / 2]);
-    inner.push([p.x - (nx * BAND.t) / 2, bandTop(d), p.z - (nz * BAND.t) / 2]);
-  }
-  bandDetails.push({ pts: rim.concat(inner.slice().reverse()), closed: true, needsTop: true });
-
-  // the two arm ends are visible from the front
-  for (const sEnd of [0, path.total]) {
-    const p = path.at(sEnd);
-    const top = bandTop(1) - 2.4; // both arm ends sit at d = 1
-    const bot = bandBottom(1) + 2.4;
-    const nx = p.tz;
-    const hw = BAND.t / 2 - 2.4;
-    const cap: V3[] = [];
-    const corners: [number, number, number][] = [
-      [hw, top, 0],
-      [-hw, top, 90],
-      [-hw, bot, 180],
-      [hw, bot, 270],
-    ];
-    for (const [ox, oy, a0] of corners) {
-      for (let i = 0; i <= 5; i++) {
-        const th = (a0 + (90 * i) / 5) * D2R;
-        const radial = ox + 2.4 * Math.cos(th);
-        const yy = oy + 2.4 * Math.sin(th);
-        cap.push([p.x + nx * radial, yy, BAND.zEnd]);
-      }
-    }
-    bandDetails.push({ pts: cap, closed: true, faceNormal: [0, 0, 1] });
-  }
-  groups.push({ id: "band", layer: 3, prims: slices, details: bandDetails });
-
-  // seat cushion with a seam just below the top edge
-  const seat: Prim = { c: [0, 34, 45.5], s: [61, 16, 79], r: 6.5 };
-  const ring = roundedRing(0, 45.5, 30.5 - 1.38, 39.5 - 1.38, 6.5 - 1.38);
+  // stepped square plinth with an engraving plate on its front face
+  const plate: V3[] = [
+    [-9, 3.5, D_CM],
+    [9, 3.5, D_CM],
+    [9, 9, D_CM],
+    [-9, 9, D_CM],
+  ];
   groups.push({
-    id: "seat",
-    layer: 2,
-    prims: [seat],
-    details: [
-      {
-        pts: ring.map((q) => [q.x, 39.5, q.z] as V3),
-        normals: ring.map((q) => [q.nx * 0.79, 0.62, q.nz * 0.79] as V3),
-        closed: true,
-      },
+    id: "plinth",
+    layer: 1,
+    prims: [
+      { c: [0, 6, CZ], s: [30, 12, 30], r: 1.5 },
+      { c: [0, 14, CZ], s: [22, 4, 22], r: 1 },
     ],
+    details: [{ pts: plate, closed: true, faceNormal: [0, 0, 1] }],
   });
 
-  // rear posts and front legs, one group each so side views order correctly
+  // turned stem with a knop
+  groups.push({
+    id: "stem",
+    layer: 2,
+    prims: [
+      frustum(16, 27, 3.6, 2.2),
+      frustum(27, 30, 2.2, 4.6),
+      frustum(30, 33, 4.6, 2.2),
+      frustum(33, SEAT_CM, 2.2, 6.5),
+    ],
+    details: [],
+  });
+
+  // the cup: flared bowl, girdle band and lip
+  groups.push({
+    id: "bowl",
+    layer: 3,
+    prims: [
+      frustum(SEAT_CM, 45, 6.5, 12.5),
+      frustum(45, 58, 12.5, 15),
+      frustum(58, 64, 15, 15.5),
+    ],
+    details: [band(52, 14.1), band(58, 15)],
+  });
+
+  // domed lid and finial
+  groups.push({
+    id: "lid",
+    layer: 4,
+    prims: [
+      frustum(64, 67, 15.5, 8),
+      frustum(67, 70, 8, 2.4),
+      { c: [0, 71.5, CZ], s: [3.4, 3, 3.4], r: 1.5 },
+    ],
+    details: [],
+  });
+
+  // two ear handles: out from the lip, down, and back into the bowl
   for (const sx of [-1, 1]) {
     groups.push({
-      id: `post${sx}`,
-      layer: 1,
-      prims: [{ c: [sx * 33, 30, 9.5], s: [9, 60, 11], r: 2 }],
-      details: [],
-    });
-    groups.push({
-      id: `leg${sx}`,
-      layer: 4,
-      prims: [{ c: [sx * 33, 20, 62], s: [9, 40, 9], r: 2 }],
+      id: `handle${sx}`,
+      layer: 0,
+      prims: [
+        { c: [sx * 18.5, 61, CZ], s: [9, 2.6, 2.6], r: 1.2 },
+        { c: [sx * 22.6, 53.5, CZ], s: [2.6, 17.5, 2.6], r: 1.2 },
+        { c: [sx * 17.5, 46, CZ], s: [11, 2.6, 2.6], r: 1.2, yaw: 0 },
+      ],
       details: [],
     });
   }
@@ -432,7 +347,7 @@ function drawView(groups: Group[], v: ViewDef, col: number, row: number): string
 
 /** The whole sheet as SVG markup (style block + nine cells). */
 function buildSheet(): string {
-  const groups = buildChair();
+  const groups = buildTrophy();
   let out = `<style>
 .cs-ink polygon{fill:var(--cs-ink);stroke:var(--cs-ink);stroke-linejoin:round}
 .cs-paper polygon{fill:var(--cs-paper);stroke:var(--cs-paper);stroke-linejoin:round}
@@ -462,7 +377,7 @@ import type { CSSProperties } from "react";
 
 const MARKUP = buildSheet(); // built once; the sheet is static
 
-export default function ChairSheet({
+export default function TrophySheet({
   ink = "#0a0a0a",
   paper = "#f2f0ee",
   grid = true,
@@ -487,7 +402,7 @@ export default function ChairSheet({
     <svg
       viewBox={`0 0 ${SHEET_W} ${SHEET_H}`}
       role="img"
-      aria-label="Technical drawing sheet of a barrel armchair: front, side, rear, top, bottom and perspective views, 75 by 85 by 73 centimetres"
+      aria-label={`Technical drawing sheet of a lidded trophy cup: front, side, rear, top, bottom and perspective views, ${W_CM} by ${D_CM} by ${H_CM} centimetres`}
       className={className}
       style={vars}
       dangerouslySetInnerHTML={{ __html: MARKUP }}

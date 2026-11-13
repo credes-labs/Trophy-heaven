@@ -1,6 +1,6 @@
 {
-  "name": "legacy-crafts",
-  "install": "pnpm install && pnpm --filter @legacy-crafts/schemas build",
+  "name": "trophy-heaven",
+  "install": "pnpm install && pnpm --filter @trophy-heaven/schemas build",
   "start": "bash scripts/dev-up.sh",
   "terminals": [
     {

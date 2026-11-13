@@ -1,6 +1,6 @@
 # Runbooks
 
-Operational runbooks for the Legacy Crafts platform. See also
+Operational runbooks for the Trophy Heaven platform. See also
 [../deployment.md](../deployment.md) and [../architecture/erd.md](../architecture/erd.md).
 
 ## Local development
@@ -29,7 +29,7 @@ URLs after `make up`:
 | Admin | http://localhost:9000/app |
 | Meilisearch | http://localhost:7700 |
 
-Dev admin: `admin@legacycrafts.test` / `LegacyCrafts!Dev1`
+Dev admin: `admin@trophyheaven.test` / `TrophyHeaven!Dev1`
 
 Scripts: [`scripts/dev-up.sh`](../../scripts/dev-up.sh),
 [`scripts/dev-down.sh`](../../scripts/dev-down.sh),

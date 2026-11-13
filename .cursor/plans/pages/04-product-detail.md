@@ -200,13 +200,13 @@
   "image": ["url1", "url2"],
   "description": "...",
   "sku": "LC-FUR-TBL-001",
-  "brand": { "@type": "Brand", "name": "Legacy Crafts" },
+  "brand": { "@type": "Brand", "name": "Trophy Heaven" },
   "offers": {
     "@type": "Offer",
     "price": "12999",
     "priceCurrency": "INR",
     "availability": "InStock",
-    "seller": { "@type": "Organization", "name": "Legacy Crafts" }
+    "seller": { "@type": "Organization", "name": "Trophy Heaven" }
   },
   "aggregateRating": {
     "@type": "AggregateRating",

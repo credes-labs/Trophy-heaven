@@ -40,7 +40,7 @@ export function PWARegister() {
     >
       <div className="mx-auto flex w-full max-w-[90em] items-center gap-4 px-[clamp(1.25rem,2.78vw,2.5rem)] py-3">
         <p className="m-0 min-w-0 flex-1 font-outfit text-sm leading-snug tracking-[-0.01em] text-[#131111] sm:text-base">
-          Install Legacy Crafts for a faster, offline-ready experience.
+          Install Trophy Heaven for a faster, offline-ready experience.
         </p>
         <button
           type="button"

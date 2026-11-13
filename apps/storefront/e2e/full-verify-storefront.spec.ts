@@ -250,7 +250,7 @@ test.describe("full-verify storefront", () => {
     const shots: string[] = []
     try {
       await page.goto("/")
-      await expect(page).toHaveTitle(/Legacy Crafts/i)
+      await expect(page).toHaveTitle(/Trophy Heaven/i)
       shots.push(await shot(page, "01-home.png"))
       record("F01", "Home page", "PASS", shots)
     } catch (e) {
@@ -296,7 +296,7 @@ test.describe("full-verify storefront", () => {
 
   test("F03 — PDP multi-image gallery navigation", async ({ page }) => {
     const shots: string[] = []
-    const handles = ["oak-side-table", "brass-table-lamp"]
+    const handles = ["achievement-statuette", "ascent-figure-award"]
     let handle = handles[0]
     let imageCount = 0
 
@@ -355,8 +355,8 @@ test.describe("full-verify storefront", () => {
     const shots: string[] = []
     try {
       await clearCartStorage(page)
-      await page.goto("/products/oak-side-table")
-      await expect(page.getByRole("heading", { name: /oak side table/i })).toBeVisible({
+      await page.goto("/products/achievement-statuette")
+      await expect(page.getByRole("heading", { name: /achievement statuette/i })).toBeVisible({
         timeout: 20_000,
       })
 
@@ -448,7 +448,7 @@ test.describe("full-verify storefront", () => {
       shots.push(await shot(page, "06-after-logout.png"))
 
       await clearCartStorage(page)
-      await page.goto("/products/halo-walnut-shelf")
+      await page.goto("/products/ascent-figure-award")
       const atc = page.locator(".pdp-buy-row").getByRole("button", { name: /^add to cart$/i })
       if (await atc.isEnabled().catch(() => false)) {
         await atc.click()
@@ -501,7 +501,7 @@ test.describe("full-verify storefront", () => {
 
     try {
       await clearCartStorage(page)
-      await page.goto("/products/oak-side-table")
+      await page.goto("/products/achievement-statuette")
       const sizeM = page.getByRole("button", { name: /M \(8/i })
       if (await sizeM.isVisible().catch(() => false)) await sizeM.click()
       const atc = page.locator(".pdp-buy-row").getByRole("button", { name: /^add to cart$/i })
@@ -628,7 +628,7 @@ test.describe("full-verify storefront", () => {
       { slug: "/blog", name: "Blog", heading: /journal|blog|stories/i },
       { slug: "/contact", name: "Contact", heading: /contact|get in touch/i },
       { slug: "/faq", name: "FAQ", heading: /faq|questions/i },
-      { slug: "/about", name: "About", heading: /about|craft|legacy/i },
+      { slug: "/about", name: "About", heading: /about|craft|heaven/i },
       { slug: "/account/wishlist", name: "Wishlist", heading: /wishlist|sign in|login/i },
       { slug: "/shipping-returns", name: "Shipping & returns", heading: /shipping|returns|delivery/i },
     ]

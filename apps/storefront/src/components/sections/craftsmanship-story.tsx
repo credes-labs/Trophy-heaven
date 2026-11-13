@@ -35,8 +35,8 @@ export function CraftsmanshipStory() {
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-5 text-base text-muted-foreground">
             Since {BRAND.foundedYear}, {BRAND.name} has partnered with artisans across India to create
-            objects of lasting beauty — trophies that celebrate achievement, furniture that anchors
-            a home, and artwork that tells a story.
+            awards of lasting beauty — trophies that celebrate achievement and carry the story of
+            the moment they mark.
           </motion.p>
           <motion.p variants={fadeUp} className="mt-4 text-base text-muted-foreground">
             Every piece begins with intentional material selection and ends with meticulous
@@ -80,8 +80,8 @@ export function CraftsmanshipStory() {
           viewport={{ once: true, amount: 0.3 }}
         >
           <Image
-            src="/images/hero/hero-gallery.webp"
-            alt="Legacy Crafts gallery wall of handcrafted trophies, furniture, and artwork in warm light"
+            src="/images/catalog/trophy-figure-award.webp"
+            alt="Gilt figure award on an octagonal mahogany base in warm light"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover"

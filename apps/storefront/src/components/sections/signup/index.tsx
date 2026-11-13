@@ -84,7 +84,7 @@ export function SignupSection() {
       </div>
 
       <ul
-        aria-label="Why Legacy Crafts"
+        aria-label="Why Trophy Heaven"
         className="m-0 flex list-none flex-col justify-between gap-6 p-0 lg:w-[26em] lg:shrink-0 lg:gap-0 lg:py-[1.75em]"
       >
         {TRUST_POINTS.map((point) => (

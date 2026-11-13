@@ -1,4 +1,4 @@
-import type { Design2DState, Material2D } from "@legacy-crafts/schemas"
+import type { Design2DState, Material2D } from "@trophy-heaven/schemas"
 
 export const CANVAS_SIZE = 800
 

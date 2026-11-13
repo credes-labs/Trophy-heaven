@@ -255,7 +255,7 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": "'Legacy Crafts'",
+          "default": "'Trophy Heaven'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"

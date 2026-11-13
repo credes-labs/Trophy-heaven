@@ -59,7 +59,7 @@ export default function CartPage() {
         ) : empty ? (
           <>
             <p className="mt-[1.75em] max-w-[28em] font-outfit text-[0.9375em] leading-[1.55] font-light tracking-[-0.02em] text-pretty text-[#6B635C]">
-              Your cart is empty. Explore trophies, furniture, and artwork to find something you love.
+              Your cart is empty. Explore trophies and awards to find something worth presenting.
             </p>
             <Link
               href="/shop"

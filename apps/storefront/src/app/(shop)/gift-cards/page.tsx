@@ -5,7 +5,7 @@ import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
 
 export const metadata: Metadata = {
   title: "Gift Cards",
-  description: "Give a Legacy Crafts gift card — trophies, furniture, or artwork.",
+  description: "Give a Trophy Heaven gift card — for a trophy, an award, or an engraved plaque.",
   alternates: { canonical: "/gift-cards" },
 }
 
@@ -17,8 +17,8 @@ export default function GiftCardsPage() {
       <SimplePageHero
         eyebrow="Gifting"
         watermark="gift"
-        title="Give a Legacy Crafts gift card."
-        body="Let someone choose the piece — trophy, furniture, or artwork."
+        title="Give a Trophy Heaven gift card."
+        body="Let someone choose the piece — a trophy, an award, or an engraved plaque."
       >
         <EditorialCtaLink href="/contact">Enquire about gift cards</EditorialCtaLink>
       </SimplePageHero>

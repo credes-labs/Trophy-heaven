@@ -15,7 +15,7 @@
 ## B. Proposed repository / folder structure
 
 ```
-legacy-crafts/
+trophy-heaven/
   apps/
     storefront/                 # Next.js 16 App Router
       app/(shop|customize|account|admin)/

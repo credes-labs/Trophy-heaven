@@ -14,6 +14,6 @@ describe("facetValueLabel", () => {
   })
 
   it("leaves category names as indexed", () => {
-    expect(facetValueLabel("category", "Wall Art")).toBe("Wall Art")
+    expect(facetValueLabel("category", "Corporate Awards")).toBe("Corporate Awards")
   })
 })

@@ -7,23 +7,24 @@ import type { HttpTypes } from "@medusajs/types"
 import { ProductCard } from "@/components/features/catalog/product-card"
 import { buttonVariants } from "@/components/ui/button"
 import { TabsRoot, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CATEGORIES, type CategoryKey } from "@/lib/category-config"
+
 import { fadeUp, staggerContainer, staggerGrid } from "@/lib/animations"
 import { cn } from "@/lib/utils"
 
-type TabValue = "all" | CategoryKey
+/** "all" plus the seeded trophy subcategory handles. */
+type TabValue = "all" | "crystal" | "metal" | "acrylic" | "corporate"
 
 const TABS: { value: TabValue; label: string }[] = [
   { value: "all", label: "All" },
-  { value: "trophies", label: CATEGORIES.trophies.label },
-  { value: "furniture", label: CATEGORIES.furniture.label },
-  { value: "artwork", label: CATEGORIES.artwork.label },
+  { value: "crystal", label: "Crystal" },
+  { value: "metal", label: "Metal" },
+  { value: "acrylic", label: "Acrylic" },
+  { value: "corporate", label: "Corporate" },
 ]
 
-function matchesCategory(product: HttpTypes.StoreProduct, key: CategoryKey): boolean {
+function matchesCategory(product: HttpTypes.StoreProduct, key: Exclude<TabValue, "all">): boolean {
   const handles = (product.categories ?? []).map((c) => c.handle?.toLowerCase() ?? "")
-  const slug = CATEGORIES[key].slug
-  return handles.some((h) => h === slug || h.includes(slug))
+  return handles.some((h) => h === key)
 }
 
 export function FeaturedProducts({ products }: { products: HttpTypes.StoreProduct[] }) {

@@ -28,7 +28,7 @@ Set at least:
 
 | Variable | Example |
 |----------|---------|
-| `NEXT_PUBLIC_BASE_URL` | `https://legacy-crafts.vercel.app` |
+| `NEXT_PUBLIC_BASE_URL` | `https://trophy-heaven.vercel.app` |
 | `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | Public Medusa URL (required for catalog/cart) |
 | `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Store publishable key from Medusa |
 | `NEXT_PUBLIC_DEFAULT_REGION` | `in` |
@@ -39,9 +39,9 @@ When Medusa is live, add the Vercel origin to Medusa `STORE_CORS` and `AUTH_CORS
 ## Release steps
 
 1. `pnpm install --frozen-lockfile`
-2. `pnpm --filter @legacy-crafts/schemas build`
-3. Backend: `npx medusa db:migrate` then `pnpm --filter @legacy-crafts/medusa build`
-4. Storefront: `pnpm --filter @legacy-crafts/storefront build`
+2. `pnpm --filter @trophy-heaven/schemas build`
+3. Backend: `npx medusa db:migrate` then `pnpm --filter @trophy-heaven/medusa build`
+4. Storefront: `pnpm --filter @trophy-heaven/storefront build`
 5. Start: backend `medusa start`; storefront `next start`.
 6. Post-deploy: `POST /admin/search/reindex` to warm the search index.
 

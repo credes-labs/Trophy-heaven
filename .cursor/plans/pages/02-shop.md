@@ -155,7 +155,7 @@
 
 ## SEO
 
-- Title: "Shop All Products — Legacy Crafts"
+- Title: "Shop All Products — Trophy Heaven"
 - Description: "Browse our collection of handcrafted trophies, artisan furniture, and curated artwork..."
 - Canonical: `/shop`
 - JSON-LD: ItemList with first 10 products

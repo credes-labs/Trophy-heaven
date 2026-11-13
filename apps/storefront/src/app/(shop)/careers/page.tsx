@@ -5,7 +5,7 @@ import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
 
 export const metadata: Metadata = {
   title: "Careers",
-  description: "Work at Legacy Crafts in Bengaluru — craft, design, and operations roles.",
+  description: "Work at Trophy Heaven in Bengaluru — craft, design, and operations roles.",
   alternates: { canonical: "/careers" },
 }
 
@@ -34,7 +34,7 @@ export default function CareersPage() {
         body="Open roles across craft, design, and operations in Bengaluru."
         illustration
       >
-        <EditorialCtaLink href="mailto:careers@legacycrafts.com">Send a CV</EditorialCtaLink>
+        <EditorialCtaLink href="mailto:careers@trophyheaven.com">Send a CV</EditorialCtaLink>
       </SimplePageHero>
       <EditorialFrame>
         <ul className="m-0 grid list-none gap-[1.25em] p-0">

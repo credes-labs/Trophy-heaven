@@ -3,8 +3,8 @@
 set -euo pipefail
 
 BACKEND="${MEDUSA_BACKEND_URL:-http://127.0.0.1:9000}"
-EMAIL="${ADMIN_EMAIL:-admin@legacycrafts.test}"
-PASSWORD="${ADMIN_PASSWORD:-LegacyCrafts!Dev1}"
+EMAIL="${ADMIN_EMAIL:-admin@trophyheaven.test}"
+PASSWORD="${ADMIN_PASSWORD:-TrophyHeaven!Dev1}"
 
 echo "==> Logging in as $EMAIL"
 TOKEN="$(curl -sf -X POST "$BACKEND/auth/user/emailpass" \

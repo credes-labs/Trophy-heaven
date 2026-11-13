@@ -1,6 +1,6 @@
-# Next.js 16 storefront image for Legacy Crafts.
+# Next.js 16 storefront image for Trophy Heaven.
 # Build from the monorepo root:
-#   docker build -f apps/storefront/Dockerfile -t legacy-crafts-storefront .
+#   docker build -f apps/storefront/Dockerfile -t trophy-heaven-storefront .
 FROM node:24-bookworm-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -13,7 +13,7 @@ COPY packages/config/package.json packages/config/
 COPY packages/observability/package.json packages/observability/
 COPY packages/schemas/package.json packages/schemas/
 COPY apps/storefront/package.json apps/storefront/
-RUN pnpm install --frozen-lockfile --filter @legacy-crafts/storefront...
+RUN pnpm install --frozen-lockfile --filter @trophy-heaven/storefront...
 
 FROM base AS build
 ARG NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000
@@ -26,8 +26,8 @@ COPY --from=deps /app /app
 COPY packages ./packages
 COPY apps/storefront ./apps/storefront
 COPY tsconfig.json ./
-RUN pnpm --filter @legacy-crafts/schemas build \
- && pnpm --filter @legacy-crafts/storefront build
+RUN pnpm --filter @trophy-heaven/schemas build \
+ && pnpm --filter @trophy-heaven/storefront build
 
 FROM base AS runtime
 ENV NODE_ENV=production

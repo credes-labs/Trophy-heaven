@@ -150,7 +150,7 @@ Each is a variation of the same template with category-specific accent color, he
 
 ### Content Structure
 ```
-[Eyebrow]   — "WHY LEGACY CRAFTS" (uppercase, category accent)
+[Eyebrow]   — "WHY TROPHY HEAVEN" (uppercase, category accent)
 [Headline]  — "Crafted for\nGenerations" (serif, text-3xl)
 [Body]      — 2–3 paragraphs about process/materials
 [Feature List] — 3 bullet points with checkmarks
@@ -185,8 +185,8 @@ Each is a variation of the same template with category-specific accent color, he
 
 | Page | Title | JSON-LD |
 |------|-------|---------|
-| /trophies | "Custom Trophies & Awards — Legacy Crafts" | CollectionPage + ItemList |
-| /furniture | "Handcrafted Furniture — Legacy Crafts" | CollectionPage + ItemList |
-| /artwork | "Artwork & Home Decor — Legacy Crafts" | CollectionPage + ItemList |
+| /trophies | "Custom Trophies & Awards — Trophy Heaven" | CollectionPage + ItemList |
+| /furniture | "Handcrafted Furniture — Trophy Heaven" | CollectionPage + ItemList |
+| /artwork | "Artwork & Home Decor — Trophy Heaven" | CollectionPage + ItemList |
 
 Open Graph images: category hero image cropped to 1200x630.

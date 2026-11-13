@@ -70,7 +70,7 @@ export default async function BlogPostPage({ params }: Props) {
     image: post.cover_image_url ? [post.cover_image_url] : undefined,
     datePublished: post.published_at ?? undefined,
     author: { "@type": "Person", name: post.author_name },
-    publisher: { "@type": "Organization", name: "Legacy Crafts" },
+    publisher: { "@type": "Organization", name: "Trophy Heaven" },
     mainEntityOfPage: { "@type": "WebPage", "@id": `${BASE_URL}/blog/${slug}` },
   }
 
@@ -156,7 +156,7 @@ export default async function BlogPostPage({ params }: Props) {
                   {post.author_name}
                 </p>
                 <p className="mt-[0.5em] m-0 max-w-[32em] font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
-                  {post.author_name} writes for The Legacy Journal — stories of craft, material, and
+                  {post.author_name} writes for The Trophy Heaven Journal — stories of craft, material, and
                   design from the workshop.
                 </p>
               </div>

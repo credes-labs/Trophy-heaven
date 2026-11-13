@@ -1,4 +1,4 @@
-/* Legacy Crafts service worker (FR-PWA-2). App-shell + static caching with a
+/* Trophy Heaven service worker (FR-PWA-2). App-shell + static caching with a
  * network-first strategy for navigations so content stays fresh, falling back to
  * the cached shell offline. The cart lives in localStorage (see cart-store), so
  * it remains available offline without special handling here. */
@@ -64,7 +64,7 @@ self.addEventListener("push", (event) => {
       return {}
     }
   })()
-  const title = data.title || "Legacy Crafts"
+  const title = data.title || "Trophy Heaven"
   event.waitUntil(
     self.registration.showNotification(title, {
       body: data.body || "",

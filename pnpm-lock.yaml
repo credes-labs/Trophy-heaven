@@ -27,9 +27,6 @@ importers:
 
   apps/medusa:
     dependencies:
-      '@legacy-crafts/schemas':
-        specifier: workspace:*
-        version: link:../../packages/schemas
       '@medusajs/admin-sdk':
         specifier: 2.18.0
         version: 2.18.0
@@ -69,6 +66,9 @@ importers:
       '@mikro-orm/postgresql':
         specifier: 6.6.14
         version: 6.6.14(@mikro-orm/core@6.6.14)
+      '@trophy-heaven/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       awilix:
         specifier: ^8.0.1
         version: 8.0.1
@@ -131,9 +131,6 @@ importers:
 
   apps/storefront:
     dependencies:
-      '@legacy-crafts/schemas':
-        specifier: workspace:*
-        version: link:../../packages/schemas
       '@medusajs/js-sdk':
         specifier: 2.18.0
         version: 2.18.0
@@ -152,6 +149,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.101.0
         version: 5.101.4(react@19.2.8)
+      '@trophy-heaven/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -249,7 +249,7 @@ importers:
         specifier: ^9.5.0
         version: 9.14.0
     devDependencies:
-      '@legacy-crafts/config':
+      '@trophy-heaven/config':
         specifier: workspace:*
         version: link:../config
       '@types/node':
@@ -268,7 +268,7 @@ importers:
         specifier: ^3.23.8
         version: 3.25.76
     devDependencies:
-      '@legacy-crafts/config':
+      '@trophy-heaven/config':
         specifier: workspace:*
         version: link:../config
       typescript:

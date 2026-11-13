@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { Material2D } from "@legacy-crafts/schemas"
+import type { Material2D } from "@trophy-heaven/schemas"
 
 const MAX_HISTORY = 50
 

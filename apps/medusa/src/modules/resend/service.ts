@@ -33,13 +33,13 @@ class ResendNotificationService extends AbstractNotificationProviderService {
 
   private renderSubject(template: string): string {
     const map: Record<string, string> = {
-      "order-placed": "Your Legacy Crafts order is confirmed",
+      "order-placed": "Your Trophy Heaven order is confirmed",
       "production-status": "Update on your custom order",
       "design-approved": "Your design was approved",
       "design-rejected": "Changes requested on your design",
-      "corporate-invite": "You've been invited to a Legacy Crafts corporate account",
+      "corporate-invite": "You've been invited to a Trophy Heaven corporate account",
     }
-    return map[template] ?? "Legacy Crafts notification"
+    return map[template] ?? "Trophy Heaven notification"
   }
 
   async send(

@@ -1,4 +1,4 @@
-import { Design2DState, Design3DState, DesignStateJson } from "@legacy-crafts/schemas"
+import { Design2DState, Design3DState, DesignStateJson } from "@trophy-heaven/schemas"
 import type { z } from "zod"
 
 /**

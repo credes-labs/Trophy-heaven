@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react"
 
 import { FOOTER_ORBIT, FOOTER_ORBIT_PERIOD } from "./constants"
 
-const ORBIT_LABEL = `Pieces from the collection: ${FOOTER_ORBIT.map((item) => item.alt).join("; ")}`
+const ORBIT_LABEL = `Pieces from the collection: ${[...new Set(FOOTER_ORBIT.map((item) => item.alt))].join("; ")}`
 
 /**
- * Five cutouts revolving on a WebGL ring above the footer links. three.js loads
+ * Award cutouts revolving on a WebGL ring above the footer links. three.js loads
  * only when the footer nears the viewport; reduced motion and no-WebGL keep
  * the static row.
  */
@@ -77,8 +77,8 @@ export function FooterOrbit() {
         aria-hidden
         className={`absolute inset-0 m-0 flex list-none items-end justify-center gap-[2%] p-0 px-[4%] transition-opacity duration-500 ${ready ? "opacity-0" : "opacity-100"}`}
       >
-        {FOOTER_ORBIT.map((item) => (
-          <li key={item.src} className="relative h-[78%] max-w-[18%] flex-1">
+        {FOOTER_ORBIT.map((item, i) => (
+          <li key={`${item.src}-${i}`} className="relative h-[78%] max-w-[18%] flex-1">
             <Image
               src={item.src}
               alt=""

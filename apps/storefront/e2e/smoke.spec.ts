@@ -12,7 +12,7 @@ test.describe("storefront smoke", () => {
     // (transient opacity causes flaky color-contrast readings).
     await page.emulateMedia({ reducedMotion: "reduce" })
     await page.goto("/")
-    await expect(page).toHaveTitle(/Legacy Crafts/i)
+    await expect(page).toHaveTitle(/Trophy Heaven/i)
     // Trigger every scroll-reveal section, then let all motion settle —
     // axe otherwise measures elements mid-fade (partial opacity) and
     // reports spurious color-contrast violations.
@@ -64,10 +64,17 @@ test.describe("storefront smoke", () => {
   })
 
   test("category pages load with branded heroes", async ({ page }) => {
-    for (const slug of ["trophies", "furniture", "artwork"]) {
+    for (const slug of ["trophies"]) {
       await page.goto(`/${slug}`)
       await expect(page).toHaveURL(new RegExp(`/${slug}`))
       await expect(page.locator("main")).toBeVisible()
+    }
+  })
+
+  test("retired furniture and artwork routes redirect to trophies", async ({ page }) => {
+    for (const slug of ["furniture", "artwork"]) {
+      await page.goto(`/${slug}`)
+      await expect(page).toHaveURL(/\/trophies$/)
     }
   })
 

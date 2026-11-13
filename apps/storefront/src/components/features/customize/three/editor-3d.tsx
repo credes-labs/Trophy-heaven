@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import type { HttpTypes } from "@medusajs/types"
-import type { Material3D } from "@legacy-crafts/schemas"
+import type { Material3D } from "@trophy-heaven/schemas"
 import { Button } from "@/components/ui/button"
 import { Viewer3D } from "./viewer-3d"
 import { useCartStore } from "@/stores/cart-store"
@@ -19,7 +19,7 @@ import {
   material3DTo2D,
   type Editor3DValues,
 } from "@/lib/design-3d"
-import type { Design3DState } from "@legacy-crafts/schemas"
+import type { Design3DState } from "@trophy-heaven/schemas"
 import { cn } from "@/lib/utils"
 import { cheapestInStockVariant } from "@/lib/product-filters"
 import { cartLinePreviewUrl } from "@/lib/cart-line"

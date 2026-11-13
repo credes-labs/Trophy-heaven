@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 function orderLabel(order: HttpTypes.StoreOrder) {
-  return order.display_id != null ? `#LC-${order.display_id}` : order.id.slice(0, 12)
+  return order.display_id != null ? `#TH-${order.display_id}` : order.id.slice(0, 12)
 }
 
 function formatDate(value: string | Date) {
@@ -222,7 +222,7 @@ export function OrderConfirmedClient({ id }: { id: string }) {
 
       <div className="mt-8 flex justify-center border-t border-border pt-6">
         <ShareButtons
-          title={`My Legacy Crafts order ${label}`}
+          title={`My Trophy Heaven order ${label}`}
           slug=""
           path={`/order/confirmed/${order.id}`}
         />

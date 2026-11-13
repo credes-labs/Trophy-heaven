@@ -1,6 +1,6 @@
 /**
- * Shared flat ESLint config for the Legacy Crafts monorepo.
- * Consumed by apps/packages via `require("@legacy-crafts/config/eslint")`.
+ * Shared flat ESLint config for the Trophy Heaven monorepo.
+ * Consumed by apps/packages via `require("@trophy-heaven/config/eslint")`.
  */
 const tseslint = require("typescript-eslint")
 

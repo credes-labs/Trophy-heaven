@@ -12,8 +12,8 @@ const VALUES = [
   },
   {
     icon: Landmark,
-    title: "Legacy",
-    description: "Objects designed to be passed on through generations",
+    title: "Recognition",
+    description: "Awards designed to be kept, displayed, and passed on",
   },
   {
     icon: Crosshair,

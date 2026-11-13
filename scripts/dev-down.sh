@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stop the Legacy Crafts tmux-backed local stack (apps + Meilisearch).
+# Stop the Trophy Heaven tmux-backed local stack (apps + Meilisearch).
 # Postgres and Redis (host services) are left running.
 set -euo pipefail
 

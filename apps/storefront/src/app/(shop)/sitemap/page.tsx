@@ -5,7 +5,7 @@ import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/ed
 
 export const metadata: Metadata = {
   title: "Sitemap",
-  description: "A human index of Legacy Crafts — shop, journal, account, and support.",
+  description: "A human index of Trophy Heaven — shop, journal, account, and support.",
   alternates: { canonical: "/sitemap" },
 }
 
@@ -15,8 +15,6 @@ const GROUPS = [
     links: [
       { label: "Collection", href: "/shop" },
       { label: "Trophies", href: "/trophies" },
-      { label: "Furniture", href: "/furniture" },
-      { label: "Artwork", href: "/artwork" },
       { label: "Design studio", href: "/customize" },
       { label: "Search", href: "/search" },
       { label: "Gift cards", href: "/gift-cards" },

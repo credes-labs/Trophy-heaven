@@ -305,9 +305,7 @@ export function CategoryPageClient({
                   href={storyCtaHref ?? config.story.ctaHref}
                   className={cn(
                     "mt-6 inline-flex h-11 items-center justify-center rounded-md px-5 text-sm font-medium transition-colors",
-                    config.accent === "trophy" && "bg-trophy text-trophy-foreground hover:bg-trophy-dark",
-                    config.accent === "furniture" && "bg-furniture text-white hover:bg-furniture-dark",
-                    config.accent === "artwork" && "bg-artwork text-white hover:bg-artwork-dark"
+                    "bg-trophy text-trophy-foreground hover:bg-trophy-dark"
                   )}
                 >
                   {config.story.ctaLabel}

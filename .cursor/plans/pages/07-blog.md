@@ -103,7 +103,7 @@
 |---|-------|----------|---------|
 | 1 | "The Art of Trophy Making: From Raw Metal to Polished Award" | Craftsmanship | Process of creating crystal/metal trophies |
 | 2 | "Choosing the Right Wood: A Guide to Our Materials" | Materials | Oak, walnut, teak — properties and uses |
-| 3 | "5 Ways to Style Your Living Space with Handcrafted Decor" | Design | Interior styling tips with Legacy Crafts products |
+| 3 | "5 Ways to Style Your Living Space with Handcrafted Decor" | Design | Interior styling tips with Trophy Heaven products |
 | 4 | "Behind the Workshop: Meet Our Artisans" | Behind the Scenes | Profiles of craftsmen, their techniques |
 | 5 | "Corporate Gifting Made Personal: Bulk Customization Guide" | Design | How to use the bulk order system |
 | 6 | "The Legacy of Indian Craftsmanship: Past Meets Present" | Craftsmanship | Cultural heritage, modern interpretation |
@@ -136,7 +136,7 @@
 [Split Layout]:
   Left: Contact form (name, email, subject, message, submit)
   Right: Contact info + map
-    - Email: hello@legacycrafts.com
+    - Email: hello@trophyheaven.com
     - Phone: +91 80 1234 5678
     - Address: Bangalore, India
     - Hours: Mon-Sat, 10am-6pm IST
@@ -168,11 +168,11 @@ Returns:
 ### Per-Page Meta
 | Page | Title Pattern | JSON-LD |
 |------|--------------|---------|
-| /blog | "The Legacy Journal — Legacy Crafts" | Blog |
-| /blog/[slug] | "[Title] — Legacy Crafts Journal" | BlogPosting |
-| /about | "About Us — Legacy Crafts" | Organization |
-| /faq | "FAQ — Legacy Crafts" | FAQPage |
-| /contact | "Contact Us — Legacy Crafts" | LocalBusiness |
+| /blog | "The Legacy Journal — Trophy Heaven" | Blog |
+| /blog/[slug] | "[Title] — Trophy Heaven Journal" | BlogPosting |
+| /about | "About Us — Trophy Heaven" | Organization |
+| /faq | "FAQ — Trophy Heaven" | FAQPage |
+| /contact | "Contact Us — Trophy Heaven" | LocalBusiness |
 
 ### Sitemap Additions
 ```xml

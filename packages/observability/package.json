@@ -1,5 +1,5 @@
 {
-  "name": "@legacy-crafts/observability",
+  "name": "@trophy-heaven/observability",
   "version": "0.1.0",
   "private": true,
   "description": "Shared structured logging (Pino) + error tracking (Sentry) helpers (see docs/kit/03 §3.8, NFR-9).",
@@ -23,7 +23,7 @@
     "pino": "^9.5.0"
   },
   "devDependencies": {
-    "@legacy-crafts/config": "workspace:*",
+    "@trophy-heaven/config": "workspace:*",
     "@types/node": "^22.10.0",
     "typescript": "^5.9.2",
     "vitest": "^2.1.8"

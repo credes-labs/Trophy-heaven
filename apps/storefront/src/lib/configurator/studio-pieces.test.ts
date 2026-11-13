@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest"
-import { Design3DState } from "@legacy-crafts/schemas"
+import { Design3DState } from "@trophy-heaven/schemas"
 import {
   AWARD_SAFE_AREA,
   STUDIO_PIECES,

@@ -42,8 +42,8 @@ async function cartItemCount(page: Page): Promise<number> {
 }
 
 async function addFirstProductToCart(page: Page): Promise<void> {
-  await page.goto("/products/oak-side-table")
-  await expect(page.getByRole("heading", { name: /oak side table/i })).toBeVisible({
+  await page.goto("/products/achievement-statuette")
+  await expect(page.getByRole("heading", { name: /achievement statuette/i })).toBeVisible({
     timeout: 20_000,
   })
 

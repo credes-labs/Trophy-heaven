@@ -118,13 +118,13 @@ export default async function ProductPage({ params }: Props) {
     name: product.title,
     description: product.description ?? undefined,
     image: galleryImages.map((i) => i.url).filter(Boolean),
-    brand: { "@type": "Brand", name: "Legacy Crafts" },
+    brand: { "@type": "Brand", name: "Trophy Heaven" },
     offers: {
       "@type": "Offer",
       priceCurrency: price?.currency_code?.toUpperCase() ?? "INR",
       price: price?.calculated_amount ?? undefined,
       availability: "https://schema.org/InStock",
-      seller: { "@type": "Organization", name: "Legacy Crafts" },
+      seller: { "@type": "Organization", name: "Trophy Heaven" },
     },
     ...(summary
       ? {

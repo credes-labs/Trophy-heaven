@@ -81,7 +81,7 @@ test.describe("logic-layer customize + bulk", () => {
     )
 
     // Seed a plain shop line before bulk confirm.
-    await page.goto("/products/oak-side-table")
+    await page.goto("/products/achievement-statuette")
     await page.getByRole("button", { name: "Add to cart" }).first().click()
     await expect(page.getByRole("button", { name: /CART \(\d+\)/i })).toBeVisible()
     const beforeCount = await page.evaluate(() => {
@@ -117,7 +117,7 @@ test.describe("logic-layer customize + bulk", () => {
 
     await page.goto("/cart")
     // Prior shop item(s) should still be present after adoptCart merge.
-    await expect(page.getByText(/Oak Side Table/i).first()).toBeVisible()
+    await expect(page.getByText(/Achievement Statuette/i).first()).toBeVisible()
     const afterCount = await page.evaluate(() => {
       const m = document.body.innerText.match(/CART \((\d+)\)/i)
       return m ? Number(m[1]) : 0

@@ -54,7 +54,7 @@ export function ShopHero({ products }: { products: HttpTypes.StoreProduct[] }) {
             aria-hidden
             className="pointer-events-none absolute -top-8 left-0 font-outfit text-[clamp(4rem,14vw,11rem)] leading-[0.8] font-light tracking-[-0.08em] text-[#131111]/[0.06] select-none"
           >
-            legacy
+            heaven
           </p>
           <h1 className="relative m-0 font-outfit text-[clamp(2.25rem,5vw,3.75em)] leading-[1.1] font-normal tracking-[-0.04em] text-[#131111] text-balance">
             {slide.title}

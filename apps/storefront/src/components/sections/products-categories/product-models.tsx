@@ -200,116 +200,6 @@ function Sweep({ points, radius, material }: { points: Vec3[]; radius: number; m
   )
 }
 
-/** The tray lip, thin stem and tapered six-sided foot of the photographed pair. */
-function TrayTable({ height, radius }: { height: number; radius: number }) {
-  return (
-    <group>
-      <Cylinder
-        top={0.1}
-        bottom={0.24}
-        height={height * 0.42}
-        at={[0, height * 0.21, 0]}
-        material="brass"
-        sides={6}
-      />
-      <Cylinder top={0.028} height={height * 0.6} at={[0, height * 0.7, 0]} material="brass" />
-      <Cylinder top={radius} height={0.025} at={[0, height, 0]} material="brass" />
-      <Ring
-        radius={radius}
-        tube={0.014}
-        at={[0, height + 0.016, 0]}
-        material="brass"
-        rotation={[Math.PI / 2, 0, 0]}
-      />
-    </group>
-  )
-}
-function NestingTables() {
-  return (
-    <group>
-      <group position={[-0.28, 0, -0.12]}>
-        <TrayTable height={1.15} radius={0.52} />
-      </group>
-      <group position={[0.42, 0, 0.3]}>
-        <TrayTable height={0.82} radius={0.39} />
-      </group>
-    </group>
-  )
-}
-
-function OctagonTable() {
-  return (
-    <group>
-      <Cylinder top={0.94} height={0.07} at={[0, 0.65, 0]} material="marble" sides={8} />
-      <Cylinder top={0.92} height={0.022} at={[0, 0.604, 0]} material="brass" sides={8} />
-      {[-1, 1].flatMap((x) =>
-        [-1, 1].map((z) => (
-          <Box
-            key={`${x}:${z}`}
-            size={[0.036, 0.6, 0.036]}
-            at={[x * 0.58, 0.3, z * 0.58]}
-            material="brass"
-          />
-        ))
-      )}
-      <Box size={[1.2, 0.028, 0.028]} at={[0, 0.12, 0]} material="brass" />
-      <Box size={[0.028, 0.028, 1.2]} at={[0, 0.12, 0]} material="brass" />
-    </group>
-  )
-}
-
-function HexTable({ height, radius }: { height: number; radius: number }) {
-  return (
-    <group>
-      <Cylinder top={radius} height={0.018} at={[0, height, 0]} material="glass" sides={6} />
-      {[0, height].map((y) => (
-        <group key={y}>
-          {Array.from({ length: 6 }, (_, i) => {
-            const angle = (i * Math.PI) / 3
-            return (
-              <Box
-                key={i}
-                size={[radius, 0.018, 0.018]}
-                at={[
-                  Math.cos(angle + Math.PI / 6) * radius * Math.cos(Math.PI / 6),
-                  y,
-                  Math.sin(angle + Math.PI / 6) * radius * Math.cos(Math.PI / 6),
-                ]}
-                rotation={[0, -angle - Math.PI / 6 - Math.PI / 2, 0]}
-                material="brass"
-              />
-            )
-          })}
-        </group>
-      ))}
-      {Array.from({ length: 6 }, (_, i) => (
-        <Box
-          key={i}
-          size={[0.022, height, 0.022]}
-          at={[
-            Math.cos((i * Math.PI) / 3) * radius,
-            height / 2,
-            Math.sin((i * Math.PI) / 3) * radius,
-          ]}
-          material="brass"
-        />
-      ))}
-    </group>
-  )
-}
-function HexTables() {
-  return (
-    <group>
-      <group position={[-0.28, 0, -0.22]}>
-        <HexTable height={0.9} radius={0.55} />
-      </group>
-      <group position={[0.48, 0, 0.25]}>
-        <HexTable height={0.65} radius={0.42} />
-      </group>
-    </group>
-  )
-}
-
 /** Ellipsoids blend the polished figure's torso, shoulders, head and limbs. */
 function Ellipsoid({ at, scale, rotation }: { at: Vec3; scale: Vec3; rotation?: Vec3 }) {
   const sphere = shared("sphere", () => new THREE.SphereGeometry(1, 32, 24))
@@ -427,7 +317,7 @@ function Plaque() {
       ctx.fillStyle = "#4a3719"
       ctx.textAlign = "center"
       ctx.font = "24px Georgia"
-      ctx.fillText("LEGACY CRAFTS", s / 2, 155)
+      ctx.fillText("TROPHY HEAVEN", s / 2, 155)
       ctx.font = "italic 42px Georgia"
       ctx.fillText("Excellence", s / 2, 240)
       ctx.font = "22px Georgia"
@@ -457,110 +347,10 @@ function Plaque() {
   )
 }
 
-function LoopSculpture() {
-  const geometry = shared("twisted-loop", () => {
-    const points = Array.from({ length: 121 }, (_, i) => {
-      const a = (i / 120) * Math.PI * 2
-      return new THREE.Vector3(0.3 * Math.sin(a * 2), 0.76 + 0.58 * Math.cos(a), 0.17 * Math.sin(a))
-    })
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points, true), 144, 0.145, 24, true)
-  })
-  return (
-    <group>
-      <Box size={[0.76, 0.085, 0.48]} at={[0, 0.0425, 0]} material="marble" />
-      <mesh geometry={geometry} material={finish("patina")} />
-    </group>
-  )
-}
-
-function Sunburst() {
-  const geometry = shared("sunburst-folds", () => {
-    const positions: number[] = []
-    for (let i = 0; i < 64; i++) {
-      const a = (i / 64) * Math.PI * 2
-      const b = ((i + 1) / 64) * Math.PI * 2
-      positions.push(
-        0,
-        0,
-        0.04,
-        Math.cos(a) * 0.55,
-        Math.sin(a) * 0.55,
-        i % 2 ? -0.035 : 0.055,
-        Math.cos(b) * 0.55,
-        Math.sin(b) * 0.55,
-        i % 2 ? 0.055 : -0.035
-      )
-    }
-    const g = new THREE.BufferGeometry()
-    g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
-    g.computeVertexNormals()
-    return g
-  })
-  const bronze = shared("sunburst-material", () => {
-    const m = finish("bronze").clone()
-    m.side = THREE.DoubleSide
-    return m
-  })
-  return (
-    <group>
-      <Box size={[0.62, 0.08, 0.4]} at={[0, 0.04, 0]} material="marble" />
-      <Cylinder top={0.025} height={0.5} at={[0, 0.33, 0]} material="bronze" />
-      <mesh geometry={geometry} material={bronze} position={[0, 1.08, 0]} scale={[0.88, 1.08, 1]} />
-      <mesh
-        geometry={geometry}
-        material={bronze}
-        position={[0, 1.08, -0.01]}
-        rotation={[0, Math.PI, 0]}
-        scale={[0.88, 1.08, 1]}
-      />
-    </group>
-  )
-}
-
-function RingsSculpture() {
-  return (
-    <group>
-      <Cylinder top={0.3} height={0.07} at={[0, 0.035, 0]} material="marble" />
-      <Ring
-        radius={0.46}
-        tube={0.048}
-        at={[0, 0.78, 0]}
-        material="bronze"
-        scale={[1, 1.35, 1]}
-        rotation={[0, -0.3, -0.2]}
-      />
-      <Ring
-        radius={0.3}
-        tube={0.045}
-        at={[-0.03, 0.76, 0.04]}
-        material="brass"
-        rotation={[0.25, 1.1, 0.15]}
-      />
-      {[-1, 1].map((s) => (
-        <Ring
-          key={s}
-          radius={0.46 + s * 0.026}
-          tube={0.009}
-          at={[0, 0.78, 0]}
-          material="brass"
-          scale={[1, 1.35, 1]}
-          rotation={[0, -0.3, -0.2]}
-        />
-      ))}
-    </group>
-  )
-}
-
 export const PRODUCT_MODELS: Record<ProductKind, () => JSX.Element> = {
-  nesting: NestingTables,
-  octagon: OctagonTable,
-  hex: HexTables,
   statuette: Statuette,
   figure: FigureAward,
   plaque: Plaque,
-  loop: LoopSculpture,
-  sunburst: Sunburst,
-  rings: RingsSculpture,
 }
 
 export type ProductBounds = { radius: number; bottom: number; top: number }

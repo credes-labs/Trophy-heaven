@@ -6,7 +6,7 @@ import { EditorialCtaLink } from "@/components/layout/editorial/editorial-cta"
 export const metadata: Metadata = {
   title: "Trade Programme",
   description:
-    "Trade pricing and samples for designers and architects working with Legacy Crafts.",
+    "Trade pricing and samples for designers and architects working with Trophy Heaven.",
   alternates: { canonical: "/trade" },
 }
 
@@ -17,7 +17,7 @@ export default function TradePage() {
         eyebrow="Trade"
         watermark="trade"
         title="For designers & architects."
-        body="Trade pricing, samples, and dedicated procurement for interiors projects."
+        body="Trade pricing, samples, and dedicated procurement for event, league, and corporate programmes."
       >
         <EditorialCtaLink href="/corporate/quote">Apply for trade access</EditorialCtaLink>
       </SimplePageHero>

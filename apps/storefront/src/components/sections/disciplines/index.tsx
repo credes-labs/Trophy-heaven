@@ -1,66 +1,68 @@
 import Link from "next/link"
 import { SectionEyebrow, SectionShell } from "@/components/sections/_editorial"
 import { listCategories, countProductsByCategory, collectCategoryIds } from "@/lib/data/catalog"
-import { CATEGORY_CONFIG, type CategoryKey } from "@/lib/category-config"
+import { CATEGORY_CONFIG } from "@/lib/category-config"
 
-const ORDER: CategoryKey[] = ["trophies", "furniture", "artwork"]
+/** Trophy collections, keyed by their seeded Medusa subcategory handle. */
+type CollectionKey = "crystal" | "metal" | "acrylic"
 
-const ACCENTS: Record<CategoryKey, string> = {
-  trophies: "#8A2D25",
-  furniture: "#191D26",
-  artwork: "#4F3516",
+const ORDER: CollectionKey[] = ["crystal", "metal", "acrylic"]
+
+const ACCENTS: Record<CollectionKey, string> = {
+  crystal: "#8A2D25",
+  metal: "#8A7550",
+  acrylic: "#331207",
 }
 
-const COPY: Record<CategoryKey, { title: string; body: string }> = {
-  trophies: {
+const COPY: Record<CollectionKey, { label: string; title: string; body: string }> = {
+  crystal: {
+    label: "Crystal",
+    title: "Light, cut into form.",
+    body: "Optical crystal faceted and polished until the engraving seems to float inside it.",
+  },
+  metal: {
+    label: "Metal",
     title: "Awards that hold their weight.",
-    body: "Optical crystal, cast brass, and acrylic honours — engraved to the name, dated to the day.",
+    body: "Cast brass and gilt figures on hardwood plinths — engraved to the name, dated to the day.",
   },
-  furniture: {
-    title: "Furniture that earns its place.",
-    body: "Kiln-dried teak, solid walnut, hand-rubbed oil. Built for decades of use, not seasons of trend.",
-  },
-  artwork: {
-    title: "Artwork, chosen slowly.",
-    body: "Handwoven textiles, cast brass, and wall pieces that reward a second look.",
+  acrylic: {
+    label: "Acrylic",
+    title: "Clear, bold, built for teams.",
+    body: "Precision-cut acrylic honours for leagues, schools, and corporate programmes at volume.",
   },
 }
 
 export async function DisciplinesSection() {
-  let counts: Record<string, number> = { trophies: 0, furniture: 0, artwork: 0 }
+  let counts: Record<string, number> = { crystal: 0, metal: 0, acrylic: 0 }
   try {
     const categories = await listCategories()
     const byHandle = Object.fromEntries(categories.map((c) => [c.handle, c]))
     const idsByKey: Record<string, string[]> = {}
-    for (const key of ORDER) {
-      const handle = CATEGORY_CONFIG[key].medusaHandle
-      const cat = byHandle[handle] ?? null
-      idsByKey[key] = collectCategoryIds(cat)
-    }
+    for (const key of ORDER) idsByKey[key] = collectCategoryIds(byHandle[key] ?? null)
     counts = await countProductsByCategory(idsByKey)
   } catch {
     // empty counts when Medusa is down
   }
+  const trophiesHref = CATEGORY_CONFIG.trophies.href
 
   return (
     <SectionShell id="disciplines" aria-labelledby="disciplines-heading">
-      <SectionEyebrow>three disciplines</SectionEyebrow>
+      <SectionEyebrow>three collections</SectionEyebrow>
       <h2
         id="disciplines-heading"
         className="mt-[0.75em] m-0 max-w-[18em] font-outfit text-[clamp(1.75em,4vw,3em)] leading-[1.15] font-normal tracking-[-0.03em] text-balance"
       >
-        One workshop, three crafts.
+        One workshop, every kind of honour.
       </h2>
 
       <div className="mt-[clamp(1.75em,3.5vw,3em)] flex snap-x snap-mandatory gap-[1em] overflow-x-auto pb-2 lg:grid lg:grid-cols-3 lg:gap-[1.5em] lg:overflow-visible lg:pb-0">
         {ORDER.map((key) => {
-          const cfg = CATEGORY_CONFIG[key]
           const copy = COPY[key]
           const count = counts[key] ?? 0
           return (
             <Link
               key={key}
-              href={cfg.href}
+              href={`${trophiesHref}?sub=${encodeURIComponent(copy.label)}`}
               className="group relative min-w-[78%] snap-start no-underline sm:min-w-[45%] lg:min-w-0"
             >
               <article
@@ -68,7 +70,7 @@ export async function DisciplinesSection() {
                 style={{ borderTopWidth: "0.25em", borderTopColor: ACCENTS[key] }}
               >
                 <p className="m-0 font-outfit text-[0.75em] uppercase tracking-[0.12em] text-[#6B635C]">
-                  {cfg.label}
+                  {copy.label}
                   {count > 0 ? ` · ${count}` : ""}
                 </p>
                 <h3 className="mt-[1em] m-0 font-outfit text-[1.35em] leading-[1.25] font-normal tracking-[-0.02em] text-balance text-[#131111]">
@@ -78,7 +80,7 @@ export async function DisciplinesSection() {
                   {copy.body}
                 </p>
                 <span className="mt-[1.25em] font-outfit text-[0.875em] uppercase tracking-wide text-[#131111] underline underline-offset-[0.15em]">
-                  Shop {cfg.label.toLowerCase()}
+                  Shop {copy.label.toLowerCase()}
                 </span>
               </article>
             </Link>

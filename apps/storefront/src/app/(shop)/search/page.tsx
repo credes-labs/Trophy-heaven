@@ -4,7 +4,7 @@ import { getRegion } from "@/lib/regions"
 
 export const metadata: Metadata = {
   title: "Search",
-  description: "Search Legacy Crafts trophies, awards, furniture, and home decor.",
+  description: "Search Trophy Heaven trophies, awards, and engraved plaques.",
 }
 
 export default async function SearchPage() {

@@ -5,15 +5,15 @@
  */
 
 export const BRAND = {
-  name: "Legacy Crafts",
-  shortName: "Legacy",
+  name: "Trophy Heaven",
+  shortName: "Trophy Heaven",
   city: "Bengaluru",
   cityAlt: "Bangalore",
   country: "India",
   /** Confirmed by about/constants founding line; craftsmanship-story "decade" claim retired. */
   foundedYear: 2022,
   tagline: "Crafted with intention. Built to last.",
-  disciplines: ["trophies", "furniture", "artwork"] as const,
+  disciplines: ["trophies"] as const,
 } as const
 
 /**
@@ -28,7 +28,7 @@ export const BRAND_STATS = [
   {
     // TODO(ops): confirm artisan headcount
     value: "40+",
-    caption: "Guild artisans across timber, metal, and crystal",
+    caption: "Guild artisans across crystal, metal, and timber",
   },
   {
     // TODO(ops): confirm lifetime delivery count

@@ -36,7 +36,7 @@ describe("matchesMaterial", () => {
     expect(matchesMaterial(p, "Wood")).toBe(false)
   })
   it("falls back to a text haystack", () => {
-    const p = product({ title: "Walnut Dining Table", description: "Solid wood" })
+    const p = product({ title: "Walnut Award Plaque", description: "Solid wood" })
     expect(matchesMaterial(p, "walnut")).toBe(true)
   })
 })

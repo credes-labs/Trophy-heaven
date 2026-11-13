@@ -4,11 +4,10 @@
  * SilhouetteGrid  (horizontal, transparent)
  * -----------------------------------------
  * The poster mosaic of thin-lined boxes, stretched into a landscape band. Each box
- * holds a furniture piece, trophy or sculpture that turns a full 360 degrees on a turntable.
- * Models available: bottle, vase1, vase2, table, daybed, chair, bench, console, lamp, stool,
- * armchair, lounger, cart, sofa, lounge (furniture) and fan, figure, rings, oscar, rock, knot
- * (sculptures and trophies). Swap `kind` in CELLS to change any box.
- * The background is clear: only the grid lines and the furniture are drawn, so
+ * holds a trophy or award that turns a full 360 degrees on a turntable.
+ * Models available: cup, urn, medal, star, plaque, crystal, globe, bowl, figure,
+ * oscar. Swap `kind` in CELLS to change any box.
+ * The background is clear: only the grid lines and the awards are drawn, so
  * whatever is behind the component shows through.
  *
  * Install:   npm i three   &&   npm i -D @types/three
@@ -50,21 +49,21 @@ const PERIOD_MS = 7000; // one full turn
 const PITCH = (10 * Math.PI) / 180; // camera looks down 10 degrees
 
 const CELLS: Cell[] = [
-  { kind: "bottle", fit: { h: 0.72 }, area: [1, 3, 1, 3], still: true },
-  { kind: "vase1", fit: { h: 0.62 }, area: [3, 5, 1, 2], still: true },
-  { kind: "vase2", fit: { h: 0.6 }, area: [5, 7, 1, 2], still: true },
-  { kind: "table", fit: { h: 0.6 }, area: [3, 7, 2, 3] },
-  { kind: "fan", fit: { h: 0.84 }, area: [7, 11, 1, 3] },
+  { kind: "urn", fit: { h: 0.78 }, area: [1, 3, 1, 3], still: true },
+  { kind: "medal", fit: { h: 0.7 }, area: [3, 5, 1, 2], still: true },
+  { kind: "star", fit: { h: 0.72 }, area: [5, 7, 1, 2], still: true },
+  { kind: "bowl", fit: { h: 0.6 }, area: [3, 7, 2, 3] },
+  { kind: "crystal", fit: { h: 0.84 }, area: [7, 11, 1, 3] },
   { kind: "figure", fit: { h: 0.9 }, area: [11, 13, 1, 3] },
-  { kind: "rings", fit: { h: 0.8 }, area: [1, 4, 3, 4] },
-  { kind: "console", fit: { h: 0.62 }, area: [4, 9, 3, 4] },
+  { kind: "globe", fit: { h: 0.8 }, area: [1, 4, 3, 4] },
+  { kind: "plaque", fit: { h: 0.72 }, area: [4, 9, 3, 4] },
   { kind: "oscar", fit: { h: 0.9 }, area: [9, 11, 3, 7] },
-  { kind: "rock", fit: { h: 0.88 }, area: [11, 13, 3, 5] },
-  { kind: "armchair", fit: { h: 0.6 }, area: [1, 5, 4, 6] },
-  { kind: "lounger", fit: { h: 0.62 }, area: [5, 9, 4, 6] },
-  { kind: "cart", fit: { h: 0.75 }, area: [1, 5, 6, 7] },
-  { kind: "sofa", fit: { h: 0.7 }, area: [5, 9, 6, 7] },
-  { kind: "knot", fit: { h: 0.8 }, area: [11, 13, 5, 7] },
+  { kind: "star", fit: { h: 0.88 }, area: [11, 13, 3, 5] },
+  { kind: "cup", fit: { h: 0.72 }, area: [1, 5, 4, 6] },
+  { kind: "urn", fit: { h: 0.72 }, area: [5, 9, 4, 6] },
+  { kind: "medal", fit: { h: 0.75 }, area: [1, 5, 6, 7] },
+  { kind: "plaque", fit: { h: 0.7 }, area: [5, 9, 6, 7] },
+  { kind: "cup", fit: { h: 0.8 }, area: [11, 13, 5, 7] },
 ];
 
 let INK: THREE.ShaderMaterial | null = null;
@@ -150,151 +149,92 @@ function extrude(shape: THREE.Shape, depth: number, bevel = 0.012): THREE.Buffer
   return g;
 }
 
-/** Flat oval band: outer radii (rx, ry), hole radii (hx, hy). */
-function ovalRing(rx: number, ry: number, hx: number, hy: number, depth: number): THREE.BufferGeometry {
+const SIGNS = [-1, 1];
+
+/** Five-point star outline, centred on the origin. */
+function starShape(outer: number, inner: number): THREE.Shape {
   const s = new THREE.Shape();
-  s.absellipse(0, 0, rx, ry, 0, Math.PI * 2, false, 0);
-  const h = new THREE.Path();
-  h.absellipse(0, 0, hx, hy, 0, Math.PI * 2, true, 0);
-  s.holes.push(h);
-  return extrude(s, depth);
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? outer : inner;
+    const a = Math.PI / 2 + (i * Math.PI) / 5;
+    if (i === 0) s.moveTo(r * Math.cos(a), r * Math.sin(a));
+    else s.lineTo(r * Math.cos(a), r * Math.sin(a));
+  }
+  s.closePath();
+  return s;
 }
 
-const SIGNS = [-1, 1];
-const LEG = 0.018; // leg radius, thick enough to stay solid at small sizes
+/** Half-ring handle on one side of a cup; side = -1 left, 1 right. */
+function handle(side: number, x: number, y: number, r: number): THREE.Mesh {
+  return put(new THREE.TorusGeometry(r, 0.018, 12, 32, Math.PI), x, y, 0, 0, 0, -side * (Math.PI / 2));
+}
 
+/** Square stepped plinth, the common foot of most of the awards below. */
+function plinth(g: THREE.Group, w: number, h: number) {
+  g.add(box(w, h, w, 0, h / 2, 0));
+  g.add(box(w * 0.82, h * 0.35, w * 0.82, 0, h + h * 0.175, 0));
+}
+
+// Trophies and awards only. Heights are roughly one unit; each model is
+// re-centred and fitted to its box, so absolute scale does not matter.
 const MODELS: Record<string, (g: THREE.Group) => void> = {
-  bottle: (g) => {
-    g.add(lathe([[0, 0], [0.12, 0], [0.15, 0.05], [0.165, 0.35], [0.14, 0.6], [0.055, 0.8], [0.05, 0.96], [0, 0.96]]));
+  // Two-handled loving cup on a turned stem
+  cup: (g) => {
+    plinth(g, 0.42, 0.1);
+    g.add(lathe([[0, 0.135], [0.13, 0.135], [0.06, 0.18], [0.04, 0.33], [0.075, 0.37], [0.04, 0.41], [0.06, 0.45], [0.2, 0.55], [0.26, 0.72], [0.28, 0.9], [0.3, 0.92], [0, 0.92]]));
+    for (const sx of SIGNS) g.add(handle(sx, sx * 0.27, 0.72, 0.1));
   },
-  vase1: (g) => {
-    g.add(lathe([[0, 0], [0.15, 0], [0.25, 0.12], [0.27, 0.3], [0.19, 0.52], [0.13, 0.62], [0.14, 0.68], [0, 0.68]]));
+  // Tall lidded cup with a finial
+  urn: (g) => {
+    plinth(g, 0.36, 0.09);
+    g.add(lathe([[0, 0.12], [0.11, 0.12], [0.045, 0.16], [0.035, 0.36], [0.07, 0.4], [0.17, 0.5], [0.2, 0.66], [0.19, 0.8], [0.2, 0.82], [0.12, 0.88], [0.03, 0.93], [0.04, 0.97], [0, 1.0]]));
+    for (const sx of SIGNS) g.add(handle(sx, sx * 0.19, 0.66, 0.08));
   },
-  vase2: (g) => {
-    g.add(lathe([[0, 0], [0.2, 0], [0.27, 0.1], [0.28, 0.28], [0.24, 0.48], [0.2, 0.52], [0, 0.52]]));
+  // Medal on a cradle stand, face toward the viewer
+  medal: (g) => {
+    g.add(box(0.5, 0.05, 0.22, 0, 0.025, 0));
+    for (const sx of SIGNS) g.add(rod([sx * 0.16, 0.05, 0], [sx * 0.12, 0.34, 0], 0.016));
+    g.add(put(new THREE.CylinderGeometry(0.28, 0.28, 0.05, 72), 0, 0.6, 0, Math.PI / 2, 0, 0));
+    g.add(put(new THREE.TorusGeometry(0.21, 0.014, 10, 72), 0, 0.6, 0.028));
   },
-  // Round top on a pedestal made of thin fins
-  table: (g) => {
-    g.add(cyl(0.55, 0.55, 0.03, 0, 0.485, 0));
-    for (let i = 0; i < 14; i++) {
-      const a = (i / 14) * Math.PI * 2;
-      g.add(rod([Math.cos(a) * 0.21, 0, Math.sin(a) * 0.21], [Math.cos(a) * 0.035, 0.47, Math.sin(a) * 0.035], 0.016, 0.012));
-    }
+  // Star on a column
+  star: (g) => {
+    plinth(g, 0.34, 0.09);
+    g.add(cyl(0.05, 0.065, 0.42, 0, 0.33, 0));
+    g.add(put(extrude(starShape(0.24, 0.1), 0.07), 0, 0.78, 0));
   },
-  // Low daybed with a raised arm at one end
-  daybed: (g) => {
-    g.add(box(1.7, 0.1, 0.8, 0, 0.14, 0));
-    g.add(box(1.62, 0.14, 0.72, 0, 0.26, 0.02));
-    g.add(box(1.62, 0.3, 0.16, 0, 0.49, -0.34));
-    g.add(box(0.14, 0.3, 0.8, -0.78, 0.4, 0));
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(box(0.05, 0.1, 0.05, sx * 0.78, 0.04, sz * 0.34));
+  // Arched wall plaque on a desk foot
+  plaque: (g) => {
+    const s = new THREE.Shape();
+    s.moveTo(-0.32, 0);
+    s.lineTo(0.32, 0);
+    s.lineTo(0.32, 0.55);
+    s.absarc(0, 0.55, 0.32, 0, Math.PI, false);
+    s.lineTo(-0.32, 0);
+    g.add(put(extrude(s, 0.06), 0, 0.08, 0));
+    g.add(box(0.5, 0.08, 0.24, 0, 0.04, 0));
+    g.add(box(0.34, 0.18, 0.02, 0, 0.42, 0.04));
   },
-  chair: (g) => {
-    g.add(box(0.44, 0.04, 0.42, 0, 0.44, 0));
-    for (const sx of SIGNS) {
-      g.add(rod([sx * 0.19, 0, 0.18], [sx * 0.19, 0.44, 0.18], LEG));
-      g.add(rod([sx * 0.19, 0, -0.19], [sx * 0.19, 0.9, -0.19], LEG));
-    }
-    g.add(box(0.44, 0.12, 0.03, 0, 0.82, -0.19));
-    g.add(box(0.4, 0.03, 0.03, 0, 0.62, -0.19));
-    g.add(box(0.4, 0.025, 0.025, 0, 0.2, 0.18));
-    g.add(box(0.4, 0.025, 0.025, 0, 0.2, -0.19));
+  // Crystal flame on a block base
+  crystal: (g) => {
+    const s = new THREE.Shape(curve([[0, 0], [0.22, 0.12], [0.24, 0.42], [0.12, 0.72], [0, 0.95]], 80).concat(curve([[-0.06, 0.8], [-0.18, 0.55], [-0.24, 0.3], [-0.2, 0.08], [0, 0]], 80)));
+    g.add(put(extrude(s, 0.12), 0, 0.16, 0));
+    g.add(box(0.46, 0.16, 0.24, 0, 0.08, 0));
   },
-  // Low bench on splayed tapered legs
-  bench: (g) => {
-    g.add(box(1.3, 0.07, 0.4, 0, 0.385, 0));
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(rod([sx * 0.62, 0, sz * 0.2], [sx * 0.46, 0.35, sz * 0.11], 0.016, 0.026));
+  // Classic column trophy topped with a globe
+  globe: (g) => {
+    plinth(g, 0.4, 0.1);
+    g.add(cyl(0.07, 0.07, 0.44, 0, 0.36, 0));
+    for (const y of [0.15, 0.58]) g.add(cyl(0.1, 0.1, 0.03, 0, y, 0));
+    g.add(put(new THREE.SphereGeometry(0.16, 32, 24), 0, 0.76, 0));
+    g.add(put(new THREE.TorusGeometry(0.2, 0.012, 8, 64), 0, 0.76, 0, Math.PI / 2.4, 0, 0));
   },
-  console: (g) => {
-    g.add(box(1.6, 0.32, 0.42, 0, 0.36, 0));
-    g.add(box(1.64, 0.03, 0.44, 0, 0.545, 0));
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(rod([sx * 0.74, 0, sz * 0.17], [sx * 0.74, 0.2, sz * 0.17], LEG));
+  // Broad presentation bowl (rose bowl) on a low foot
+  bowl: (g) => {
+    g.add(lathe([[0, 0], [0.22, 0], [0.12, 0.06], [0.1, 0.1], [0.3, 0.2], [0.42, 0.34], [0.44, 0.38], [0, 0.38]]));
+    for (const sx of SIGNS) g.add(handle(sx, sx * 0.43, 0.3, 0.07));
   },
-  // Box shade on a tripod. Three legs only, meeting under the shade.
-  lamp: (g) => {
-    g.add(box(0.52, 0.3, 0.42, 0, 1.83, 0));
-    [90, 210, 330].forEach((deg) => {
-      const a = (deg * Math.PI) / 180;
-      g.add(rod([Math.cos(a) * 0.34, 0, Math.sin(a) * 0.34], [Math.cos(a) * 0.04, 1.68, Math.sin(a) * 0.04], 0.022, 0.03));
-    });
-  },
-  stool: (g) => {
-    g.add(box(0.42, 0.12, 0.4, 0, 0.72, 0));
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(rod([sx * 0.2, 0, sz * 0.18], [sx * 0.18, 0.66, sz * 0.16], LEG));
-    g.add(box(0.4, 0.022, 0.022, 0, 0.28, 0.19));
-    g.add(box(0.4, 0.022, 0.022, 0, 0.28, -0.19));
-    for (const sx of SIGNS) g.add(box(0.022, 0.022, 0.36, sx * 0.2, 0.28, 0));
-  },
-  armchair: (g) => {
-    g.add(box(0.62, 0.14, 0.58, 0, 0.3, 0.02));
-    g.add(box(0.62, 0.38, 0.12, 0, 0.55, -0.26));
-    for (const sx of SIGNS) g.add(box(0.08, 0.22, 0.6, sx * 0.35, 0.42, 0));
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(rod([sx * 0.3, 0, sz * 0.25], [sx * 0.3, 0.23, sz * 0.25], LEG));
-  },
-  // Sun lounger: end-on it reads as a small chair, side-on as a long reclined line
-  lounger: (g) => {
-    g.add(box(0.5, 0.04, 0.8, 0, 0.3, 0.25));
-    g.add(box(0.5, 0.04, 0.9, 0, 0.67, -0.41, 0.96));
-    for (const sx of SIGNS) {
-      g.add(rod([sx * 0.25, 0, 0.58], [sx * 0.25, 0.3, 0.58], LEG));
-      g.add(rod([sx * 0.25, 0, -0.1], [sx * 0.25, 0.3, -0.1], LEG));
-      g.add(box(0.034, 0.034, 1.0, sx * 0.25, 0.28, 0.1));
-      g.add(rod([sx * 0.25, 0.3, -0.1], [sx * 0.25, 0.6, -0.42], 0.015));
-    }
-  },
-  cart: (g) => {
-    g.add(box(0.56, 0.03, 0.4, 0, 0.66, 0));
-    g.add(box(0.56, 0.02, 0.4, 0, 0.24, 0));
-    for (const sx of SIGNS) {
-      for (const sz of SIGNS) {
-        g.add(rod([sx * 0.26, 0.07, sz * 0.18], [sx * 0.26, 0.66, sz * 0.18], 0.016));
-        g.add(cyl(0.065, 0.065, 0.03, sx * 0.29, 0.065, sz * 0.18, true));
-      }
-      g.add(rod([sx * 0.26, 0.66, -0.18], [sx * 0.26, 0.86, -0.2], 0.014));
-    }
-    g.add(box(0.54, 0.024, 0.024, 0, 0.86, -0.2));
-  },
-  sofa: (g) => {
-    g.add(box(1.8, 0.22, 0.8, 0, 0.2, 0));
-    g.add(box(1.8, 0.36, 0.2, 0, 0.5, -0.3));
-    for (const sx of SIGNS) g.add(box(0.16, 0.3, 0.8, sx * 0.82, 0.4, 0));
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(box(0.05, 0.09, 0.05, sx * 0.8, 0.045, sz * 0.34));
-  },
-  // Lounge chair with slim arms and splayed legs
-  lounge: (g) => {
-    g.add(box(0.6, 0.12, 0.56, 0, 0.28, 0.02));
-    g.add(box(0.6, 0.4, 0.1, 0, 0.52, -0.25, -0.15));
-    for (const sx of SIGNS) {
-      g.add(rod([sx * 0.32, 0.52, 0.25], [sx * 0.32, 0.52, -0.22], 0.02));
-      g.add(rod([sx * 0.32, 0.28, 0.24], [sx * 0.32, 0.52, 0.24], 0.02));
-    }
-    for (const sx of SIGNS) for (const sz of SIGNS) g.add(rod([sx * 0.34, 0, sz * 0.3], [sx * 0.28, 0.24, sz * 0.24], 0.016, 0.02));
-  },
-};
-
-// Sculptures and trophies. Heights use the same units as the furniture.
-Object.assign(MODELS, {
-  fan: (g: THREE.Group) => {
-    g.add(box(0.62, 0.06, 0.5, 0, 0.03, 0));
-    g.add(rod([0, 0.06, 0], [0, 0.36, 0], 0.045, 0.028));
-    g.add(put(new THREE.SphereGeometry(0.06, 24, 16), 0, 0.12, 0));
-    const cy = 0.83;
-    const face = new THREE.RingGeometry(0.004, 0.5, 112, 8);
-    const p = face.attributes.position as THREE.BufferAttribute;
-    for (let i = 0; i < p.count; i++) {
-      const x = p.getX(i);
-      const y = p.getY(i);
-      p.setZ(i, 0.035 + 0.03 * Math.cos(28 * Math.atan2(y, x)) * (Math.hypot(x, y) / 0.5));
-    }
-    face.computeVertexNormals();
-    g.add(put(face, 0, cy, 0));
-    g.add(put(new THREE.CircleGeometry(0.5, 112), 0, cy, -0.035));
-    const edge = new THREE.CylinderGeometry(0.5, 0.5, 0.07, 112, 1, true);
-    edge.rotateX(Math.PI / 2);
-    g.add(put(edge, 0, cy, 0));
-  },
-
-  figure: (g: THREE.Group) => {
+  figure: (g) => {
     const R: [number, number][] = [[0, 1.0], [0.05, 0.99], [0.07, 0.95], [0.058, 0.905], [0.04, 0.88], [0.085, 0.858], [0.15, 0.825], [0.195, 0.775], [0.2, 0.71], [0.175, 0.64], [0.125, 0.57], [0.1, 0.47], [0.115, 0.37], [0.1, 0.27], [0.075, 0.18], [0.07, 0.12], [0.1, 0.05], [0.115, 0.01]];
     const L: [number, number][] = [[-0.24, 0], [-0.13, 0.06], [-0.078, 0.13], [-0.1, 0.27], [-0.115, 0.37], [-0.1, 0.47], [-0.105, 0.54], [-0.13, 0.61], [-0.19, 0.69], [-0.21, 0.76], [-0.17, 0.82], [-0.1, 0.855], [-0.04, 0.88], [-0.058, 0.905], [-0.07, 0.95], [-0.05, 0.99]];
     const shape = new THREE.Shape(curve(R, 150).concat(curve(L, 150)));
@@ -306,16 +246,7 @@ Object.assign(MODELS, {
     g.add(put(new THREE.CylinderGeometry(0.26, 0.28, 0.08, 8), 0, 0.04, 0, 0, Math.PI / 8, 0));
   },
 
-  rings: (g: THREE.Group) => {
-    g.add(cyl(0.34, 0.34, 0.07, 0, 0.035, 0));
-    g.add(cyl(0.03, 0.03, 0.12, 0, 0.13, 0));
-    const cy = 0.71;
-    g.add(put(ovalRing(0.42, 0.52, 0.3, 0.4, 0.07), 0, cy, 0));
-    g.add(put(ovalRing(0.3, 0.38, 0.19, 0.27, 0.07), 0, cy + 0.02, 0, 0, (60 * Math.PI) / 180, 0));
-    g.add(put(ovalRing(0.26, 0.3, 0.15, 0.2, 0.07), 0, cy - 0.06, 0, 0, (-45 * Math.PI) / 180, 0));
-  },
-
-  oscar: (g: THREE.Group) => {
+  oscar: (g) => {
     const prof: [number, number][] = [[0, 0], [0.11, 0], [0.115, 0.025], [0.1, 0.05], [0.065, 0.075], [0.06, 0.2], [0.075, 0.33], [0.095, 0.44], [0.09, 0.52], [0.105, 0.6], [0.15, 0.68], [0.19, 0.76], [0.2, 0.8], [0.15, 0.84], [0.07, 0.865], [0.045, 0.885], [0.055, 0.915], [0.075, 0.945], [0.07, 0.98], [0, 1.0]];
     const body = new THREE.LatheGeometry(prof.map((q) => new THREE.Vector2(q[0], q[1])), 48);
     body.scale(1, 1, 0.55);
@@ -327,29 +258,7 @@ Object.assign(MODELS, {
     g.add(box(0.78, 0.11, 0.78, 0, 0.055, 0));
   },
 
-  rock: (g: THREE.Group) => {
-    g.add(box(0.6, 0.06, 0.32, 0, 0.03, 0));
-    const loops: [number, number, number, number, number][] = [
-      [0, 0.13, 0.13, 0.045, 20],
-      [0, 0.28, 0.1, 0.04, -50],
-      [0.07, 0.45, 0.15, 0.045, 70],
-      [-0.04, 0.62, 0.13, 0.045, 10],
-      [0.05, 0.78, 0.12, 0.04, -30],
-      [-0.06, 0.92, 0.1, 0.04, 60],
-    ];
-    for (const [x, y, r, t, a] of loops) g.add(put(new THREE.TorusGeometry(r, t, 16, 48), x, y + 0.06, 0, 0, (a * Math.PI) / 180, 0));
-  },
-
-  knot: (g: THREE.Group) => {
-    g.add(box(0.9, 0.07, 0.7, 0, 0.035, 0));
-    const a = new THREE.TorusGeometry(0.3, 0.15, 32, 72);
-    a.scale(1, 1, 0.6);
-    const b = new THREE.TorusGeometry(0.26, 0.14, 32, 72);
-    b.scale(1, 1, 0.6);
-    g.add(put(a, 0, 0.87, 0, -0.17, 0.26, 0));
-    g.add(put(b, 0.06, 0.49, 0, 0.35, -0.52, 0));
-  },
-});
+};
 
 type Live = {
   el: HTMLElement;
@@ -529,7 +438,7 @@ export default function SilhouetteGrid({
     <div
       ref={wrap}
       role="img"
-      aria-label="Furniture, trophy and sculpture silhouettes turning on a turntable"
+      aria-label="Trophy and award silhouettes turning on a turntable"
       className={`relative w-full ${className}`}
       style={{ borderTop: line, borderLeft: line }} // no background: the page shows through
     >

@@ -17,7 +17,7 @@ describe("roleFromAuthContext", () => {
     ).toBe("designer")
   })
 
-  it("treats Medusa dashboard users without LC role as admin", () => {
+  it("treats Medusa dashboard users without TH role as admin", () => {
     expect(roleFromAuthContext({ actor_id: "user_1", actor_type: "user" })).toBe("admin")
   })
 })

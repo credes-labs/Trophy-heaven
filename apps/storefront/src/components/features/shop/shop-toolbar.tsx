@@ -52,8 +52,8 @@ export function ShopFilterBanner({ category }: { category: CategoryKey | null })
   return (
     <div className="relative mb-[1.5em] aspect-[1360/280] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
       <Image
-        src={cfg?.imageSrc ?? "/images/explore/hero-atelier.webp"}
-        alt={cfg?.imageAlt ?? "Walnut furniture in a gold-lit atelier"}
+        src={cfg?.imageSrc ?? "/images/hero/hero-workshop.webp"}
+        alt={cfg?.imageAlt ?? "Trophy workshop bench with brass tools in warm light"}
         fill
         sizes="(min-width: 1024px) 85em, 100vw"
         className="object-cover"
@@ -67,7 +67,7 @@ export function ShopFilterBanner({ category }: { category: CategoryKey | null })
           {cfg?.headline ?? "The collection"}
         </h1>
         <p className="mt-[0.5em] m-0 max-w-[32em] font-outfit text-[0.9375em] leading-[1.45] font-light tracking-[-0.02em] text-[#F2F1EF]/80 text-pretty">
-          {cfg?.description ?? "Handcrafted trophies, artisan furniture, and curated artwork."}
+          {cfg?.description ?? "Handcrafted trophies, awards, and engraved plaques."}
         </p>
       </div>
     </div>

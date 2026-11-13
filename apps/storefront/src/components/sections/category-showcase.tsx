@@ -25,9 +25,7 @@ export function CategoryShowcase() {
                 className={cn(
                   "group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300",
                   "hover:-translate-y-2 hover:shadow-xl",
-                  cat.slug === "trophies" && "border-b-4 border-b-trophy",
-                  cat.slug === "furniture" && "border-b-4 border-b-furniture",
-                  cat.slug === "artwork" && "border-b-4 border-b-artwork"
+                  "border-b-4 border-b-trophy"
                 )}
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -47,9 +45,7 @@ export function CategoryShowcase() {
                   <h3
                     className={cn(
                       "font-serif text-2xl font-semibold text-foreground transition-colors",
-                      cat.slug === "trophies" && "group-hover:text-trophy",
-                      cat.slug === "furniture" && "group-hover:text-furniture",
-                      cat.slug === "artwork" && "group-hover:text-artwork"
+                      "group-hover:text-trophy"
                     )}
                   >
                     {cat.title}

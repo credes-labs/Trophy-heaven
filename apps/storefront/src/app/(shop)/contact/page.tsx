@@ -8,7 +8,7 @@ import { EditorialWatermark } from "@/components/layout/editorial/editorial-wate
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Contact Legacy Crafts in Bangalore for custom trophies, bulk awards, furniture, and order support.",
+    "Contact Trophy Heaven in Bangalore for custom trophies, bulk awards, and order support.",
   alternates: { canonical: "/contact" },
 }
 
@@ -46,7 +46,7 @@ export default function ContactPage() {
             </p>
             <address className="mt-[1.25em] not-italic">
               <p className="m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
-                Legacy Crafts Studio
+                Trophy Heaven Studio
                 <br />
                 Indiranagar, Bangalore 560038
                 <br />
@@ -54,10 +54,10 @@ export default function ContactPage() {
               </p>
               <p className="mt-[1.25em] m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
                 <a
-                  href="mailto:hello@legacycrafts.com"
+                  href="mailto:hello@trophyheaven.com"
                   className="text-[#131111] no-underline hover:opacity-70"
                 >
-                  hello@legacycrafts.com
+                  hello@trophyheaven.com
                 </a>
                 <br />
                 <a
@@ -72,7 +72,7 @@ export default function ContactPage() {
               </p>
             </address>
             <iframe
-              title="Legacy Crafts Bangalore location"
+              title="Trophy Heaven Bangalore location"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0!2d77.6408!3d12.9784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU4JzQyLjIiTiA3N8KwMzgnMjYuOSJF!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
               className="mt-[2em] h-[16em] w-full rounded-[0.125em] border-0 grayscale-[40%]"
               loading="lazy"

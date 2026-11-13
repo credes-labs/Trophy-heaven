@@ -24,7 +24,7 @@ export default function ApiDocsPage() {
               Store API
             </h1>
             <p className="mt-[1.25em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
-              Custom Legacy Crafts endpoints — OpenAPI 3.1.
+              Custom Trophy Heaven endpoints — OpenAPI 3.1.
             </p>
           </div>
         </EditorialFrame>

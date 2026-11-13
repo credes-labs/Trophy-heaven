@@ -52,8 +52,7 @@ export type ShopCategoryOption = {
 
 function parseFilters(sp: URLSearchParams): ShopFilters {
   const cat = sp.get("category")
-  const category =
-    cat === "trophies" || cat === "furniture" || cat === "artwork" ? cat : null
+  const category = cat === "trophies" ? cat : null
   const material = sp.get("material")
   const sort = sp.get("sort") || "newest"
   const minPrice = Math.max(PRICE_RANGE.min, Number(sp.get("minPrice")) || PRICE_RANGE.min)

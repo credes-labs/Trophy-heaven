@@ -1,8 +1,8 @@
 {
-  "name": "legacy-crafts",
+  "name": "trophy-heaven",
   "version": "0.1.0",
   "private": true,
-  "description": "Legacy Crafts — premium e-commerce for custom trophies, furniture, and home decor with a 2D/3D customization engine.",
+  "description": "Trophy Heaven — premium e-commerce for custom trophies and awards with a 2D/3D customization engine.",
   "packageManager": "pnpm@10.33.3",
   "engines": {
     "node": ">=22"
@@ -13,8 +13,8 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm schemas:build && pnpm -r typecheck",
     "test": "pnpm -r test",
-    "schemas:build": "pnpm --filter @legacy-crafts/schemas build",
-    "schemas:test": "pnpm --filter @legacy-crafts/schemas test"
+    "schemas:build": "pnpm --filter @trophy-heaven/schemas build",
+    "schemas:test": "pnpm --filter @trophy-heaven/schemas test"
   },
   "devDependencies": {
     "eslint": "^9.15.0",

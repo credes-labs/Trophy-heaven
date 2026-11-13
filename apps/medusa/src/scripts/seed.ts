@@ -3,6 +3,7 @@ import {
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
   createProductsWorkflow,
+  deleteProductCategoriesWorkflow,
   deleteProductsWorkflow,
   createRegionsWorkflow,
   createSalesChannelsWorkflow,
@@ -15,8 +16,6 @@ import {
 import { Modules, ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
 import type { CreateProductWorkflowInputDTO, ExecArgs } from "@medusajs/framework/types"
 import { generateSku } from "../lib/sku"
-import { furnitureCollectionProducts } from "./furniture-collection"
-import { sculptureCollectionProducts } from "./sculpture-collection"
 import { trophyCollectionProducts } from "./trophy-collection"
 
 // Medusa's default local file provider won't serve the storefront assets, so in
@@ -67,10 +66,34 @@ const RETIRED_SAMPLE_HANDLES = new Set([
   "oak-side-table",
   "brass-table-lamp",
   "handwoven-wall-textile",
+  // Trophy Heaven rebrand: the furniture and sculpture collections belonged to
+  // Legacy Crafts. Trophy Heaven sells trophies only.
+  "brass-nesting-tables",
+  "marble-top-side-table",
+  "brass-hex-glass-table",
+  "marble-octagon-coffee-table",
+  "verdigris-loop-sculpture",
+  "pierced-bronze-disc",
+  "split-rib-sculpture",
+  "sunburst-disc-sculpture",
+  "gilt-burst-objet",
+  "reef-totem-sculpture",
+  "verdigris-wave-sculpture",
+  "ripple-disc-sculpture",
+  "interlocking-rings-sculpture",
+  "fluted-oval-objet",
+  "obsidian-totem-sculpture",
+  "verdigris-wreath-sculpture",
 ])
 
 /**
- * Seeds the Legacy Crafts catalog: regions (India/INR + International/USD), the
+ * Non-trophy categories from the Legacy Crafts catalog. Deleted (children
+ * first) on each seed so older databases converge on the trophy-only tree.
+ */
+const RETIRED_CATEGORY_NAMES = ["Tables", "Sculptures", "Furniture", "Home Decor"] as const
+
+/**
+ * Seeds the Trophy Heaven catalog: regions (India/INR + International/USD), the
  * category hierarchy from FR-CAT-1, product types, a stock location, fulfillment
  * set + shipping options, inventory stock levels, and sample products (standard
  * + customizable). Safe to re-run — guarded by existence checks.
@@ -84,7 +107,7 @@ export default async function seed({ container }: ExecArgs) {
   const fulfillmentModule = container.resolve(Modules.FULFILLMENT)
   const regionModule = container.resolve(Modules.REGION)
 
-  logger.info("Seeding Legacy Crafts catalog…")
+  logger.info("Seeding Trophy Heaven catalog…")
 
   // ── Sales channel ──────────────────────────────────────────────────────────
   let [defaultSalesChannel] = await salesChannelModule.listSalesChannels({
@@ -147,14 +170,14 @@ export default async function seed({ container }: ExecArgs) {
     fields: ["id", "name"],
   })
   let stockLocation: { id: string; name: string } | undefined = existingLocations.find(
-    (l: { name: string }) => l.name === "Legacy Crafts Workshop"
+    (l: { name: string }) => l.name === "Trophy Heaven Workshop"
   )
   if (!stockLocation) {
     const { result: stockLocations } = await createStockLocationsWorkflow(container).run({
       input: {
         locations: [
           {
-            name: "Legacy Crafts Workshop",
+            name: "Trophy Heaven Workshop",
             address: { city: "Bengaluru", country_code: "IN", address_1: "Workshop Rd" },
           },
         ],
@@ -163,7 +186,7 @@ export default async function seed({ container }: ExecArgs) {
     stockLocation = stockLocations[0]
   }
   if (!stockLocation) {
-    throw new Error("Failed to find or create the Legacy Crafts Workshop stock location.")
+    throw new Error("Failed to find or create the Trophy Heaven Workshop stock location.")
   }
 
   await linkSalesChannelsToStockLocationWorkflow(container)
@@ -191,13 +214,13 @@ export default async function seed({ container }: ExecArgs) {
 
   // ── Fulfillment set + service zone + shipping options ───────────────────────
   let fulfillmentSets = await fulfillmentModule.listFulfillmentSets(
-    { name: "Legacy Crafts Workshop delivery" },
+    { name: "Trophy Heaven Workshop delivery" },
     { relations: ["service_zones"] }
   )
   let fulfillmentSet = fulfillmentSets[0]
   if (!fulfillmentSet) {
     fulfillmentSet = await fulfillmentModule.createFulfillmentSets({
-      name: "Legacy Crafts Workshop delivery",
+      name: "Trophy Heaven Workshop delivery",
       type: "shipping",
       service_zones: [
         {
@@ -298,7 +321,7 @@ export default async function seed({ container }: ExecArgs) {
   )
 
   if (!categoryByName["Trophies"]) {
-    const topLevel = ["Trophies", "Furniture", "Home Decor", "Gift Sets"]
+    const topLevel = ["Trophies", "Gift Sets"]
     const { result: parents } = await createProductCategoriesWorkflow(container).run({
       input: { product_categories: topLevel.map((name) => ({ name, is_active: true })) },
     })
@@ -306,10 +329,6 @@ export default async function seed({ container }: ExecArgs) {
 
     const children: Record<string, string[]> = {
       Trophies: ["Sports", "Corporate", "Academic", "Memorial", "Acrylic", "Crystal", "Metal"],
-      // The workshop makes tables; the other furniture leaves went with the
-      // retired sample products.
-      Furniture: ["Tables"],
-      "Home Decor": ["Sculptures"],
     }
     const childInput = Object.entries(children).flatMap(([parent, subs]) =>
       subs.map((name) => ({ name, parent_category_id: categoryByName[parent], is_active: true }))
@@ -318,20 +337,6 @@ export default async function seed({ container }: ExecArgs) {
       input: { product_categories: childInput },
     })
     for (const c of subCategories) categoryByName[c.name] = c.id
-  }
-
-  // Subcategories added after a database was first seeded: the block above only
-  // runs on a fresh DB, so new leaves have to be backfilled explicitly.
-  const homeDecorId = categoryByName["Home Decor"]
-  if (homeDecorId && !categoryByName["Sculptures"]) {
-    const { result: newSubs } = await createProductCategoriesWorkflow(container).run({
-      input: {
-        product_categories: [
-          { name: "Sculptures", parent_category_id: homeDecorId, is_active: true },
-        ],
-      },
-    })
-    for (const c of newSubs) categoryByName[c.name] = c.id
   }
 
   // ── Publishable API key linked to the sales channel ──────────────────────────
@@ -435,6 +440,21 @@ export default async function seed({ container }: ExecArgs) {
     await deleteProductsWorkflow(container).run({ input: { ids: retiredIds } })
     logger.info(`Removed ${retiredIds.length} retired catalog product(s).`)
   }
+
+  // Leaves come before parents in RETIRED_CATEGORY_NAMES, so each delete hits an
+  // empty node. Done after the product cleanup above so no live product links remain.
+  for (const name of RETIRED_CATEGORY_NAMES) {
+    const id = categoryByName[name]
+    if (!id) continue
+    await deleteProductCategoriesWorkflow(container)
+      .run({ input: [id] })
+      .then(() => {
+        delete categoryByName[name]
+        logger.info(`Removed retired category "${name}".`)
+      })
+      .catch((err: unknown) => logger.warn(`Could not remove category "${name}": ${String(err)}`))
+  }
+
   const liveProducts = existingProducts.filter(
     (p: { id: string }) => !retiredIds.includes(p.id),
   )
@@ -490,16 +510,6 @@ export default async function seed({ container }: ExecArgs) {
   }
 
   const collectionSources = [
-    furnitureCollectionProducts({
-      salesChannelId: defaultSalesChannel.id,
-      categoryByName,
-      storefrontUrl: STOREFRONT_URL,
-    }),
-    sculptureCollectionProducts({
-      salesChannelId: defaultSalesChannel.id,
-      categoryByName,
-      storefrontUrl: STOREFRONT_URL,
-    }),
     trophyCollectionProducts({
       salesChannelId: defaultSalesChannel.id,
       categoryByName,
@@ -600,9 +610,9 @@ export default async function seed({ container }: ExecArgs) {
   // created inside (or attached to) an active campaign window.
   const promotionModule = container.resolve(Modules.PROMOTION)
   const campaignWindow = {
-    name: "Legacy Offers",
-    campaign_identifier: "legacy-offers",
-    description: "Storewide Legacy Crafts offers",
+    name: "Trophy Heaven Offers",
+    campaign_identifier: "trophy-heaven-offers",
+    description: "Storewide Trophy Heaven offers",
     starts_at: new Date(Date.now() - 24 * 60 * 60 * 1000),
     ends_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
   }
@@ -618,7 +628,7 @@ export default async function seed({ container }: ExecArgs) {
       },
     },
     {
-      code: "LEGACY500",
+      code: "HEAVEN500",
       type: "standard",
       application_method: {
         type: "fixed",

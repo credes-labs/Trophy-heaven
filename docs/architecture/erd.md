@@ -1,6 +1,6 @@
 # Entity-Relationship Diagram
 
-Custom Legacy Crafts entities layered on top of Medusa's core commerce models
+Custom Trophy Heaven entities layered on top of Medusa's core commerce models
 (Product, Variant, Cart, Order, Customer, Payment). Core Medusa entities are
 shown only where custom entities reference them (by id, no FK across modules —
 Medusa module isolation).

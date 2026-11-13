@@ -27,12 +27,12 @@ const TIERS = [
     name: "White-glove freight",
     time: "By appointment",
     price: "Quoted",
-    detail: "Uncrating and placement for large furniture in Bangalore, Mumbai, and Delhi NCR.",
+    detail: "Uncrating and stage placement for large awards in Bangalore, Mumbai, and Delhi NCR.",
   },
 ] as const
 
 const STEPS = [
-  { n: "01", title: "Request", copy: "Start from your account, or write to hello@legacycrafts.com with the order number." },
+  { n: "01", title: "Request", copy: "Start from your account, or write to hello@trophyheaven.com with the order number." },
   { n: "02", title: "Collect", copy: "We arrange insured pickup where available. Keep the original packaging." },
   { n: "03", title: "Inspect", copy: "The workshop checks the piece, typically within two to three days of arrival." },
   { n: "04", title: "Refund", copy: "Approved refunds return to the original method within 5–7 business days." },

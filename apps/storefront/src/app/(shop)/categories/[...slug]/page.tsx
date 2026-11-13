@@ -15,9 +15,6 @@ type Props = {
 /** Top-level Medusa handles → branded category routes */
 const TOP_LEVEL_REDIRECTS: Record<string, string> = {
   trophies: "/trophies",
-  furniture: "/furniture",
-  "home-decor": "/artwork",
-  artwork: "/artwork",
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -36,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!category) return { title: "Category" }
   return {
     title: category.name,
-    description: category.description ?? `Shop ${category.name} at Legacy Crafts.`,
+    description: category.description ?? `Shop ${category.name} at Trophy Heaven.`,
     alternates: { canonical: `/categories/${slug.join("/")}` },
   }
 }
