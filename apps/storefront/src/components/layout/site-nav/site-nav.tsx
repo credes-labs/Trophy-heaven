@@ -10,13 +10,13 @@ import { siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
 import { useHoverIntent } from "./use-hover-intent"
 
 export const siteNavItemClass =
-  "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-white uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#F2F1EF] lg:text-[13px]"
+  "font-outfit text-[12px] leading-none font-normal tracking-[0.04em] text-white uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#F2F1EF] lg:text-[13px]"
 
 /** `light` = white type for the dark homepage poster; `ink` = dark type for light inner pages. */
 export type SiteNavTone = "light" | "ink"
 
 const siteNavInkItemClass =
-  "font-outfit text-[12px] leading-none font-medium tracking-[0.14em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
+  "font-outfit text-[12px] leading-none font-normal tracking-[0.04em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
 
 const inkWordmarkClass = "text-[#131111] focus-visible:outline-[#131111]"
 

@@ -4,7 +4,7 @@
   overflow-x: clip;
   background: #f2f1ef;
   color: #131111;
-  font-family: var(--font-outfit), "Outfit", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
 }
 
 .pdp-shell {

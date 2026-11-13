@@ -19,9 +19,11 @@ function HomeMobileHeader() {
   return (
     <div
       data-home-mobile-header
-      className="fixed inset-x-0 top-0 z-40 bg-transparent px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-4 lg:hidden"
+      className={`fixed inset-x-0 top-0 z-40 px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-4 transition-colors lg:hidden ${
+        overHero ? "bg-transparent" : "bg-white/90 backdrop-blur-sm"
+      }`}
     >
-      <SiteNavMobile tone={overHero ? "light" : "ink"} />
+      <SiteNavMobile tone="ink" />
     </div>
   )
 }

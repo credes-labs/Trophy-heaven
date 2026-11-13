@@ -29,3 +29,45 @@ export const HERO_NAV_COL_2 = [
 ] as const
 
 export const HERO_NAV_LINKS = [...HERO_NAV_COL_1, ...HERO_NAV_COL_2]
+
+/* ── Editorial poster hero (white, Urbanist, cut-out trophies) ── */
+
+export const HERO_TAGLINE = {
+  lead: "Trophies designed",
+  rest: "as objects of recognition.",
+} as const
+
+/** Tiny caps row under the wordmark; `col` places each label on the 12-col grid. */
+export const HERO_FEATURES = [
+  { label: "Form & finish", href: "/shop", col: "col-span-3" },
+  { label: "Material & craft", href: "/about#story", col: "col-start-4 col-span-2" },
+  { label: "Engraving", href: "/customize", col: "col-start-6 col-span-2" },
+  { label: "Presentation", href: "/corporate", col: "col-start-10 col-span-2" },
+  { label: "Our story", href: "/about", col: "col-start-12 text-right" },
+] as const
+
+/** Top bar: two stacked filter columns, then shop links, then cart + currency. */
+export const HERO_TOP_FILTERS = [
+  [
+    { label: "Collections", href: "/trophies" },
+    { label: "Price", href: "/shop?sort=price_asc" },
+  ],
+  [
+    { label: "Custom", href: "/customize" },
+    { label: "Plaque / Award", href: "/corporate" },
+  ],
+] as const
+
+export const HERO_TOP_LINKS = [
+  { label: "Shop", href: "/shop" },
+  { label: "Trade", href: "/trade" },
+  { label: "About", href: "/about" },
+  { label: "Search", href: "/search" },
+] as const
+
+/** Cut-outs (backgrounds removed from the catalog photos). Heights are % of the stage. */
+export const HERO_TROPHIES = [
+  { src: "/images/cutouts/plaque.webp", width: 1021, intrinsicHeight: 1177, height: "46%" },
+  { src: "/images/cutouts/figure-award.webp", width: 590, intrinsicHeight: 1604, height: "100%" },
+  { src: "/images/cutouts/statuette.webp", width: 314, intrinsicHeight: 772, height: "78%" },
+] as const

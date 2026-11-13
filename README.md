@@ -8,7 +8,7 @@ artwork); the furniture and artwork lines were removed in WP-87 (see `docs/chang
 - Brand: walnut/cream/champagne base, gold accents (`#B89E6B`), burgundy `#8A2D25`
   trophy accent. Logo: "T" monogram + "Trophy Heaven" wordmark — interim live-text
   versions until the supplied logo and imagery land.
-- Type: Playfair Display (serif headlines) + Inter (body)
+- Type: Urbanist everywhere (display, body, UI)
 - Catalog seeded: 3 trophy products, 6 blog posts, reviews, promotions (`WELCOME10`, `HEAVEN500`)
 
 ## Stack

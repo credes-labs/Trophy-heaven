@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, Outfit, Playfair_Display } from "next/font/google"
+import { Inter, Playfair_Display, Urbanist } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
 import { AnnouncementBar } from "@/components/layout/announcement-bar"
@@ -11,26 +11,37 @@ import { Analytics } from "@/components/analytics"
 import { ChromeGate, SiteChrome } from "@/components/layout/site-chrome"
 import { getSiteUrl } from "@/lib/site-url"
 
-const inter = Inter({
+/**
+ * Urbanist is the single site typeface (display, body, UI) — the geometric
+ * grotesque from the Trophy Heaven landing-page reference.
+ */
+const urbanist = Urbanist({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-urbanist",
+  display: "swap",
+})
+
+/**
+ * Engraving faces only: the plaque configurator offers these as lettering
+ * styles for the customer's plate. Not preloaded — the site never uses them.
+ */
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600"],
   variable: "--font-inter",
   display: "swap",
+  preload: false,
 })
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "700"],
   style: ["normal", "italic"],
   variable: "--font-playfair",
   display: "swap",
-})
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
-  variable: "--font-outfit-family",
-  display: "swap",
+  preload: false,
 })
 
 const siteUrl = getSiteUrl()
@@ -86,7 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${urbanist.variable} ${inter.variable} ${playfair.variable}`}>
       <body className="font-sans bg-background text-foreground antialiased">
         <script
           type="application/ld+json"

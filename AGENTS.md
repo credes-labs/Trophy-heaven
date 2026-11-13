@@ -107,8 +107,11 @@ pnpm build                                  # before merging
 ## Brand contract (do not dilute)
 
 Champagne `#FBFBF7` / cream `#E0D8C3` surfaces, walnut `#331207` text, gold
-`#B89E6B` accents, burgundy `#8A2D25` trophy accent. Playfair Display headlines,
-Inter body. Trophy Heaven is a trophy-only fork of Legacy Crafts: do not reintroduce
+`#B89E6B` accents, burgundy `#8A2D25` trophy accent. **Urbanist is the only site
+typeface** (display, body, UI); `font-serif`/`font-display`/`font-outfit` are aliases
+of it. Playfair Display and Inter load unpreloaded solely as plaque-engraving styles in
+the configurator. The homepage top (white poster hero, categories, Selected Editions)
+uses transparent cut-outs from `public/images/cutouts/`. Trophy Heaven is a trophy-only fork of Legacy Crafts: do not reintroduce
 furniture, artwork/home-decor or sculpture products, routes, copy or imagery
 (`/furniture` and `/artwork` 308 to `/trophies`). "Artwork" in the configurator means
 the customer's plaque art/logo and stays. The "T" monogram and wordmark are interim

@@ -286,3 +286,6 @@ Replaced the shared silhouette grid with the supplied furniture, trophy and scul
 
 ## 2026-11-13 - Trophy Heaven rebrand
 Forked from Legacy Crafts: renamed to Trophy Heaven (`@trophy-heaven/*`), removed all furniture, artwork/home-decor and sculpture products, routes, copy and imagery, and re-pointed every homepage section at trophies. See L2 WP-87.
+
+## 2026-11-13 - Editorial homepage and Urbanist typography
+Homepage top rebuilt after the supplied reference: white poster hero with a full-width lowercase wordmark and three background-removed trophies, a categories row and a filterable "Selected Editions" grid. Urbanist replaces Playfair/Inter/Outfit site-wide. See L2 WP-88.

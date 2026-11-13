@@ -18,6 +18,7 @@ that matches how much you need to know.
 | # | Title | Layer-2 anchor |
 |---|-------|----------------|
 | 058 | [Trophy Heaven rebrand: trophy-only fork](L3/058-trophy-heaven-rebrand.md) | WP-87 |
+| 059 | [Editorial poster homepage, trophy cut-outs, Urbanist](L3/059-editorial-homepage-urbanist.md) | WP-88 |
 | 057 | [Mixed-product silhouette mosaic](L3/057-silhouette-mosaic.md) | WP-86 |
 | 056 | [WebP imagery and image performance](L3/056-webp-imagery-performance.md) | WP-85 |
 | 055 | [Studio choices and mobile trophy hero](L3/055-studio-picker-mobile-hero.md) | WP-81 |

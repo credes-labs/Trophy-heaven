@@ -7,5 +7,8 @@
   "/images/og/og-default.jpg": "Social share card: 1200x630 JPEG crop of catalog/trophy-figure-award (kept as JPEG for link-preview crawlers that reject WebP)",
   "/images/catalog/trophy-figure-award.webp": "Gilt figure award rising through a ring on an octagonal mahogany base, burgundy wall",
   "/images/catalog/trophy-achievement-statuette.webp": "Gilded figure statuette on a black marble plinth in warm light",
-  "/images/catalog/plaque-studio.webp": "Engraved walnut award plaque with a brass plate, studio light"
+  "/images/catalog/plaque-studio.webp": "Engraved walnut award plaque with a brass plate, studio light",
+  "/images/cutouts/statuette.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/trophy-achievement-statuette: gilded figure on a black marble plinth",
+  "/images/cutouts/figure-award.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/trophy-figure-award: gilt ring figure on an octagonal mahogany base",
+  "/images/cutouts/plaque.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/plaque-studio: arched walnut plaque with a brass plate"
 }
