@@ -46,25 +46,6 @@ export const HERO_FEATURES = [
   { label: "Our story", href: "/about", col: "col-start-12 text-right" },
 ] as const
 
-/** Top bar: two stacked filter columns, then shop links, then cart + currency. */
-export const HERO_TOP_FILTERS = [
-  [
-    { label: "Collections", href: "/trophies" },
-    { label: "Price", href: "/shop?sort=price_asc" },
-  ],
-  [
-    { label: "Custom", href: "/customize" },
-    { label: "Plaque / Award", href: "/corporate" },
-  ],
-] as const
-
-export const HERO_TOP_LINKS = [
-  { label: "Shop", href: "/shop" },
-  { label: "Trade", href: "/trade" },
-  { label: "About", href: "/about" },
-  { label: "Search", href: "/search" },
-] as const
-
 /** Cut-outs (backgrounds removed from the catalog photos). Heights are % of the stage. */
 export const HERO_TROPHIES = [
   { src: "/images/cutouts/plaque.webp", width: 1021, intrinsicHeight: 1177, height: "46%" },

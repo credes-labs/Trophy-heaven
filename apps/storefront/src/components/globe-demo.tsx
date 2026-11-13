@@ -96,7 +96,7 @@ export default function GlobeDemo({ embedded = false }: { embedded?: boolean }) 
         className="relative h-full w-full"
       >
         <World data={sampleArcs} globeConfig={globeConfig} />
-        <div className="absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none from-transparent to-[#F2F1EF] z-40" />
+        <div className="absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none from-transparent to-white z-40" />
       </div>
     )
 

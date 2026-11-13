@@ -206,7 +206,7 @@ export default function AddressesPage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           size="lg"
-          className="max-h-[90vh] overflow-y-auto rounded-none border-0 bg-[#F2F1EF] p-[clamp(1.5rem,4vw,2.5em)] text-[#131111] shadow-none"
+          className="max-h-[90vh] overflow-y-auto rounded-none border-0 bg-white p-[clamp(1.5rem,4vw,2.5em)] text-[#131111] shadow-none"
         >
           <DialogHeader className="mb-[0.25em]">
             <EditorialEyebrow>Account</EditorialEyebrow>

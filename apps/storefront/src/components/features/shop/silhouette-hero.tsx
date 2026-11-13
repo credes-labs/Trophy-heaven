@@ -14,7 +14,7 @@ const SilhouetteGrid = dynamic(() => import("./silhouette-grid"), {
 
 export function SilhouetteHero() {
   return (
-    <section className="bg-[#F2F1EF]">
+    <section className="bg-white">
       <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,4vw,3.5em)] pb-[clamp(1.5rem,3vw,2.5em)]">
         <SilhouetteGrid ink="#131111" />
       </div>

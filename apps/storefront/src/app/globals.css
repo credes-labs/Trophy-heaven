@@ -15,7 +15,7 @@
   --color-walnut-foreground: oklch(0.92 0.02 85);
   --color-stone: oklch(0.57 0.03 80);
   --color-cream: oklch(0.89 0.03 90);
-  --color-champagne: oklch(0.99 0.005 95);
+  --color-champagne: #FFFFFF;
   --color-gold: oklch(0.72 0.10 80);
   /* Darker gold for text on light surfaces — --color-gold only reaches ~2.4:1
      on champagne; this passes WCAG AA (≥4.5:1) for small text. */
@@ -24,18 +24,18 @@
   /* Figma editorial ink and paper. Muted ink is ~5.7:1 on paper. */
   --color-ink: #131111;
   --color-ink-muted: #6B635C;
-  --color-paper: #FBFBF7;
-  --color-paper-raised: #F2F1EF;
+  --color-paper: #FFFFFF;
+  --color-paper-raised: #FFFFFF;
 
   /* ── Semantic Colors ── */
 
-  --color-background: oklch(0.99 0.005 95);
+  --color-background: #FFFFFF;
   --color-foreground: oklch(0.22 0.07 35);
 
   --color-card: oklch(1 0 0);
   --color-card-foreground: oklch(0.22 0.07 35);
 
-  --color-muted: oklch(0.96 0.008 90);
+  --color-muted: #F3F3F3;
   --color-muted-foreground: oklch(0.50 0.02 70);
 
   --color-border: oklch(0.90 0.01 85);

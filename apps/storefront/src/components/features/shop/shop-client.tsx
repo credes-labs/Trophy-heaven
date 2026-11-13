@@ -346,7 +346,7 @@ export function ShopClient({
   return (
     <div
       className={cn(
-        "shop-page under-site-header bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]",
+        "shop-page under-site-header bg-white font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]",
         filtersOpen && "is-filter"
       )}
     >

@@ -8,7 +8,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { Check } from "lucide-react"
 import { CategoryHero } from "@/components/features/catalog/category-hero"
 import { SubcategoryNav } from "@/components/features/catalog/subcategory-nav"
-import { ProductCard } from "@/components/features/catalog/product-card"
+import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -24,6 +24,9 @@ import { matchesMaterial, productPrice } from "@/lib/product-filters"
 import { fadeUp, staggerGrid } from "@/lib/animations"
 import { cn } from "@/lib/utils"
 import { motion } from "motion/react"
+
+/** Same grid as the shop catalogue so cards are identical across both pages. */
+const GRID = "grid grid-cols-1 gap-x-[1.5em] gap-y-[2.625em] sm:grid-cols-2 xl:grid-cols-4"
 
 const PRICE_BUCKETS = [
   { value: "under-5k", label: "Under ₹5,000", min: 0, max: 5000 },
@@ -177,7 +180,6 @@ export function CategoryPageClient({
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <SubcategoryNav
           items={config.subcategories}
-          accent={config.accent}
           active={sub}
           onSelect={(value) => setParam({ sub: value })}
           className="mb-6"
@@ -187,7 +189,7 @@ export function CategoryPageClient({
           <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
             Sort
             <select
-              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
+              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
               value={sort}
               onChange={(e) => setParam({ sort: e.target.value === "newest" ? null : e.target.value })}
             >
@@ -201,7 +203,7 @@ export function CategoryPageClient({
           <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
             Price
             <select
-              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
+              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
               value={priceBucket ?? ""}
               onChange={(e) => setParam({ price: e.target.value || null })}
             >
@@ -216,7 +218,7 @@ export function CategoryPageClient({
           <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
             Material
             <select
-              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
+              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
               value={material ?? ""}
               onChange={(e) => setParam({ material: e.target.value || null })}
             >
@@ -247,9 +249,9 @@ export function CategoryPageClient({
         </div>
 
         {loading && products.length === 0 ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className={GRID}>
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-square rounded-none" />
+              <Skeleton key={i} className="aspect-[302/374] rounded-none" />
             ))}
           </div>
         ) : products.length === 0 ? (
@@ -260,14 +262,14 @@ export function CategoryPageClient({
           <>
             <motion.div
               key={`first|${filterKey}`}
-              className="grid grid-cols-2 gap-4 md:grid-cols-4"
+              className={GRID}
               variants={staggerGrid}
               initial="hidden"
               animate="visible"
             >
               {firstBatch.map((p, i) => (
                 <motion.div key={p.id} variants={fadeUp}>
-                  <ProductCard product={p} accent={config.accent} eager={i < 4} />
+                  <EditorialProductCard product={p} index={i} />
                 </motion.div>
               ))}
             </motion.div>
@@ -284,10 +286,10 @@ export function CategoryPageClient({
                 <div className="absolute inset-0 bg-gradient-to-t from-walnut/30 to-transparent" />
               </div>
               <div className="md:col-span-2">
-                <p className={cn("text-xs font-semibold uppercase tracking-wider", config.textClass)}>
+                <p className="m-0 text-[11px] font-normal tracking-[0.04em] text-[#1A1A1A]/60 uppercase">
                   {config.story.eyebrow}
                 </p>
-                <h2 className="mt-2 font-outfit text-3xl font-semibold whitespace-pre-line text-balance text-[#131111]">
+                <h2 className="mt-2 font-outfit text-3xl font-normal tracking-[-0.03em] whitespace-pre-line text-balance text-[#131111]">
                   {config.story.title}
                 </h2>
                 <p className="mt-3 text-pretty text-sm leading-relaxed text-[#6B635C]">
@@ -296,17 +298,14 @@ export function CategoryPageClient({
                 <ul className="mt-4 space-y-2">
                   {config.story.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
-                      <Check className={cn("mt-0.5 h-4 w-4 shrink-0", config.textClass)} />
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1A1A1A]" />
                       {f}
                     </li>
                   ))}
                 </ul>
                 <Link
                   href={storyCtaHref ?? config.story.ctaHref}
-                  className={cn(
-                    "mt-6 inline-flex h-11 items-center justify-center rounded-md px-5 text-sm font-medium transition-colors",
-                    "bg-trophy text-trophy-foreground hover:bg-trophy-dark"
-                  )}
+                  className="mt-6 inline-flex h-14 w-full max-w-[22rem] items-center justify-center border border-[#1A1A1A]/35 text-[11px] font-medium tracking-[0.06em] text-[#1A1A1A] uppercase transition-colors hover:bg-[#1A1A1A] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A1A1A]"
                 >
                   {config.story.ctaLabel}
                 </Link>
@@ -316,7 +315,7 @@ export function CategoryPageClient({
             {secondBatch.length > 0 && (
               <motion.div
                 key={`second|${filterKey}`}
-                className="grid grid-cols-2 gap-4 md:grid-cols-4"
+                className={GRID}
                 variants={staggerGrid}
                 initial="hidden"
                 whileInView="visible"
@@ -324,7 +323,7 @@ export function CategoryPageClient({
               >
                 {secondBatch.map((p) => (
                   <motion.div key={p.id} variants={fadeUp}>
-                    <ProductCard product={p} accent={config.accent} />
+                    <EditorialProductCard product={p} />
                   </motion.div>
                 ))}
               </motion.div>
@@ -345,8 +344,9 @@ export function CategoryPageClient({
           </>
         )}
 
+        {related.length > 0 ? (
         <section className="mt-20 border-t border-border pt-12">
-          <h2 className="mb-6 font-outfit text-2xl font-semibold text-balance text-[#131111]">You might also like</h2>
+          <h2 className="mb-6 font-outfit text-2xl font-normal tracking-[-0.03em] text-balance text-[#131111]">You might also like</h2>
           <div className="grid gap-6 sm:grid-cols-2">
             {related.map((cat) => (
               <Link
@@ -376,6 +376,7 @@ export function CategoryPageClient({
             ))}
           </div>
         </section>
+        ) : null}
       </div>
     </div>
   )

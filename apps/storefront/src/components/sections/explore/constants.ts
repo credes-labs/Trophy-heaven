@@ -89,7 +89,7 @@ export const EXPLORE_PRODUCTS: ExploreProduct[] = [
     rating: 4.7,
     reviews: 118,
     reviewsLabel: "4.7 (118 reviews)",
-    image: "/images/catalog/plaque-studio.webp",
+    image: "/images/catalog/plaque-engraved.webp",
     alt: "Engraved wooden award plaque with a brass plate",
     href: "/products/engraved-wooden-plaque",
     color: "Walnut",

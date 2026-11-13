@@ -44,7 +44,7 @@ export function SimplePageHero({
           </div>
           {illustration ? (
             <div className="hidden w-full xl:block">
-              <TrophySheet ink="#131111" paper="#F2F1EF" className="ml-auto w-full max-w-[44em]" />
+              <TrophySheet ink="#131111" paper="#FFFFFF" className="ml-auto w-full max-w-[44em]" />
             </div>
           ) : null}
         </div>

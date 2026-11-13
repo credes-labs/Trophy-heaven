@@ -71,7 +71,7 @@ export function StudioTopBar({
         <div
           role="radiogroup"
           aria-label="Preview"
-          className="pointer-events-auto absolute top-2 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-[#131111]/12 bg-[#FBFBF7]/90 p-1 sm:top-3"
+          className="pointer-events-auto absolute top-2 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-[#131111]/12 bg-white/90 p-1 sm:top-3"
         >
           {MODES.map((m) => {
             const active = m.id === mode

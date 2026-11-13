@@ -3,7 +3,7 @@
    pair escape into the header. */
 
 .checkout-page {
-  --checkout-surface: #f2f1ef;
+  --checkout-surface: #ffffff;
   overflow-x: clip;
   background: var(--checkout-surface);
   color: #131111;

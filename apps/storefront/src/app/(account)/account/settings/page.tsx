@@ -317,7 +317,7 @@ export default function SettingsPage() {
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-[#F2F1EF] transition-transform ${
+                  className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
                     notifs[key] ? "translate-x-5" : ""
                   }`}
                 />

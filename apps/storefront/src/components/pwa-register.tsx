@@ -36,7 +36,7 @@ export function PWARegister() {
     <div
       role="region"
       aria-label="Install the app"
-      className="fixed inset-x-0 bottom-16 z-[60] border-y border-[#131111]/15 bg-[#F2F1EF] md:bottom-0"
+      className="fixed inset-x-0 bottom-16 z-[60] border-y border-[#131111]/15 bg-white md:bottom-0"
     >
       <div className="mx-auto flex w-full max-w-[90em] items-center gap-4 px-[clamp(1.25rem,2.78vw,2.5rem)] py-3">
         <p className="m-0 min-w-0 flex-1 font-outfit text-sm leading-snug tracking-[-0.01em] text-[#131111] sm:text-base">

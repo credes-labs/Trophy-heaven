@@ -147,7 +147,7 @@ export function MobileMenu({
         <div className="shrink-0 border-t border-white/15 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <Link
             href="/customize"
-            className={`flex min-h-12 items-center justify-between rounded-full bg-[#FBFBF7] px-5 font-outfit text-xs font-medium tracking-[0.1em] text-[#331207] uppercase ${linkFocus}`}
+            className={`flex min-h-12 items-center justify-between rounded-full bg-white px-5 font-outfit text-xs font-medium tracking-[0.1em] text-[#331207] uppercase ${linkFocus}`}
           >
             Design a trophy <ArrowUpRight className="size-4" aria-hidden />
           </Link>

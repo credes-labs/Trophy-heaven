@@ -45,7 +45,7 @@ export function AwardStage({
     <div
       data-award-stage
       aria-busy={!ready && !failed}
-      className="relative h-full w-full bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]"
+      className="relative h-full w-full bg-[radial-gradient(ellipse_at_50%_42%,#FFFFFF_0%,#F7F7F7_48%,#ECECEC_100%)]"
     >
       <div
         role="img"
@@ -96,7 +96,7 @@ export function AwardStage({
             aria-label={label}
             onClick={action}
             disabled={failed}
-            className="flex size-10 items-center justify-center rounded-full border border-[#331207]/20 bg-[#FBFBF7]/90 text-[#331207] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40"
+            className="flex size-10 items-center justify-center rounded-full border border-[#331207]/20 bg-white/90 text-[#331207] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40"
           >
             <Icon className="size-4" aria-hidden />
           </button>

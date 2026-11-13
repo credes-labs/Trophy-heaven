@@ -15,7 +15,7 @@ export function EditorialCtaLink({
 }) {
   return (
     <Link href={href} className={cn(pillClass, className)}>
-      <span className="size-[0.5em] shrink-0 rounded-full bg-[#F2F1EF]" aria-hidden />
+      <span className="size-[0.5em] shrink-0 rounded-full bg-white" aria-hidden />
       {children}
     </Link>
   )
@@ -41,7 +41,7 @@ export function EditorialCtaButton({
       onClick={onClick}
       className={cn(pillClass, "cursor-pointer border-0", className)}
     >
-      <span className="size-[0.5em] shrink-0 rounded-full bg-[#F2F1EF]" aria-hidden />
+      <span className="size-[0.5em] shrink-0 rounded-full bg-white" aria-hidden />
       {children}
     </button>
   )

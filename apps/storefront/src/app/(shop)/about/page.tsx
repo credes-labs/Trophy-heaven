@@ -34,7 +34,7 @@ const DISCIPLINES = [
   {
     title: "Engraved plaques",
     href: "/customize",
-    image: "/images/catalog/plaque-studio.webp",
+    image: "/images/catalog/plaque-engraved.webp",
     alt: "Engraved wooden award plaque with a brass plate",
     copy: "Seasoned hardwood and a brass plate, laid out by you in the design studio.",
   },

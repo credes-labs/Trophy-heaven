@@ -15,7 +15,7 @@ export function HeroProducts() {
       </div>
       <div className="relative h-[84px] w-[128px] overflow-clip rounded-[2px] border-2 border-white lg:h-[126px] lg:w-[190px]">
         <Image
-          src="/images/catalog/plaque-studio.webp"
+          src="/images/catalog/plaque-engraved.webp"
           alt="Engraved wooden award plaque with a brass plate"
           fill
           sizes="190px"

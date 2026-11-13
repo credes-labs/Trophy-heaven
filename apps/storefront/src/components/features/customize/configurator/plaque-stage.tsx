@@ -24,7 +24,7 @@ function detectWebGL() {
 const noopSubscribe = () => () => {}
 
 const controlClass =
-  "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+  "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-white/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
 /** 3D stage with orbit + keyboard turn controls; shows the flat drawing only when WebGL is unavailable. */
 export function PlaqueStage({
@@ -55,7 +55,7 @@ export function PlaqueStage({
   return (
     <div
       ref={frame}
-      className="configurator-stage relative h-full w-full overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]"
+      className="configurator-stage relative h-full w-full overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FFFFFF_0%,#F7F7F7_48%,#ECECEC_100%)]"
     >
       <div role="img" aria-label={label} className="absolute inset-0">
         {webgl ? (

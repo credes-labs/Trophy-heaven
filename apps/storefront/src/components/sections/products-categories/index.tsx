@@ -15,7 +15,7 @@ export function ProductsCategoriesSection() {
     <section
       id="products"
       aria-labelledby="products-heading"
-      className="scroll-mt-[7rem] overflow-x-clip bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]"
+      className="scroll-mt-[7rem] overflow-x-clip bg-white font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]"
     >
       <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2.5rem,4.72vw,4.25em)] pb-[clamp(3rem,6vw,5em)]">
         <p

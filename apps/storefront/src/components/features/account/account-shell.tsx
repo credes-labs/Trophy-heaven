@@ -52,7 +52,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
 
   if (!customer) {
     return (
-      <div className="under-site-header overflow-x-clip bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
+      <div className="under-site-header overflow-x-clip bg-white font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
         <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2.5rem,6vw,5em)] pb-[clamp(3.5rem,8vw,7em)]">
           <div className="flex gap-[3em]">
             <div className="hidden w-[12em] shrink-0 space-y-[0.75em] lg:block">
@@ -80,7 +80,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="under-site-header overflow-x-clip bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
+    <div className="under-site-header overflow-x-clip bg-white font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
       <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,5vw,4em)] pb-[clamp(3.5rem,8vw,7em)]">
         <div className="mb-[2em] lg:hidden">
           <p className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111]">

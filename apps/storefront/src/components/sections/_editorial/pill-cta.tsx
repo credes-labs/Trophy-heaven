@@ -23,7 +23,7 @@ export function PillCta({
   return (
     <Link href={href} className={cn(isLight ? lightOnDark : darkOnCream, "w-full sm:w-auto", className)}>
       <span
-        className={cn("size-2 shrink-0 rounded-full", isLight ? "bg-[#131111]" : "bg-[#F2F1EF]")}
+        className={cn("size-2 shrink-0 rounded-full", isLight ? "bg-[#131111]" : "bg-white")}
         aria-hidden
       />
       {children}

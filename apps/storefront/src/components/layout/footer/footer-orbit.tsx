@@ -45,7 +45,7 @@ export function FooterOrbit() {
               orbit = mountOrbit(stage, {
                 items: FOOTER_ORBIT,
                 period: FOOTER_ORBIT_PERIOD,
-                background: "#F2F1EF",
+                background: "#FFFFFF",
                 onReady: () => {
                   if (!cancelled) setReady(true)
                 },

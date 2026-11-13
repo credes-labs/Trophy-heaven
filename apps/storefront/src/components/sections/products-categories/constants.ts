@@ -26,7 +26,7 @@ export type CatalogProduct = {
 const IMG = {
   statuette: "/images/catalog/trophy-achievement-statuette.webp",
   figure: "/images/catalog/trophy-figure-award.webp",
-  plaque: "/images/catalog/plaque-studio.webp",
+  plaque: "/images/catalog/plaque-engraved.webp",
 } as const
 
 const PDP = {

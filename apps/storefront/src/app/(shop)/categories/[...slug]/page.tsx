@@ -75,7 +75,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
   const accentToken = accent ? CATEGORY_CONFIG[accent].accent : undefined
 
   return (
-    <div className="mx-auto max-w-7xl bg-[#FBFBF7] px-4 py-10 font-outfit text-[#131111]">
+    <div className="mx-auto max-w-7xl bg-white px-4 py-10 font-outfit text-[#131111]">
       <nav aria-label="Breadcrumb" className="mb-2 text-sm text-[#6B635C]">
         <Link href="/" className="hover:text-[#131111]">
           Home
@@ -97,7 +97,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
             id="order"
             name="order"
             defaultValue={order}
-            className="h-10 rounded-[0.125em] border border-[#131111]/15 bg-[#FBFBF7] px-3 font-outfit text-sm text-[#131111]"
+            className="h-10 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
@@ -115,7 +115,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
             <Link
               key={child.id}
               href={`/categories/${slug[0]}/${child.handle}`}
-              className="rounded-full border border-[#131111]/15 px-3 py-1 font-outfit text-xs text-[#131111] hover:bg-[#F2F1EF]"
+              className="rounded-full border border-[#131111]/15 px-3 py-1 font-outfit text-xs text-[#131111] hover:bg-white"
             >
               {child.name}
             </Link>

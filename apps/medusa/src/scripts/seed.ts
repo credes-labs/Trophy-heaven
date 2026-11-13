@@ -486,8 +486,8 @@ export default async function seed({ container }: ExecArgs) {
       category_ids: [categoryByName["Academic"]].filter(Boolean),
       description:
         "Solid hardwood plaque with a brass engraving plate, laid out in the design studio and cut to order.",
-      thumbnail: catalogImage("plaque-studio.webp"),
-      images: [{ url: catalogImage("plaque-studio.webp") }],
+      thumbnail: catalogImage("plaque-engraved.webp"),
+      images: [{ url: catalogImage("plaque-engraved.webp") }],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
         customization_level: "text_only",
@@ -538,7 +538,7 @@ export default async function seed({ container }: ExecArgs) {
   // ever otherwise, so the plaque is repointed explicitly on every run.
   const productModule = container.resolve(Modules.PRODUCT)
   const IMAGE_BY_HANDLE: Record<string, string> = {
-    "engraved-wooden-plaque": catalogImage("plaque-studio.webp"),
+    "engraved-wooden-plaque": catalogImage("plaque-engraved.webp"),
   }
   const { data: imageryProducts } = await query.graph({
     entity: "product",

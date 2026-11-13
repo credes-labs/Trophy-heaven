@@ -2,13 +2,14 @@
   "/images/footer/orbit-statuette.webp": "Transparent cutout: gilded figure statuette on a black marble plinth",
   "/images/footer/orbit-figure-award.webp": "Transparent cutout: gilt figure award on an octagonal mahogany base",
   "/images/hero/hero-workshop.webp": "Craftsman workshop with warm wood and brass tools in low-key atmospheric light",
-  "/images/blog/blog-craftsmanship.webp": "Artisan working wood with brass tools — craftsmanship editorial",
+  "/images/blog/blog-craftsmanship.webp": "Artisan working wood with brass tools \u2014 craftsmanship editorial",
   "/images/blog/blog-materials.webp": "Premium materials flat lay: wood, brass, crystal, leather, marble",
   "/images/og/og-default.jpg": "Social share card: 1200x630 JPEG crop of catalog/trophy-figure-award (kept as JPEG for link-preview crawlers that reject WebP)",
   "/images/catalog/trophy-figure-award.webp": "Gilt figure award rising through a ring on an octagonal mahogany base, burgundy wall",
   "/images/catalog/trophy-achievement-statuette.webp": "Gilded figure statuette on a black marble plinth in warm light",
-  "/images/catalog/plaque-studio.webp": "Engraved walnut award plaque with a brass plate, studio light",
+  "/images/catalog/plaque-studio.webp": "Alias of catalog/plaque-engraved.webp (same cropped image) kept for stored URLs",
   "/images/cutouts/statuette.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/trophy-achievement-statuette: gilded figure on a black marble plinth",
   "/images/cutouts/figure-award.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/trophy-figure-award: gilt ring figure on an octagonal mahogany base",
-  "/images/cutouts/plaque.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/plaque-studio: arched walnut plaque with a brass plate"
+  "/images/cutouts/plaque.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/plaque-studio: arched walnut plaque with a brass plate",
+  "/images/catalog/plaque-engraved.webp": "Engraved walnut award plaque with a brass plate, studio render cropped clear of the studio UI (no logo or viewer controls). Replaces plaque-studio.webp, which stays as an identical alias for old URLs."
 }

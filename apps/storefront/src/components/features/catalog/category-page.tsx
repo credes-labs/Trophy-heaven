@@ -87,7 +87,7 @@ function CategoryFallback() {
 
 export function CategoryPage({ categoryKey }: { categoryKey: CategoryKey }) {
   return (
-    <div className="under-site-header bg-[#F2F1EF]">
+    <div className="under-site-header bg-white">
       <Suspense fallback={<CategoryFallback />}>
         <CategoryContent categoryKey={categoryKey} />
       </Suspense>

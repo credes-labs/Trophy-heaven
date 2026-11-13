@@ -621,7 +621,7 @@ export function PlaqueConfigurator({
         label: f.label,
         visual: (
           <span
-            className="bg-[#F2F1EF] text-[1.35em] text-[#131111] leading-none"
+            className="bg-white text-[1.35em] text-[#131111] leading-none"
             style={{ fontFamily: `var(${f.cssVar})`, fontStyle: f.style, fontWeight: f.weight }}
           >
             Aa
@@ -835,7 +835,7 @@ export function PlaqueConfigurator({
         <StudioTopBar mode={mode} onModeChange={changeMode} />
       </div>
 
-      <div className="flex min-h-0 flex-col overflow-hidden border-t border-[#131111]/10 bg-[#FBFBF7] lg:border-t-0 lg:border-l">
+      <div className="flex min-h-0 flex-col overflow-hidden border-t border-[#131111]/10 bg-white lg:border-t-0 lg:border-l">
         <div className={cn("shrink-0 pt-5 lg:pt-6", panelX)}>
           <StudioPiecePicker value={award ?? "plaque"} />
           <h1
@@ -1128,7 +1128,7 @@ export function PlaqueConfigurator({
 
         <div
           className={cn(
-            "relative shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-4",
+            "relative shrink-0 border-t border-[#131111]/10 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-4",
             panelX
           )}
         >

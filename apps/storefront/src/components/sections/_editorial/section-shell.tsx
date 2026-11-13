@@ -25,7 +25,7 @@ export function SectionShell({
       aria-labelledby={ariaLabelledBy}
       className={cn(
         "overflow-x-clip font-outfit lg:[font-size:min(1rem,calc(100vw/90))]",
-        ink ? "bg-[#131111] text-[#F2F1EF]" : "bg-[#F2F1EF] text-[#131111]",
+        ink ? "bg-[#131111] text-[#F2F1EF]" : "bg-white text-[#131111]",
         className
       )}
     >

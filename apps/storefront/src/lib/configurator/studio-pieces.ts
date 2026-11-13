@@ -23,8 +23,8 @@ export const STUDIO_PIECES = [
     label: "Engraved Wooden Plaque",
     shortLabel: "Plaque",
     handle: "engraved-wooden-plaque",
-    image: "/images/catalog/plaque-studio.webp",
-    cutout: "/images/catalog/plaque-studio.webp",
+    image: "/images/catalog/plaque-engraved.webp",
+    cutout: "/images/catalog/plaque-engraved.webp",
     detail: "Walnut · engraved brass",
   },
 ] as const

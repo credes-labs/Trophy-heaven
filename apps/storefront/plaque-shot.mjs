@@ -1,7 +1,7 @@
 import { chromium } from "@playwright/test"
 import { mkdirSync } from "node:fs"
 
-const OUT = "public/images/catalog/plaque-studio.png"
+const OUT = "public/images/catalog/plaque-engraved.png"
 mkdirSync("public/images/catalog", { recursive: true })
 
 const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader"] })
@@ -30,7 +30,16 @@ const ready = await page
 
 await page.waitForTimeout(1500)
 
+// Crop off the studio chrome (wordmark, view toggle and cart along the top;
+// hint text and view buttons along the bottom) so no UI or old logo ships.
 const stage = page.locator(".configurator-stage [role=img]").first()
-await stage.screenshot({ path: OUT })
+const box = await stage.boundingBox()
+if (!box) throw new Error("stage not found")
+const TOP = 85
+const BOTTOM = 79
+await page.screenshot({
+  path: OUT,
+  clip: { x: box.x, y: box.y + TOP, width: box.width, height: box.height - TOP - BOTTOM },
+})
 console.log(`webgl-ready=${ready}`)
 await browser.close()

@@ -56,7 +56,7 @@ export function ExploreToolbar({
           <ul
             role="listbox"
             aria-label="Sort products"
-            className="absolute top-[2.25em] right-0 z-20 min-w-[14em] rounded-[0.125em] bg-[#F2F1EF] py-[0.5em] shadow-[0_12px_40px_rgba(19,17,17,0.12)]"
+            className="absolute top-[2.25em] right-0 z-20 min-w-[14em] rounded-[0.125em] bg-white py-[0.5em] shadow-[0_12px_40px_rgba(19,17,17,0.12)]"
           >
             {EXPLORE_SORTS.map((item) => (
               <li key={item.id} role="option" aria-selected={item.id === sort}>

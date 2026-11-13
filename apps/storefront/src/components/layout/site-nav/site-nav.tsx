@@ -6,7 +6,7 @@ import { Menu } from "lucide-react"
 import dynamic from "next/dynamic"
 import { SiteCartControl } from "./site-cart-control"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
-import { siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
+import { siteNavColumns, siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
 import { useHoverIntent } from "./use-hover-intent"
 
 export const siteNavItemClass =
@@ -41,6 +41,7 @@ function NavFlyout({
   onPointerEnter,
   onPointerLeave,
   itemClass,
+  stacked = false,
 }: {
   item: SiteNavItem
   open: boolean
@@ -49,6 +50,8 @@ function NavFlyout({
   onPointerEnter: () => void
   onPointerLeave: () => void
   itemClass: string
+  /** Items stacked vertically: keep the hover pad horizontal so it can't cover the next item. */
+  stacked?: boolean
 }) {
   const panelId = useId()
   const triggerRef = useRef<HTMLAnchorElement>(null)
@@ -76,7 +79,13 @@ function NavFlyout({
 
   return (
     <li
-      className={hasMenu ? "pointer-events-auto relative -mx-2 -my-3 px-2 py-3" : "relative"}
+      className={
+        hasMenu
+          ? stacked
+            ? "pointer-events-auto relative -mx-2 px-2"
+            : "pointer-events-auto relative -mx-2 -my-3 px-2 py-3"
+          : "relative"
+      }
       onPointerEnter={
         hasMenu
           ? (event) => {
@@ -165,7 +174,7 @@ function NavFlyout({
             }
           }}
         >
-          <ul className="m-0 list-none border border-[#131111]/10 bg-[#F2F1EF] py-3 shadow-[0_12px_40px_rgba(19,17,17,0.12)]">
+          <ul className="m-0 list-none border border-[#131111]/10 bg-white py-3 shadow-[0_12px_40px_rgba(19,17,17,0.12)]">
             {children.map((child) => (
               <li key={`${child.href}-${child.label}`}>
                 <Link
@@ -230,6 +239,62 @@ export function SiteNav({
         <SiteCartControl className={itemClass} />
       </nav>
     </div>
+  )
+}
+
+const sitePosterItemClass =
+  "block text-[11px] leading-[1.45] font-normal tracking-[0.02em] text-[#1A1A1A] uppercase transition-opacity hover:opacity-60 focus-visible:outline-1 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[#1A1A1A]"
+
+/**
+ * Landing-page poster layout of the same primary nav: identical items, flyout
+ * menus and routes as SiteNav, set as stacked tiny caps on a 12-column grid
+ * (the giant hero wordmark stands in for the logo).
+ */
+export function SiteNavPoster({ categories }: { categories?: NavCategory[] }) {
+  const { col1, col2 } = useMemo(() => siteNavColumns(categories), [categories])
+  const { openId, open, close, pointerEnter, pointerLeave } = useHoverIntent()
+
+  useEffect(() => {
+    if (!openId) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close()
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [openId, close])
+
+  const renderColumn = (items: SiteNavItem[], className: string) => (
+    <ul className={`m-0 flex list-none flex-col items-start gap-0.5 p-0 ${className}`}>
+      {items.map((item) => (
+        <NavFlyout
+          key={item.id}
+          item={item}
+          open={openId === item.id}
+          onOpen={() => open(item.id)}
+          onClose={close}
+          onPointerEnter={() => pointerEnter(item.id)}
+          onPointerLeave={pointerLeave}
+          itemClass={sitePosterItemClass}
+          stacked
+        />
+      ))}
+    </ul>
+  )
+
+  return (
+    <nav aria-label="Primary" className="relative z-40 grid grid-cols-12 items-start gap-x-4">
+      {renderColumn(col1, "col-span-3")}
+      {renderColumn(col2, "col-start-4 col-span-3")}
+      <div className="col-start-8 col-span-3">
+        <Link href="/search" aria-label="Search" className={sitePosterItemClass}>
+          SEARCH
+        </Link>
+      </div>
+      <div className="col-start-11 col-span-2 flex justify-end gap-8">
+        <SiteCartControl className={sitePosterItemClass} />
+        <span className={sitePosterItemClass}>INR</span>
+      </div>
+    </nav>
   )
 }
 

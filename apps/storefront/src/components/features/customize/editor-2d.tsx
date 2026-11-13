@@ -99,7 +99,7 @@ export function Editor2D({
           <StudioTopBar mode="2d" />
         </div>
 
-        <div className="flex min-h-0 flex-col overflow-hidden border-t border-[#131111]/10 bg-[#FBFBF7] lg:border-t-0 lg:border-l">
+        <div className="flex min-h-0 flex-col overflow-hidden border-t border-[#131111]/10 bg-white lg:border-t-0 lg:border-l">
           <div className={cn("shrink-0 pt-[0.8em] lg:pt-[1.5em]", panelX)}>
             <p className="m-0 hidden font-outfit text-[0.6875em] tracking-[0.14em] text-[#6B635C] uppercase lg:block">
               Design studio · 2D layout
@@ -149,7 +149,7 @@ export function Editor2D({
             {tab === "compose" ? <LayoutComposePanel /> : <LayoutLibraryPanel />}
           </div>
 
-          <div className={cn("relative shrink-0 border-t border-[#131111]/10 bg-[#FBFBF7] pt-[0.8em] pb-[max(0.6em,env(safe-area-inset-bottom))] lg:py-[1em]", panelX)}>
+          <div className={cn("relative shrink-0 border-t border-[#131111]/10 bg-white pt-[0.8em] pb-[max(0.6em,env(safe-area-inset-bottom))] lg:py-[1em]", panelX)}>
             <p
               role="status"
               className={cn(

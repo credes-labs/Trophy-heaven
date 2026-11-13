@@ -104,7 +104,7 @@ export function ProductCard({
     return (
       <article
         className={cn(
-          "group flex gap-4 overflow-hidden border border-[#131111]/15 bg-[#FBFBF7] p-3",
+          "group flex gap-4 overflow-hidden border border-[#131111]/15 bg-white p-3",
           className
         )}
       >
@@ -174,7 +174,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group flex flex-col overflow-hidden border border-[#131111]/15 bg-[#FBFBF7]",
+        "group flex flex-col overflow-hidden border border-[#131111]/15 bg-white",
         className
       )}
     >
@@ -210,7 +210,7 @@ export function ProductCard({
             aria-pressed={wishlisted}
             disabled={wishlistBusy}
             onClick={() => void toggleWishlist()}
-            className="absolute right-2 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#FBFBF7]/90 text-[#131111] transition-colors hover:bg-[#FBFBF7] disabled:opacity-60"
+            className="absolute right-2 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#131111] transition-colors hover:bg-white disabled:opacity-60"
           >
             <Heart className={cn("h-4 w-4", wishlisted && "fill-[#131111] text-[#131111]")} />
           </button>

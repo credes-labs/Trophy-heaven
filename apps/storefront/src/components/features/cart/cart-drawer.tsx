@@ -46,7 +46,7 @@ export function CartDrawer() {
         onClick={() => setDrawerOpen(false)}
         aria-hidden
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-[26rem] flex-col bg-[#F2F1EF] text-[#131111] shadow-xl">
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-[26rem] flex-col bg-white text-[#131111] shadow-xl">
         <div className="flex items-center justify-between border-b border-[#131111]/12 px-5 py-4">
           <h2 className="m-0 font-outfit text-[1.125em] font-normal tracking-[0.14em] text-balance uppercase">
             Your cart

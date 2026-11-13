@@ -289,3 +289,15 @@ Forked from Legacy Crafts: renamed to Trophy Heaven (`@trophy-heaven/*`), remove
 
 ## 2026-11-13 - Editorial homepage and Urbanist typography
 Homepage top rebuilt after the supplied reference: white poster hero with a full-width lowercase wordmark and three background-removed trophies, a categories row and a filterable "Selected Editions" grid. Urbanist replaces Playfair/Inter/Outfit site-wide. See L2 WP-88.
+
+## 2026-11-13 - Poster hero site-wide, white surfaces, local backend
+Every marketing/catalog page now opens with the homepage poster hero; the inner header is the same top bar; all page surfaces are white. Backend brought up locally on the trophy_heaven database. See L2 WP-89.
+
+## 2026-11-13 - Poster hero limited to the landing page
+Owner correction: the poster hero belongs on the homepage only. Inner-page heroes and header restored; white surfaces and the backend setup stay. See L2 WP-90.
+
+## 2026-11-13 - Landing nav uses the real site nav
+The landing-page top bar now renders the primary site nav (same items, flyouts and routes); stacked-item hover overlap fixed; shop silhouette grid duplicate keys fixed. See L2 WP-91.
+
+## 2026-11-13 - Trophies page restyle, clean plaque image
+/trophies uses the shop's product card and monochrome slash filters (no burgundy); the plaque image is cropped clear of the old Legacy Crafts studio UI and renamed. See L2 WP-92.

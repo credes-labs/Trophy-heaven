@@ -269,7 +269,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
         <div className="mt-[2em]">
           <div className="flex flex-wrap items-center gap-[1.5em] border-y border-[#CDCDCD] py-[1.75em]">
             <label className="inline-flex h-[3.875em] w-[19.5em] max-w-full cursor-pointer items-center justify-center gap-[1.25em] rounded-full bg-[#131111] py-[0.625em] pr-[0.625em] pl-[0.5em] font-outfit text-[1em] leading-[1.25em] font-light tracking-[-0.02em] text-[#F2F1EF] uppercase">
-              <span className="size-[0.5em] shrink-0 rounded-full bg-[#F2F1EF]" aria-hidden />
+              <span className="size-[0.5em] shrink-0 rounded-full bg-white" aria-hidden />
               {busy ? "Processing" : "Upload .xlsx / .csv"}
               <input type="file" accept=".xlsx,.xls,.csv" onChange={onFile} className="hidden" disabled={busy} />
             </label>

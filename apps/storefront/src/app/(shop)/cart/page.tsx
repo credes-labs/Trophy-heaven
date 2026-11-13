@@ -39,7 +39,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
+    <div className="bg-white font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]">
       <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,4vw,3.5em)] pb-[clamp(5rem,10vw,7em)]">
         <button
           type="button"

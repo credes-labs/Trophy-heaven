@@ -68,7 +68,7 @@ export function ExploreSection() {
     <section
       id="explore"
       aria-labelledby="explore-heading"
-      className="overflow-x-clip bg-[#F2F1EF] font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]"
+      className="overflow-x-clip bg-white font-outfit text-[#131111] lg:[font-size:min(1rem,calc(100vw/90))]"
     >
       <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2.5rem,4.44vw,4em)] pb-[clamp(3rem,6vw,5.5em)]">
         <ExploreHeader />
@@ -104,7 +104,7 @@ export function ExploreSection() {
             aria-label="Close filters"
             onClick={() => setSheetOpen(false)}
           />
-          <div className="absolute inset-x-0 bottom-0 max-h-[85svh] overflow-y-auto rounded-t-[1em] bg-[#F2F1EF] px-[1.25em] pt-[1em] pb-[max(1.5em,env(safe-area-inset-bottom))]">
+          <div className="absolute inset-x-0 bottom-0 max-h-[85svh] overflow-y-auto rounded-t-[1em] bg-white px-[1.25em] pt-[1em] pb-[max(1.5em,env(safe-area-inset-bottom))]">
             <div className="mb-[1em] flex items-center justify-between">
               <p className="m-0 font-outfit text-[1.25em] uppercase tracking-wide">Filters</p>
               <button

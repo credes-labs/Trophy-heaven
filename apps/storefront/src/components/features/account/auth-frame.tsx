@@ -46,7 +46,7 @@ export function AuthFrame({
               <div className="hidden w-full xl:block">
                 <TrophySheet
                   ink="#131111"
-                  paper="#F2F1EF"
+                  paper="#FFFFFF"
                   className="ml-auto w-full max-w-[44em]"
                 />
               </div>

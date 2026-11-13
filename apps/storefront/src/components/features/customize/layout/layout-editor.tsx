@@ -1092,7 +1092,7 @@ function PlaqueFaceArt({
 
 const STAGE_PADDING = { x: 12, top: 56, bottom: 56 }
 const roundControl =
-  "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-[#FBFBF7] disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+  "flex size-[2.5em] items-center justify-center rounded-full border border-[#131111]/15 bg-white/85 text-[#131111] backdrop-blur-sm transition-colors hover:bg-white disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
 
 /** The 2D canvas cell: plaque art, Fabric layer, safe-area guide and history controls. */
 export function LayoutStage({ className }: { className?: string }) {
@@ -1104,7 +1104,7 @@ export function LayoutStage({ className }: { className?: string }) {
     <div
       ref={ref}
       className={cn(
-        "absolute inset-0 overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)]",
+        "absolute inset-0 overflow-hidden bg-[radial-gradient(ellipse_at_50%_42%,#FFFFFF_0%,#F7F7F7_48%,#ECECEC_100%)]",
         editor.award && "[&_[data-proof-caption]]:hidden",
         className
       )}
@@ -1196,7 +1196,7 @@ export function LayoutStage({ className }: { className?: string }) {
           <button
             type="button"
             onClick={() => editor.validate()}
-            className="h-[2.5em] rounded-full border border-[#131111]/15 bg-[#FBFBF7]/85 px-[1em] font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase backdrop-blur-sm hover:bg-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+            className="h-[2.5em] rounded-full border border-[#131111]/15 bg-white/85 px-[1em] font-outfit text-[0.75em] tracking-[0.08em] text-[#131111] uppercase backdrop-blur-sm hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
           >
             Validate
           </button>
@@ -1255,7 +1255,7 @@ function PhotoEngraveControls({ params }: { params: EngraveParams }) {
           <span
             aria-hidden
             className={cn(
-              "absolute top-[0.2em] size-[1.2em] rounded-full bg-[#FBFBF7] transition-[left] duration-150 motion-reduce:transition-none",
+              "absolute top-[0.2em] size-[1.2em] rounded-full bg-white transition-[left] duration-150 motion-reduce:transition-none",
               params.enabled ? "left-[1.5em]" : "left-[0.2em]"
             )}
           />
@@ -1417,7 +1417,7 @@ export function LayoutComposePanel() {
                 aria-label={`Text colour ${color}`}
                 aria-pressed={on}
                 className={cn(
-                  "size-[1.9em] rounded-full ring-offset-2 ring-offset-[#FBFBF7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111]",
+                  "size-[1.9em] rounded-full ring-offset-2 ring-offset-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111]",
                   on ? "ring-[1.5px] ring-[#131111]" : "ring-1 ring-[#131111]/15"
                 )}
                 style={{ backgroundColor: color }}
@@ -1642,7 +1642,7 @@ export function LayoutLibraryPanel() {
                         className="aspect-square w-full object-cover"
                       />
                     ) : (
-                      <span className="flex aspect-square w-full items-center justify-center bg-[#F2F1EF] px-1 text-center font-outfit text-[0.625em] text-[#6B635C]">
+                      <span className="flex aspect-square w-full items-center justify-center bg-white px-1 text-center font-outfit text-[0.625em] text-[#6B635C]">
                         {d.name}
                       </span>
                     )}

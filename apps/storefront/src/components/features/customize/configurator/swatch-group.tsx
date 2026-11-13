@@ -62,7 +62,7 @@ export function SwatchGroup<Id extends string>({
               <span
                 aria-hidden
                 className={cn(
-                  "flex size-[2.15em] items-center justify-center overflow-hidden rounded-full ring-offset-[2px] ring-offset-[#FBFBF7] transition-[box-shadow,transform] duration-200 motion-reduce:transition-none",
+                  "flex size-[2.15em] items-center justify-center overflow-hidden rounded-full ring-offset-[2px] ring-offset-white transition-[box-shadow,transform] duration-200 motion-reduce:transition-none",
                   "group-hover:scale-[1.05] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-[4px] peer-focus-visible:outline-[#131111]",
                   checked ? "ring-[1.5px] ring-[#131111]" : "ring-1 ring-[#131111]/12"
                 )}

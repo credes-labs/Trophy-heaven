@@ -46,7 +46,7 @@ export function StudioPiecePicker({ value }: { value: StudioPieceId }) {
             href={`/customize?piece=${piece.id}`}
             aria-current={piece.id === value ? "page" : undefined}
             aria-label={piece.label}
-            className={`group relative min-w-0 rounded-lg border px-1.5 pt-2 pb-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#331207] ${piece.id === value ? "border-[#331207] bg-[#E0D8C3]/30" : "border-[#331207]/15 bg-[#F2F1EF]/60 hover:border-[#331207]/50 hover:bg-[#E0D8C3]/20"}`}
+            className={`group relative min-w-0 rounded-lg border px-1.5 pt-2 pb-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#331207] ${piece.id === value ? "border-[#331207] bg-[#E0D8C3]/30" : "border-[#331207]/15 bg-white/60 hover:border-[#331207]/50 hover:bg-[#E0D8C3]/20"}`}
           >
             {piece.id === value && <Check aria-hidden className="absolute top-2 right-2 size-3.5 text-[#331207]" />}
             <div ref={slots[index]} aria-hidden className="pointer-events-none relative mb-2 h-28 lg:h-32">

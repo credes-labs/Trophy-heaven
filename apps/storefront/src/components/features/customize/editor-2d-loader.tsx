@@ -6,7 +6,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { designApi, type DesignRecord } from "@/lib/design-client"
 
 const loadingFallback = (
-  <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_50%_42%,#FBFBF7_0%,#F2F1EF_48%,#E6E0D3_100%)] font-outfit text-[0.875em] tracking-[0.08em] text-[#6B635C] uppercase">
+  <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_50%_42%,#FFFFFF_0%,#F7F7F7_48%,#ECECEC_100%)] font-outfit text-[0.875em] tracking-[0.08em] text-[#6B635C] uppercase">
     Loading the design studio…
   </div>
 )

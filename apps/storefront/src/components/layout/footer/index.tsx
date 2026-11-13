@@ -8,7 +8,7 @@ import { FooterNav } from "./footer-nav"
  */
 export function Footer() {
   return (
-    <footer className="overflow-x-clip bg-[#F2F1EF] pb-20 font-outfit text-[#131111] md:pb-0 lg:[font-size:min(1rem,calc(100vw/90))]">
+    <footer className="overflow-x-clip bg-white pb-20 font-outfit text-[#131111] md:pb-0 lg:[font-size:min(1rem,calc(100vw/90))]">
       <div className="mx-auto flex w-full max-w-[90em] flex-col items-center gap-[2rem] lg:gap-[2.625em]">
         <CtaBand />
         <FooterNav />

@@ -453,7 +453,7 @@ export default function SilhouetteGrid({
       >
         {CELLS.map((c, i) => (
           <div
-            key={c.kind}
+            key={`${c.kind}-${i}`}
             ref={(el) => {
               cellRefs.current[i] = el;
             }}
