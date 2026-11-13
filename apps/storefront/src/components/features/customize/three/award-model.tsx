@@ -314,36 +314,51 @@ function AscentFigure({ metal, textured }: { metal: THREE.Material; textured: TH
     () =>
       sweep(
         [
-          [0.05, 0.682, 0],
-          [0.0, 0.8, 0],
-          [-0.07, 0.98, 0],
+          [0.0, 0.75, 0],
+          [-0.02, 0.84, 0],
+          [-0.07, 1.0, 0],
           [-0.035, 1.2, 0],
           [0.05, 1.4, 0],
           [0.035, 1.6, 0],
         ],
         profile([
-          [0, 0.2],
-          [0.06, 0.16],
-          [0.22, 0.092],
-          [0.44, 0.104],
+          [0, 0.095],
+          [0.18, 0.09],
+          [0.42, 0.104],
           [0.64, 0.084],
           [0.86, 0.1],
           [1, 0.09],
         ]),
-        // Round flared hem at the foot, flattening into a twisting ribbon above it.
-        {
-          squash: profile([
-            [0, 0.92],
-            [0.2, 0.62],
-            [1, 0.66],
-          ]),
-          twist: Math.PI * 1.2,
-        }
+        { squash: 0.66, twist: Math.PI * 1.2 }
+      ),
+    []
+  )
+  // Swirled skirt hem the figure stands on, seated flat on the base cap.
+  const hem = useDisposable(
+    () =>
+      lathe(
+        [
+          [0.0, 0.676],
+          [0.2, 0.678],
+          [0.205, 0.692],
+          [0.16, 0.725],
+          [0.112, 0.77],
+          [0.094, 0.82],
+          [0.0, 0.83],
+        ],
+        64
       ),
     []
   )
   return (
     <group>
+      <mesh
+        geometry={hem}
+        position={[0.0, 0, 0]}
+        scale={[1, 1, 0.72]}
+        rotation-y={0.35}
+        material={metal}
+      />
       <mesh geometry={body} material={textured} />
       {/* Open ring in the chest. */}
       <mesh position={[0.02, 1.71, 0]} scale={[0.94, 1.06, 1]} material={metal}>
@@ -412,6 +427,17 @@ export function AwardModel({
       }),
     [config.plate]
   )
+  // Base trims keep the chosen metal's own satin finish so flat tops don't mirror the key light.
+  const trim = useDisposable(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: plate.color,
+        metalness: plate.metalness,
+        roughness: Math.max(plate.roughness, 0.38),
+        clearcoat: 0.2,
+      }),
+    [config.plate]
+  )
   const dots = useDisposable(
     () =>
       canvasTexture(
@@ -458,6 +484,9 @@ export function AwardModel({
         map: woodMap,
         roughness: config.finish === "gloss" ? 0.25 : 0.55,
         clearcoat: config.finish === "oil" ? 0 : 0.6,
+        // Spread the lacquer highlight so flat tops keep their timber colour.
+        clearcoatRoughness: config.finish === "gloss" ? 0.22 : 0.4,
+        envMapIntensity: 0.7,
       }),
     [woodMap, config.finish]
   )
@@ -479,7 +508,14 @@ export function AwardModel({
     []
   )
   const stone = useDisposable(
-    () => new THREE.MeshPhysicalMaterial({ map: stoneMap, roughness: 0.26, clearcoat: 0.65 }),
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        map: stoneMap,
+        roughness: 0.3,
+        clearcoat: 0.65,
+        clearcoatRoughness: 0.35,
+        envMapIntensity: 0.6,
+      }),
     [stoneMap]
   )
   const nameplate = useDisposable(
@@ -496,7 +532,7 @@ export function AwardModel({
       {isAchievement ? (
         <>
           <Block size={[0.86, 0.1, 0.66]} at={[0, 0.05, 0]} material={timber} />
-          <Block size={[0.77, 0.06, 0.59]} at={[0, 0.13, 0]} material={metal} />
+          <Block size={[0.77, 0.06, 0.59]} at={[0, 0.13, 0]} material={trim} />
           <Block size={[0.68, 0.46, 0.52]} at={[0, 0.39, 0]} material={stone} />
           <mesh position={[0, 0.76, 0]} material={metal}>
             <cylinderGeometry args={[0.2, 0.2, 0.28, 64]} />
@@ -511,8 +547,11 @@ export function AwardModel({
           <mesh position={[0, 0.365, 0]} rotation-y={Math.PI / 8} material={timber}>
             <cylinderGeometry args={[0.46, 0.46, 0.53, 8]} />
           </mesh>
-          <mesh position={[0, 0.652, 0]} rotation-y={Math.PI / 8} material={metal}>
-            <cylinderGeometry args={[0.45, 0.46, 0.045, 8]} />
+          <mesh position={[0, 0.655, 0]} rotation-y={Math.PI / 8} material={timber}>
+            <cylinderGeometry args={[0.44, 0.46, 0.04, 8]} />
+          </mesh>
+          <mesh position={[0, 0.632, 0]} rotation-y={Math.PI / 8} material={trim}>
+            <cylinderGeometry args={[0.465, 0.465, 0.014, 8]} />
           </mesh>
           <AscentFigure metal={metal} textured={textured} />
         </>
