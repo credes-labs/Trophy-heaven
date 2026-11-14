@@ -1,16 +1,19 @@
 "use client"
 
 import type { HttpTypes } from "@medusajs/types"
+import { PaymentBreakdown } from "@/components/features/checkout/payment-breakdown"
 import { formatMoney } from "@/lib/format"
 
 export function CheckoutSummary({
   cart,
   currency,
   netTermsLabel,
+  advanceCod = false,
 }: {
   cart: HttpTypes.StoreCart
   currency: string
   netTermsLabel?: string | null
+  advanceCod?: boolean
 }) {
   return (
     <aside className="checkout-summary" aria-label="Order summary">
@@ -49,6 +52,9 @@ export function CheckoutSummary({
           <dd>{formatMoney(cart.total ?? 0, currency)}</dd>
         </div>
       </dl>
+      {advanceCod ? (
+        <PaymentBreakdown total={cart.total ?? 0} currency={currency} compact />
+      ) : null}
       {netTermsLabel ? <p className="checkout-summary-note">{netTermsLabel}</p> : null}
     </aside>
   )

@@ -603,3 +603,60 @@
   list-style: none;
   border-top: 1px solid rgb(19 17 17 / 0.16);
 }
+
+/* 10% advance + COD breakdown (payment-breakdown.tsx) */
+.checkout-breakdown {
+  margin: 1rem 0 0;
+  border: 1px solid rgb(19 17 17 / 0.16);
+  border-radius: 0.125rem;
+  padding: 0.25rem 1rem;
+}
+
+.checkout-breakdown-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgb(19 17 17 / 0.1);
+  font-size: 0.875rem;
+  color: #131111;
+}
+
+.checkout-breakdown-row:last-child {
+  border-bottom: 0;
+}
+
+.checkout-breakdown-row dt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.checkout-breakdown-row dt span {
+  color: #6b635c;
+  font-size: 0.75rem;
+}
+
+.checkout-breakdown-row dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.checkout-breakdown-row.is-now dd {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.checkout-breakdown-row.is-total {
+  color: #6b635c;
+}
+
+.checkout-breakdown.is-compact {
+  padding: 0 0.75rem;
+}
+
+.checkout-breakdown.is-compact .checkout-breakdown-row {
+  padding: 0.55rem 0;
+  font-size: 0.8125rem;
+}

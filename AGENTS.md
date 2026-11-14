@@ -66,6 +66,11 @@ pnpm build                                  # before merging
 - **`next/image` rejects absolute `localhost` URLs** even with the port
   `remotePatterns` in `next.config.ts`. Every backend-sourced image URL goes
   through `localizeImageUrl()` (`apps/storefront/src/lib/images.ts`).
+- **Sign-in is OTP only** (no passwords): `POST /store/otp/request` + `/store/otp/verify`
+  (apps/medusa/src/api/store/otp) issue a normal customer JWT; the storefront sets it with
+  `medusa.client.setToken`. Locally `OTP_DEV_ECHO=true` (apps/medusa/.env) returns the code
+  in the response and the login form shows it; e2e should read it from there. Older e2e
+  specs that fill password fields are stale.
 - **Customer data is client-side only**: wishlist/cart/auth use the Medusa SDK
   with a JWT (`apps/storefront/src/lib/medusa.ts`). RSC fetches of customer data
   return 401 — follow the account-page pattern.

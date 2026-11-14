@@ -1,6 +1,7 @@
 import { medusa } from "../medusa"
 import type { HttpTypes } from "@medusajs/types"
 import { toSmallestUnit } from "../currency"
+import type { PaymentPlan } from "../payment-plan"
 
 /**
  * Checkout orchestration against Medusa's Store API (docs/kit/02 §2.4, §2.5).
@@ -66,22 +67,45 @@ export function isRazorpayEnabled(): boolean {
  * Payment route is left open: Razorpay / COD / corporate net-terms still
  * initialize here. Do not stub or close this step.
  */
-export async function initPayment(cartId: string, opts?: { netTerms?: boolean }) {
+export async function initPayment(
+  cartId: string,
+  opts?: { netTerms?: boolean; plan?: PaymentPlan }
+) {
   const { cart } = await medusa.store.cart.retrieve(cartId)
   const netTerms = opts?.netTerms ?? isNetTermsCart(cart)
+  const plan: PaymentPlan = netTerms ? "full" : (opts?.plan ?? "full")
   if (!netTerms && isRazorpayEnabled()) {
     const existing = cart.payment_collection?.payment_sessions?.find((s) =>
       s.provider_id?.includes("razorpay")
     )
     const data = (existing?.data ?? {}) as Record<string, unknown>
-    if (typeof data.razorpay_order_id === "string" && data.razorpay_order_id) {
+    const existingPlan = data.payment_plan === "advance_cod" ? "advance_cod" : "full"
+    // Reuse the Razorpay order only while the plan (and so the amount) is unchanged.
+    if (
+      typeof data.razorpay_order_id === "string" &&
+      data.razorpay_order_id &&
+      existingPlan === plan &&
+      existing?.amount === cart.total
+    ) {
       return cart.payment_collection
     }
   }
   const { payment_collection } = await medusa.store.payment.initiatePaymentSession(cart, {
     provider_id: pickProvider(netTerms),
+    data: { payment_plan: plan },
   })
   return payment_collection
+}
+
+/**
+ * Records the chosen plan on the cart (copied to the order) so confirmation and
+ * the team see "10% advance + COD". The amounts are recomputed server-side.
+ */
+export async function setPaymentPlan(cartId: string, plan: PaymentPlan) {
+  const { cart } = await medusa.store.cart.retrieve(cartId)
+  const metadata = { ...((cart.metadata ?? {}) as Record<string, unknown>), payment_plan: plan }
+  const { cart: updated } = await medusa.store.cart.update(cartId, { metadata })
+  return updated
 }
 
 function pickProvider(netTerms = false): string {

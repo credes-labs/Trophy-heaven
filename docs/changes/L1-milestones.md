@@ -304,3 +304,6 @@ The landing-page top bar now renders the primary site nav (same items, flyouts a
 
 ## 2026-11-13 - Studio trophies re-sculpted
 Design-studio Achievement and Ascent models rebuilt to follow the catalogue photographs. See L2 WP-93.
+
+## 2026-11-14 - OTP sign-in, cart designs, 10% advance + COD, silver news
+Passwordless sign-in by email or phone code; sticker design box in the studio and on product pages; cart quantity controls, order-wide and per-item design uploads and design notes; a 10% advance + 90% cash-on-delivery payment option shown at every checkout step; a "Trophies, dipped in silver" news story; the contact page map removed. See L2 WP-94.

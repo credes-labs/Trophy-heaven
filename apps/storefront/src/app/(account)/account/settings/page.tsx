@@ -10,7 +10,6 @@ import {
 } from "@/components/layout/editorial/editorial-cta"
 import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebrow"
 import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
-import { PasswordField } from "@/components/ui/password-field"
 import { cn } from "@/lib/utils"
 
 const fieldClass = cn(
@@ -50,12 +49,6 @@ export default function SettingsPage() {
   const [profileMsg, setProfileMsg] = useState<string | null>(null)
   const [profileError, setProfileError] = useState<string | null>(null)
 
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [passwordMsg, setPasswordMsg] = useState<string | null>(null)
-  const [passwordError, setPasswordError] = useState<string | null>(null)
-  const [savingPassword, setSavingPassword] = useState(false)
 
   const [notifs, setNotifs] = useState<NotifPrefs>({
     orderUpdates: true,
@@ -91,45 +84,6 @@ export default function SettingsPage() {
       setProfileError((err as Error).message || "Could not update profile")
     } finally {
       setSaving(false)
-    }
-  }
-
-  async function handlePasswordChange(e: React.FormEvent) {
-    e.preventDefault()
-    setPasswordMsg(null)
-    setPasswordError(null)
-    if (newPassword.length < 8) {
-      setPasswordError("New password must be at least 8 characters.")
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match.")
-      return
-    }
-    if (!customer?.email) return
-    setSavingPassword(true)
-    try {
-      // Verify the current password before allowing the change.
-      await medusa.auth.login("customer", "emailpass", {
-        email: customer.email,
-        password: currentPassword,
-      })
-      const token = await medusa.client.getToken()
-      if (!token) throw new Error("Session expired. Please sign in again.")
-      await medusa.auth.updateProvider(
-        "customer",
-        "emailpass",
-        { email: customer.email, password: newPassword },
-        token
-      )
-      setPasswordMsg("Password updated.")
-      setCurrentPassword("")
-      setNewPassword("")
-      setConfirmPassword("")
-    } catch {
-      setPasswordError("Current password is incorrect, or the update failed.")
-    } finally {
-      setSavingPassword(false)
     }
   }
 
@@ -230,63 +184,12 @@ export default function SettingsPage() {
 
       <section className="mt-[2.5em] max-w-[28em] border-t border-[#CDCDCD] pt-[2em]">
         <h2 className="m-0 font-outfit text-[1.5em] leading-[1.25] font-light tracking-[-0.02em] text-balance text-[#131111]">
-          Password
+          Sign-in
         </h2>
         <p className="mt-[0.5em] m-0 font-outfit text-[1em] leading-[1.4] tracking-[-0.02em] text-[#6B635C]">
-          Update your sign-in password.
+          There is no password to manage. You sign in with a one-time code sent to your email
+          or mobile number.
         </p>
-        <form onSubmit={(e) => void handlePasswordChange(e)} className="mt-[1.5em] grid gap-[1.5em]">
-          <div>
-            <label htmlFor="settings-current" className={editorialLabelClass}>
-              Current password
-            </label>
-            <PasswordField
-              id="settings-current"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              autoComplete="current-password"
-              className={fieldClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="settings-new" className={editorialLabelClass}>
-              New password
-            </label>
-            <PasswordField
-              id="settings-new"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              autoComplete="new-password"
-              minLength={8}
-              className={fieldClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="settings-confirm" className={editorialLabelClass}>
-              Confirm new password
-            </label>
-            <PasswordField
-              id="settings-confirm"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-              className={fieldClass}
-            />
-          </div>
-          {passwordMsg ? (
-            <p className="m-0 font-outfit text-[0.875em] text-[#131111]" role="status">
-              {passwordMsg}
-            </p>
-          ) : null}
-          {passwordError ? (
-            <p className="m-0 font-outfit text-[0.875em] text-[#8A2D25]" role="alert">
-              {passwordError}
-            </p>
-          ) : null}
-          <EditorialCtaButton type="submit" disabled={savingPassword} className={focusRing}>
-            {savingPassword ? "Updating" : "Update password"}
-          </EditorialCtaButton>
-        </form>
       </section>
 
       <section className="mt-[2.5em] max-w-[28em] border-t border-[#CDCDCD] pt-[2em]">

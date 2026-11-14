@@ -7,6 +7,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { CheckCircle2, Truck } from "lucide-react"
 import { medusa } from "@/lib/medusa"
 import { formatMoney } from "@/lib/format"
+import { ADVANCE_COD_PLAN, ADVANCE_PERCENT, splitAdvance } from "@/lib/payment-plan"
 import { ShareButtons } from "@/components/features/blog/share-buttons"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
@@ -213,6 +214,23 @@ export function OrderConfirmedClient({ id }: { id: string }) {
               <span>Total</span>
               <span className="tabular-nums">{formatMoney(order.total ?? 0, order.currency_code)}</span>
             </div>
+            {order.metadata?.payment_plan === ADVANCE_COD_PLAN ? (
+              (() => {
+                const { advance, balance } = splitAdvance(order.total ?? 0, order.currency_code)
+                return (
+                  <div className="space-y-1 rounded-sm border border-border p-3 text-xs">
+                    <div className="flex justify-between">
+                      <span>Paid online ({ADVANCE_PERCENT}% advance)</span>
+                      <span className="tabular-nums">{formatMoney(advance, order.currency_code)}</span>
+                    </div>
+                    <div className="flex justify-between font-medium">
+                      <span>Due in cash on delivery</span>
+                      <span className="tabular-nums">{formatMoney(balance, order.currency_code)}</span>
+                    </div>
+                  </div>
+                )
+              })()
+            ) : null}
             <p className="max-w-[68ch] pt-2 text-pretty text-xs text-muted-foreground">
               Payment: <Badge variant="gold">{order.payment_status}</Badge>
             </p>

@@ -1,5 +1,7 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
-import { Modules } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import { toSmallestUnit, fromSmallestUnit } from "../lib/currency"
+import { ADVANCE_COD_PLAN, parsePaymentPlan, splitAdvance } from "../lib/payment-plan"
 
 /**
  * Sends an order confirmation on `order.placed` (FR-ORD-9). In Phase 5 this is
@@ -18,6 +20,44 @@ export default async function orderPlacedHandler({
     relations: ["items", "shipping_address"],
   })
 
+  // Partial-advance orders: record what was paid online and what is due in cash.
+  // The plan comes from the Razorpay session data (server-computed), falling back to
+  // the cart metadata for the system provider used without Razorpay keys.
+  let paymentSummary: Record<string, unknown> | null = null
+  try {
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
+    const { data: rows } = await query.graph({
+      entity: "order",
+      fields: ["id", "total", "metadata", "payment_collections.payment_sessions.data"],
+      filters: { id: data.id },
+    })
+    const row = rows[0] as {
+      total?: unknown
+      metadata?: Record<string, unknown> | null
+      payment_collections?: Array<{ payment_sessions?: Array<{ data?: Record<string, unknown> }> }>
+    }
+    const sessionData = row?.payment_collections
+      ?.flatMap((c) => c.payment_sessions ?? [])
+      .map((s) => s.data ?? {})
+      .find((d) => d.payment_plan)
+    const plan = parsePaymentPlan(sessionData?.payment_plan ?? row?.metadata?.payment_plan)
+    if (plan === ADVANCE_COD_PLAN) {
+      const currency = order.currency_code
+      const totalPaise = toSmallestUnit(Number(row?.total ?? order.total ?? 0), currency)
+      const { advancePaise, codPaise } = splitAdvance(totalPaise)
+      paymentSummary = {
+        payment_plan: ADVANCE_COD_PLAN,
+        advance_amount: fromSmallestUnit(advancePaise, currency),
+        cod_amount: fromSmallestUnit(codPaise, currency),
+      }
+      await orderModule.updateOrders(order.id, {
+        metadata: { ...(order.metadata ?? {}), ...paymentSummary },
+      })
+    }
+  } catch (e) {
+    logger.warn(`order.placed: could not record payment plan for ${data.id}: ${(e as Error).message}`)
+  }
+
   if (!order.email) {
     logger.warn(`order.placed: order ${data.id} has no email; skipping confirmation`)
     return
@@ -32,6 +72,7 @@ export default async function orderPlacedHandler({
       items: order.items?.map((i) => ({ title: i.title, quantity: i.quantity })) ?? [],
       total: order.total,
       currency_code: order.currency_code,
+      ...(paymentSummary ?? {}),
     },
   })
 

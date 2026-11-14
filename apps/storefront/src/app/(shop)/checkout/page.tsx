@@ -12,6 +12,7 @@ import {
   listShippingOptions,
   setShippingMethod,
   initPayment,
+  setPaymentPlan,
   completeCart,
   isNetTermsCart,
   getCartPaymentMeta,
@@ -131,8 +132,14 @@ export default function CheckoutPage() {
     setBusy(true)
     setError(null)
     try {
-      if (razorpayEnabled && paymentMethod === "razorpay") {
-        const paymentCollection = await initPayment(cartId, { netTerms: false })
+      const plan = paymentMethod === "advance_cod" ? "advance_cod" : "full"
+      if (!netTerms) {
+        const updated = await setPaymentPlan(cartId, plan)
+        useCartStore.setState({ cart: updated })
+      }
+
+      if (razorpayEnabled && (paymentMethod === "razorpay" || paymentMethod === "advance_cod")) {
+        const paymentCollection = await initPayment(cartId, { netTerms: false, plan })
         const sessionData = getRazorpaySessionData(paymentCollection)
         const latest = useCartStore.getState().cart
         const amountPaise =
@@ -144,7 +151,8 @@ export default function CheckoutPage() {
           amount: amountPaise,
           currency: (currency || "INR").toUpperCase(),
           name: "Trophy Heaven",
-          description: `Order ${cartId}`,
+          description:
+            plan === "advance_cod" ? `10% advance · order ${cartId}` : `Order ${cartId}`,
           order_id: sessionData.orderId,
           prefill: {
             email: cart.email ?? undefined,
@@ -179,12 +187,7 @@ export default function CheckoutPage() {
         return
       }
 
-      if (paymentMethod === "cod" && isRazorpayEnabled()) {
-        setError("Cash on delivery is not available. Please pay with Razorpay.")
-        setBusy(false)
-        return
-      }
-
+      if (!netTerms) await initPayment(cartId, { netTerms: false, plan })
       await finishOrder(cartId)
       setBusy(false)
     } catch (e) {
@@ -275,6 +278,8 @@ export default function CheckoutPage() {
                     method={paymentMethod}
                     onMethodChange={setPaymentMethod}
                     razorpayEnabled={razorpayEnabled}
+                    total={cart.total ?? 0}
+                    currency={currency}
                     busy={busy}
                     onBack={() => setStep("delivery")}
                     onContinue={() => setStep("review")}
@@ -288,6 +293,7 @@ export default function CheckoutPage() {
                     shippingLabel={shippingLabel}
                     paymentLabel={payLabel}
                     netTerms={netTerms}
+                    advanceCod={!netTerms && paymentMethod === "advance_cod"}
                     busy={busy}
                     onBack={() => setStep("payment")}
                     onPlaceOrder={handlePlaceOrder}
@@ -297,7 +303,12 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <CheckoutSummary cart={cart} currency={currency} netTermsLabel={netTermsLabel} />
+          <CheckoutSummary
+            cart={cart}
+            currency={currency}
+            netTermsLabel={netTermsLabel}
+            advanceCod={!netTerms && paymentMethod === "advance_cod"}
+          />
         </div>
     </CheckoutCanvas>
   )

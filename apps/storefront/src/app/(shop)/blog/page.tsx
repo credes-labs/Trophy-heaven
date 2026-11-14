@@ -5,6 +5,7 @@ import { listPosts, listBlogCategories } from "@/lib/blog"
 import { BlogHero } from "@/components/features/blog/blog-hero"
 import { BlogCard } from "@/components/features/blog/blog-card"
 import { BlogCardGrid } from "@/components/features/blog/blog-card-grid"
+import { SilverDipFeature } from "@/components/features/blog/silver-dip-feature"
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
 import { cn } from "@/lib/utils"
 
@@ -60,6 +61,7 @@ export default async function BlogPage({ searchParams }: Props) {
   return (
     <EditorialShell>
       <BlogHero />
+      {page === 1 && !category && !q ? <SilverDipFeature /> : null}
 
       <EditorialFrame className="pt-[clamp(2.5rem,5vw,4em)]">
         <nav className="flex flex-wrap gap-x-[1.5em] gap-y-[0.75em]" aria-label="Blog categories">

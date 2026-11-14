@@ -11,5 +11,8 @@
   "/images/cutouts/statuette.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/trophy-achievement-statuette: gilded figure on a black marble plinth",
   "/images/cutouts/figure-award.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/trophy-figure-award: gilt ring figure on an octagonal mahogany base",
   "/images/cutouts/plaque.webp": "Transparent cutout (background removed locally with an ISNet model) of catalog/plaque-studio: arched walnut plaque with a brass plate",
-  "/images/catalog/plaque-engraved.webp": "Engraved walnut award plaque with a brass plate, studio render cropped clear of the studio UI (no logo or viewer controls). Replaces plaque-studio.webp, which stays as an identical alias for old URLs."
+  "/images/catalog/plaque-engraved.webp": "Engraved walnut award plaque with a brass plate, studio render cropped clear of the studio UI (no logo or viewer controls). Replaces plaque-studio.webp, which stays as an identical alias for old URLs.",
+  "/images/news/news-silver-dipped.webp": "News story cover: the gilt figure award and statuette re-toned to a silver-dip finish (hue-selective recolour of cutouts/figure-award and cutouts/statuette) on the neutral studio tile",
+  "/images/news/news-silver-figure.webp": "Silver-dipped figure award (recoloured cutouts/figure-award) standing on the neutral studio tile, portrait crop",
+  "/images/news/news-silver-statuette.webp": "Silver-dipped statuette on its black marble plinth (recoloured cutouts/statuette) on the neutral studio tile, portrait crop"
 }

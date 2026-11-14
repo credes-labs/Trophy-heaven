@@ -94,19 +94,20 @@ test.describe("storefront smoke", () => {
     )
   })
 
-  test("login and forgot-password pages render", async ({ page }) => {
+  test("login is passwordless and forgot-password redirects to it", async ({ page }) => {
     await page.goto("/account/login")
     await expect(page.getByText(/welcome back/i)).toBeVisible()
-    await page.getByRole("link", { name: /forgot password/i }).click()
-    await expect(page).toHaveURL(/\/account\/forgot-password/)
-    await expect(page.getByText(/reset your password/i)).toBeVisible()
+    await expect(page.getByLabel(/email or mobile number/i)).toBeVisible()
+    await expect(page.getByLabel(/^password$/i)).toHaveCount(0)
+    await page.goto("/account/forgot-password")
+    await expect(page).toHaveURL(/\/account\/login/)
   })
 
   test("register page requires terms consent", async ({ page }) => {
     await page.goto("/account/register")
     await expect(page.getByText("Create account", { exact: true }).first()).toBeVisible()
     await expect(page.getByRole("checkbox")).toBeVisible()
-    await expect(page.getByLabel(/phone/i)).toBeVisible()
+    await expect(page.getByLabel(/email or mobile number/i)).toBeVisible()
   })
 
   test("mobile viewport: bottom nav is visible", async ({ page }) => {

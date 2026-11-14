@@ -19,10 +19,27 @@ type CartState = {
   transferToCustomer: () => Promise<void>
   addItem: (variantId: string, quantity?: number, metadata?: Record<string, unknown>) => Promise<void>
   updateItem: (lineId: string, quantity: number) => Promise<void>
+  /** Merges keys into a line's metadata (`null` clears a key), keeping its quantity. */
+  updateItemMetadata: (lineId: string, patch: Record<string, unknown>) => Promise<void>
+  /** Merges keys into the cart's metadata (`null` clears a key). Copied to the order. */
+  updateCartMetadata: (patch: Record<string, unknown>) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
   applyPromoCode: (code: string) => Promise<void>
   removePromoCode: (code: string) => Promise<void>
   itemCount: () => number
+}
+
+function mergeMetadata(
+  current: Record<string, unknown> | null | undefined,
+  patch: Record<string, unknown>
+): Record<string, unknown> {
+  const next: Record<string, unknown> = { ...(current ?? {}) }
+  for (const [key, value] of Object.entries(patch)) {
+    // Medusa merges metadata and deletes keys sent as "", so "" clears a key
+    // whether the backend merges or replaces; readers treat "" as absent.
+    next[key] = value === null || value === undefined ? "" : value
+  }
+  return next
 }
 
 function appliedPromoCodes(cart: HttpTypes.StoreCart | null): string[] {
@@ -185,6 +202,38 @@ export const useCartStore = create<CartState>((set, get) => ({
         loading: false,
         pendingLineIds: s.pendingLineIds.filter((id) => id !== lineId),
       }))
+    }
+  },
+
+  updateItemMetadata: async (lineId, patch) => {
+    const current = get().cart
+    const line = current?.items?.find((i) => i.id === lineId)
+    if (!current || !line) return
+    set((s) => ({ loading: true, pendingLineIds: [...s.pendingLineIds, lineId] }))
+    try {
+      const { cart } = await medusa.store.cart.updateLineItem(current.id, lineId, {
+        quantity: line.quantity ?? 1,
+        metadata: mergeMetadata(line.metadata as Record<string, unknown> | null, patch),
+      })
+      set({ cart })
+    } finally {
+      set((s) => ({
+        loading: false,
+        pendingLineIds: s.pendingLineIds.filter((id) => id !== lineId),
+      }))
+    }
+  },
+
+  updateCartMetadata: async (patch) => {
+    const current = get().cart ?? (await ensureCart())
+    set({ loading: true })
+    try {
+      const { cart } = await medusa.store.cart.update(current.id, {
+        metadata: mergeMetadata(current.metadata as Record<string, unknown> | null, patch),
+      })
+      set({ cart })
+    } finally {
+      set({ loading: false })
     }
   },
 

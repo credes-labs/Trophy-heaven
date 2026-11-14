@@ -71,14 +71,6 @@ export default function ContactPage() {
                 Monday–Saturday, 10:00–18:00 IST
               </p>
             </address>
-            <iframe
-              title="Trophy Heaven Bangalore location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0!2d77.6408!3d12.9784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU4JzQyLjIiTiA3N8KwMzgnMjYuOSJF!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-              className="mt-[2em] h-[16em] w-full rounded-[0.125em] border-0 grayscale-[40%]"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
           </aside>
         </div>
       </EditorialFrame>

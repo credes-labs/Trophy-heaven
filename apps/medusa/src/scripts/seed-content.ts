@@ -13,6 +13,7 @@ const COVER_BY_CATEGORY: Record<string, string> = {
   materials: `${STOREFRONT_URL}/images/blog/blog-materials.webp`,
   design: `${STOREFRONT_URL}/images/catalog/trophy-figure-award.webp`,
   stories: `${STOREFRONT_URL}/images/catalog/trophy-achievement-statuette.webp`,
+  news: `${STOREFRONT_URL}/images/news/news-silver-dipped.webp`,
 }
 
 const CATEGORIES = [
@@ -35,6 +36,11 @@ const CATEGORIES = [
     name: "Stories",
     slug: "stories",
     description: "Client moments, workshops, and studio notes.",
+  },
+  {
+    name: "News",
+    slug: "news",
+    description: "New finishes, new pieces and studio announcements.",
   },
 ]
 
@@ -160,6 +166,39 @@ Oak bases, brushed brass columns, and restrained engraving — identical silhoue
 ## The moment
 
 They were presented without spectacle. That was the point: craft in service of recognition.`,
+  },
+  {
+    title: "Trophies, Dipped in Silver",
+    slug: "dipped-in-silver",
+    categorySlug: "news",
+    excerpt: "Our figure awards and statuettes now come in a full silver dip: the same sculpted form in a cool, bright finish.",
+    tags: ["news", "silver", "finish"],
+    read_time_minutes: 3,
+    content_md: `## A new finish
+
+Gold has always been the language of first place. Silver says something quieter: precision, calm, a modern room. Our figure awards and statuettes are now available fully dipped in silver.
+
+![A figure award and a statuette, both dipped in silver](/images/news/news-silver-dipped.webp)
+
+## Polish
+
+Every figure is hand-polished before it goes anywhere near the bath. Silver shows every mark underneath it, so the surface has to be clean and even first.
+
+![Silver-dipped figure award on a mahogany base](/images/news/news-silver-figure.webp)
+
+## Dip
+
+The piece is lowered into the bath and takes on an even skin of silver across every fold, ring and edge, including the textured sash and the open ring of the figure award.
+
+## Seal
+
+A clear protective lacquer goes on last, so the shine lasts on a shelf or in a boardroom without tarnishing.
+
+![Silver-dipped statuette on a black marble plinth](/images/news/news-silver-statuette.webp)
+
+## Ordering
+
+Ask for the silver dip in the design notes on your cart, or contact us about silver for a bulk order. Engraving and bases stay the same.`,
   },
 ]
 

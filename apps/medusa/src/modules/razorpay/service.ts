@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/utils"
 import type { Logger } from "@medusajs/framework/types"
 import { fromSmallestUnit, toSmallestUnit } from "../../lib/currency"
+import { ADVANCE_COD_PLAN, parsePaymentPlan, splitAdvance } from "../../lib/payment-plan"
 
 type RazorpayOptions = {
   key_id: string
@@ -93,7 +94,11 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
     data?: Record<string, unknown>
   }) {
     const currency = input.currency_code
-    const amountPaise = toSmallestUnit(asNumber(input.amount), currency)
+    const totalPaise = toSmallestUnit(asNumber(input.amount), currency)
+    // 10% advance + 90% cash on delivery: Razorpay only charges the advance.
+    const plan = parsePaymentPlan(input.data?.payment_plan ?? input.context?.payment_plan)
+    const { advancePaise, codPaise } = splitAdvance(totalPaise)
+    const amountPaise = plan === ADVANCE_COD_PLAN ? advancePaise : totalPaise
     const sessionId =
       (typeof input.data?.session_id === "string" && input.data.session_id) ||
       (typeof input.context?.session_id === "string" && input.context.session_id) ||
@@ -105,8 +110,10 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
         amount: amountPaise,
         currency: currency.toUpperCase(),
         notes: {
-          medusa_session_id: sessionId,
           ...(input.context ?? {}),
+          medusa_session_id: sessionId,
+          payment_plan: plan,
+          ...(plan === ADVANCE_COD_PLAN ? { cod_due_paise: String(codPaise) } : {}),
         },
       }),
     })
@@ -117,6 +124,11 @@ class RazorpayProviderService extends AbstractPaymentProvider<RazorpayOptions> {
         razorpay_order_id: order.id,
         status: order.status,
         amount_paise: amountPaise,
+        total_paise: totalPaise,
+        payment_plan: plan,
+        ...(plan === ADVANCE_COD_PLAN
+          ? { advance_paise: advancePaise, cod_due_paise: codPaise }
+          : {}),
         currency_code: currency,
         medusa_session_id: sessionId,
       },

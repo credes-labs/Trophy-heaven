@@ -2,7 +2,9 @@
 
 import type { HttpTypes } from "@medusajs/types"
 import { CheckoutBack, CheckoutSubmit } from "@/components/features/checkout/checkout-actions"
+import { PaymentBreakdown } from "@/components/features/checkout/payment-breakdown"
 import { formatMoney } from "@/lib/format"
+import { ADVANCE_PERCENT, splitAdvance } from "@/lib/payment-plan"
 import type { PaymentMethod } from "./payment-step"
 
 export function ReviewStep({
@@ -11,6 +13,7 @@ export function ReviewStep({
   shippingLabel,
   paymentLabel,
   netTerms,
+  advanceCod = false,
   busy,
   onBack,
   onPlaceOrder,
@@ -20,6 +23,8 @@ export function ReviewStep({
   shippingLabel: string
   paymentLabel: string
   netTerms: boolean
+  /** 10% advance now, 90% cash on delivery. */
+  advanceCod?: boolean
   busy?: boolean
   onBack: () => void
   onPlaceOrder: () => void
@@ -56,6 +61,8 @@ export function ReviewStep({
         </div>
       </dl>
 
+      {advanceCod ? <PaymentBreakdown total={cart.total ?? 0} currency={currency} /> : null}
+
       <ul className="checkout-lines">
         {(cart.items ?? []).map((i) => (
           <li key={i.id}>
@@ -76,7 +83,9 @@ export function ReviewStep({
             ? "Placing order…"
             : netTerms
               ? "Place order on account"
-              : `Place order · ${formatMoney(cart.total ?? 0, currency)}`}
+              : advanceCod
+                ? `Pay ${formatMoney(splitAdvance(cart.total ?? 0, currency).advance, currency)} advance · place order`
+                : `Place order · ${formatMoney(cart.total ?? 0, currency)}`}
         </CheckoutSubmit>
       </div>
     </div>
@@ -85,6 +94,7 @@ export function ReviewStep({
 
 export function paymentMethodLabel(method: PaymentMethod, razorpayEnabled: boolean): string {
   if (method === "net_terms") return "Corporate net terms"
-  if (method === "cod") return "Cash on delivery"
+  if (method === "advance_cod")
+    return `${ADVANCE_PERCENT}% advance ${razorpayEnabled ? "via Razorpay" : "(test)"} + ${100 - ADVANCE_PERCENT}% cash on delivery`
   return razorpayEnabled ? "Razorpay" : "Online payment (test)"
 }

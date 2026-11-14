@@ -7,6 +7,7 @@ import { AnimatePresence } from "motion/react"
 import { RefreshCw } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { CartItem } from "@/components/features/cart/cart-item"
+import { OrderDesignPanel } from "@/components/features/cart/order-design-panel"
 import { OrderSummary } from "@/components/features/cart/order-summary"
 import { PromoCode } from "@/components/features/cart/promo-code"
 import { CartRecommendations } from "@/components/features/cart/cart-recommendations"
@@ -87,6 +88,8 @@ export default function CartPage() {
                     ))}
                   </AnimatePresence>
                 </ul>
+
+                <OrderDesignPanel className="mt-[1.75em]" />
 
                 <div className="cart-coupon mt-[1.75em] border-t border-[#131111]/12 pt-[1.5em]">
                   <div className="cart-coupon-row">

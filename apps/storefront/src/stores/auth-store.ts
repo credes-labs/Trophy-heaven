@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { medusa } from "@/lib/medusa"
+import { requestOtpCode, verifyOtpCode, type OtpRequestResult } from "@/lib/otp-client"
 import type { HttpTypes } from "@medusajs/types"
 import {
   httpStatusFromError,
@@ -13,14 +14,15 @@ type AuthState = {
   customer: HttpTypes.StoreCustomer | null
   loading: boolean
   loadCustomer: () => Promise<void>
-  login: (email: string, password: string) => Promise<void>
-  register: (data: {
-    email: string
-    password: string
+  /** Sends a sign-in code to an email address or Indian mobile number. */
+  requestOtp: (identifier: string) => Promise<OtpRequestResult>
+  /** Checks the code and signs in, creating the account on first sign-in. */
+  verifyOtp: (input: {
+    identifier: string
+    code: string
     first_name?: string
     last_name?: string
-    phone?: string
-  }) => Promise<void>
+  }) => Promise<{ isNew: boolean }>
   logout: () => Promise<void>
 }
 
@@ -45,28 +47,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  login: async (email, password) => {
-    set({ loading: true })
-    try {
-      await medusa.auth.login("customer", "emailpass", { email, password })
-      const { customer } = await medusa.store.customer.retrieve()
-      set({ customer })
-      await useCartStore.getState().transferToCustomer()
-    } finally {
-      set({ loading: false })
-    }
-  },
+  requestOtp: (identifier) => requestOtpCode(identifier),
 
-  register: async ({ email, password, first_name, last_name, phone }) => {
+  verifyOtp: async (input) => {
     set({ loading: true })
     try {
-      // 1. Obtain a registration token, 2. create the customer, 3. log in.
-      await medusa.auth.register("customer", "emailpass", { email, password })
-      await medusa.store.customer.create({ email, first_name, last_name, phone })
-      await medusa.auth.login("customer", "emailpass", { email, password })
+      const { token, is_new } = await verifyOtpCode(input)
+      await medusa.client.setToken(token)
       const { customer } = await medusa.store.customer.retrieve()
       set({ customer })
       await useCartStore.getState().transferToCustomer()
+      return { isNew: is_new }
     } finally {
       set({ loading: false })
     }

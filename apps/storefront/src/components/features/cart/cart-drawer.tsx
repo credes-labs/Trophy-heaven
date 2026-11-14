@@ -1,15 +1,24 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { X } from "lucide-react"
+import { Upload, X } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { CartThumb } from "@/components/features/cart/cart-thumb"
+import { DesignUploadButton } from "@/components/features/cart/design-upload-button"
+import { OrderDesignPanel } from "@/components/features/cart/order-design-panel"
 import { formatMoney } from "@/lib/format"
+import {
+  LINE_DESIGN_KEY,
+  ORDER_DESIGN_KEY,
+  ORDER_DESIGN_NOTES_KEY,
+  STICKER_DESIGN_KEY,
+  readDesignFile,
+} from "@/lib/design-uploads"
 
 const stepperClass =
-  "rounded-[0.125em] border-[#131111]/20 [&_button]:h-8 [&_button]:w-8 [&_span]:h-8 [&_span]:min-w-[2rem] [&_span]:border-[#131111]/20 [&_span]:font-outfit [&_span]:text-[0.8125em]"
+  "rounded-[0.125em] border-[#131111]/25 [&_button]:h-9 [&_button]:w-9 [&_button]:text-[1.05rem] [&_button]:hover:bg-[#131111]/5 [&_span]:h-9 [&_span]:min-w-[2.25rem] [&_span]:border-[#131111]/25 [&_span]:font-outfit [&_span]:text-[0.875em]"
 
 export function CartDrawer() {
   const cart = useCartStore((s) => s.cart)
@@ -19,6 +28,8 @@ export function CartDrawer() {
   const removeItem = useCartStore((s) => s.removeItem)
   const loading = useCartStore((s) => s.loading)
   const pendingLineIds = useCartStore((s) => s.pendingLineIds)
+  const updateItemMetadata = useCartStore((s) => s.updateItemMetadata)
+  const [designsOpen, setDesignsOpen] = useState(false)
 
   useEffect(() => {
     if (!drawerOpen) return
@@ -38,6 +49,10 @@ export function CartDrawer() {
 
   const items = cart?.items ?? []
   const currency = cart?.currency_code ?? "inr"
+  const cartMeta = (cart?.metadata ?? {}) as Record<string, unknown>
+  const hasOrderDesign = Boolean(
+    readDesignFile(cartMeta[ORDER_DESIGN_KEY]) || cartMeta[ORDER_DESIGN_NOTES_KEY]
+  )
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Shopping cart">
@@ -51,14 +66,34 @@ export function CartDrawer() {
           <h2 className="m-0 font-outfit text-[1.125em] font-normal tracking-[0.14em] text-balance uppercase">
             Your cart
           </h2>
-          <button
-            onClick={() => setDrawerOpen(false)}
-            aria-label="Close cart"
-            className="flex h-11 w-11 items-center justify-center text-[#6B635C] hover:text-[#131111]"
-          >
-            <X className="h-5 w-5" strokeWidth={1.5} aria-hidden />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setDesignsOpen((v) => !v)}
+              aria-expanded={designsOpen}
+              aria-controls="cart-order-designs"
+              className="flex h-9 items-center gap-1.5 rounded-[0.125em] border border-[#131111]/25 px-3 font-outfit text-[0.6875em] tracking-[0.12em] text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+            >
+              <Upload className="size-3.5" strokeWidth={1.5} aria-hidden />
+              Enter your designs
+              {hasOrderDesign ? (
+                <span className="size-1.5 rounded-full bg-[#131111]" aria-label="(added)" />
+              ) : null}
+            </button>
+            <button
+              onClick={() => setDrawerOpen(false)}
+              aria-label="Close cart"
+              className="flex h-11 w-11 items-center justify-center text-[#6B635C] hover:text-[#131111]"
+            >
+              <X className="h-5 w-5" strokeWidth={1.5} aria-hidden />
+            </button>
+          </div>
         </div>
+        {designsOpen ? (
+          <div id="cart-order-designs" className="border-b border-[#131111]/12 px-5 py-4">
+            <OrderDesignPanel />
+          </div>
+        ) : null}
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {items.length === 0 ? (
@@ -98,6 +133,20 @@ export function CartDrawer() {
                           Customized design
                         </p>
                       ) : null}
+                      {typeof item.metadata?.[STICKER_DESIGN_KEY] === "string" &&
+                      item.metadata[STICKER_DESIGN_KEY] ? (
+                        <p className="mt-0.5 m-0 line-clamp-2 font-outfit text-[0.75em] text-[#6B635C]">
+                          Sticker: {String(item.metadata[STICKER_DESIGN_KEY])}
+                        </p>
+                      ) : null}
+                      <DesignUploadButton
+                        className="mt-1.5"
+                        value={readDesignFile(item.metadata?.[LINE_DESIGN_KEY])}
+                        disabled={pendingLineIds.includes(item.id)}
+                        label="Upload design for this item"
+                        onUploaded={(f) => updateItemMetadata(item.id, { [LINE_DESIGN_KEY]: f })}
+                        onRemove={() => updateItemMetadata(item.id, { [LINE_DESIGN_KEY]: null })}
+                      />
                       <div className="mt-2">
                         <QuantityStepper
                           value={qty}
