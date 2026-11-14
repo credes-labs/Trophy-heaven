@@ -71,6 +71,14 @@ pnpm build                                  # before merging
   `medusa.client.setToken`. Locally `OTP_DEV_ECHO=true` (apps/medusa/.env) returns the code
   in the response and the login form shows it; e2e should read it from there. Older e2e
   specs that fill password fields are stale.
+- **Judge speed on a production build, not `next dev`**: dev compiles on demand and caches
+  nothing (5–10 s page changes; a long-running dev server degrades further and its
+  static-paths worker can die, 500ing `/products/*` until restarted). `next build && next start`
+  serves the same pages in ~0.1–0.3 s. A dynamic route's `revalidate` is ignored unless it
+  also exports `generateStaticParams` (empty array = ISR on first visit).
+- **Customer files**: product/configurator designs go on line metadata `design_upload`;
+  order-wide files on cart metadata `order_documents` (≤10, office docs allowed via
+  `kind: "document"`). `order.placed` emails them to `ORDER_NOTIFY_EMAIL`.
 - **Customer data is client-side only**: wishlist/cart/auth use the Medusa SDK
   with a JWT (`apps/storefront/src/lib/medusa.ts`). RSC fetches of customer data
   return 401 — follow the account-page pattern.

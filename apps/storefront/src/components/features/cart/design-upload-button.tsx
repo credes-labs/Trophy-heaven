@@ -3,9 +3,10 @@
 import { useRef, useState, type ReactNode } from "react"
 import { FileText, Upload, X } from "lucide-react"
 import {
-  DESIGN_UPLOAD_ACCEPT,
+  uploadAccept,
   uploadDesignFile,
   type DesignFile,
+  type UploadKind,
 } from "@/lib/design-uploads"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +19,7 @@ export function DesignUploadButton({
   onUploaded,
   onRemove,
   label = "Upload design",
+  kind = "design",
   disabled = false,
   className,
   children,
@@ -26,6 +28,7 @@ export function DesignUploadButton({
   onUploaded: (file: DesignFile) => Promise<void> | void
   onRemove: () => Promise<void> | void
   label?: string
+  kind?: UploadKind
   disabled?: boolean
   className?: string
   children?: ReactNode
@@ -39,7 +42,7 @@ export function DesignUploadButton({
     setBusy(true)
     setError(null)
     try {
-      const uploaded = await uploadDesignFile(file)
+      const uploaded = await uploadDesignFile(file, kind)
       await onUploaded(uploaded)
     } catch (e) {
       setError((e as Error).message)
@@ -54,7 +57,7 @@ export function DesignUploadButton({
       <input
         ref={inputRef}
         type="file"
-        accept={DESIGN_UPLOAD_ACCEPT}
+        accept={uploadAccept(kind)}
         tabIndex={-1}
         aria-hidden
         className="hidden"

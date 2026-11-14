@@ -46,7 +46,8 @@ export function BrandLockup({
       <Emblem className={stacked ? "w-[2.4em]" : "w-[2.15em] shrink-0"} />
       <Wordmark
         title={null}
-        className={stacked ? "w-[5.2em]" : "w-[4.2em] shrink-0"}
+        // Phones show the emblem alone in a horizontal lockup; the hero carries the wordmark.
+        className={stacked ? "w-[5.2em]" : "w-[4.2em] shrink-0 max-md:hidden"}
       />
     </>
   )

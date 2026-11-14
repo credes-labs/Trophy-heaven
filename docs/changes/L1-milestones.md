@@ -313,3 +313,9 @@ Supplied emblem used as the site logo and favicon, hero wordmark in the logo's s
 
 ## 2026-11-14 - Logo-accurate wordmark, varied footer trophies, shop silhouettes moved
 TROPHY HEAVEN wordmark redrawn after the logo artwork (serif capitals plus the looped A-V ligature), set large and stacked in the hero and in the footer without the emblem; footer orbit shows five different trophies; /shop silhouette grid moved under the testimonials. See L2 WP-96.
+
+## 2026-11-14 - File uploads replace design text, owner order email, emblem-only mobile header
+Product page and configurator take an uploaded design (image/PDF) instead of sticker text; the cart takes up to ten order-wide files (images, PDF, Word, Excel, PowerPoint, CSV, text) that go to the shop owner with the order; phones show the emblem without the wordmark in the header; product pages are now cached. See L2 WP-97.
+
+## 2026-11-14 - Shop banner removed, maroon silhouettes, /about cup pops out of its frame
+/shop ends with the turning silhouette grid, now in logo maroon (figures and lines) instead of black, and the ribbon banner image is gone; the /about hero cup rises out of the top of its photo frame. See L2 WP-98.

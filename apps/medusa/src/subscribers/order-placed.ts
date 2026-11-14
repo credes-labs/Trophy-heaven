@@ -2,6 +2,7 @@ import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { toSmallestUnit, fromSmallestUnit } from "../lib/currency"
 import { ADVANCE_COD_PLAN, parsePaymentPlan, splitAdvance } from "../lib/payment-plan"
+import { ORDER_DESIGN_NOTES_KEY, collectOrderFiles, renderOwnerOrderEmail } from "../lib/order-files"
 
 /**
  * Sends an order confirmation on `order.placed` (FR-ORD-9). In Phase 5 this is
@@ -56,6 +57,36 @@ export default async function orderPlacedHandler({
     }
   } catch (e) {
     logger.warn(`order.placed: could not record payment plan for ${data.id}: ${(e as Error).message}`)
+  }
+
+  // The shop owner gets every order with links to the customer's design files and
+  // documents (also stored on the order and line-item metadata in the admin).
+  const ownerEmail = process.env.ORDER_NOTIFY_EMAIL?.trim()
+  if (ownerEmail) {
+    try {
+      const meta = (order.metadata ?? {}) as Record<string, unknown>
+      const items = order.items ?? []
+      const files = collectOrderFiles(meta, items)
+      const notes = typeof meta[ORDER_DESIGN_NOTES_KEY] === "string" ? meta[ORDER_DESIGN_NOTES_KEY] : null
+      const { subject, html } = renderOwnerOrderEmail({
+        orderRef: order.display_id ?? order.id,
+        email: order.email,
+        total: order.total,
+        currency: order.currency_code,
+        items,
+        files,
+        notes,
+      })
+      await notificationModule.createNotifications({
+        to: ownerEmail,
+        channel: "email",
+        template: "order-owner",
+        content: { subject, html },
+        data: { order_id: order.id, files },
+      })
+    } catch (e) {
+      logger.warn(`order.placed: owner notification failed for ${data.id}: ${(e as Error).message}`)
+    }
   }
 
   if (!order.email) {

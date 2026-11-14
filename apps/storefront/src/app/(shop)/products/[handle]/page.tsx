@@ -14,6 +14,15 @@ import { getSiteUrl } from "@/lib/site-url"
 
 export const revalidate = 300
 
+/**
+ * Empty list = no product pages at build time, but each one is rendered on its first
+ * visit and then served from cache (revalidated every 5 minutes). Without this the
+ * route ignores `revalidate` and re-renders on every request.
+ */
+export async function generateStaticParams() {
+  return []
+}
+
 const BASE_URL = getSiteUrl()
 
 type Props = { params: Promise<{ handle: string }> }

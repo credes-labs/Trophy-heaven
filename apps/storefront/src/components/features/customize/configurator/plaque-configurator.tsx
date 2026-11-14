@@ -12,7 +12,8 @@ import { formatMoney } from "@/lib/format"
 import { track } from "@/lib/analytics"
 import { drawWood } from "@/lib/three/draw"
 import { cn } from "@/lib/utils"
-import { STICKER_DESIGN_KEY } from "@/lib/design-uploads"
+import { LINE_DESIGN_KEY, type DesignFile } from "@/lib/design-uploads"
+import { DesignDropzone } from "@/components/features/cart/design-dropzone"
 import {
   ALIGNS,
   BORDERS,
@@ -86,7 +87,6 @@ const LINE_FIELDS: { key: LineKey; label: string; placeholder: string }[] = [
   { key: "detail", label: "Detail", placeholder: "Annual Honours 2026" },
 ]
 
-const STICKER_MAX = 1000
 
 const TABS_3D = [
   { id: "shape", label: "Shape" },
@@ -417,8 +417,8 @@ export function PlaqueConfigurator({
   const [tab2d, setTab2d] = useState<Tab2D>("compose")
   const [status, setStatus] = useState<{ tone: "info" | "error"; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
-  const [sticker, setSticker] = useState("")
-  const stickerMeta = sticker.trim() ? { [STICKER_DESIGN_KEY]: sticker.trim() } : {}
+  const [designFile, setDesignFile] = useState<DesignFile | null>(null)
+  const designFileMeta = designFile ? { [LINE_DESIGN_KEY]: designFile } : {}
   const [savedDesign, setSavedDesign] = useState<{ ready: boolean; record: DesignRecord | null }>({
     ready: !designId,
     record: null,
@@ -708,7 +708,7 @@ export function PlaqueConfigurator({
         variant_id: variant.id,
         state_json: buildDesignState(config, customFace, award),
       })
-      await addItem(variant.id, 1, { ...cartMetadata(config, design, award), ...stickerMeta })
+      await addItem(variant.id, 1, { ...cartMetadata(config, design, award), ...designFileMeta })
       track("add_to_cart", {
         item_id: product.id,
         variant_id: variant.id,
@@ -759,7 +759,7 @@ export function PlaqueConfigurator({
           ...(award ? { model: studioPiece(award).label, piece: award } : {}),
           engraving: engravingLines(config),
         },
-        ...stickerMeta,
+        ...designFileMeta,
       })
       track("design_added_to_cart", { design_id: record.id, mode: "2d", product_id: product.id })
       say("info", "Added to cart with your design")
@@ -1082,27 +1082,14 @@ export function PlaqueConfigurator({
                     </fieldset>
                   )}
 
-                  <div>
-                    <label
-                      htmlFor="sticker-design"
-                      className="block p-0 font-outfit text-[0.6875em] font-medium tracking-[0.14em] text-[#131111] uppercase"
-                    >
-                      Sticker design
-                    </label>
-                    <textarea
-                      id="sticker-design"
-                      value={sticker}
-                      maxLength={STICKER_MAX}
-                      rows={3}
-                      onChange={(e) => setSticker(e.target.value)}
-                      placeholder="Enter your design for stickers"
-                      className="mt-[0.55em] block w-full resize-y rounded-[0.125em] border border-[#131111]/20 bg-white px-[0.75em] py-[0.55em] font-outfit text-[0.875em] leading-[1.4] text-[#131111] placeholder:text-[#6B635C]/70 focus-visible:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-                    />
-                    <p className="mt-[0.35em] m-0 font-outfit text-[0.6875em] leading-[1.35] text-[#6B635C]">
-                      Describe the sticker: text, logo, colours and size. It goes with this piece
-                      to your cart.
-                    </p>
-                  </div>
+                  <DesignDropzone
+                    className="text-[0.92em]"
+                    label="Your design"
+                    description="Upload your logo, artwork or sticker design. It goes with this piece to your cart."
+                    files={designFile ? [designFile] : []}
+                    onAdd={(f) => setDesignFile(f)}
+                    onRemove={() => setDesignFile(null)}
+                  />
 
                   {product ? (
                     <button

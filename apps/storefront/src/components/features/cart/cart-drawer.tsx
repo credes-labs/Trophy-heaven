@@ -11,10 +11,10 @@ import { OrderDesignPanel } from "@/components/features/cart/order-design-panel"
 import { formatMoney } from "@/lib/format"
 import {
   LINE_DESIGN_KEY,
-  ORDER_DESIGN_KEY,
   ORDER_DESIGN_NOTES_KEY,
   STICKER_DESIGN_KEY,
   readDesignFile,
+  readOrderDocuments,
 } from "@/lib/design-uploads"
 
 const stepperClass =
@@ -51,7 +51,7 @@ export function CartDrawer() {
   const currency = cart?.currency_code ?? "inr"
   const cartMeta = (cart?.metadata ?? {}) as Record<string, unknown>
   const hasOrderDesign = Boolean(
-    readDesignFile(cartMeta[ORDER_DESIGN_KEY]) || cartMeta[ORDER_DESIGN_NOTES_KEY]
+    readOrderDocuments(cartMeta).length || cartMeta[ORDER_DESIGN_NOTES_KEY]
   )
 
   return (
@@ -75,7 +75,7 @@ export function CartDrawer() {
               className="flex h-9 items-center gap-1.5 rounded-[0.125em] border border-[#131111]/25 px-3 font-outfit text-[0.6875em] tracking-[0.12em] text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
             >
               <Upload className="size-3.5" strokeWidth={1.5} aria-hidden />
-              Enter your designs
+              Upload your designs
               {hasOrderDesign ? (
                 <span className="size-1.5 rounded-full bg-[#131111]" aria-label="(added)" />
               ) : null}

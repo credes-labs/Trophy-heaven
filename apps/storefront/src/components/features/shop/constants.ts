@@ -23,10 +23,6 @@ export const SHOP_FEATURED_FALLBACK = [
   },
 ] as const
 
-export const SHOP_BANNER = {
-  src: "/images/brand/banner-ribbon.webp",
-  alt: "Trophy Heaven ribbon award on a cream pedestal with burgundy velvet",
-} as const
 
 export const SHOP_QUOTES = [
   {

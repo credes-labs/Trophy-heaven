@@ -7,13 +7,16 @@ const UploadSchema = z.object({
   filename: z.string().min(1).max(200),
   /** File bytes as base64 (a `data:` URL prefix is accepted). */
   data: z.string().min(1),
+  /** `design` (default): image/PDF for one piece. `document`: order-wide file, office formats too. */
+  kind: z.enum(["design", "document"]).optional(),
 })
 
 /**
  * POST /store/design-uploads — stores a customer's design file (order-wide sticker
  * artwork from the cart, or a per-line design) through the File module and returns
  * its public URL. The storefront then records the URL on cart or line-item metadata,
- * which is copied to the order. PNG/JPG/WebP/PDF only, ≤10 MB, sniffed by magic bytes.
+ * which is copied to the order. Designs are PNG/JPG/WebP/PDF; `kind: "document"`
+ * also allows Word, Excel, PowerPoint, CSV and text. ≤10 MB, checked by content.
  */
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const parsed = UploadSchema.safeParse(req.body)
@@ -23,7 +26,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     })
   }
 
-  const checked = checkDesignUpload(parsed.data.data, parsed.data.filename)
+  const checked = checkDesignUpload(parsed.data.data, parsed.data.filename, parsed.data.kind)
   if (!checked.ok) {
     const status = checked.code === "TOO_LARGE" ? 413 : 400
     return res.status(status).json({ error: { code: checked.code, message: checked.message } })

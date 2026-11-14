@@ -67,11 +67,12 @@ const CELLS: Cell[] = [
 ];
 
 let INK: THREE.ShaderMaterial | null = null;
-/** Near-black with a soft top-left light, so turning surfaces read without losing the silhouette. */
+/** The `fill` colour with a soft top-left light, so turning surfaces read without losing the silhouette. */
 function ink(): THREE.ShaderMaterial {
   if (!INK) {
     INK = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
+      uniforms: { uColor: { value: new THREE.Color("#0a0a0a") } },
       vertexShader: `
         varying vec3 vN;
         void main() {
@@ -79,12 +80,16 @@ function ink(): THREE.ShaderMaterial {
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }`,
       fragmentShader: `
+        uniform vec3 uColor;
         varying vec3 vN;
         void main() {
           vec3 n = normalize(vN);
           if (!gl_FrontFacing) n = -n;
           float d = clamp(dot(n, normalize(vec3(-0.55, 0.8, 0.6))), 0.0, 1.0);
-          gl_FragColor = vec4(mix(vec3(0.035), vec3(0.26), pow(d, 1.6)), 1.0);
+          // Shadow side a little deeper than the fill, lit side lifted towards it.
+          vec3 dark = uColor * 0.55 + vec3(0.01);
+          vec3 lit = min(uColor * 1.9 + vec3(0.12), vec3(1.0));
+          gl_FragColor = vec4(mix(dark, lit, pow(d, 1.6)), 1.0);
         }`,
     });
   }
@@ -408,12 +413,15 @@ function mountSilhouettes(
 export default function SilhouetteGrid({
   aspect = "2 / 1",
   ink: lineColor = "#0a0a0a",
+  fill = lineColor,
   className = "",
 }: {
   /** width / height of the whole band, as a CSS aspect-ratio value */
   aspect?: string;
   /** grid line colour */
   ink?: string;
+  /** silhouette colour (shaded); defaults to the line colour */
+  fill?: string;
   className?: string;
 }) {
   const wrap = useRef<HTMLDivElement>(null);
@@ -423,6 +431,8 @@ export default function SilhouetteGrid({
   useEffect(() => {
     if (!wrap.current || !canvas.current) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Display colours are sRGB; the shader writes output values directly.
+    ink().uniforms.uColor.value.set(fill).convertLinearToSRGB();
     return mountSilhouettes(
       wrap.current,
       canvas.current,
@@ -430,7 +440,7 @@ export default function SilhouetteGrid({
       CELLS,
       reduced
     );
-  }, []);
+  }, [fill]);
 
   const line = `1.5px solid ${lineColor}`;
 

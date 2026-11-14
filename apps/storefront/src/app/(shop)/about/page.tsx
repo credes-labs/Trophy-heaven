@@ -44,7 +44,7 @@ export default function AboutPage() {
   return (
     <EditorialShell>
       <section id="story" className="relative scroll-mt-[7rem] overflow-hidden border-b border-[#131111]/10">
-        <EditorialFrame className="pt-[clamp(2.5rem,6vw,5em)] pb-[clamp(2.5rem,6vw,5em)]">
+        <EditorialFrame className="pt-[clamp(1.5rem,3vw,2.5em)] pb-[clamp(2.5rem,6vw,5em)]">
           <div className="grid items-center gap-[2.5em] lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:min-h-[32em] lg:gap-16">
             <div className="relative z-10 max-w-[32em]">
               <EditorialWatermark>heaven</EditorialWatermark>
@@ -61,15 +61,37 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
-              <Image
-                src="/images/brand/cup-pedestal.webp"
-                alt="Gold Trophy Heaven cup on a marble pedestal against burgundy velvet"
-                fill
-                preload
-                sizes="(min-width: 1024px) 48em, 100vw"
-                className="object-cover object-center"
-              />
+            {/*
+              Pop-out. The photo is 1115×1411 with the handle tips at y≈190; the stage drops
+              the empty top (169px) so it is 1115×1242. The frame starts at y=420 of the photo
+              (20.2% of the stage) and shows the photo bottom-aligned at full width, so photo
+              and stage share one mapping. The cut-out of the same cup is laid out at the
+              photo's full aspect from the stage bottom (its empty top overhangs the stage) and
+              clipped to the strip above the frame (top 29.8% of the photo), so the cup rises
+              out of the square without a seam.
+            */}
+            <div className="relative aspect-[1115/1242] w-full lg:max-w-[40em] lg:justify-self-end">
+              <div className="absolute inset-x-0 top-[20.2%] bottom-0 overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
+                <Image
+                  src="/images/brand/cup-pedestal.webp"
+                  alt="Gold Trophy Heaven cup on a marble pedestal against burgundy velvet"
+                  fill
+                  preload
+                  sizes="(min-width: 1024px) 48em, 100vw"
+                  className="object-cover object-bottom"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 aspect-[1115/1411] [clip-path:inset(0_0_70.2%_0)]">
+                <Image
+                  src="/images/brand/cup-pedestal-cutout.webp"
+                  alt=""
+                  aria-hidden
+                  fill
+                  preload
+                  sizes="(min-width: 1024px) 48em, 100vw"
+                  className="object-contain"
+                />
+              </div>
             </div>
           </div>
         </EditorialFrame>

@@ -11,7 +11,6 @@ import {
 } from "@/components/features/shop/filter-sidebar"
 import { SilhouetteHero } from "@/components/features/shop/silhouette-hero"
 import { ShopTestimonials } from "@/components/features/shop/shop-testimonials"
-import { ShopBanner } from "@/components/features/shop/shop-banner"
 import { ShopPagination } from "@/components/features/shop/shop-pagination"
 import {
   ShopListingBreadcrumb,
@@ -435,7 +434,6 @@ export function ShopClient({
               <div className="shop-fold-pane">
                 <ShopTestimonials />
                 <SilhouetteHero />
-                <ShopBanner />
               </div>
             </div>
           </div>

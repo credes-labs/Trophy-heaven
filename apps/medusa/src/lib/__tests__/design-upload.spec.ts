@@ -31,6 +31,46 @@ describe("design uploads", () => {
     })
   })
 
+  it("accepts office documents and text only as order documents", () => {
+    const xlsx = Buffer.concat([
+      Buffer.from([0x50, 0x4b, 0x03, 0x04]),
+      Buffer.from("....[Content_Types].xml...."),
+    ])
+    const ole = Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0])
+    const csv = Buffer.from("name,award\nPriya,Gold\n")
+    const b64 = (b: Buffer) => b.toString("base64")
+
+    expect(checkDesignUpload(b64(xlsx), "names.xlsx", "document")).toMatchObject({
+      ok: true,
+      mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      filename: "names.xlsx",
+    })
+    expect(checkDesignUpload(b64(ole), "brief.doc", "document")).toMatchObject({
+      ok: true,
+      mime: "application/msword",
+    })
+    expect(checkDesignUpload(b64(csv), "list.csv", "document")).toMatchObject({
+      ok: true,
+      mime: "text/csv",
+    })
+    expect(checkDesignUpload(b64(PDF), "art.pdf", "document")).toMatchObject({ ok: true })
+    // Not allowed as a product design.
+    expect(checkDesignUpload(b64(xlsx), "names.xlsx")).toMatchObject({ ok: false })
+  })
+
+  it("rejects archives, binaries and mislabelled documents", () => {
+    const zip = Buffer.concat([Buffer.from([0x50, 0x4b, 0x03, 0x04]), Buffer.from("payload")])
+    const b64 = (b: Buffer) => b.toString("base64")
+    expect(checkDesignUpload(b64(zip), "names.xlsx", "document")).toMatchObject({ ok: false })
+    expect(checkDesignUpload(b64(zip), "x.zip", "document")).toMatchObject({ ok: false })
+    expect(
+      checkDesignUpload(b64(Buffer.from([0x4d, 0x5a, 0, 0x90])), "list.csv", "document")
+    ).toMatchObject({ ok: false })
+    expect(checkDesignUpload(b64(Buffer.from("MZ")), "setup.exe", "document")).toMatchObject({
+      ok: false,
+    })
+  })
+
   it("strips paths and odd characters from filenames", () => {
     expect(cleanDesignFilename("../../etc/<team logo>.png", "image/png")).toBe("team logo.png")
     expect(cleanDesignFilename("???.pdf", "application/pdf")).toBe("design.pdf")

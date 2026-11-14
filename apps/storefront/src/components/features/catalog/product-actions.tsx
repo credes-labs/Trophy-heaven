@@ -2,7 +2,7 @@
 
 import { studioPieceForHandle } from "@/lib/configurator/studio-pieces"
 
-import { useId, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Heart } from "lucide-react"
 import type { HttpTypes } from "@medusajs/types"
@@ -18,7 +18,8 @@ import { cheapestInStockVariant, variantInStock } from "@/lib/product-filters"
 import { useCartStore } from "@/stores/cart-store"
 import { useWishlist } from "@/hooks/use-wishlist"
 import { track } from "@/lib/analytics"
-import { STICKER_DESIGN_KEY } from "@/lib/design-uploads"
+import { LINE_DESIGN_KEY, type DesignFile } from "@/lib/design-uploads"
+import { DesignDropzone } from "@/components/features/cart/design-dropzone"
 
 function firstOptionSelection(
   options: HttpTypes.StoreProductOption[],
@@ -50,8 +51,7 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
   )
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
-  const [sticker, setSticker] = useState("")
-  const stickerId = useId()
+  const [design, setDesign] = useState<DesignFile | null>(null)
   const { wishlisted, toggle: toggleWishlist, busy: wishlistBusy } = useWishlist(product.id)
   const atcRef = useRef<HTMLDivElement>(null)
 
@@ -105,7 +105,7 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
       await addItem(
         activeVariant.id,
         quantity,
-        sticker.trim() ? { [STICKER_DESIGN_KEY]: sticker.trim() } : undefined
+        design ? { [LINE_DESIGN_KEY]: design } : undefined
       )
       track("add_to_cart", {
         item_id: product.id,
@@ -233,27 +233,14 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
         </Link>
       ) : null}
 
-      <div>
-        <label
-          htmlFor={stickerId}
-          className="block font-outfit text-[0.75em] tracking-[0.14em] text-[#131111] uppercase"
-        >
-          Sticker design
-        </label>
-        <textarea
-          id={stickerId}
-          value={sticker}
-          maxLength={1000}
-          rows={3}
-          onChange={(e) => setSticker(e.target.value)}
-          placeholder="Enter your design for stickers"
-          className="mt-[0.6em] block w-full resize-y rounded-[0.125em] border border-[#131111]/20 bg-white px-[0.85em] py-[0.65em] font-outfit text-[0.9375em] leading-[1.4] text-[#131111] placeholder:text-[#6B635C]/80 focus-visible:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-        />
-        <p className="mt-[0.4em] m-0 font-outfit text-[0.75em] leading-[1.4] text-[#6B635C]">
-          Text, logo, colours and size. Added to this item when you add it to the cart; you can
-          also upload a file from the cart.
-        </p>
-      </div>
+      <DesignDropzone
+        label="Your design"
+        description="Upload your logo, artwork or sticker design. It goes with this piece when you add it to the cart."
+        files={design ? [design] : []}
+        onAdd={(f) => setDesign(f)}
+        onRemove={() => setDesign(null)}
+        disabled={loading}
+      />
 
       <ShareButtons
         title={product.title}
