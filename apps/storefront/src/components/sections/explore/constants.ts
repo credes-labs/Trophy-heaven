@@ -45,8 +45,8 @@ export type ExploreProduct = {
 }
 
 export const EXPLORE_HERO = {
-  src: "/images/hero/hero-workshop.webp",
-  alt: "Craftsman workshop with warm wood and brass tools in low-key light",
+  src: "/images/brand/gold-cup.webp",
+  alt: "Gold Trophy Heaven cup on a marbled burgundy base in warm light",
 } as const
 
 export const EXPLORE_PRODUCTS: ExploreProduct[] = [

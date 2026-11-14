@@ -70,8 +70,8 @@ export const CATEGORY_CONFIG: Record<CategoryKey, CategoryConfig> = {
     borderClass: "border-trophy",
     badgeVariant: "trophy",
     buttonVariant: "trophy",
-    imageSrc: "/images/catalog/trophy-figure-award.webp",
-    imageAlt: "Gilt figure award on an octagonal mahogany base",
+    imageSrc: "/images/brand/gold-cup.webp",
+    imageAlt: "Gold Trophy Heaven cup on a marbled burgundy base in warm light",
   },
 }
 

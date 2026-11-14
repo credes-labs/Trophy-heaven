@@ -97,7 +97,7 @@ export function SearchView({ regionId }: { regionId?: string }) {
         <p className="mt-[1em] m-0 rounded-[0.125em] bg-[#131111]/5 px-[1em] py-[0.85em] font-outfit text-[0.9375em] text-[#6B635C]">
           Live search is offline. Browse the{" "}
           <Link href="/shop" className="text-[#131111] underline">
-            catalog
+            shop
           </Link>{" "}
           instead.
         </p>

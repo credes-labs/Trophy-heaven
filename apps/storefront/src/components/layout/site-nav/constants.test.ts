@@ -5,7 +5,7 @@ describe("siteNavLinks", () => {
   it("has no Collection item", () => {
     const links = siteNavLinks([{ name: "Lighting", handle: "lighting" }])
     expect(links.some((item) => item.id === "collection")).toBe(false)
-    expect(links[0]?.id).toBe("catalog")
+    expect(links[0]?.id).toBe("shop")
   })
 })
 

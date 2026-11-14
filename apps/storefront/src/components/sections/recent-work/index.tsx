@@ -34,7 +34,7 @@ export async function RecentWorkSection() {
 
       {products.length === 0 ? (
         <p className="mt-[2em] m-0 font-outfit text-pretty text-[#6B635C]">
-          Catalog is loading. Please check back shortly.
+          The shop is loading. Please check back shortly.
         </p>
       ) : (
         <ul className="mt-[clamp(1.75em,3.5vw,3em)] m-0 flex list-none snap-x snap-mandatory gap-[1em] overflow-x-auto p-0 pb-2 lg:grid lg:grid-cols-4 lg:gap-[1.25em] lg:overflow-visible lg:pb-0">

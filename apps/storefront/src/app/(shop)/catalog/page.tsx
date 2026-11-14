@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 
-/** The CATALOG nav item is the `/shop` listing; keep `/catalog` URLs (and their filters) working. */
+/** The SHOP nav item is the `/shop` listing; keep `/catalog` URLs (and their filters) working. */
 export default async function CatalogPage({
   searchParams,
 }: {

@@ -20,7 +20,7 @@ export default function OfflinePage() {
             You&apos;re offline
           </h1>
           <p className="mt-[1.5em] m-0 font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
-            Your cart is saved on this device. Reconnect to browse the catalog and check out.
+            Your cart is saved on this device. Reconnect to browse the shop and check out.
           </p>
           <div className="mt-[2em] flex flex-col items-start gap-[1.25em]">
             <EditorialCtaLink href="/cart">View saved cart</EditorialCtaLink>

@@ -24,8 +24,8 @@ export const SHOP_FEATURED_FALLBACK = [
 ] as const
 
 export const SHOP_BANNER = {
-  src: "/images/hero/hero-workshop.webp",
-  alt: "Craftsman workshop with warm wood and brass tools in low-key light",
+  src: "/images/brand/banner-ribbon.webp",
+  alt: "Trophy Heaven ribbon award on a cream pedestal with burgundy velvet",
 } as const
 
 export const SHOP_QUOTES = [

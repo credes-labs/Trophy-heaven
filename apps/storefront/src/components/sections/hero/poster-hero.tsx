@@ -17,8 +17,8 @@ export type PosterTrophy = {
 }
 
 /**
- * The landing-page poster hero: the primary nav in tiny caps, full-bleed lowercase
- * "trophy heaven" wordmark, cut-out trophies standing in front of it, a caps
+ * The landing-page poster hero: the primary nav in tiny caps with the emblem, a
+ * full-bleed TROPHY HEAVEN wordmark in the brand serif (logo maroon), cut-out trophies standing in front of it, a caps
  * label row, the page title + copy bottom-left and an outlined CTA box.
  */
 export function PosterHero({
@@ -66,12 +66,12 @@ export function PosterHero({
         <div className="relative">
           <p
             aria-hidden
-            className="relative z-0 m-0 block pt-[1.5vw] text-center font-medium leading-[0.8] tracking-[-0.06em] whitespace-nowrap text-[#2B2B2B] [font-size:16.4vw] select-none lg:pt-[0.6vw] lg:[font-size:min(17.2vw,276px)]"
+            className="relative z-0 m-0 block pt-[1.5vw] text-center font-brand leading-[0.8] tracking-[-0.01em] whitespace-nowrap text-maroon uppercase [font-size:11.7vw] select-none lg:pt-[0.6vw] lg:[font-size:min(12.4vw,199px)]"
           >
-            trophy heaven
+            Trophy Heaven
           </p>
 
-          <ul className="relative z-0 m-0 mt-[3.4vw] hidden list-none grid-cols-12 gap-x-4 p-0 lg:grid">
+          <ul className="relative z-0 m-0 mt-[2.2vw] hidden list-none grid-cols-12 gap-x-4 p-0 lg:grid">
             {HERO_FEATURES.map((item) => (
               <li key={item.label} className={item.col}>
                 <Link href={item.href} className={featureClass}>
@@ -84,7 +84,7 @@ export function PosterHero({
           {/* Trophies overlap the lower half of the wordmark, like objects in front of a sign. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-[5vw] z-10 flex h-[80vw] items-end justify-center gap-[1.5vw] lg:top-[5vw] lg:h-[min(36vw,580px)] lg:gap-[2.4vw]"
+            className="pointer-events-none absolute inset-x-0 top-[5vw] z-10 flex h-[80vw] items-end justify-center gap-[1.5vw] lg:top-[5vw] lg:h-[min(36vw,580px)] lg:gap-[1.6vw]"
           >
             {trophies.map((t) => (
               <div key={t.src} className="relative flex items-end" style={{ height: t.height }}>

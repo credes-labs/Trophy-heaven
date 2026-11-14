@@ -4,7 +4,7 @@
   "/images/hero/hero-workshop.webp": "Craftsman workshop with warm wood and brass tools in low-key atmospheric light",
   "/images/blog/blog-craftsmanship.webp": "Artisan working wood with brass tools \u2014 craftsmanship editorial",
   "/images/blog/blog-materials.webp": "Premium materials flat lay: wood, brass, crystal, leather, marble",
-  "/images/og/og-default.jpg": "Social share card: 1200x630 JPEG crop of catalog/trophy-figure-award (kept as JPEG for link-preview crawlers that reject WebP)",
+  "/images/og/og-default.jpg": "Social share card: 1200x630 JPEG crop of the brand poster (photo 8) centred on the emblem and wordmark (kept as JPEG for link-preview crawlers that reject WebP)",
   "/images/catalog/trophy-figure-award.webp": "Gilt figure award rising through a ring on an octagonal mahogany base, burgundy wall",
   "/images/catalog/trophy-achievement-statuette.webp": "Gilded figure statuette on a black marble plinth in warm light",
   "/images/catalog/plaque-studio.webp": "Alias of catalog/plaque-engraved.webp (same cropped image) kept for stored URLs",
@@ -14,5 +14,17 @@
   "/images/catalog/plaque-engraved.webp": "Engraved walnut award plaque with a brass plate, studio render cropped clear of the studio UI (no logo or viewer controls). Replaces plaque-studio.webp, which stays as an identical alias for old URLs.",
   "/images/news/news-silver-dipped.webp": "News story cover: the gilt figure award and statuette re-toned to a silver-dip finish (hue-selective recolour of cutouts/figure-award and cutouts/statuette) on the neutral studio tile",
   "/images/news/news-silver-figure.webp": "Silver-dipped figure award (recoloured cutouts/figure-award) standing on the neutral studio tile, portrait crop",
-  "/images/news/news-silver-statuette.webp": "Silver-dipped statuette on its black marble plinth (recoloured cutouts/statuette) on the neutral studio tile, portrait crop"
+  "/images/news/news-silver-statuette.webp": "Silver-dipped statuette on its black marble plinth (recoloured cutouts/statuette) on the neutral studio tile, portrait crop",
+  "/images/brand/poster-awards-jewelry.webp": "Portrait brand poster: snow leopard on paper-relief mountains over burgundy velvet, 'Awards & Jewelry for Distinguished Brands' (WebP of supplied brand photo \"trophy heaven 1.jpeg\")",
+  "/images/brand/banner-crystal.webp": "Wide banner: Trophy Heaven wordmark beside a crystal block award etched with a palace, on a cream pedestal with burgundy velvet (WebP of supplied brand photo \"trophy heaven 2.jpeg\")",
+  "/images/brand/presentation-hands.webp": "Hands presenting a crystal excellence award and a framed 'Award of Excellence' certificate (WebP of supplied brand photo \"trophy heaven 3.jpeg\")",
+  "/images/brand/cup-pedestal.webp": "Gold two-handled cup on a marble block pedestal against burgundy velvet and gilt florals (WebP of supplied brand photo \"trophy heaven 4.jpeg\")",
+  "/images/brand/flame-award.webp": "A gold flame award on a black base held on a marble table before burgundy drapes (WebP of supplied brand photo \"trophy heaven 5.jpeg\")",
+  "/images/brand/gold-cup.webp": "Gold cup on a marbled burgundy base engraved TROPHY HEAVEN, gold confetti and laurel (WebP of supplied brand photo \"trophy heaven 6.jpeg\")",
+  "/images/brand/winner-cup.webp": "A smiling winner in a suit holding up a gold cup on stage (WebP of supplied brand photo \"trophy heaven 7.jpeg\")",
+  "/images/brand/poster-logo.webp": "Portrait brand poster: Trophy Heaven emblem and wordmark, 'Premium Awards & Recognition', cream arch and burgundy velvet (WebP of supplied brand photo \"trophy heaven 8.jpeg\")",
+  "/images/brand/poster-celebrating.webp": "Portrait brand poster: 'Celebrating Achievement with Timeless Elegance', paper mountains, gold sun, burgundy velvet (WebP of supplied brand photo \"trophy heaven 9.jpeg\")",
+  "/images/brand/banner-ribbon.webp": "Wide banner: Trophy Heaven wordmark beside a gold and red ribbon award on a cream pedestal (WebP of supplied brand photo \"trophy heaven 10.jpeg\")",
+  "/images/cutouts/cup.webp": "Transparent cutout (background removed locally with an ISNet model) of the gold cup on its burgundy base from brand photo 6",
+  "/images/cutouts/ribbon-award.webp": "Transparent cutout of the gold and red ribbon award from brand photo 10 (ISNet mask, thresholded and hole-filled)"
 }

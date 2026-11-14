@@ -11,8 +11,8 @@ const STOREFRONT_URL = process.env.STOREFRONT_URL ?? "http://localhost:3000"
 const COVER_BY_CATEGORY: Record<string, string> = {
   craftsmanship: `${STOREFRONT_URL}/images/blog/blog-craftsmanship.webp`,
   materials: `${STOREFRONT_URL}/images/blog/blog-materials.webp`,
-  design: `${STOREFRONT_URL}/images/catalog/trophy-figure-award.webp`,
-  stories: `${STOREFRONT_URL}/images/catalog/trophy-achievement-statuette.webp`,
+  design: `${STOREFRONT_URL}/images/brand/gold-cup.webp`,
+  stories: `${STOREFRONT_URL}/images/brand/winner-cup.webp`,
   news: `${STOREFRONT_URL}/images/news/news-silver-dipped.webp`,
 }
 

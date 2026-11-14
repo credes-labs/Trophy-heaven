@@ -307,3 +307,6 @@ Design-studio Achievement and Ascent models rebuilt to follow the catalogue phot
 
 ## 2026-11-14 - OTP sign-in, cart designs, 10% advance + COD, silver news
 Passwordless sign-in by email or phone code; sticker design box in the studio and on product pages; cart quantity controls, order-wide and per-item design uploads and design notes; a 10% advance + 90% cash-on-delivery payment option shown at every checkout step; a "Trophies, dipped in silver" news story; the contact page map removed. See L2 WP-94.
+
+## 2026-11-14 - Brand logo, wordmark and photography
+Supplied emblem used as the site logo and favicon, hero wordmark in the logo's serif and maroon, cup and ribbon award cut from the brand photos replace the hero plaque, brand photos placed across the site, CATALOG renamed SHOP. See L2 WP-95.

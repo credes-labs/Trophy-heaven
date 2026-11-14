@@ -83,7 +83,7 @@ export function FeaturedProducts({ products }: { products: HttpTypes.StoreProduc
               </div>
             ) : (
               <p className="py-12 text-center text-muted-foreground">
-                Catalog is loading. Please check back shortly.
+                The shop is loading. Please check back shortly.
               </p>
             )}
           </motion.div>

@@ -44,8 +44,8 @@ export default function CorporatePage() {
             </div>
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
               <Image
-                src="/images/hero/hero-workshop.webp"
-                alt="Workshop tools and timber for corporate honors"
+                src="/images/brand/presentation-hands.webp"
+                alt="A crystal excellence award and framed certificate being presented"
                 fill
                 preload
                 sizes="(min-width: 1024px) 48em, 100vw"

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, Playfair_Display, Urbanist } from "next/font/google"
+import { Inter, Marcellus, Playfair_Display, Urbanist } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
 import { AnnouncementBar } from "@/components/layout/announcement-bar"
@@ -20,6 +20,17 @@ const urbanist = Urbanist({
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-urbanist",
+  display: "swap",
+})
+
+/**
+ * Brand wordmark face: Marcellus, a flared Roman serif matching the Trophy Heaven
+ * logo lettering. Used for the wordmark only (hero, header lockup, footer).
+ */
+const marcellus = Marcellus({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-marcellus",
   display: "swap",
 })
 
@@ -97,7 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <html lang="en" className={`${urbanist.variable} ${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${urbanist.variable} ${marcellus.variable} ${inter.variable} ${playfair.variable}`}>
       <body className="font-sans bg-background text-foreground antialiased">
         <script
           type="application/ld+json"

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Emblem } from "@/components/brand/emblem"
 
 import { FOOTER_NAV } from "./constants"
 
@@ -40,14 +41,13 @@ export function FooterNav() {
           aria-label="Trophy Heaven home"
           className="block w-full max-w-[34rem] no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:max-w-none"
         >
-          {/* Interim live-text wordmark until the supplied logo files land. */}
-          <span
-            aria-hidden
-            className="block font-serif text-[clamp(3.5rem,11vw,10rem)] leading-[0.9] font-semibold tracking-[-0.03em] text-[#131111]"
-          >
-            Trophy
-            <br />
-            Heaven
+          <span aria-hidden className="flex items-end gap-[0.18em] text-[clamp(3.5rem,11vw,10rem)] text-maroon">
+            <Emblem className="mb-[0.12em] w-[0.9em] shrink-0" />
+            <span className="block font-brand leading-[0.9] tracking-[0.01em] uppercase">
+              Trophy
+              <br />
+              Heaven
+            </span>
           </span>
         </Link>
       </div>

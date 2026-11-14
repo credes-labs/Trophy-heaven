@@ -21,7 +21,7 @@ const DEFAULT_DEPARTMENTS: SiteNavChild[] = [
   { label: "Trophies", href: "/trophies" },
 ]
 
-export const CATALOG_CHILDREN: SiteNavChild[] = [
+export const SHOP_CHILDREN: SiteNavChild[] = [
   { label: "Trophies", href: "/trophies" },
   { label: "Crystal", href: "/trophies?sub=Crystal" },
   { label: "Metal", href: "/trophies?sub=Metal" },
@@ -84,10 +84,10 @@ export function siteNavColumns(_categories?: NavCategory[]): {
   return {
     col1: [
       {
-        id: "catalog",
-        label: "CATALOG",
+        id: "shop",
+        label: "SHOP",
         href: "/shop",
-        children: CATALOG_CHILDREN,
+        children: SHOP_CHILDREN,
       },
       {
         id: "info",

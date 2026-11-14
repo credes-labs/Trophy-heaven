@@ -1,24 +1,15 @@
 import Link from "next/link"
+import { BrandLockup, Emblem } from "@/components/brand/emblem"
 import { BRAND } from "@/lib/brand-facts"
 
-/**
- * Interim Trophy Heaven mark: a "T" monogram plus the Playfair wordmark,
- * rendered as live text. Swap for the supplied logo files when they land.
- */
+/** Trophy Heaven logo: emblem + wordmark lockup, or the emblem alone. */
 export function Logo({ iconOnly = false }: { iconOnly?: boolean }) {
-  return (
-    <Link href="/" className="flex items-center gap-2.5" aria-label={`${BRAND.name} home`}>
-      <span
-        aria-hidden
-        className="grid h-8 w-8 place-items-center rounded-full border border-gold font-serif text-lg leading-none font-semibold text-gold"
-      >
-        T
-      </span>
-      {!iconOnly && (
-        <span className="font-serif text-xl font-semibold tracking-tight text-foreground">
-          {BRAND.name}
-        </span>
-      )}
-    </Link>
-  )
+  if (iconOnly) {
+    return (
+      <Link href="/" aria-label={`${BRAND.name} home`} className="inline-flex text-maroon">
+        <Emblem className="w-9" />
+      </Link>
+    )
+  }
+  return <BrandLockup className="text-[1rem] text-maroon" />
 }

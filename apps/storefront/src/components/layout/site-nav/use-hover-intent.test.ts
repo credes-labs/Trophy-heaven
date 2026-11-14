@@ -8,16 +8,16 @@ describe("useHoverIntent", () => {
 
   it("opens only after the open delay", () => {
     const { result } = renderHook(() => useHoverIntent())
-    act(() => result.current.pointerEnter("catalog"))
+    act(() => result.current.pointerEnter("shop"))
     act(() => vi.advanceTimersByTime(HOVER_OPEN_DELAY_MS - 1))
     expect(result.current.openId).toBeNull()
     act(() => vi.advanceTimersByTime(1))
-    expect(result.current.openId).toBe("catalog")
+    expect(result.current.openId).toBe("shop")
   })
 
   it("does not open when the pointer sweeps past", () => {
     const { result } = renderHook(() => useHoverIntent())
-    act(() => result.current.pointerEnter("catalog"))
+    act(() => result.current.pointerEnter("shop"))
     act(() => result.current.pointerLeave())
     act(() => vi.advanceTimersByTime(HOVER_CLOSE_DELAY_MS * 2))
     expect(result.current.openId).toBeNull()
@@ -51,7 +51,7 @@ describe("useHoverIntent", () => {
 
   it("clears pending timers on unmount", () => {
     const { result, unmount } = renderHook(() => useHoverIntent())
-    act(() => result.current.pointerEnter("catalog"))
+    act(() => result.current.pointerEnter("shop"))
     unmount()
     expect(vi.getTimerCount()).toBe(0)
   })

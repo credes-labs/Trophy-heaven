@@ -17,6 +17,8 @@
   --color-cream: oklch(0.89 0.03 90);
   --color-champagne: #FFFFFF;
   --color-gold: oklch(0.72 0.10 80);
+  /* Logo maroon, sampled from the supplied brand artwork. */
+  --color-maroon: #4A1F1B;
   /* Darker gold for text on light surfaces — --color-gold only reaches ~2.4:1
      on champagne; this passes WCAG AA (≥4.5:1) for small text. */
   --color-gold-dark: oklch(0.50 0.09 78);
@@ -64,6 +66,8 @@
   --font-outfit: var(--font-sans);
   --font-serif: var(--font-sans);
   --font-display: var(--font-sans);
+  /* Wordmark only (logo lettering) — never body or UI text. */
+  --font-brand: var(--font-marcellus), "Marcellus", ui-serif, Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
 
   /* ── Fluid Type Scale ── */

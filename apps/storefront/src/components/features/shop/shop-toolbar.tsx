@@ -52,8 +52,8 @@ export function ShopFilterBanner({ category }: { category: CategoryKey | null })
   return (
     <div className="relative mb-[1.5em] aspect-[1360/280] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
       <Image
-        src={cfg?.imageSrc ?? "/images/hero/hero-workshop.webp"}
-        alt={cfg?.imageAlt ?? "Trophy workshop bench with brass tools in warm light"}
+        src={cfg?.imageSrc ?? "/images/brand/banner-crystal.webp"}
+        alt={cfg?.imageAlt ?? "Crystal award with an etched palace on a cream pedestal"}
         fill
         sizes="(min-width: 1024px) 85em, 100vw"
         className="object-cover"

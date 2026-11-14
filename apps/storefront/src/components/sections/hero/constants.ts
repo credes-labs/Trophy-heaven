@@ -18,7 +18,7 @@ export const HERO_CTA_SECONDARY_HREF = "/customize"
 
 export const HERO_NAV_COL_1 = [
   { label: "COLLECTION", href: "/shop" },
-  { label: "CATALOG", href: "/shop" },
+  { label: "SHOP", href: "/shop" },
   { label: "INFO", href: "/about" },
 ] as const
 
@@ -46,9 +46,12 @@ export const HERO_FEATURES = [
   { label: "Our story", href: "/about", col: "col-start-12 text-right" },
 ] as const
 
-/** Cut-outs (backgrounds removed from the catalog photos). Heights are % of the stage. */
+/**
+ * Cut-outs (backgrounds removed). Heights are % of the stage. The cup and the ribbon
+ * award come from the brand photos "trophy heaven 6" and "trophy heaven 10".
+ */
 export const HERO_TROPHIES = [
-  { src: "/images/cutouts/plaque.webp", width: 1021, intrinsicHeight: 1177, height: "46%" },
+  { src: "/images/cutouts/cup.webp", width: 564, intrinsicHeight: 650, height: "66%" },
   { src: "/images/cutouts/figure-award.webp", width: 590, intrinsicHeight: 1604, height: "100%" },
-  { src: "/images/cutouts/statuette.webp", width: 314, intrinsicHeight: 772, height: "78%" },
+  { src: "/images/cutouts/ribbon-award.webp", width: 227, intrinsicHeight: 473, height: "78%" },
 ] as const

@@ -24,7 +24,7 @@ export function MobileMenu({
   onClose: () => void
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const [expanded, setExpanded] = useState<string | null>("catalog")
+  const [expanded, setExpanded] = useState<string | null>("shop")
 
   useEffect(() => {
     const dialog = dialogRef.current

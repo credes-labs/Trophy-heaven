@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { Emblem } from "@/components/brand/emblem"
 import { CUTOUTS, HOME_CATEGORIES } from "./constants"
 
 const count = String(HOME_CATEGORIES.length).padStart(2, "0")
@@ -48,12 +49,7 @@ export function HomeCategories() {
                       />
                     ) : (
                       <span className="flex flex-col items-center gap-3 text-center">
-                        <span
-                          aria-hidden
-                          className="text-[clamp(4rem,9vw,8.5rem)] leading-none font-light tracking-[-0.06em] text-[#2B2B2B] transition-transform duration-500 group-hover:scale-[1.04]"
-                        >
-                          T
-                        </span>
+                        <Emblem className="w-[clamp(5rem,11vw,10rem)] text-maroon transition-transform duration-500 group-hover:scale-[1.04]" />
                         <span className="text-[11px] tracking-[0.04em] text-[#1A1A1A]/60 uppercase">
                           Open the studio →
                         </span>

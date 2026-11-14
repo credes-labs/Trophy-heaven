@@ -116,16 +116,19 @@ pnpm build                                  # before merging
 
 **White `#FFFFFF` is the only page/section surface** (tokens `background`, `paper`,
 `paper-raised`, `champagne`; product image tiles use neutral `#F3F3F3`), walnut `#331207` text, gold
-`#B89E6B` accents, burgundy `#8A2D25` trophy accent. **Urbanist is the only site
-typeface** (display, body, UI); `font-serif`/`font-display`/`font-outfit` are aliases
-of it. Playfair Display and Inter load unpreloaded solely as plaque-engraving styles in
+`#B89E6B` accents, burgundy `#8A2D25` trophy accent, logo maroon `#4A1F1B`
+(`text-maroon`). **Urbanist is the only text typeface** (display, body, UI);
+`font-serif`/`font-display`/`font-outfit` are aliases of it. The wordmark alone is set in
+Marcellus (`font-brand`, the closest Google face to the logo lettering): hero, header
+lockup, footer. The logo is `components/brand/emblem.tsx` (`Emblem`, `BrandLockup`),
+traced from the supplied artwork; favicons are rendered from it. Playfair Display and Inter load unpreloaded solely as plaque-engraving styles in
 the configurator. The homepage top (white poster hero, categories, Selected Editions)
 uses transparent cut-outs from `public/images/cutouts/`. Trophy Heaven is a trophy-only fork of Legacy Crafts: do not reintroduce
 furniture, artwork/home-decor or sculpture products, routes, copy or imagery
 (`/furniture` and `/artwork` 308 to `/trophies`). "Artwork" in the configurator means
 the customer's plaque art/logo and stays. The poster hero (`components/sections/hero/poster-hero.tsx`) is for the
-**landing page only**; inner pages keep their own editorial heroes and the SiteNav header. The "T" monogram and wordmark are interim
-live text until the supplied brand assets arrive.
+**landing page only**; inner pages keep their own editorial heroes and the SiteNav header. The supplied brand photos live in
+`public/images/brand/` (WebP); the originals stay as `public/images/trophy heaven N.jpeg`.
 Tone: minimal, elegant, editorial — "Crafted with intention. Built to last."
 Tokens: `apps/storefront/src/app/globals.css`. Spec: `.cursor/plans/00-master-plan.md`.
 

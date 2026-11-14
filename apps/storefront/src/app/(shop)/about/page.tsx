@@ -63,8 +63,8 @@ export default function AboutPage() {
 
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] lg:aspect-[6/5]">
               <Image
-                src="/images/hero/hero-workshop.webp"
-                alt="Trophy workshop bench with brass tools in warm, low light"
+                src="/images/brand/cup-pedestal.webp"
+                alt="Gold Trophy Heaven cup on a marble pedestal against burgundy velvet"
                 fill
                 preload
                 sizes="(min-width: 1024px) 48em, 100vw"
@@ -153,8 +153,8 @@ export default function AboutPage() {
       <section className="relative mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3.5rem,8vw,7em)]">
         <div className="relative aspect-[1360/664] w-full overflow-hidden rounded-[0.125em]">
           <Image
-            src="/images/hero/hero-workshop.webp"
-            alt="Artisan shaping timber in the atelier"
+            src="/images/brand/winner-cup.webp"
+            alt="A winner holding up a gold cup on stage"
             fill
             sizes="(min-width: 90rem) 85rem, 100vw"
             className="object-cover object-center"

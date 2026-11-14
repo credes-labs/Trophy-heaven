@@ -6,6 +6,7 @@ import { Menu } from "lucide-react"
 import dynamic from "next/dynamic"
 import { SiteCartControl } from "./site-cart-control"
 import { HeroWordmark } from "@/components/sections/hero/hero-wordmark"
+import { Emblem } from "@/components/brand/emblem"
 import { siteNavColumns, siteNavLinks, type NavCategory, type SiteNavItem } from "./constants"
 import { useHoverIntent } from "./use-hover-intent"
 
@@ -18,7 +19,7 @@ export type SiteNavTone = "light" | "ink"
 const siteNavInkItemClass =
   "font-outfit text-[12px] leading-none font-normal tracking-[0.04em] text-[#131111] uppercase transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-[#131111] lg:text-[13px]"
 
-const inkWordmarkClass = "text-[#131111] focus-visible:outline-[#131111]"
+const inkWordmarkClass = "text-maroon focus-visible:outline-maroon"
 
 function focusMenuItem(panel: HTMLElement | null, index: number | "next" | "prev") {
   const items = Array.from(panel?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
@@ -285,6 +286,13 @@ export function SiteNavPoster({ categories }: { categories?: NavCategory[] }) {
     <nav aria-label="Primary" className="relative z-40 grid grid-cols-12 items-start gap-x-4">
       {renderColumn(col1, "col-span-3")}
       {renderColumn(col2, "col-start-4 col-span-3")}
+      <Link
+        href="/"
+        aria-label="Trophy Heaven home"
+        className="absolute top-0 left-1/2 -translate-x-1/2 text-maroon focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-maroon"
+      >
+        <Emblem className="w-14" />
+      </Link>
       <div className="col-start-8 col-span-3">
         <Link href="/search" aria-label="Search" className={sitePosterItemClass}>
           SEARCH

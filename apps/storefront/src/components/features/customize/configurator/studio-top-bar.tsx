@@ -66,7 +66,7 @@ export function StudioTopBar({
         className,
       )}
     >
-      <HeroWordmark className="pointer-events-auto h-8 shrink-0 text-[#131111] focus-visible:outline-[#131111] lg:h-9 [&_span]:text-[0.95rem] lg:[&_span]:text-[1.05rem]" />
+      <HeroWordmark className="pointer-events-auto h-8 shrink-0 text-[0.92rem] text-maroon focus-visible:outline-maroon lg:h-9 lg:text-[1rem]" />
       {onModeChange ? (
         <div
           role="radiogroup"
