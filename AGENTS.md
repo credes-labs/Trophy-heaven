@@ -118,9 +118,7 @@ pnpm build                                  # before merging
 `paper-raised`, `champagne`; product image tiles use neutral `#F3F3F3`), walnut `#331207` text, gold
 `#B89E6B` accents, burgundy `#8A2D25` trophy accent, logo maroon `#4A1F1B`
 (`text-maroon`). **Urbanist is the only text typeface** (display, body, UI);
-`font-serif`/`font-display`/`font-outfit` are aliases of it. The wordmark alone is set in
-Marcellus (`font-brand`, the closest Google face to the logo lettering): hero, header
-lockup, footer. The logo is `components/brand/emblem.tsx` (`Emblem`, `BrandLockup`),
+`font-serif`/`font-display`/`font-outfit` are aliases of it. The TROPHY HEAVEN wordmark is outlines, not live text: `components/brand/wordmark.tsx` (`Wordmark`, stacked or one line), Cinzel capitals fitted to the logo artwork plus the traced A-loop ligature (generated `wordmark-paths.ts`); hero, header lockup and footer use it. The logo is `components/brand/emblem.tsx` (`Emblem`, `BrandLockup`),
 traced from the supplied artwork; favicons are rendered from it. Playfair Display and Inter load unpreloaded solely as plaque-engraving styles in
 the configurator. The homepage top (white poster hero, categories, Selected Editions)
 uses transparent cut-outs from `public/images/cutouts/`. Trophy Heaven is a trophy-only fork of Legacy Crafts: do not reintroduce

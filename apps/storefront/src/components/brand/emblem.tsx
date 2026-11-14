@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { BRAND } from "@/lib/brand-facts"
 import { cn } from "@/lib/utils"
+import { Wordmark } from "./wordmark"
 
 /**
  * Trophy Heaven emblem (winged "T" over a diamond), traced from the supplied logo
@@ -28,7 +29,7 @@ export function Emblem({ className, title }: { className?: string; title?: strin
 }
 
 /**
- * Logo lockup: emblem beside a stacked TROPHY / HEAVEN in the brand serif.
+ * Logo lockup: emblem beside the stacked TROPHY / HEAVEN wordmark.
  * `stacked` puts the emblem above the words, as on the brand artwork.
  */
 export function BrandLockup({
@@ -43,18 +44,10 @@ export function BrandLockup({
   const inner = (
     <>
       <Emblem className={stacked ? "w-[2.4em]" : "w-[2.15em] shrink-0"} />
-      <span
-        aria-hidden
-        className={cn(
-          "font-brand tracking-[0.02em] uppercase",
-          stacked ? "text-center text-[1.35em]" : "text-[0.98em]",
-          // after the size: tailwind-merge drops a leading-* that precedes a text-* size
-          "leading-[0.95]"
-        )}
-      >
-        <span className="block">Trophy</span>
-        <span className="block">Heaven</span>
-      </span>
+      <Wordmark
+        title={null}
+        className={stacked ? "w-[5.2em]" : "w-[4.2em] shrink-0"}
+      />
     </>
   )
   const layout = cn(

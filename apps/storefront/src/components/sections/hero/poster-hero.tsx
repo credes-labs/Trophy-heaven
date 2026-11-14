@@ -3,6 +3,7 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 import { SiteNavPoster } from "@/components/layout/site-nav/site-nav"
 import type { NavCategory } from "@/components/layout/site-nav/constants"
+import { Wordmark } from "@/components/brand/wordmark"
 import { HERO_FEATURES, HERO_TROPHIES } from "./constants"
 
 const featureClass =
@@ -18,7 +19,7 @@ export type PosterTrophy = {
 
 /**
  * The landing-page poster hero: the primary nav in tiny caps with the emblem, a
- * full-bleed TROPHY HEAVEN wordmark in the brand serif (logo maroon), cut-out trophies standing in front of it, a caps
+ * full-width stacked TROPHY HEAVEN wordmark (logo maroon, as on the brand artwork), cut-out trophies standing in front of it, a caps
  * label row, the page title + copy bottom-left and an outlined CTA box.
  */
 export function PosterHero({
@@ -64,12 +65,10 @@ export function PosterHero({
         {home ? <div aria-hidden className="h-16 lg:hidden" /> : null}
 
         <div className="relative">
-          <p
-            aria-hidden
-            className="relative z-0 m-0 block pt-[1.5vw] text-center font-brand leading-[0.8] tracking-[-0.01em] whitespace-nowrap text-maroon uppercase [font-size:11.7vw] select-none lg:pt-[0.6vw] lg:[font-size:min(12.4vw,199px)]"
-          >
-            Trophy Heaven
-          </p>
+          <Wordmark
+            title={null}
+            className="relative z-0 w-full pt-[2vw] text-maroon select-none lg:pt-[1vw]"
+          />
 
           <ul className="relative z-0 m-0 mt-[2.2vw] hidden list-none grid-cols-12 gap-x-4 p-0 lg:grid">
             {HERO_FEATURES.map((item) => (
@@ -81,10 +80,10 @@ export function PosterHero({
             ))}
           </ul>
 
-          {/* Trophies overlap the lower half of the wordmark, like objects in front of a sign. */}
+          {/* Trophies stand in front of "VEN" (right of the ligature, which stays visible), like objects in front of a sign. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-[5vw] z-10 flex h-[80vw] items-end justify-center gap-[1.5vw] lg:top-[5vw] lg:h-[min(36vw,580px)] lg:gap-[1.6vw]"
+            className="pointer-events-none absolute inset-x-0 top-[46vw] z-10 flex h-[60vw] items-end justify-center gap-[1.5vw] lg:top-[min(20vw,320px)] lg:h-[min(32vw,512px)] lg:justify-end lg:gap-[1.4vw] lg:pr-[4vw]"
           >
             {trophies.map((t) => (
               <div key={t.src} className="relative flex items-end" style={{ height: t.height }}>
@@ -102,8 +101,8 @@ export function PosterHero({
             ))}
           </div>
 
-          <div className="relative lg:h-[min(25vw,410px)]">
-            <div aria-hidden className="h-[74vw] lg:hidden" />
+          <div className="relative lg:h-[min(14vw,224px)]">
+            <div aria-hidden className="h-[60vw] lg:hidden" />
             <div className="relative z-20 flex flex-col gap-5 pb-6 lg:absolute lg:inset-x-0 lg:bottom-0 lg:flex-row lg:items-end lg:justify-between lg:pb-4">
               <div className="max-w-[26rem]">
                 {showTitle ? (

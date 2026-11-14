@@ -352,12 +352,6 @@ export function ShopClient({
     >
       <h1 className="sr-only">Shop all products</h1>
 
-      <div className="shop-page-hero" aria-hidden={filtersOpen}>
-        <div className="shop-fold-pane">
-          <SilhouetteHero />
-        </div>
-      </div>
-
       <div
         className={cn(
           "mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3rem,6vw,5.5em)] transition-[padding] duration-[560ms] ease-[cubic-bezier(0.25,0.82,0.25,1)] motion-reduce:duration-0",
@@ -440,6 +434,7 @@ export function ShopClient({
             <div className="shop-browse-footer" aria-hidden={filtersOpen}>
               <div className="shop-fold-pane">
                 <ShopTestimonials />
+                <SilhouetteHero />
                 <ShopBanner />
               </div>
             </div>

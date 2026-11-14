@@ -2,7 +2,7 @@
   "/images/footer/orbit-statuette.webp": "Transparent cutout: gilded figure statuette on a black marble plinth",
   "/images/footer/orbit-figure-award.webp": "Transparent cutout: gilt figure award on an octagonal mahogany base",
   "/images/hero/hero-workshop.webp": "Craftsman workshop with warm wood and brass tools in low-key atmospheric light",
-  "/images/blog/blog-craftsmanship.webp": "Artisan working wood with brass tools \u2014 craftsmanship editorial",
+  "/images/blog/blog-craftsmanship.webp": "Artisan working wood with brass tools — craftsmanship editorial",
   "/images/blog/blog-materials.webp": "Premium materials flat lay: wood, brass, crystal, leather, marble",
   "/images/og/og-default.jpg": "Social share card: 1200x630 JPEG crop of the brand poster (photo 8) centred on the emblem and wordmark (kept as JPEG for link-preview crawlers that reject WebP)",
   "/images/catalog/trophy-figure-award.webp": "Gilt figure award rising through a ring on an octagonal mahogany base, burgundy wall",
@@ -26,5 +26,10 @@
   "/images/brand/poster-celebrating.webp": "Portrait brand poster: 'Celebrating Achievement with Timeless Elegance', paper mountains, gold sun, burgundy velvet (WebP of supplied brand photo \"trophy heaven 9.jpeg\")",
   "/images/brand/banner-ribbon.webp": "Wide banner: Trophy Heaven wordmark beside a gold and red ribbon award on a cream pedestal (WebP of supplied brand photo \"trophy heaven 10.jpeg\")",
   "/images/cutouts/cup.webp": "Transparent cutout (background removed locally with an ISNet model) of the gold cup on its burgundy base from brand photo 6",
-  "/images/cutouts/ribbon-award.webp": "Transparent cutout of the gold and red ribbon award from brand photo 10 (ISNet mask, thresholded and hole-filled)"
+  "/images/cutouts/ribbon-award.webp": "Transparent cutout of the gold and red ribbon award from brand photo 10 (ISNet mask, thresholded and hole-filled)",
+  "/images/footer/ring-cup.webp": "Transparent cutout card for the footer orbit (451:553, piece on the card floor): gold cup trophy, from public/images/cutouts/cup.webp",
+  "/images/footer/ring-figure-award.webp": "Transparent cutout card for the footer orbit (451:553, piece on the card floor): gilt figure award, from public/images/cutouts/figure-award.webp",
+  "/images/footer/ring-ribbon-award.webp": "Transparent cutout card for the footer orbit (451:553, piece on the card floor): gold and red ribbon award, from public/images/cutouts/ribbon-award.webp",
+  "/images/footer/ring-statuette.webp": "Transparent cutout card for the footer orbit (451:553, piece on the card floor): gilded figure statuette, from public/images/cutouts/statuette.webp",
+  "/images/footer/ring-plaque.webp": "Transparent cutout card for the footer orbit (451:553, piece on the card floor): engraved wooden plaque, from public/images/cutouts/plaque.webp"
 }

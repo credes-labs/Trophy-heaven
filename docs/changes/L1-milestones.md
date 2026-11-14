@@ -310,3 +310,6 @@ Passwordless sign-in by email or phone code; sticker design box in the studio an
 
 ## 2026-11-14 - Brand logo, wordmark and photography
 Supplied emblem used as the site logo and favicon, hero wordmark in the logo's serif and maroon, cup and ribbon award cut from the brand photos replace the hero plaque, brand photos placed across the site, CATALOG renamed SHOP. See L2 WP-95.
+
+## 2026-11-14 - Logo-accurate wordmark, varied footer trophies, shop silhouettes moved
+TROPHY HEAVEN wordmark redrawn after the logo artwork (serif capitals plus the looped A-V ligature), set large and stacked in the hero and in the footer without the emblem; footer orbit shows five different trophies; /shop silhouette grid moved under the testimonials. See L2 WP-96.

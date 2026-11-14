@@ -50,21 +50,17 @@ export const FOOTER_NAV = [
 ] as const
 
 /**
- * Transparent cutouts on the footer orbit, in ring order: the award pieces
- * that make up the current collection, cut from the studio photography. The
- * two trophy cutouts alternate until more trophy photography lands; four
- * cards keep the ring readable at footer width.
+ * Transparent cutouts on the footer orbit, in ring order: one of each award
+ * style, from the same cut-outs as the homepage hero (public/images/cutouts),
+ * padded onto 451:553 cards with the piece standing on the card floor.
  */
-const STATUETTE = {
-  src: "/images/footer/orbit-statuette.webp",
-  alt: "Gilded figure statuette on a black marble plinth",
-} as const
-const FIGURE = {
-  src: "/images/footer/orbit-figure-award.webp",
-  alt: "Gilt figure award on an octagonal mahogany base",
-} as const
-
-export const FOOTER_ORBIT = [STATUETTE, FIGURE, STATUETTE, FIGURE] as const
+export const FOOTER_ORBIT = [
+  { src: "/images/footer/ring-cup.webp", alt: "Gold cup trophy on a mahogany base" },
+  { src: "/images/footer/ring-figure-award.webp", alt: "Gilt figure award on an octagonal mahogany base" },
+  { src: "/images/footer/ring-ribbon-award.webp", alt: "Gold and red ribbon award on a maroon base" },
+  { src: "/images/footer/ring-statuette.webp", alt: "Gilded figure statuette on a black plinth" },
+  { src: "/images/footer/ring-plaque.webp", alt: "Engraved wooden plaque" },
+] as const
 
 /** Seconds for one revolution of the footer orbit. */
 export const FOOTER_ORBIT_PERIOD = 36

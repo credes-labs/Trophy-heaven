@@ -445,34 +445,6 @@
     grid-template-rows: 1fr;
   }
 
-  /* Featured hero: collapses first so it never stacks with the filter banner. */
-  .shop-page-hero {
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows var(--shop-move) var(--shop-ease);
-  }
-
-  .shop-page-hero .shop-fold-pane {
-    opacity: 1;
-    transition: opacity var(--shop-fade) var(--shop-ease);
-  }
-
-  .shop-page.is-filter .shop-page-hero {
-    grid-template-rows: 0fr;
-    transition-duration: 420ms;
-    transition-delay: 0ms;
-  }
-
-  .shop-page.is-filter .shop-page-hero .shop-fold-pane {
-    opacity: 0;
-    pointer-events: none;
-    transition-duration: 180ms;
-  }
-
-  .shop-page:not(.is-filter) .shop-page-hero {
-    transition-delay: 90ms;
-  }
-
   .shop-filter-breadcrumb,
   .shop-filter-banner-slot,
   .shop-browse-footer {
@@ -653,7 +625,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .shop-page-hero,
     .shop-filter-breadcrumb,
     .shop-filter-banner-slot,
     .shop-browse-footer,
@@ -661,7 +632,6 @@
     .shop-fold,
     .shop-listing-frame,
     .shop-listing-sidebar,
-    .shop-page-hero .shop-fold-pane,
     .shop-filter-breadcrumb .shop-fold-pane,
     .shop-filter-banner-slot .shop-fold-pane,
     .shop-browse-footer .shop-fold-pane {
