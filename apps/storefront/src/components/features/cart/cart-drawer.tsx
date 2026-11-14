@@ -1,20 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
-import { Upload, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { CartThumb } from "@/components/features/cart/cart-thumb"
 import { DesignUploadButton } from "@/components/features/cart/design-upload-button"
-import { OrderDesignPanel } from "@/components/features/cart/order-design-panel"
+import {
+  OrderDocumentsButton,
+  OrderDocumentsList,
+} from "@/components/features/cart/order-design-panel"
+import { useOrderDocuments } from "@/hooks/use-order-documents"
 import { formatMoney } from "@/lib/format"
+import { cartShippingLabel } from "@/lib/shipping"
 import {
   LINE_DESIGN_KEY,
-  ORDER_DESIGN_NOTES_KEY,
   STICKER_DESIGN_KEY,
   readDesignFile,
-  readOrderDocuments,
 } from "@/lib/design-uploads"
 
 const stepperClass =
@@ -29,7 +32,7 @@ export function CartDrawer() {
   const loading = useCartStore((s) => s.loading)
   const pendingLineIds = useCartStore((s) => s.pendingLineIds)
   const updateItemMetadata = useCartStore((s) => s.updateItemMetadata)
-  const [designsOpen, setDesignsOpen] = useState(false)
+  const orderDocs = useOrderDocuments()
 
   useEffect(() => {
     if (!drawerOpen) return
@@ -49,10 +52,6 @@ export function CartDrawer() {
 
   const items = cart?.items ?? []
   const currency = cart?.currency_code ?? "inr"
-  const cartMeta = (cart?.metadata ?? {}) as Record<string, unknown>
-  const hasOrderDesign = Boolean(
-    readOrderDocuments(cartMeta).length || cartMeta[ORDER_DESIGN_NOTES_KEY]
-  )
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Shopping cart">
@@ -67,19 +66,7 @@ export function CartDrawer() {
             Your cart
           </h2>
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setDesignsOpen((v) => !v)}
-              aria-expanded={designsOpen}
-              aria-controls="cart-order-designs"
-              className="flex h-9 items-center gap-1.5 rounded-[0.125em] border border-[#131111]/25 px-3 font-outfit text-[0.6875em] tracking-[0.12em] text-[#131111] uppercase transition-colors hover:bg-[#131111]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
-            >
-              <Upload className="size-3.5" strokeWidth={1.5} aria-hidden />
-              Upload your designs
-              {hasOrderDesign ? (
-                <span className="size-1.5 rounded-full bg-[#131111]" aria-label="(added)" />
-              ) : null}
-            </button>
+            <OrderDocumentsButton docs={orderDocs} />
             <button
               onClick={() => setDrawerOpen(false)}
               aria-label="Close cart"
@@ -89,11 +76,7 @@ export function CartDrawer() {
             </button>
           </div>
         </div>
-        {designsOpen ? (
-          <div id="cart-order-designs" className="border-b border-[#131111]/12 px-5 py-4">
-            <OrderDesignPanel />
-          </div>
-        ) : null}
+        <OrderDocumentsList docs={orderDocs} />
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {items.length === 0 ? (
@@ -173,9 +156,7 @@ export function CartDrawer() {
             <div className="flex items-start justify-between gap-3">
               <dt className="text-[#6B635C]">Shipping (3–5 business days)</dt>
               <dd className="m-0 shrink-0 tabular-nums text-[#131111]">
-                {(cart?.shipping_total ?? 0) <= 0
-                  ? "Free"
-                  : formatMoney(cart?.shipping_total ?? 0, currency)}
+                {cartShippingLabel(cart)}
               </dd>
             </div>
             <div className="flex items-start justify-between gap-3">

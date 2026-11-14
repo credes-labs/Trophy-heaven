@@ -1,4 +1,4 @@
-import { BACKEND_URL, PUBLISHABLE_KEY } from "./medusa"
+import { BACKEND_URL, PUBLISHABLE_KEY, serverOnlyHeaders } from "./medusa"
 import { formatMoney } from "./format"
 
 export type StorePromotion = {
@@ -18,6 +18,7 @@ export async function listActivePromotions(): Promise<StorePromotion[]> {
     headers: {
       "Content-Type": "application/json",
       "x-publishable-api-key": PUBLISHABLE_KEY,
+    ...serverOnlyHeaders(),
     },
   })
   if (!res.ok) {

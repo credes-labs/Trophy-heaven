@@ -1,5 +1,5 @@
 import { localizeImageUrl } from "./images"
-import { BACKEND_URL, PUBLISHABLE_KEY } from "./medusa"
+import { BACKEND_URL, PUBLISHABLE_KEY, serverOnlyHeaders } from "./medusa"
 
 export type BlogCategory = {
   id: string
@@ -62,6 +62,7 @@ function blogHeaders(): HeadersInit {
   return {
     "Content-Type": "application/json",
     "x-publishable-api-key": PUBLISHABLE_KEY,
+    ...serverOnlyHeaders(),
   }
 }
 
@@ -133,9 +134,11 @@ export function categoryForPost(
   post: BlogPost,
   categories: BlogCategory[]
 ): BlogCategory | null {
-  if (post.category) return post.category
-  if (!post.category_id) return null
-  return categories.find((c) => c.id === post.category_id) ?? null
+  // The store API may embed only `{ id }`; fall back to the full category by id.
+  if (post.category?.slug) return post.category
+  const id = post.category?.id ?? post.category_id
+  if (!id) return null
+  return categories.find((c) => c.id === id) ?? null
 }
 
 export type TocEntry = { id: string; text: string; level: 2 | 3 }

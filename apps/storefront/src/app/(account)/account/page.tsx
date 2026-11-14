@@ -59,7 +59,7 @@ export default function AccountDashboardPage() {
 
   if (!customer) return null
 
-  const firstName = customer.first_name || "there"
+  const firstName = customer.first_name?.trim() ?? ""
   const addressCount = customer.addresses?.length ?? 0
 
   const stats = [
@@ -92,7 +92,7 @@ export default function AccountDashboardPage() {
         <EditorialWatermark>account</EditorialWatermark>
         <EditorialEyebrow>Account</EditorialEyebrow>
         <h1 className="relative m-0 mt-[1em] font-outfit text-[clamp(2.25rem,4vw,3em)] leading-[1.1] font-normal tracking-[-0.04em] text-balance text-[#131111]">
-          Welcome back, {firstName}
+          {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
         </h1>
         <p className="relative mt-[1em] m-0 max-w-[28em] font-outfit text-[1.125em] leading-[1.4] tracking-[-0.02em] text-[#131111]/70">
           Manage orders, designs, and account preferences.

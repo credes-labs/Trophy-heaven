@@ -13,6 +13,8 @@ import { useCartStore } from "@/stores/cart-store"
 type AuthState = {
   customer: HttpTypes.StoreCustomer | null
   loading: boolean
+  /** True once a session check has finished; guards wait for it before redirecting. */
+  checked: boolean
   loadCustomer: () => Promise<void>
   /** Sends a sign-in code to an email address or Indian mobile number. */
   requestOtp: (identifier: string) => Promise<OtpRequestResult>
@@ -29,6 +31,7 @@ type AuthState = {
 export const useAuthStore = create<AuthState>((set, get) => ({
   customer: null,
   loading: false,
+  checked: false,
 
   loadCustomer: async () => {
     const existing = get().customer
@@ -43,7 +46,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ customer: null })
       }
     } finally {
-      set({ loading: false })
+      set({ loading: false, checked: true })
     }
   },
 
@@ -55,7 +58,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { token, is_new } = await verifyOtpCode(input)
       await medusa.client.setToken(token)
       const { customer } = await medusa.store.customer.retrieve()
-      set({ customer })
+      set({ customer, checked: true })
       await useCartStore.getState().transferToCustomer()
       return { isNew: is_new }
     } finally {

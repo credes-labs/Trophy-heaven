@@ -11,6 +11,7 @@ export function OrderSummary({
   total,
   currency,
   checkoutHref = "/checkout",
+  shippingLabel,
 }: {
   subtotal: number
   shipping: number
@@ -21,8 +22,10 @@ export function OrderSummary({
   itemCount?: number
   checkoutHref?: string
   showPromo?: boolean
+  /** Overrides the shipping cell (see lib/shipping `cartShippingLabel`). */
+  shippingLabel?: string
 }) {
-  const shippingValue = shipping <= 0 ? "Free" : formatMoney(shipping, currency)
+  const shippingValue = shippingLabel ?? (shipping <= 0 ? "Free" : formatMoney(shipping, currency))
 
   return (
     <aside className="cart-totals">

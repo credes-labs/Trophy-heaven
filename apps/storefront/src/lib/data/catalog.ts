@@ -165,7 +165,8 @@ export async function listProductsClient(params: {
     offset: params.offset ?? 0,
     q: params.q,
     order: params.order,
-    region_id: params.regionId,
+    // Prices need a region; with no cart yet (empty-cart recommendations) use the default one.
+    region_id: params.regionId ?? (await getRegion())?.id,
     fields: PRODUCT_FIELDS,
     ...(categoryFilter ? { category_id: categoryFilter } : {}),
     ...(params.ids?.length ? { id: params.ids } : {}),

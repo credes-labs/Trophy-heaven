@@ -7,6 +7,7 @@ import { AnimatePresence } from "motion/react"
 import { RefreshCw } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { CartItem } from "@/components/features/cart/cart-item"
+import { cartShippingLabel } from "@/lib/shipping"
 import { OrderDesignPanel } from "@/components/features/cart/order-design-panel"
 import { OrderSummary } from "@/components/features/cart/order-summary"
 import { PromoCode } from "@/components/features/cart/promo-code"
@@ -110,6 +111,7 @@ export default function CartPage() {
               <OrderSummary
                 subtotal={cart?.item_subtotal ?? 0}
                 shipping={cart?.shipping_total ?? 0}
+                shippingLabel={cartShippingLabel(cart)}
                 tax={cart?.tax_total ?? 0}
                 discount={cart?.discount_total ?? 0}
                 total={total}

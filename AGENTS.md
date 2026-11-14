@@ -78,7 +78,18 @@ pnpm build                                  # before merging
   also exports `generateStaticParams` (empty array = ISR on first visit).
 - **Customer files**: product/configurator designs go on line metadata `design_upload`;
   order-wide files on cart metadata `order_documents` (≤10, office docs allowed via
-  `kind: "document"`). `order.placed` emails them to `ORDER_NOTIFY_EMAIL`.
+  `kind: "document"`). `order.placed` emails them to `ORDER_NOTIFY_EMAIL`, which is also
+  the inbox for the contact, corporate-quote and return forms (`/store/contact`, `topic`).
+- **Rate limits are per IP, and SSR shares one IP**: storefront server requests send
+  `x-storefront-key` = `STOREFRONT_SERVER_KEY` (same value in both apps, never
+  NEXT_PUBLIC) so Medusa skips non-strict limits for them. Missing or mismatched key ⇒
+  visitors share 100/min and product pages start 404ing under load.
+- **Placeholder Razorpay keys break checkout**: if `RAZORPAY_KEY_ID`/`SECRET` are set at
+  all, cart completion requires an authorized Razorpay session. With
+  `NEXT_PUBLIC_RAZORPAY_ENABLED=false` leave them unset (system provider) or use real
+  `rzp_test_` keys and enable it in the storefront.
+- **Free shipping ≥ ₹5,000** is a Standard Shipping price rule (`item_total >= 5000`),
+  created by `seed.ts`; existing DBs: `npx medusa exec ./src/scripts/free-shipping.ts`.
 - **Customer data is client-side only**: wishlist/cart/auth use the Medusa SDK
   with a JWT (`apps/storefront/src/lib/medusa.ts`). RSC fetches of customer data
   return 401 — follow the account-page pattern.

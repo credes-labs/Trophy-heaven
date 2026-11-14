@@ -4,6 +4,9 @@ import { useState, type FormEvent } from "react"
 import { EditorialCtaButton } from "@/components/layout/editorial/editorial-cta"
 import { editorialFieldClass, editorialLabelClass } from "@/components/layout/editorial/editorial-cta"
 import { cn } from "@/lib/utils"
+import { sendContactMessage } from "@/lib/forms"
+
+const NL = "\n"
 
 const fieldClass = cn(
   editorialFieldClass,
@@ -12,10 +15,28 @@ const fieldClass = cn(
 
 export function ReturnsForm() {
   const [sent, setSent] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setSent(true)
+    const f = new FormData(e.currentTarget)
+    const v = (k: string) => String(f.get(k) ?? "").trim()
+    setBusy(true)
+    setError(null)
+    try {
+      await sendContactMessage({
+        topic: "return",
+        name: `Order ${v("order")}`,
+        email: v("email"),
+        message: [`Order number: ${v("order")}`, `Reason: ${v("reason")}`].join(NL),
+      })
+      setSent(true)
+    } catch (err) {
+      setError((err as Error).message || "Could not send. Please try again.")
+    } finally {
+      setBusy(false)
+    }
   }
 
   if (sent) {
@@ -46,7 +67,14 @@ export function ReturnsForm() {
         </label>
         <textarea id="reason" name="reason" required rows={4} className={cn(fieldClass, "h-auto py-2")} />
       </div>
-      <EditorialCtaButton type="submit">Request RMA</EditorialCtaButton>
+      {error ? (
+        <p role="alert" className="m-0 font-outfit text-[0.875em] text-[#8A2D25]">
+          {error}
+        </p>
+      ) : null}
+      <EditorialCtaButton type="submit" disabled={busy}>
+        {busy ? "Sending…" : "Request RMA"}
+      </EditorialCtaButton>
     </form>
   )
 }

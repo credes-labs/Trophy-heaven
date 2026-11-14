@@ -30,6 +30,8 @@ export function sendContactMessage(input: {
   name: string
   email: string
   message: string
+  /** Which form sent it (contact, corporate quote, return request). */
+  topic?: "contact" | "quote" | "return"
 }): Promise<void> {
   return postForm("/store/contact", input)
 }

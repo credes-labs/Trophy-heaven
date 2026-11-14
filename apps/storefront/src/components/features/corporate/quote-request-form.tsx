@@ -4,6 +4,9 @@ import { useState, type FormEvent } from "react"
 import { EditorialCtaButton } from "@/components/layout/editorial/editorial-cta"
 import { editorialFieldClass, editorialLabelClass } from "@/components/layout/editorial/editorial-cta"
 import { cn } from "@/lib/utils"
+import { sendContactMessage } from "@/lib/forms"
+
+const NL = "\n"
 
 const fieldClass = cn(
   editorialFieldClass,
@@ -12,10 +15,33 @@ const fieldClass = cn(
 
 export function QuoteRequestForm() {
   const [sent, setSent] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setSent(true)
+    const f = new FormData(e.currentTarget)
+    const v = (k: string) => String(f.get(k) ?? "").trim()
+    setBusy(true)
+    setError(null)
+    try {
+      await sendContactMessage({
+        topic: "quote",
+        name: v("org"),
+        email: v("email"),
+        message: [
+          `Organisation: ${v("org")}`,
+          `Approximate quantity: ${v("qty")}`,
+          `Occasion: ${v("occasion")}`,
+          `Notes: ${v("notes") || "-"}`,
+        ].join(NL),
+      })
+      setSent(true)
+    } catch (err) {
+      setError((err as Error).message || "Could not send. Please try again.")
+    } finally {
+      setBusy(false)
+    }
   }
 
   if (sent) {
@@ -63,7 +89,14 @@ export function QuoteRequestForm() {
           className={cn(fieldClass, "h-auto py-2")}
         />
       </div>
-      <EditorialCtaButton type="submit">Request a quote</EditorialCtaButton>
+      {error ? (
+        <p role="alert" className="m-0 font-outfit text-[0.875em] text-[#8A2D25]">
+          {error}
+        </p>
+      ) : null}
+      <EditorialCtaButton type="submit" disabled={busy}>
+        {busy ? "Sending…" : "Request a quote"}
+      </EditorialCtaButton>
     </form>
   )
 }

@@ -276,6 +276,12 @@ export default async function seed({ container }: ExecArgs) {
             { currency_code: "usd", amount: 10 },
             { region_id: indiaRegion.id, amount: 99 },
             { region_id: intlRegion.id, amount: 10 },
+            // "Free shipping on orders above ₹5,000" (see scripts/free-shipping.ts for existing DBs)
+            {
+              region_id: indiaRegion.id,
+              amount: 0,
+              rules: [{ attribute: "item_total", operator: "gte", value: 5000 }],
+            },
           ],
           rules: [
             { attribute: "enabled_in_store", value: "true", operator: "eq" },

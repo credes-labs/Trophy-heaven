@@ -319,3 +319,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 
 ## 2026-11-14 - Shop banner removed, maroon silhouettes, /about cup pops out of its frame
 /shop ends with the turning silhouette grid, now in logo maroon (figures and lines) instead of black, and the ribbon banner image is gone; the /about hero cup rises out of the top of its photo frame. See L2 WP-98.
+
+## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
+Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
+
+## 2026-11-14 - Client-testing readiness sweep: orders complete, sessions survive reloads, free shipping honoured
+Full site crawl (61 pages, desktop + 390px) and an end-to-end order found and fixed: orders could not be placed with the placeholder Razorpay keys, account pages signed users out on reload, the "free shipping above ₹5,000" promise was not configured, all server-side traffic shared one rate-limit bucket, and blog posts linked to `?category=undefined`. See L2 WP-100.

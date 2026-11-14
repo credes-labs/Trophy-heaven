@@ -1,4 +1,4 @@
-import { BACKEND_URL, PUBLISHABLE_KEY, medusa } from "./medusa"
+import { BACKEND_URL, PUBLISHABLE_KEY, medusa, serverOnlyHeaders } from "./medusa"
 
 /**
  * Client for the backend reviews module (apps/medusa/src/api/store/reviews).
@@ -30,6 +30,7 @@ function baseHeaders(): Record<string, string> {
   return {
     "Content-Type": "application/json",
     "x-publishable-api-key": PUBLISHABLE_KEY,
+    ...serverOnlyHeaders(),
   }
 }
 

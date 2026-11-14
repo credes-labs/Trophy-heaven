@@ -35,7 +35,7 @@ const navLinkClass =
 export function AccountShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { customer, loading, loadCustomer, logout } = useAuthStore()
+  const { customer, loading, checked, loadCustomer, logout } = useAuthStore()
 
   const isAuthPage = AUTH_PATHS.has(pathname)
 
@@ -44,9 +44,11 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   }, [isAuthPage, loadCustomer])
 
   useEffect(() => {
-    if (isAuthPage || loading) return
+    // Wait for the stored session to be checked: on a full page load the first render
+    // has no customer yet, and redirecting then signs out anyone who reloads.
+    if (isAuthPage || loading || !checked) return
     if (!customer) router.replace("/account/login")
-  }, [isAuthPage, loading, customer, router])
+  }, [isAuthPage, loading, checked, customer, router])
 
   if (isAuthPage) return <>{children}</>
 

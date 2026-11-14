@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto"
 import { defineMiddlewares } from "@medusajs/framework/http"
 import type { MedusaRequest, MedusaResponse, MedusaNextFunction } from "@medusajs/framework/http"
 import { requireCapability } from "../lib/rbac"
@@ -11,6 +12,18 @@ import { isJwtBearer } from "../lib/rate-limit-auth"
 type Bucket = { count: number; resetAt: number }
 const buckets = new Map<string, Bucket>()
 
+/**
+ * The storefront's server renders pages for every visitor from one IP; its requests
+ * carry `x-storefront-key` = STOREFRONT_SERVER_KEY and are not rate limited (the
+ * browser never has the key, so visitors stay limited per IP).
+ */
+function isStorefrontServer(req: MedusaRequest): boolean {
+  const expected = process.env.STOREFRONT_SERVER_KEY
+  const got = req.headers["x-storefront-key"]
+  if (!expected || typeof got !== "string" || got.length !== expected.length) return false
+  return timingSafeEqual(Buffer.from(got), Buffer.from(expected))
+}
+
 function rateLimit(opts: {
   windowMs: number
   max: number
@@ -19,6 +32,7 @@ function rateLimit(opts: {
   trust?: "jwt" | "any"
 }) {
   return (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
+    if (!opts.strict && isStorefrontServer(req)) return next()
     const now = Date.now()
     const authed =
       !opts.strict &&
