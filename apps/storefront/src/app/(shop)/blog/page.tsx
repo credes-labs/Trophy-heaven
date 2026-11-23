@@ -7,6 +7,7 @@ import { BlogCard } from "@/components/features/blog/blog-card"
 import { BlogCardGrid } from "@/components/features/blog/blog-card-grid"
 import { SilverDipFeature } from "@/components/features/blog/silver-dip-feature"
 import { EditorialFrame, EditorialShell } from "@/components/layout/editorial/editorial-shell"
+import { SHARE_IMAGE } from "@/lib/images"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Trophy Heaven Journal",
     description: "Stories of craft, design, and material from the Trophy Heaven workshop.",
+    images: [SHARE_IMAGE],
   },
 }
 

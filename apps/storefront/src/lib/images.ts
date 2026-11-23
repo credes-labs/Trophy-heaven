@@ -28,6 +28,20 @@ function recodeToWebp(path: string): string {
   return webp + query
 }
 
+/** Default link-preview card. JPEG, because some link-preview crawlers reject WebP. */
+export const SHARE_IMAGE = {
+  url: "/images/og/og-share.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Trophy Heaven custom trophies and awards",
+}
+
+/** Open Graph images for a page: its own image when crawlers can read it, else the card. */
+export function shareImages(url?: string | null) {
+  const local = localizeImageUrl(url)
+  return [local && !/\.webp(?:[?#]|$)/i.test(local) ? local : SHARE_IMAGE]
+}
+
 export function localizeImageUrl<T extends string | null | undefined>(url: T): T {
   if (!url) return url
   const origins = [

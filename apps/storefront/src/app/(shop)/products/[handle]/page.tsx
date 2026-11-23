@@ -11,6 +11,7 @@ import { getReviewSummary } from "@/lib/reviews"
 import { cheapestPricedVariant } from "@/lib/product-filters"
 import "./pdp.css"
 import { getSiteUrl } from "@/lib/site-url"
+import { shareImages } from "@/lib/images"
 
 export const revalidate = 300
 
@@ -81,7 +82,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `/products/${handle}` },
     openGraph: {
       title: product.title,
-      images: product.thumbnail ? [product.thumbnail] : undefined,
+      images: shareImages(product.thumbnail),
     },
   }
 }

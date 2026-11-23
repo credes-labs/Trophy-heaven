@@ -11,6 +11,7 @@ import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
 import { ChromeGate, SiteChrome } from "@/components/layout/site-chrome"
 import { getSiteUrl } from "@/lib/site-url"
+import { SHARE_IMAGE } from "@/lib/images"
 
 /**
  * Urbanist is the single site typeface (display, body, UI) — the geometric
@@ -70,7 +71,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Trophy Heaven",
     locale: "en_IN",
-    images: [{ url: "/images/og/og-default.jpg", width: 1200, height: 630 }],
+    images: [SHARE_IMAGE],
   },
   twitter: { card: "summary_large_image" },
   robots: process.env.VERCEL_ENV === "preview" ? { index: false, follow: false } : undefined,

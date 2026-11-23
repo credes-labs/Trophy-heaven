@@ -1,3 +1,4 @@
+import { shareImages } from "@/lib/images"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: "article",
       publishedTime: post.published_at ?? undefined,
-      images: post.cover_image_url ? [post.cover_image_url] : undefined,
+      images: shareImages(post.cover_image_url),
     },
   }
 }

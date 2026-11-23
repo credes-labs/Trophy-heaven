@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-23 - Every shared page has a working preview image
+Product, blog and shop links now show a readable image instead of a localhost, WebP or old one. See L2 WP-113.
+
 ## 2026-11-23 - Shared links show a branded trophy card
 Link previews now show the Trophy Heaven wordmark with real trophy imagery. See L2 WP-112.
 
