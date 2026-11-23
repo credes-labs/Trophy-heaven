@@ -323,6 +323,12 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-23 - Ready to deploy on Vercel and Render
+The repo now has a Render Blueprint, a Vercel config and a step-by-step runbook. A production Docker rehearsal covered migration, seeding, search, uploads and orders. See L2 WP-107.
+
+## 2026-11-23 - Customers match designs to trophies
+A cart can no longer hold more designs than trophies. Several images open a mapping dialog, while PDFs and office files stay whole-order documents. The server enforces the same rules. See L2 WP-106.
+
 ## 2026-11-23 - Shop filter count matches the grid
 Material and price filters on /shop still said "1–9 of 9" after the grid had shrunk. The count now follows the filtered list. The old category sort no longer empties the page. See L2 WP-105.
 

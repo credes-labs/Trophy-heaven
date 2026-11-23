@@ -132,6 +132,10 @@ export default async function seed({ container }: ExecArgs) {
   }
 
   // ── Regions ─────────────────────────────────────────────────────────────────
+  // Razorpay's provider only exists when its keys are set (see medusa-config).
+  const indiaPaymentProviders = process.env.RAZORPAY_KEY_ID
+    ? ["pp_razorpay_razorpay", "pp_system_default"]
+    : ["pp_system_default"]
   let regions = await regionModule.listRegions({}, { take: 10 })
   if (regions.length === 0) {
     const { result } = await createRegionsWorkflow(container).run({
@@ -141,7 +145,7 @@ export default async function seed({ container }: ExecArgs) {
             name: "India",
             currency_code: "inr",
             countries: ["in"],
-            payment_providers: ["pp_razorpay_razorpay", "pp_system_default"],
+            payment_providers: indiaPaymentProviders,
           },
           {
             name: "International",
@@ -158,7 +162,7 @@ export default async function seed({ container }: ExecArgs) {
   const intlRegion = regions.find((r) => r.currency_code === "usd") ?? regions[0]
   try {
     await regionModule.updateRegions(indiaRegion.id, {
-      payment_providers: ["pp_razorpay_razorpay", "pp_system_default"],
+      payment_providers: indiaPaymentProviders,
     } as never)
   } catch (e) {
     logger.warn(`Could not attach Razorpay to India region: ${(e as Error).message}`)

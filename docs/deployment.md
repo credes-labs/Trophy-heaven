@@ -1,62 +1,181 @@
 # Deployment Guide
 
-## Topology
+Storefront on **Vercel**. Backend, database, Redis and search on **Render** (Singapore).
+Customer files on **Cloudflare R2**. Follow the steps in order; the first deploy takes
+about an hour, most of it waiting for builds and DNS.
 
-- **Storefront** — Next.js 16 (App Router, RSC + ISR). Deploy to a Node host or
-  edge platform. Requires `NEXT_PUBLIC_MEDUSA_BACKEND_URL`,
-  `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`, `NEXT_PUBLIC_BASE_URL`.
-- **Medusa backend** — Node 24, Postgres 16 (local) / 18 (target), Redis 7. Serves
-  the Store/Admin API, admin dashboard, and workflow engine.
-- **Meilisearch v1** — product search index.
-- **Object storage** — Cloudflare R2 (S3-compatible) for design previews + media.
+## Why this hosting
 
-Local bring-up: see [`docs/runbooks/README.md`](./runbooks/README.md) for the host
-path (`make up`) and the Docker Compose `--profile apps` path.
+| Piece | Host | Reason |
+|-------|------|--------|
+| Next.js storefront | Vercel `sin1` | Native Next.js host with ISR and image optimisation |
+| Medusa API + admin | Render web, Docker, 2 GB | Long-running Node process with background jobs, which serverless cannot run. Medusa recommends at least 2 GB |
+| Postgres 16 | Render, private network | Same region as the API, with managed backups |
+| Redis | Render Key Value, `noeviction` | Event and workflow queues must never lose keys |
+| Meilisearch | Render private service + disk | Not reachable from the internet, and the index survives deploys |
+| Uploads | Cloudflare R2 | Render's disk is wiped on deploy. R2 has no egress fees |
 
-## Environment
+Render has no India region, so Singapore is the closest. Vercel functions run in the same
+city, which keeps storefront-to-API calls short.
 
-Copy `.env.example` and populate secrets via your secret store (never commit
-real keys). Payments (Razorpay/Stripe), shipping (ShipRocket/Delhivery),
-notifications (Resend/MSG91), search (Meilisearch), and storage (R2) all activate
-only when their env vars are present, so partial configs degrade gracefully.
+### Expected monthly cost
 
-### Vercel storefront (current)
+| Item | Plan | Approx. USD |
+|------|------|-------------|
+| Medusa web | `1c-2g` | 25 |
+| Meilisearch | `0.5c-512mb` + 2 GB disk | 7.50 |
+| Key Value | `256mb` | 10 |
+| Postgres | `basic-1gb` + 10 GB storage | about 20–25 |
+| Vercel | Pro (Hobby is non-commercial only) | 20 per seat |
+| R2 | Free tier covers 10 GB | 0 to start |
 
-Root Directory: `apps/storefront`. Build/install come from `apps/storefront/vercel.json`.
+Total is roughly **$85–90 a month**. The Postgres figure is an estimate, so confirm it on
+Render's pricing page when the Blueprint shows its summary.
 
-Set at least:
+## What you need first
 
-| Variable | Example |
-|----------|---------|
-| `NEXT_PUBLIC_BASE_URL` | `https://trophy-heaven.vercel.app` |
-| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | Public Medusa URL (required for catalog/cart) |
-| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Store publishable key from Medusa |
+- GitHub access to `credes-labs/Trophy-heaven`, for both Render and Vercel.
+- A Cloudflare account, a Render account, a Vercel account.
+- A **Resend** account with the sending domain verified. **Without this nobody can sign
+  in**, because login codes go by email and the dev shortcut is off in production.
+- The final storefront domain, or use the `*.vercel.app` URL to begin with.
+- Optional: MSG91 (phone sign-in codes) and Razorpay keys.
+
+## Step 1: Cloudflare R2
+
+1. R2 → **Create bucket**, name `trophy-heaven-uploads`.
+2. Bucket → Settings → **Public access**: connect a custom domain such as
+   `files.yourdomain.com`, or enable the `r2.dev` URL for testing.
+3. R2 → **Manage API tokens** → create a token with *Object Read & Write* on this bucket.
+4. Keep these for Step 2:
+
+| Render variable | Value |
+|-----------------|-------|
+| `S3_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |
+| `S3_BUCKET` | `trophy-heaven-uploads` |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | From the token |
+| `CDN_BASE_URL` | The public bucket URL, no trailing slash |
+
+Anyone holding a file's link can open it, because the owner's order email uses these links.
+
+## Step 2: Render Blueprint
+
+1. Render → **New → Blueprint** → pick the repo, branch `main`. It reads `render.yaml`.
+2. Fill in the prompted values:
+
+| Variable | Value |
+|----------|-------|
+| `STORE_CORS` | Storefront origin, e.g. `https://trophy-heaven.vercel.app` |
+| `S3_*`, `CDN_BASE_URL` | From Step 1 |
+| `RESEND_API_KEY` | Resend key |
+| `RESEND_FROM` | `Trophy Heaven <orders@yourdomain.com>` on the verified domain |
+| `ORDER_NOTIFY_EMAIL` | The owner's inbox for orders and forms |
+| `ALLOW_TEST_PAYMENTS` | `true` for client testing, otherwise blank |
+| `MSG91_*`, `RAZORPAY_*` | Blank for now |
+
+3. **Apply** and wait for `trophy-heaven-medusa` to go live. Migrations run automatically
+   before each deploy.
+4. Open the `trophy-heaven-medusa` **Shell** tab and run:
+
+```bash
+cd /app/apps/medusa/.medusa/server
+medusa exec ./src/scripts/bootstrap.js
+medusa user -e owner@yourdomain.com -p 'choose-a-strong-password'
+```
+
+5. From the bootstrap output, copy `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_…`.
+6. From the service's Environment tab, copy `STOREFRONT_SERVER_KEY`.
+7. Check `https://<medusa>.onrender.com/health` returns `OK`, and sign in to the admin at
+   `https://<medusa>.onrender.com/app`.
+
+Bootstrap is safe to re-run.
+
+## Step 3: Vercel
+
+1. **Add New → Project** → import the repo.
+2. Set **Root Directory** to `apps/storefront`. Keep "include files outside the root
+   directory" on. Install and build commands come from `vercel.json`.
+3. Add environment variables for Production:
+
+| Variable | Value |
+|----------|-------|
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | `https://<medusa>.onrender.com` |
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | From Step 2 |
+| `NEXT_PUBLIC_BASE_URL` | Storefront URL |
 | `NEXT_PUBLIC_DEFAULT_REGION` | `in` |
+| `NEXT_PUBLIC_CDN_BASE_URL` | Same as `CDN_BASE_URL` |
+| `STOREFRONT_SERVER_KEY` | Same value as Render |
+| `NEXT_PUBLIC_RAZORPAY_ENABLED` | `false` until payments are on |
 
-Without a public Medusa, marketing pages still render; catalog rails stay empty.
-When Medusa is live, add the Vercel origin to Medusa `STORE_CORS` and `AUTH_CORS`.
+4. **Deploy.** `NEXT_PUBLIC_*` values are built in, so changing one needs a redeploy.
+5. If the final URL differs from `STORE_CORS`, update it on Render. List several origins
+   with commas and no spaces.
 
-## Release steps
+## Step 4: Check the live site
 
-1. `pnpm install --frozen-lockfile`
-2. `pnpm --filter @trophy-heaven/schemas build`
-3. Backend: `npx medusa db:migrate` then `pnpm --filter @trophy-heaven/medusa build`
-4. Storefront: `pnpm --filter @trophy-heaven/storefront build`
-5. Start: backend `medusa start`; storefront `next start`.
-6. Post-deploy: `POST /admin/search/reindex` to warm the search index.
+- [ ] Home, `/shop` and a product page show products and images.
+- [ ] Search finds "crystal", and also the typo "crystl".
+- [ ] An email login code arrives and signs you in.
+- [ ] Add 2 trophies, upload 3 images: the third is refused.
+- [ ] Upload 2 images and a PDF: the mapping dialog opens for the images only.
+- [ ] Place a test order: it appears in the admin, and the owner email links to the files.
+- [ ] A contact form message reaches `ORDER_NOTIFY_EMAIL`.
 
-## Health & observability
+## Turn on payments
 
-- Liveness: `GET /health` on the backend.
-- Structured logs via Pino (`packages/observability`); errors to Sentry when
-  `SENTRY_DSN` is set.
-- Analytics: GA4 + Mixpanel load client-side when their keys are configured.
+Do this before real customers. Start with `rzp_test_` keys, then repeat with live keys.
 
-## Scaling notes
+1. Razorpay → Webhooks → add `https://<medusa>.onrender.com/webhooks/razorpay` with events
+   `payment.captured` and `payment.failed`, and choose a secret.
+2. Render: set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and
+   **clear `ALLOW_TEST_PAYMENTS`**. Wait for the redeploy.
+3. Render Shell:
 
-- The backend is stateless; scale horizontally behind a load balancer with Redis
-  as the shared cache / event bus / workflow store.
-- The in-memory rate limiter (`src/api/middlewares.ts`) should be swapped for the
-  Redis-backed limiter when running more than one node.
-- ISR + CDN caching front the storefront; product/category pages revalidate on a
-  schedule and on catalog events.
+```bash
+cd /app/apps/medusa/.medusa/server
+medusa exec ./src/scripts/enable-razorpay.js
+```
+
+4. Vercel: set `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` (the storefront verifies
+   the payment signature) and `NEXT_PUBLIC_RAZORPAY_ENABLED=true`, then redeploy.
+5. Pay for one test order and confirm it is marked paid in the admin.
+
+With no Razorpay keys and no `ALLOW_TEST_PAYMENTS`, the backend refuses to complete orders,
+so the shop cannot take unpaid orders by accident.
+
+## Custom domain
+
+1. Vercel → Domains: add the storefront domain.
+2. Update `NEXT_PUBLIC_BASE_URL` on Vercel and redeploy.
+3. Update `STORE_CORS` on Render.
+4. Optional API domain such as `api.yourdomain.com`: add it on Render, set
+   `MEDUSA_BACKEND_URL` to it, and update `NEXT_PUBLIC_MEDUSA_BACKEND_URL` on Vercel.
+
+## Troubleshooting
+
+| Symptom | Cause |
+|---------|-------|
+| Backend exits with "S3_ENDPOINT … is required" | R2 values missing |
+| Migration hangs or fails on SSL | `DATABASE_SSL` must be `false` |
+| Browser shows CORS errors | `STORE_CORS` must match the origin exactly, with no trailing slash |
+| Product pages 404 under load | `STOREFRONT_SERVER_KEY` differs between Render and Vercel |
+| Login code never arrives | Resend key or sending domain not verified |
+| "Online payment is not available yet" at order | Add Razorpay or set `ALLOW_TEST_PAYMENTS=true` |
+| Search is empty | Re-run bootstrap, or `POST /admin/search/reindex` |
+| Uploaded images do not display | `NEXT_PUBLIC_CDN_BASE_URL` missing on Vercel |
+
+## Operations
+
+- Liveness: `GET /health`. Logs are in each Render service and in Vercel.
+- Errors reach Sentry when `SENTRY_DSN` is set. Analytics load when their keys are set.
+- Rate limits are in memory per instance, so keep Medusa at **one instance** until they
+  move to Redis. To add capacity, first split out a worker (see the end of `render.yaml`).
+- Pushes to `main` redeploy both Vercel and Render.
+
+## Sources
+
+- Render Blueprint spec: https://render.com/docs/blueprint-spec
+- Render regions: https://render.com/docs/regions
+- Render pricing: https://render.com/pricing
+- Medusa deployment: https://docs.medusajs.com/learn/deployment/general
+- Vercel monorepos: https://vercel.com/docs/monorepos

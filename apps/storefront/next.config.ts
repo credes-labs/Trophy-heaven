@@ -8,6 +8,16 @@ const backendHost = (() => {
   }
 })()
 
+const cdnHost = (() => {
+  try {
+    return process.env.NEXT_PUBLIC_CDN_BASE_URL
+      ? new URL(process.env.NEXT_PUBLIC_CDN_BASE_URL).hostname
+      : null
+  } catch {
+    return null
+  }
+})()
+
 // Site imagery was recoded to WebP (WP-85); old links (emails, shared URLs, caches)
 // still ask for .jpg/.png.
 const WEBP_DIRS = "products|catalog|blog|about|footer|hero"
@@ -30,6 +40,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "**.r2.cloudflarestorage.com" },
+      { protocol: "https", hostname: "**.r2.dev" },
+      ...(cdnHost ? [{ protocol: "https" as const, hostname: cdnHost }] : []),
       { protocol: "https", hostname: "**.amazonaws.com" },
       { protocol: "http", hostname: backendHost },
       { protocol: "https", hostname: backendHost },

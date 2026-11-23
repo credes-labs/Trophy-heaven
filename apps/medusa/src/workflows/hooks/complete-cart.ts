@@ -52,6 +52,8 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     },
     {
       razorpayConfigured,
+      testPaymentsAllowed:
+        process.env.NODE_ENV !== "production" || process.env.ALLOW_TEST_PAYMENTS === "true",
       verifyNetTerms: async (profileId, terms, amount) => {
         const termsOk = await corporate.canUsePaymentTerms(profileId, terms)
         if (!termsOk.ok) return termsOk

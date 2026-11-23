@@ -31,6 +31,8 @@ export async function assertCartMayComplete(
   snapshot: CartCompleteSnapshot,
   deps: {
     razorpayConfigured: boolean
+    /** False in production unless ALLOW_TEST_PAYMENTS=true: no provider means no real payment. */
+    testPaymentsAllowed?: boolean
     verifyNetTerms?: (
       profileId: string,
       terms: "net_30" | "net_60",
@@ -59,7 +61,15 @@ export async function assertCartMayComplete(
     return
   }
 
-  if (!deps.razorpayConfigured) return
+  if (!deps.razorpayConfigured) {
+    if (deps.testPaymentsAllowed === false) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Online payment is not available yet. Please contact us to place this order."
+      )
+    }
+    return
+  }
 
   const rzp = snapshot.paymentSessions?.find((s) => s.provider_id?.includes("razorpay"))
   const status = rzp?.status

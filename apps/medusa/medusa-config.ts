@@ -2,8 +2,28 @@ import { loadEnv, defineConfig } from "@medusajs/framework/utils"
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
+// Medusa forces TLS for any non-localhost database. Render's private network is plain
+// Postgres, so DATABASE_SSL=false turns that off (modules read DATABASE_URL directly).
+if (process.env.DATABASE_SSL === "false" && process.env.DATABASE_URL) {
+  const url = process.env.DATABASE_URL
+  if (!/ssl_?mode=/i.test(url)) {
+    process.env.DATABASE_URL = `${url}${url.includes("?") ? "&" : "?"}sslmode=disable`
+  }
+}
+
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379"
-const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+// Render sets RENDER_EXTERNAL_URL to the service's public URL.
+const BACKEND_URL =
+  process.env.MEDUSA_BACKEND_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:9000"
+const STORE_CORS = process.env.STORE_CORS || "http://localhost:3000"
+const IS_PRODUCTION = process.env.NODE_ENV === "production"
+
+// Production must have durable file storage: a host's disk is wiped on every deploy,
+// which would silently lose customers' uploaded designs. `medusa build` runs without
+// NODE_ENV=production in the Dockerfile, so this only applies when the app really runs.
+if (IS_PRODUCTION && !process.env.S3_ENDPOINT) {
+  throw new Error("S3_ENDPOINT (Cloudflare R2) is required in production for customer uploads.")
+}
 
 /**
  * Trophy Heaven Medusa v2.18 configuration.
@@ -26,12 +46,15 @@ module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: REDIS_URL,
+    // `shared` runs API + background jobs together; split with `server` / `worker` to scale.
+    workerMode: (process.env.MEDUSA_WORKER_MODE || "shared") as "shared" | "worker" | "server",
     http: {
-      storeCors: process.env.STORE_CORS || "http://localhost:3000",
-      adminCors: process.env.ADMIN_CORS || "http://localhost:9000",
-      authCors: process.env.AUTH_CORS || "http://localhost:3000,http://localhost:9000",
-      jwtSecret: process.env.JWT_SECRET || "supersecret",
-      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+      storeCors: STORE_CORS,
+      adminCors: process.env.ADMIN_CORS || BACKEND_URL,
+      authCors: process.env.AUTH_CORS || `${STORE_CORS},${BACKEND_URL}`,
+      // No fallback in production: Medusa refuses to start without real secrets.
+      jwtSecret: process.env.JWT_SECRET || (IS_PRODUCTION ? undefined : "supersecret"),
+      cookieSecret: process.env.COOKIE_SECRET || (IS_PRODUCTION ? undefined : "supersecret"),
     },
   },
   admin: {
@@ -43,7 +66,7 @@ module.exports = defineConfig({
     { resolve: "@medusajs/medusa/event-bus-redis", options: { redisUrl: REDIS_URL } },
     {
       resolve: "@medusajs/medusa/workflow-engine-redis",
-      options: { redis: { url: REDIS_URL } },
+      options: { redis: { redisUrl: REDIS_URL } },
     },
     // ── File storage: S3 / Cloudflare R2 in prod, local on-disk in dev ───────
     {
@@ -62,6 +85,8 @@ module.exports = defineConfig({
                   bucket: process.env.S3_BUCKET,
                   endpoint: process.env.S3_ENDPOINT,
                   additional_client_config: { forcePathStyle: true },
+                  // R2 access is set on the bucket; it has no per-object ACLs.
+                  acl: false,
                 },
               },
             ]
@@ -139,10 +164,16 @@ module.exports = defineConfig({
               ]
             : []),
           {
-            // Always keep a local fallback so dev + unconfigured channels work.
+            // Logs channels with no real provider. Medusa refuses two providers on one channel.
             resolve: "@medusajs/medusa/notification-local",
             id: "local",
-            options: { channels: ["email", "sms", "feed"] },
+            options: {
+              channels: [
+                "feed",
+                ...(process.env.RESEND_API_KEY ? [] : ["email"]),
+                ...(process.env.MSG91_AUTH_KEY ? [] : ["sms"]),
+              ],
+            },
           },
         ],
       },

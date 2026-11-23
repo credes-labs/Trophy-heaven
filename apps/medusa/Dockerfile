@@ -1,4 +1,4 @@
-# Medusa v2.18 backend image for Trophy Heaven.
+# Medusa v2.18 backend image for Trophy Heaven (Render, or any Docker host).
 # Build from the monorepo root:
 #   docker build -f apps/medusa/Dockerfile -t trophy-heaven-medusa .
 FROM node:24-bookworm-slim AS base
@@ -15,6 +15,8 @@ COPY packages/schemas/package.json packages/schemas/
 COPY apps/medusa/package.json apps/medusa/
 RUN pnpm install --frozen-lockfile --filter @trophy-heaven/medusa...
 
+# NODE_ENV stays unset here: the admin build needs dev dependencies, and medusa-config
+# only demands production secrets and storage when the app actually runs.
 FROM base AS build
 COPY --from=deps /app /app
 COPY packages ./packages
@@ -25,10 +27,14 @@ RUN pnpm --filter @trophy-heaven/schemas build \
 
 FROM base AS runtime
 ENV NODE_ENV=production
-WORKDIR /app
+ENV PORT=9000
 COPY --from=build /app /app
-WORKDIR /app/apps/medusa
+# Medusa runs from its build output; packages resolve through ../../node_modules.
+RUN echo '#!/bin/sh' > /usr/local/bin/medusa \
+ && echo 'exec /app/apps/medusa/node_modules/.bin/medusa "$@"' >> /usr/local/bin/medusa \
+ && chmod +x /usr/local/bin/medusa
+WORKDIR /app/apps/medusa/.medusa/server
 EXPOSE 9000
-HEALTHCHECK --interval=10s --timeout=5s --retries=10 \
-  CMD node -e "fetch('http://127.0.0.1:9000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["pnpm", "start"]
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=10 \
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||9000)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["medusa", "start"]

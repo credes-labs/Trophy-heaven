@@ -8,6 +8,7 @@
     "dev": "medusa develop",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
+    "bootstrap": "medusa exec ./src/scripts/bootstrap.ts",
     "predeploy": "medusa db:migrate",
     "typecheck": "tsc --noEmit",
     "test": "TEST_TYPE=unit jest --silent=false --runInBand --forceExit",

@@ -13,7 +13,9 @@ export function getMeili(): MeiliSearch | null {
   if (client) return client
   const host = process.env.MEILISEARCH_HOST
   if (!host) return null
-  client = new MeiliSearch({ host, apiKey: process.env.MEILISEARCH_API_KEY })
+  // Render's private-network reference is `host:port`, without a scheme.
+  const url = /^https?:\/\//.test(host) ? host : `http://${host}`
+  client = new MeiliSearch({ host: url, apiKey: process.env.MEILISEARCH_API_KEY })
   return client
 }
 
