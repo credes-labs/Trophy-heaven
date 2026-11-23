@@ -47,6 +47,13 @@ The steps below deploy a **test site**: everything works except real payment.
 **Before real customers:** clear both flags, verify a Resend domain, and follow
 "Turn on payments". Test mode also switches itself off if live Razorpay keys are added.
 
+## Short preview without R2
+
+For a brief client preview, Railway can hold uploads on a volume instead of R2. Use branch
+`client-preview`, set `ALLOW_LOCAL_FILE_STORAGE=true` on Medusa, leave every `S3_*` and CDN
+variable unset, and mount a volume at `/app/apps/medusa/.medusa/server/static`. Files are then
+served from `https://<medusa-domain>/static/`. Do not use this for launch.
+
 ## What you need first
 
 - GitHub access to `credes-labs/Trophy-heaven`, for both Render and Vercel.

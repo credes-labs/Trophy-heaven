@@ -21,7 +21,12 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production"
 // Production must have durable file storage: a host's disk is wiped on every deploy,
 // which would silently lose customers' uploaded designs. `medusa build` runs without
 // NODE_ENV=production in the Dockerfile, so this only applies when the app really runs.
-if (IS_PRODUCTION && !process.env.S3_ENDPOINT) {
+// ALLOW_LOCAL_FILE_STORAGE=true is for a short preview with a volume mounted at ./static.
+if (
+  IS_PRODUCTION &&
+  !process.env.S3_ENDPOINT &&
+  process.env.ALLOW_LOCAL_FILE_STORAGE !== "true"
+) {
   throw new Error("S3_ENDPOINT (Cloudflare R2) is required in production for customer uploads.")
 }
 
