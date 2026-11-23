@@ -371,7 +371,7 @@ export function ShopClient({
       <div
         className={cn(
           "mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pb-[clamp(3rem,6vw,5.5em)] transition-[padding] duration-[560ms] ease-[cubic-bezier(0.25,0.82,0.25,1)] motion-reduce:duration-0",
-          filtersOpen ? "pt-[clamp(1.25rem,2vw,2em)]" : "pt-[clamp(2rem,4vw,3.5em)]"
+          filtersOpen ? "pt-[clamp(0.5rem,2vw,2em)]" : "pt-[clamp(0.5rem,4vw,3.5em)]"
         )}
       >
         <div className="shop-filter-breadcrumb" aria-hidden={!filtersOpen}>

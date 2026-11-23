@@ -20,7 +20,7 @@ export function SubcategoryNav({ items, active, onSelect, className }: Subcatego
     <nav
       aria-label="Subcategories"
       className={cn(
-        "flex items-center overflow-x-auto pb-1 text-[15px] [-ms-overflow-style:none] [scrollbar-width:none] lg:text-[17px] [&::-webkit-scrollbar]:hidden",
+        "flex flex-wrap items-center gap-x-4 gap-y-0 pb-1 text-[15px] lg:gap-x-0 lg:flex-nowrap lg:overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] lg:text-[17px] [&::-webkit-scrollbar]:hidden",
         className
       )}
     >
@@ -30,7 +30,7 @@ export function SubcategoryNav({ items, active, onSelect, className }: Subcatego
         return (
           <span key={item} className="flex shrink-0 items-center">
             {i > 0 ? (
-              <span aria-hidden className="px-1.5 text-[#1A1A1A]/35">
+              <span aria-hidden className="px-1.5 text-[#1A1A1A]/35 max-lg:hidden">
                 /
               </span>
             ) : null}

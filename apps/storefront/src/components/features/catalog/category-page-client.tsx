@@ -177,7 +177,7 @@ export function CategoryPageClient({
     <div>
       <CategoryHero config={config} productCount={count} />
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8">
         <SubcategoryNav
           items={config.subcategories}
           active={sub}
@@ -185,11 +185,11 @@ export function CategoryPageClient({
           className="mb-6"
         />
 
-        <div className="mb-6 flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
+        <div className="mb-6 grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap sm:items-center">
+          <label className="flex min-w-0 flex-col gap-1 font-outfit text-sm text-[#6B635C] sm:flex-row sm:items-center sm:gap-2">
             Sort
             <select
-              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
+              className="h-10 w-full min-w-0 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111] sm:h-9 sm:w-auto"
               value={sort}
               onChange={(e) => setParam({ sort: e.target.value === "newest" ? null : e.target.value })}
             >
@@ -200,10 +200,10 @@ export function CategoryPageClient({
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
+          <label className="flex min-w-0 flex-col gap-1 font-outfit text-sm text-[#6B635C] sm:flex-row sm:items-center sm:gap-2">
             Price
             <select
-              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
+              className="h-10 w-full min-w-0 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111] sm:h-9 sm:w-auto"
               value={priceBucket ?? ""}
               onChange={(e) => setParam({ price: e.target.value || null })}
             >
@@ -215,10 +215,10 @@ export function CategoryPageClient({
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 font-outfit text-sm text-[#6B635C]">
+          <label className="flex min-w-0 flex-col gap-1 font-outfit text-sm text-[#6B635C] sm:flex-row sm:items-center sm:gap-2">
             Material
             <select
-              className="h-9 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
+              className="h-10 w-full min-w-0 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111] sm:h-9 sm:w-auto"
               value={material ?? ""}
               onChange={(e) => setParam({ material: e.target.value || null })}
             >
@@ -239,7 +239,7 @@ export function CategoryPageClient({
               Clear
             </button>
           )}
-          <span className="font-outfit text-sm text-[#6B635C]">
+          <span className="flex h-10 items-center font-outfit text-sm text-[#6B635C] sm:h-auto">
             {loading || pending
               ? "Updating…"
               : priceBucket || material

@@ -84,21 +84,21 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
   const accentToken = accent ? CATEGORY_CONFIG[accent].accent : undefined
 
   return (
-    <div className="mx-auto max-w-7xl bg-white px-4 py-10 font-outfit text-[#131111]">
+    <div className="mx-auto max-w-7xl bg-white px-4 py-5 font-outfit sm:py-10 text-[#131111]">
       <nav aria-label="Breadcrumb" className="mb-2 text-sm text-[#6B635C]">
         <Link href="/" className="hover:text-[#131111]">
           Home
         </Link>{" "}
         / <span className="text-[#131111]">{category.name}</span>
       </nav>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-4">
         <div>
           <h1 className="font-outfit text-3xl font-semibold text-balance text-[#131111]">{category.name}</h1>
           {category.description && (
             <p className="mt-1 max-w-2xl text-pretty text-[#6B635C]">{category.description}</p>
           )}
         </div>
-        <form className="flex items-center gap-2">
+        <form className="flex w-full items-center gap-2 sm:w-auto">
           <label htmlFor="order" className="text-sm text-[#6B635C]">
             Sort
           </label>
@@ -106,7 +106,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
             id="order"
             name="order"
             defaultValue={order}
-            className="h-10 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111]"
+            className="h-10 min-w-0 flex-1 rounded-[0.125em] border border-[#131111]/15 bg-white px-3 font-outfit text-sm text-[#131111] sm:flex-none"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
@@ -134,7 +134,7 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
 
       {products.length ? (
         <>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 md:grid-cols-4">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} accent={accentToken} />
             ))}

@@ -190,7 +190,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
       {step === 1 && (
         <div className="mt-[2em] max-w-[32em] space-y-[1.75em]">
           {!profile ? (
-            <p className="m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
+            <p className="mx-0 mt-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
               No corporate profile yet — prepaid checkout only.{" "}
               <Link
                 href="/account/corporate"
@@ -202,7 +202,7 @@ export function BulkOrderWizard({ products }: { products: ProductOption[] }) {
             </p>
           ) : null}
           {profile && !profile.is_verified ? (
-            <p className="m-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
+            <p className="mx-0 mt-0 font-outfit text-[1em] leading-[1.5] tracking-[-0.02em] text-[#131111]/70">
               {profile.company_name} is pending verification. Net terms unlock after an admin
               verifies the account.
             </p>

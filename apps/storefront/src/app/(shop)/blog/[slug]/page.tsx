@@ -128,7 +128,7 @@ export default async function BlogPostPage({ params }: Props) {
         </section>
 
         <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)]">
-          <div className="relative aspect-[21/9] overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
+          <div className="relative aspect-[3/2] overflow-hidden rounded-[0.125em] bg-[#D9D9D9] sm:aspect-[21/9]">
             <Image
               src={journalCoverSrc(post)}
               alt=""

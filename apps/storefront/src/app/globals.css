@@ -313,6 +313,10 @@
   color: #131111;
 }
 
+.blog-prose > :first-child {
+  margin-top: 0;
+}
+
 .blog-prose h1,
 .blog-prose h2,
 .blog-prose h3 {
@@ -557,6 +561,13 @@
     width: 100%;
   }
 
+  /* The closed filter panel must not reserve a row above the toolbar on phones. */
+  @media (max-width: 1023.98px) {
+    .shop-page:not(.is-filter) .shop-listing-sidebar {
+      height: 0;
+    }
+  }
+
   @media (min-width: 1024px) {
     .shop-listing-frame {
       grid-template-rows: auto;
@@ -586,7 +597,7 @@
     display: grid;
     align-items: start;
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 2.5em;
+    row-gap: 1.25em;
     overflow-x: clip;
   }
 

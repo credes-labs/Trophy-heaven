@@ -182,7 +182,7 @@ export default function AboutPage() {
             className="object-cover object-center"
           />
         </div>
-        <p className="pointer-events-none m-0 mt-[-0.2em] text-center font-outfit text-[clamp(1.85em,8.95vw,8.059em)] leading-[0.74] font-medium tracking-[-0.054em] text-[#131111]">
+        <p className="pointer-events-none m-0 mt-[0.6em] text-center font-outfit text-[clamp(1.85em,8.95vw,8.059em)] leading-[1.05] font-medium sm:mt-[-0.2em] sm:leading-[0.74] tracking-[-0.054em] text-[#131111]">
           From workshop to stage
         </p>
         <div className="mx-auto mt-[2em] flex max-w-[34em] flex-col items-center gap-[1.5em] text-center">

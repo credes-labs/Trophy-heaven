@@ -538,3 +538,18 @@
     transition: none;
   }
 }
+
+@media (max-width: 1023.98px) {
+  .pdp-shell {
+    padding-top: 0.5rem;
+  }
+
+  .pdp-hero {
+    gap: 1.25rem;
+    margin-top: 0.75em;
+  }
+
+  .pdp-gallery-frame {
+    padding: 1%;
+  }
+}

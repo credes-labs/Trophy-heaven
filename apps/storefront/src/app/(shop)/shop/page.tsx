@@ -112,7 +112,7 @@ async function ShopContent() {
 function ShopFallback() {
   return (
     <div className="under-site-header bg-white font-outfit text-[#131111]">
-      <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(2rem,4vw,3.5em)] pb-[clamp(3rem,6vw,5.5em)]">
+      <div className="mx-auto w-full max-w-[90em] px-[clamp(1.25rem,2.78vw,2.5em)] pt-[clamp(0.5rem,4vw,3.5em)] pb-[clamp(3rem,6vw,5.5em)]">
         <Skeleton className="mb-4 h-4 w-32 bg-[#D9D9D9]" />
         <Skeleton className="mb-10 h-12 w-64 bg-[#D9D9D9]" />
         <div className="grid grid-cols-1 gap-x-[1.5em] gap-y-[2.625em] sm:grid-cols-2 xl:grid-cols-4">

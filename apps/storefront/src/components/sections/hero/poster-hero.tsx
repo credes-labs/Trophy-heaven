@@ -102,7 +102,7 @@ export function PosterHero({
           </div>
 
           <div className="relative lg:h-[min(14vw,224px)]">
-            <div aria-hidden className="h-[60vw] lg:hidden" />
+            <div aria-hidden className="h-[70vw] lg:hidden" />
             <div className="relative z-20 flex flex-col gap-5 pb-6 lg:absolute lg:inset-x-0 lg:bottom-0 lg:flex-row lg:items-end lg:justify-between lg:pb-4">
               <div className="max-w-[26rem]">
                 {showTitle ? (

@@ -50,7 +50,7 @@ export function ShopListingBreadcrumb({
 export function ShopFilterBanner({ category }: { category: CategoryKey | null }) {
   const cfg = category ? CATEGORY_CONFIG[category] : null
   return (
-    <div className="relative mb-[1.5em] aspect-[1360/280] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9]">
+    <div className="relative mb-[1.5em] w-full overflow-hidden rounded-[0.125em] bg-[#D9D9D9] max-sm:h-44 sm:aspect-[1360/280]">
       <Image
         src={cfg?.imageSrc ?? "/images/brand/banner-crystal.webp"}
         alt={cfg?.imageAlt ?? "Crystal award with an etched palace on a cream pedestal"}
@@ -58,7 +58,7 @@ export function ShopFilterBanner({ category }: { category: CategoryKey | null })
         sizes="(min-width: 1024px) 85em, 100vw"
         className="object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#131111]/70 via-[#131111]/35 to-transparent" />
+      <div className="absolute inset-0 bg-[#131111]/60 sm:bg-transparent sm:bg-gradient-to-r sm:from-[#131111]/70 sm:via-[#131111]/35 sm:to-transparent" />
       <div className="absolute inset-0 flex flex-col justify-end px-[clamp(1.25rem,3vw,2.5em)] py-[clamp(1.25rem,3vw,2em)]">
         <p className="m-0 font-outfit text-[0.875em] tracking-[0.14em] text-[#F2F1EF]/80 uppercase">
           {cfg?.label ?? "Collection"}
@@ -160,7 +160,7 @@ export function ShopToolbar({
           <ul
             role="listbox"
             aria-label="Sort products"
-            className="absolute top-[2.25em] left-0 z-20 min-w-[14em] rounded-[0.125em] bg-white py-[0.5em] shadow-[0_12px_40px_rgba(19,17,17,0.12)]"
+            className="absolute top-[2.25em] right-0 z-20 min-w-[14em] lg:right-auto lg:left-0 rounded-[0.125em] bg-white py-[0.5em] shadow-[0_12px_40px_rgba(19,17,17,0.12)]"
           >
             {SHOP_SORT_OPTIONS.map((item) => (
               <li key={item.value} role="option" aria-selected={item.value === sort}>
@@ -204,10 +204,11 @@ export function ShopModeToolbar({
   return (
     <div
       className={cn(
-        "relative flex min-h-[2.75em] items-center border-b border-[#131111]/10 pb-[1em] transition-[margin] duration-[560ms] ease-[cubic-bezier(0.25,0.82,0.25,1)] motion-reduce:duration-0",
-        filtersOpen ? "mb-[1.75em]" : "mb-[2.5em]"
+        "border-b border-[#131111]/10 pb-[0.75em] transition-[margin] duration-[560ms] ease-[cubic-bezier(0.25,0.82,0.25,1)] motion-reduce:duration-0 lg:pb-[1em]",
+        filtersOpen ? "mb-[1.25em] lg:mb-[1.75em]" : "mb-[1.5em] lg:mb-[2.5em]"
       )}
     >
+      <div className="relative flex min-h-[2.75em] items-center">
       <button
         type="button"
         aria-pressed={filtersOpen}
@@ -229,11 +230,11 @@ export function ShopModeToolbar({
       <div
         className={cn(
           "ml-auto grid min-w-0 transition-[grid-template-columns,opacity] duration-[560ms] ease-[cubic-bezier(0.25,0.82,0.25,1)] motion-reduce:duration-0",
-          filtersOpen ? "grid-cols-[1fr] opacity-100" : "pointer-events-none grid-cols-[0fr] opacity-0"
+          filtersOpen ? "grid-cols-[1fr] opacity-100" : "pointer-events-none h-0 grid-cols-[0fr] overflow-hidden opacity-0"
         )}
         aria-hidden={!filtersOpen}
       >
-        <div className="flex min-w-0 flex-wrap items-center gap-x-[1.25em] gap-y-[0.5em] overflow-hidden">
+        <div className={cn("flex min-w-0 flex-wrap items-center gap-x-[1.25em] gap-y-[0.5em]", !filtersOpen && "overflow-hidden")}>
         <div className="flex items-center gap-[0.25em]">
           <button
             type="button"
@@ -283,7 +284,7 @@ export function ShopModeToolbar({
             <ul
               role="listbox"
               aria-label="Sort products"
-              className="absolute top-[2.25em] left-0 z-20 min-w-[14em] rounded-[0.125em] bg-white py-[0.5em] shadow-[0_12px_40px_rgba(19,17,17,0.12)]"
+              className="absolute top-[2.25em] right-0 z-20 min-w-[14em] lg:right-auto lg:left-0 rounded-[0.125em] bg-white py-[0.5em] shadow-[0_12px_40px_rgba(19,17,17,0.12)]"
             >
               {SHOP_SORT_OPTIONS.map((item) => (
                 <li key={item.value} role="option" aria-selected={item.value === sort}>
@@ -302,10 +303,11 @@ export function ShopModeToolbar({
           ) : null}
         </div>
 
-        <p className="m-0 font-outfit text-[0.8125em] tracking-[0.08em] text-[#6B635C] uppercase">
+        <p className="m-0 font-outfit text-[0.8125em] tracking-[0.08em] text-[#6B635C] uppercase max-lg:hidden">
           Showing {showingFrom}–{showingTo} of {total} results
         </p>
         </div>
+      </div>
       </div>
     </div>
   )

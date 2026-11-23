@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { ChevronDown } from "lucide-react"
 import type { HttpTypes } from "@medusajs/types"
 import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -37,6 +38,7 @@ export function SearchView({ regionId }: { regionId?: string }) {
   const [available, setAvailable] = useState(true)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const run = useCallback(async () => {
     setLoading(true)
@@ -82,6 +84,7 @@ export function SearchView({ regionId }: { regionId?: string }) {
   }
 
   const facetGroups = Object.entries(facets).filter(([, values]) => Object.keys(values).length > 0)
+  const activeFilters = Object.values(selected).flat().length
 
   return (
     <div className="mt-[1.75em]">
@@ -107,7 +110,27 @@ export function SearchView({ regionId }: { regionId?: string }) {
         <div className="search-listing-sidebar">
           <div className="lg:sticky lg:top-[calc(var(--site-header-h)+1.5em)] lg:max-h-[calc(100svh-var(--site-header-h)-3em)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {facetGroups.length > 0 ? (
-              <aside aria-label="Search filters" className="border-t border-[#CDCDCD]">
+              <button
+                type="button"
+                aria-expanded={filtersOpen}
+                aria-controls="search-filters"
+                onClick={() => setFiltersOpen((open) => !open)}
+                className="flex min-h-11 w-full cursor-pointer items-center justify-between border-x-0 border-y border-[#CDCDCD] bg-transparent px-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111] uppercase lg:hidden"
+              >
+                {activeFilters ? `Filters (${activeFilters})` : "Filters"}
+                <ChevronDown
+                  aria-hidden
+                  strokeWidth={1.5}
+                  className={`size-5 transition-transform motion-reduce:transition-none ${filtersOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+            ) : null}
+            {facetGroups.length > 0 ? (
+              <aside
+                id="search-filters"
+                aria-label="Search filters"
+                className={`border-[#CDCDCD] lg:border-t ${filtersOpen ? "" : "max-lg:hidden"}`}
+              >
                 {facetGroups.map(([attr, values]) => (
                   <section key={attr} className="border-b border-[#CDCDCD] py-[1.25em]">
                     <h2 className="m-0 mb-[0.9em] font-outfit text-[1.25em] leading-[1.25] font-light tracking-[-0.02em] text-[#131111] uppercase">
