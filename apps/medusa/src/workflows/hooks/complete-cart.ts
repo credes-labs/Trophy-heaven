@@ -14,6 +14,7 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     id?: string
     total?: number
     metadata?: Record<string, unknown> | null
+    items?: Array<{ title?: string | null; quantity?: unknown; metadata?: Record<string, unknown> | null }>
     payment_collection?: { payment_sessions?: Array<{ provider_id?: string; status?: string }> }
   }
 
@@ -25,6 +26,9 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
           "id",
           "total",
           "metadata",
+          "items.title",
+          "items.quantity",
+          "items.metadata",
           "payment_collection.payment_sessions.provider_id",
           "payment_collection.payment_sessions.status",
         ],
@@ -43,6 +47,7 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     {
       total: Number(snapshotCart?.total ?? 0),
       metadata: snapshotCart?.metadata ?? null,
+      items: snapshotCart?.items,
       paymentSessions: snapshotCart?.payment_collection?.payment_sessions ?? [],
     },
     {

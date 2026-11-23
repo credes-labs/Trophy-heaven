@@ -23,6 +23,9 @@ type CartState = {
   updateItemMetadata: (lineId: string, patch: Record<string, unknown>) => Promise<void>
   /** Merges keys into the cart's metadata (`null` clears a key). Copied to the order. */
   updateCartMetadata: (patch: Record<string, unknown>) => Promise<void>
+  /** The design-to-trophy matching dialog (mounted once in the root layout). */
+  designMappingOpen: boolean
+  setDesignMappingOpen: (open: boolean) => void
   removeItem: (lineId: string) => Promise<void>
   applyPromoCode: (code: string) => Promise<void>
   removePromoCode: (code: string) => Promise<void>
@@ -204,6 +207,9 @@ export const useCartStore = create<CartState>((set, get) => ({
       }))
     }
   },
+
+  designMappingOpen: false,
+  setDesignMappingOpen: (designMappingOpen) => set({ designMappingOpen }),
 
   updateItemMetadata: async (lineId, patch) => {
     const current = get().cart

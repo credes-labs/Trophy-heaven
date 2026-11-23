@@ -7,6 +7,9 @@ export const ORDER_DOCUMENTS_KEY = "order_documents"
 export const ORDER_DESIGN_KEY = "order_design_file"
 export const ORDER_DESIGN_NOTES_KEY = "order_design_notes"
 export const LINE_DESIGN_KEY = "design_upload"
+export const LINE_DESIGN_PIECES_KEY = "design_pieces"
+/** Hard ceiling on image designs per order; mirrors the storefront. */
+export const ORDER_DESIGNS_MAX = 50
 export const STICKER_DESIGN_KEY = "sticker_design"
 
 export type OrderFile = { url: string; filename: string; mime_type?: string; size?: number }
@@ -23,19 +26,82 @@ function asFile(value: unknown): OrderFile | null {
     : null
 }
 
-/** Every file on the order: order-wide documents first, then each item's design. */
+function isImage(file: OrderFile): boolean {
+  return file.mime_type?.startsWith("image/") || /\.(png|jpe?g|webp)$/i.test(file.filename)
+}
+
+function quantityOf(item: ItemLike): number {
+  return Math.max(0, Number(item.quantity ?? 0))
+}
+
+/** Image on each piece: explicit `design_pieces`, else the line's image on every piece. */
+function piecesOf(item: ItemLike): (OrderFile | null)[] {
+  const quantity = quantityOf(item)
+  const stored = item.metadata?.[LINE_DESIGN_PIECES_KEY]
+  if (Array.isArray(stored)) {
+    return Array.from({ length: quantity }, (_, i) => {
+      const file = asFile(stored[i])
+      return file && isImage(file) ? file : null
+    })
+  }
+  const lineFile = asFile(item.metadata?.[LINE_DESIGN_KEY])
+  const design = lineFile && isImage(lineFile) ? lineFile : null
+  return Array.from({ length: quantity }, () => design)
+}
+
+function orderPool(orderMeta: Meta): OrderFile[] {
+  const docs = orderMeta?.[ORDER_DOCUMENTS_KEY]
+  const pool = (Array.isArray(docs) ? docs : []).map(asFile).filter((f): f is OrderFile => !!f)
+  const legacy = asFile(orderMeta?.[ORDER_DESIGN_KEY])
+  return legacy ? [...pool, legacy] : pool
+}
+
+/**
+ * Why this cart may not complete, or null. Images are designs: no more than the trophies
+ * ordered, and each on at least one. PDFs and office files are whole-order documents.
+ */
+export function checkOrderDesigns(orderMeta: Meta, items: ItemLike[] = []): string | null {
+  const designs = new Set(orderPool(orderMeta).filter(isImage).map((f) => f.url))
+  const used = new Set<string>()
+  let pieces = 0
+  for (const item of items) {
+    pieces += quantityOf(item)
+    for (const file of piecesOf(item)) {
+      if (!file) continue
+      used.add(file.url)
+      designs.add(file.url)
+    }
+  }
+  if (designs.size > Math.min(pieces, ORDER_DESIGNS_MAX)) {
+    return `This order has ${designs.size} designs for ${pieces} ${pieces === 1 ? "trophy" : "trophies"}. Remove the extra designs in your cart.`
+  }
+  const unmatched = [...designs].filter((url) => !used.has(url)).length
+  return unmatched
+    ? `${unmatched} design${unmatched === 1 ? " is" : "s are"} not matched to a trophy. Match them in your cart.`
+    : null
+}
+
+/** Every file on the order: whole-order documents first, then each trophy's design. */
 export function collectOrderFiles(orderMeta: Meta, items: ItemLike[] = []): AttachedFile[] {
   const files: AttachedFile[] = []
-  const docs = orderMeta?.[ORDER_DOCUMENTS_KEY]
-  for (const d of Array.isArray(docs) ? docs : []) {
-    const f = asFile(d)
-    if (f) files.push({ ...f, scope: "Whole order" })
+  const mapped = new Set(items.flatMap((item) => piecesOf(item).map((f) => f?.url)))
+  for (const f of orderPool(orderMeta)) {
+    // Images on a trophy are listed under that trophy below.
+    if (!mapped.has(f.url)) files.push({ ...f, scope: "Whole order" })
   }
-  const legacy = asFile(orderMeta?.[ORDER_DESIGN_KEY])
-  if (legacy) files.push({ ...legacy, scope: "Whole order" })
   for (const item of items) {
-    const f = asFile(item.metadata?.[LINE_DESIGN_KEY])
-    if (f) files.push({ ...f, scope: item.title ?? "Item" })
+    const title = item.title ?? "Item"
+    const lineFile = asFile(item.metadata?.[LINE_DESIGN_KEY])
+    if (lineFile && !isImage(lineFile)) files.push({ ...lineFile, scope: title })
+    const pieces = piecesOf(item)
+    const first = pieces[0]
+    if (first && pieces.every((f) => f?.url === first.url)) {
+      files.push({ ...first, scope: pieces.length > 1 ? `${title}, all ${pieces.length}` : title })
+      continue
+    }
+    pieces.forEach((f, i) => {
+      if (f) files.push({ ...f, scope: `${title}, trophy ${i + 1} of ${pieces.length}` })
+    })
   }
   return files
 }

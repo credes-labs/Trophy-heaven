@@ -6,6 +6,7 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CartDrawer } from "@/components/features/cart/cart-drawer"
+import { DesignMappingDialog } from "@/components/features/cart/design-mapping-dialog"
 import { PWARegister } from "@/components/pwa-register"
 import { Analytics } from "@/components/analytics"
 import { ChromeGate, SiteChrome } from "@/components/layout/site-chrome"
@@ -133,6 +134,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </ChromeGate>
           <CartDrawer />
+          <DesignMappingDialog />
           <PWARegister />
         </Providers>
         <Analytics />

@@ -21,6 +21,7 @@ import {
 } from "@/lib/data/checkout"
 import { toCustomerAddressPayload, toCartShippingAddress, type DeliveryAddressValues } from "@/lib/checkout-address"
 import { openCheckout, verifyRazorpayPayment } from "@/lib/razorpay"
+import { cartDesignState } from "@/lib/design-mapping"
 import { StepIndicator, type CheckoutStep } from "@/components/features/checkout/step-indicator"
 import { CheckoutAuthGate } from "@/components/features/checkout/checkout-auth-gate"
 import { CheckoutAddressStep } from "@/components/features/checkout/checkout-address-step"
@@ -69,6 +70,16 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (netTerms) setPaymentMethod("net_terms")
   }, [netTerms])
+
+  // Designs must be within the limit and matched before paying (Medusa enforces this too).
+  const designsBlocked = cart?.items?.length
+    ? cartDesignState(cart.metadata as Record<string, unknown> | null, cart.items).needsAction
+    : false
+  useEffect(() => {
+    if (!designsBlocked) return
+    useCartStore.getState().setDesignMappingOpen(true)
+    router.replace("/cart")
+  }, [designsBlocked, router])
 
   async function handleAddress(values: DeliveryAddressValues, options: { persist: boolean }) {
     if (!cart) return

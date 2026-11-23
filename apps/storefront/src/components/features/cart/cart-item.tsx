@@ -6,10 +6,9 @@ import { X } from "lucide-react"
 import type { HttpTypes } from "@medusajs/types"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { CartThumb } from "@/components/features/cart/cart-thumb"
-import { DesignUploadButton } from "@/components/features/cart/design-upload-button"
+import { LineDesignControl } from "@/components/features/cart/line-design-control"
 import { formatMoney } from "@/lib/format"
-import { LINE_DESIGN_KEY, STICKER_DESIGN_KEY, readDesignFile } from "@/lib/design-uploads"
-import { useCartStore } from "@/stores/cart-store"
+import { STICKER_DESIGN_KEY } from "@/lib/design-uploads"
 import { fadeUp } from "@/lib/animations"
 
 const stepperClass =
@@ -35,7 +34,6 @@ export function CartItem({
   const qty = item.quantity ?? 1
   const variantLine = [item.variant_title, `x${qty}`].filter(Boolean).join(" / ")
   const title = item.product_title ?? "Item"
-  const updateItemMetadata = useCartStore((s) => s.updateItemMetadata)
   const sticker =
     typeof item.metadata?.[STICKER_DESIGN_KEY] === "string" ? String(item.metadata[STICKER_DESIGN_KEY]) : ""
 
@@ -87,14 +85,7 @@ export function CartItem({
             Sticker: {sticker}
           </p>
         ) : null}
-        <DesignUploadButton
-          className="mt-[0.6em]"
-          value={readDesignFile(item.metadata?.[LINE_DESIGN_KEY])}
-          disabled={busy}
-          label="Upload design for this item"
-          onUploaded={(f) => updateItemMetadata(item.id, { [LINE_DESIGN_KEY]: f })}
-          onRemove={() => updateItemMetadata(item.id, { [LINE_DESIGN_KEY]: null })}
-        />
+        <LineDesignControl item={item} disabled={busy} className="mt-[0.6em]" />
       </div>
 
       <div className="cart-item-qty">

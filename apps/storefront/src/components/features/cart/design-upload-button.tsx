@@ -20,6 +20,7 @@ export function DesignUploadButton({
   onRemove,
   label = "Upload design",
   kind = "design",
+  validate,
   disabled = false,
   className,
   children,
@@ -29,6 +30,8 @@ export function DesignUploadButton({
   onRemove: () => Promise<void> | void
   label?: string
   kind?: UploadKind
+  /** Checked before uploading; a returned message is shown and nothing is sent. */
+  validate?: (file: File) => string | null
   disabled?: boolean
   className?: string
   children?: ReactNode
@@ -39,6 +42,12 @@ export function DesignUploadButton({
 
   async function onPick(file: File | undefined) {
     if (!file) return
+    const invalid = validate?.(file)
+    if (invalid) {
+      setError(invalid)
+      if (inputRef.current) inputRef.current.value = ""
+      return
+    }
     setBusy(true)
     setError(null)
     try {

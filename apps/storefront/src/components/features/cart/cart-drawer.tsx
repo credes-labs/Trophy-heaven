@@ -6,7 +6,7 @@ import { X } from "lucide-react"
 import { useCartStore } from "@/stores/cart-store"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { CartThumb } from "@/components/features/cart/cart-thumb"
-import { DesignUploadButton } from "@/components/features/cart/design-upload-button"
+import { LineDesignControl } from "@/components/features/cart/line-design-control"
 import {
   OrderDocumentsButton,
   OrderDocumentsList,
@@ -14,11 +14,7 @@ import {
 import { useOrderDocuments } from "@/hooks/use-order-documents"
 import { formatMoney } from "@/lib/format"
 import { cartShippingLabel } from "@/lib/shipping"
-import {
-  LINE_DESIGN_KEY,
-  STICKER_DESIGN_KEY,
-  readDesignFile,
-} from "@/lib/design-uploads"
+import { STICKER_DESIGN_KEY } from "@/lib/design-uploads"
 
 const stepperClass =
   "rounded-[0.125em] border-[#131111]/25 [&_button]:h-9 [&_button]:w-9 [&_button]:text-[1.05rem] [&_button]:hover:bg-[#131111]/5 [&_span]:h-9 [&_span]:min-w-[2.25rem] [&_span]:border-[#131111]/25 [&_span]:font-outfit [&_span]:text-[0.875em]"
@@ -31,7 +27,6 @@ export function CartDrawer() {
   const removeItem = useCartStore((s) => s.removeItem)
   const loading = useCartStore((s) => s.loading)
   const pendingLineIds = useCartStore((s) => s.pendingLineIds)
-  const updateItemMetadata = useCartStore((s) => s.updateItemMetadata)
   const orderDocs = useOrderDocuments()
 
   useEffect(() => {
@@ -122,13 +117,10 @@ export function CartDrawer() {
                           Sticker: {String(item.metadata[STICKER_DESIGN_KEY])}
                         </p>
                       ) : null}
-                      <DesignUploadButton
+                      <LineDesignControl
+                        item={item}
                         className="mt-1.5"
-                        value={readDesignFile(item.metadata?.[LINE_DESIGN_KEY])}
                         disabled={pendingLineIds.includes(item.id)}
-                        label="Upload design for this item"
-                        onUploaded={(f) => updateItemMetadata(item.id, { [LINE_DESIGN_KEY]: f })}
-                        onRemove={() => updateItemMetadata(item.id, { [LINE_DESIGN_KEY]: null })}
                       />
                       <div className="mt-2">
                         <QuantityStepper
@@ -186,16 +178,26 @@ export function CartDrawer() {
               </dd>
             </div>
           </dl>
-          <Link
-            href="/checkout"
-            onClick={() => setDrawerOpen(false)}
-            aria-disabled={items.length === 0}
-            className={`flex h-[3.15em] w-full items-center justify-center rounded-[0.125em] bg-[#131111] font-outfit text-[0.75em] tracking-[0.16em] text-[#F2F1EF] uppercase no-underline transition-opacity hover:opacity-85 ${
-              items.length === 0 ? "pointer-events-none opacity-40" : ""
-            }`}
-          >
-            Proceed to checkout
-          </Link>
+          {orderDocs.state.needsAction ? (
+            <button
+              type="button"
+              onClick={orderDocs.openMapping}
+              className="flex h-[3.15em] w-full items-center justify-center rounded-[0.125em] bg-[#131111] font-outfit text-[0.75em] tracking-[0.16em] text-[#F2F1EF] uppercase transition-opacity hover:opacity-85"
+            >
+              Match designs to continue
+            </button>
+          ) : (
+            <Link
+              href="/checkout"
+              onClick={() => setDrawerOpen(false)}
+              aria-disabled={items.length === 0}
+              className={`flex h-[3.15em] w-full items-center justify-center rounded-[0.125em] bg-[#131111] font-outfit text-[0.75em] tracking-[0.16em] text-[#F2F1EF] uppercase no-underline transition-opacity hover:opacity-85 ${
+                items.length === 0 ? "pointer-events-none opacity-40" : ""
+              }`}
+            >
+              Proceed to checkout
+            </Link>
+          )}
           <Link
             href="/cart"
             onClick={() => setDrawerOpen(false)}

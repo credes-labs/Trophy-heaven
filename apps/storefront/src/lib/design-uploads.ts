@@ -16,8 +16,10 @@ export type DesignFile = {
 export type UploadKind = "design" | "document"
 
 export const DESIGN_UPLOAD_MAX_BYTES = 10 * 1024 * 1024
-/** Most order-wide files a cart can carry. */
+/** Most whole-order documents (PDF, Word, Excel…) a cart can carry. */
 export const ORDER_DOCUMENTS_MAX = 10
+/** Hard ceiling on image designs; larger runs should send one PDF or spreadsheet. */
+export const ORDER_DESIGNS_MAX = 50
 
 const DESIGN_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "pdf"]
 const DOCUMENT_EXTENSIONS = [
@@ -55,6 +57,8 @@ export const ORDER_DOCUMENTS_KEY = "order_documents"
 export const ORDER_DESIGN_KEY = "order_design_file"
 export const ORDER_DESIGN_NOTES_KEY = "order_design_notes"
 export const LINE_DESIGN_KEY = "design_upload"
+/** Line metadata: the design on each piece of the line, by index (see lib/design-mapping). */
+export const LINE_DESIGN_PIECES_KEY = "design_pieces"
 /** Older free-text sticker brief on a line; still shown on existing cart items. */
 export const STICKER_DESIGN_KEY = "sticker_design"
 

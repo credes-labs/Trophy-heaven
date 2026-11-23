@@ -9,6 +9,7 @@ import { useCartStore } from "@/stores/cart-store"
 import { CartItem } from "@/components/features/cart/cart-item"
 import { cartShippingLabel } from "@/lib/shipping"
 import { OrderDesignPanel } from "@/components/features/cart/order-design-panel"
+import { useOrderDocuments } from "@/hooks/use-order-documents"
 import { OrderSummary } from "@/components/features/cart/order-summary"
 import { PromoCode } from "@/components/features/cart/promo-code"
 import { CartRecommendations } from "@/components/features/cart/cart-recommendations"
@@ -23,6 +24,7 @@ export default function CartPage() {
   const updateItem = useCartStore((s) => s.updateItem)
   const removeItem = useCartStore((s) => s.removeItem)
   const pendingLineIds = useCartStore((s) => s.pendingLineIds)
+  const orderDocs = useOrderDocuments()
   const items = cart?.items ?? []
   const currency = cart?.currency_code ?? "inr"
   const total = cart?.total ?? cart?.item_subtotal ?? 0
@@ -90,7 +92,7 @@ export default function CartPage() {
                   </AnimatePresence>
                 </ul>
 
-                <OrderDesignPanel className="mt-[1.75em]" />
+                <OrderDesignPanel docs={orderDocs} className="mt-[1.75em]" />
 
                 <div className="cart-coupon mt-[1.75em] border-t border-[#131111]/12 pt-[1.5em]">
                   <div className="cart-coupon-row">
@@ -112,6 +114,7 @@ export default function CartPage() {
                 subtotal={cart?.item_subtotal ?? 0}
                 shipping={cart?.shipping_total ?? 0}
                 shippingLabel={cartShippingLabel(cart)}
+                onResolveDesigns={orderDocs.state.needsAction ? orderDocs.openMapping : undefined}
                 tax={cart?.tax_total ?? 0}
                 discount={cart?.discount_total ?? 0}
                 total={total}

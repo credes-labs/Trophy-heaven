@@ -28,6 +28,7 @@ export function DesignDropzone({
   files,
   max = 1,
   onAdd,
+  onFiles,
   onRemove,
   disabled = false,
   className,
@@ -39,6 +40,8 @@ export function DesignDropzone({
   max?: number
   /** Called once per uploaded file, in order. */
   onAdd: (file: DesignFile) => Promise<void> | void
+  /** Takes the picked files itself (limits, upload, matching) instead of `onAdd`. */
+  onFiles?: (files: File[]) => Promise<void>
   onRemove: (index: number) => Promise<void> | void
   disabled?: boolean
   className?: string
@@ -55,6 +58,16 @@ export function DesignDropzone({
     const picked = Array.from(list ?? [])
     if (!picked.length) return
     setError(null)
+    if (onFiles) {
+      if (inputRef.current) inputRef.current.value = ""
+      setBusy(true)
+      try {
+        await onFiles(picked)
+      } finally {
+        setBusy(false)
+      }
+      return
+    }
     // A single-file field replaces its file; a list takes as many as fit.
     const batch = max === 1 ? picked.slice(0, 1) : picked.slice(0, remaining)
     if (picked.length > batch.length && max > 1) {
@@ -184,7 +197,7 @@ export function DesignDropzone({
         </>
       )}
 
-      {max > 1 && files.length > 0 ? (
+      {max > 1 && files.length > 0 && !onFiles ? (
         <p className="mt-[0.35em] m-0 font-outfit text-[0.6875em] text-[#6B635C] tabular-nums">
           {files.length} of {max} files
         </p>

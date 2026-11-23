@@ -1,8 +1,11 @@
 import { MedusaError } from "@medusajs/framework/utils"
+import { checkOrderDesigns } from "./order-files"
 
 export type CartCompleteSnapshot = {
   total: number
   metadata?: Record<string, unknown> | null
+  /** Line items, when loaded; used to check customer designs against quantities. */
+  items?: Array<{ title?: string | null; quantity?: unknown; metadata?: Record<string, unknown> | null }>
   paymentSessions?: Array<{ provider_id?: string | null; status?: string | null }>
 }
 
@@ -35,6 +38,11 @@ export async function assertCartMayComplete(
     ) => Promise<{ ok: true } | { ok: false; reason: string }>
   }
 ): Promise<void> {
+  if (snapshot.items?.length) {
+    const designProblem = checkOrderDesigns(snapshot.metadata, snapshot.items)
+    if (designProblem) throw new MedusaError(MedusaError.Types.NOT_ALLOWED, designProblem)
+  }
+
   const terms = claimedNetTerms(snapshot.metadata)
   if (terms) {
     const profileId = String(snapshot.metadata?.corporate_profile_id ?? "")

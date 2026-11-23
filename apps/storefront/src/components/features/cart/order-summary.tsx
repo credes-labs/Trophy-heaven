@@ -12,6 +12,7 @@ export function OrderSummary({
   currency,
   checkoutHref = "/checkout",
   shippingLabel,
+  onResolveDesigns,
 }: {
   subtotal: number
   shipping: number
@@ -24,6 +25,8 @@ export function OrderSummary({
   showPromo?: boolean
   /** Overrides the shipping cell (see lib/shipping `cartShippingLabel`). */
   shippingLabel?: string
+  /** Set while designs block checkout: the button opens the matching dialog instead. */
+  onResolveDesigns?: () => void
 }) {
   const shippingValue = shippingLabel ?? (shipping <= 0 ? "Free" : formatMoney(shipping, currency))
 
@@ -66,12 +69,22 @@ export function OrderSummary({
         </div>
       </dl>
 
-      <Link
-        href={checkoutHref}
-        className="mt-[1.75em] flex h-[3.15em] w-full items-center justify-center rounded-[0.125em] bg-[#131111] font-outfit text-[0.8125em] tracking-[0.16em] text-[#F2F1EF] uppercase no-underline transition-opacity hover:opacity-85"
-      >
-        Proceed to checkout
-      </Link>
+      {onResolveDesigns ? (
+        <button
+          type="button"
+          onClick={onResolveDesigns}
+          className="mt-[1.75em] flex h-[3.15em] w-full items-center justify-center rounded-[0.125em] bg-[#131111] font-outfit text-[0.8125em] tracking-[0.16em] text-[#F2F1EF] uppercase transition-opacity hover:opacity-85"
+        >
+          Match designs to continue
+        </button>
+      ) : (
+        <Link
+          href={checkoutHref}
+          className="mt-[1.75em] flex h-[3.15em] w-full items-center justify-center rounded-[0.125em] bg-[#131111] font-outfit text-[0.8125em] tracking-[0.16em] text-[#F2F1EF] uppercase no-underline transition-opacity hover:opacity-85"
+        >
+          Proceed to checkout
+        </Link>
+      )}
       <Link
         href="/shop"
         className="mt-[1em] block text-center font-outfit text-[0.75em] tracking-[0.14em] text-[#6B635C] uppercase no-underline transition-colors hover:text-[#131111]"

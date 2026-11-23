@@ -92,11 +92,11 @@ export default defineMiddlewares({
       middlewares: [rateLimit({ windowMs: 60_000, max: 10, key: "otp-verify", strict: true })],
     },
     {
-      // base64 of a 10 MB design file is ~13.4 MB
+      // base64 of a 10 MB design file is ~13.4 MB. 60/min fits a bulk order's 50 designs.
       matcher: "/store/design-uploads",
       method: ["POST"],
       bodyParser: { sizeLimit: "14mb" },
-      middlewares: [rateLimit({ windowMs: 60_000, max: 10, key: "design-upload", strict: true })],
+      middlewares: [rateLimit({ windowMs: 60_000, max: 60, key: "design-upload", strict: true })],
     },
     {
       matcher: "/webhooks/razorpay",
