@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-23 - Browser checks in CI match the site again
+The CI browser job had failed on every recent push. It now runs the smoke suite, which needs no backend, with outdated assertions updated and low-contrast homepage text fixed. See L2 WP-108.
+
 ## 2026-11-23 - Ready to deploy on Vercel and Render
 The repo now has a Render Blueprint, a Vercel config and a step-by-step runbook. A production Docker rehearsal covered migration, seeding, search, uploads and orders. See L2 WP-107.
 

@@ -56,7 +56,7 @@ export function SelectedEditions() {
                   onClick={() => setFilter(f)}
                   aria-pressed={filter === f}
                   className={`transition-colors focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#1A1A1A] ${
-                    filter === f ? "text-[#1A1A1A]" : "text-[#1A1A1A]/45 hover:text-[#1A1A1A]/75"
+                    filter === f ? "text-[#1A1A1A]" : "text-[#1A1A1A]/70 hover:text-[#1A1A1A]"
                   }`}
                 >
                   {f}

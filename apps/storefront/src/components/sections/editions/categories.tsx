@@ -50,7 +50,7 @@ export function HomeCategories() {
                     ) : (
                       <span className="flex flex-col items-center gap-3 text-center">
                         <Emblem className="w-[clamp(5rem,11vw,10rem)] text-maroon transition-transform duration-500 group-hover:scale-[1.04]" />
-                        <span className="text-[11px] tracking-[0.04em] text-[#1A1A1A]/60 uppercase">
+                        <span className="text-[11px] tracking-[0.04em] text-[#1A1A1A]/70 uppercase">
                           Open the studio →
                         </span>
                       </span>

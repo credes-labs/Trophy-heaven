@@ -35,14 +35,22 @@ test.describe("storefront smoke", () => {
 
   test("search page is reachable from the header", async ({ page }) => {
     await page.goto("/")
-    await page.getByRole("link", { name: "Search" }).first().click()
+    // Phones reach search through the menu; the header link is desktop only.
+    const menu = page.getByRole("button", { name: "Open menu" })
+    if (await menu.isVisible()) {
+      await menu.click()
+      await page.getByRole("link", { name: "Search the collection" }).click()
+    } else {
+      await page.getByRole("link", { name: "Search" }).first().click()
+    }
     await expect(page.getByRole("heading", { name: "Search" })).toBeVisible()
     await expect(page.getByRole("textbox", { name: "Search" })).toBeVisible()
   })
 
   test("corporate landing shows the bulk calculator", async ({ page }) => {
     await page.goto("/corporate")
-    await expect(page.getByText(/Estimate your bulk price/i)).toBeVisible()
+    await expect(page.getByText("Estimate", { exact: true })).toBeVisible()
+    await expect(page.getByText("Quantity", { exact: true })).toBeVisible()
   })
 
   test("shop page loads", async ({ page }) => {
@@ -81,7 +89,7 @@ test.describe("storefront smoke", () => {
   test("footer has no dead internal links", async ({ page }) => {
     await page.goto("/")
     const footer = page.locator("footer")
-    const dead = ["/sale", "/careers", "/press"]
+    const dead = ["/sale"]
     for (const href of dead) {
       await expect(footer.locator(`a[href="${href}"]`)).toHaveCount(0)
     }

@@ -104,5 +104,6 @@ jobs:
         run: pnpm schemas:build && pnpm --filter @trophy-heaven/storefront build
       - name: Install Playwright Chromium
         run: pnpm --filter @trophy-heaven/storefront exec playwright install --with-deps chromium
+      # This job has no Medusa backend. The other specs need a seeded one.
       - name: Playwright smoke + axe
-        run: pnpm --filter @trophy-heaven/storefront --if-present test:e2e
+        run: pnpm --filter @trophy-heaven/storefront exec playwright test e2e/smoke.spec.ts

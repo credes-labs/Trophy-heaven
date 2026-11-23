@@ -40,7 +40,7 @@ export function SubcategoryNav({ items, active, onSelect, className }: Subcatego
               aria-pressed={isActive}
               className={cn(
                 "transition-colors focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#1A1A1A]",
-                isActive ? "text-[#1A1A1A]" : "text-[#1A1A1A]/45 hover:text-[#1A1A1A]/75"
+                isActive ? "text-[#1A1A1A]" : "text-[#1A1A1A]/70 hover:text-[#1A1A1A]"
               )}
             >
               {item === "All" ? "All Pieces" : item}
