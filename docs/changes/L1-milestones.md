@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-23 - Storefront /admin opens the Medusa admin
+Visiting `/admin` on the storefront now redirects to the admin on the backend domain. See L2 WP-111.
+
 ## 2026-11-23 - Client preview can run without R2
 The `client-preview` branch keeps customer uploads on a Railway volume, so the test site needs no card or storage account. See L2 WP-110.
 

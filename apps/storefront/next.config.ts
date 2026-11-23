@@ -1,8 +1,10 @@
 import type { NextConfig } from "next"
 
+const backendUrl = (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000").replace(/\/$/, "")
+
 const backendHost = (() => {
   try {
-    return new URL(process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000").hostname
+    return new URL(backendUrl).hostname
   } catch {
     return "localhost"
   }
@@ -55,6 +57,9 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // The admin is served by Medusa at /app on the backend's own domain.
+      { source: "/admin", destination: `${backendUrl}/app`, permanent: false },
+      { source: "/admin/:path*", destination: `${backendUrl}/app/:path*`, permanent: false },
       ...RETIRED_CATEGORY_PATHS.map((source) => ({
         source,
         destination: "/trophies",
