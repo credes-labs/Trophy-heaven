@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-23 - Shared links show a branded trophy card
+Link previews now show the Trophy Heaven wordmark with real trophy imagery. See L2 WP-112.
+
 ## 2026-11-23 - Storefront /admin opens the Medusa admin
 Visiting `/admin` on the storefront now redirects to the admin on the backend domain. See L2 WP-111.
 
