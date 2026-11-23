@@ -12,12 +12,28 @@ export function productPrice(product: HttpTypes.StoreProduct): number | null {
 }
 
 /**
- * Loose material match: prefers metadata.material, falls back to a text
- * haystack so seeded values like "oak"/"walnut" still match "Wood".
+ * Catalogue metadata uses the material that was cast (brass, crystal, wood).
+ * The filter menu uses the broader names on the trophies page.
+ */
+const MATERIAL_ALIASES: Record<string, readonly string[]> = {
+  wood: ["wood", "walnut", "oak", "timber"],
+  metal: ["metal", "brass", "bronze", "gilt", "gold", "silver", "copper"],
+  crystal: ["crystal", "glass"],
+  acrylic: ["acrylic"],
+  marble: ["marble"],
+  leather: ["leather"],
+}
+
+/**
+ * Loose material match: metadata.material first (including aliases such as
+ * brass → Metal), then a text haystack so a title like "Walnut Award" still
+ * matches a search for "walnut".
  */
 export function matchesMaterial(product: HttpTypes.StoreProduct, material: string): boolean {
+  const wanted = material.toLowerCase()
+  const aliases = MATERIAL_ALIASES[wanted] ?? [wanted]
   const meta = product.metadata?.material
-  if (typeof meta === "string" && meta.toLowerCase() === material.toLowerCase()) return true
+  if (typeof meta === "string" && aliases.includes(meta.toLowerCase())) return true
   const hay = [
     product.title,
     product.description ?? "",
@@ -26,7 +42,24 @@ export function matchesMaterial(product: HttpTypes.StoreProduct, material: strin
   ]
     .join(" ")
     .toLowerCase()
-  return hay.includes(material.toLowerCase())
+  return hay.includes(wanted)
+}
+
+/** Price order is applied here. The store API 500s on `variants.calculated_price`. */
+export function sortProducts<T extends HttpTypes.StoreProduct>(
+  products: T[],
+  sort?: string | null
+): T[] {
+  if (sort !== "price_asc" && sort !== "price_desc") return products
+  const direction = sort === "price_asc" ? 1 : -1
+  return products.toSorted((a, b) => {
+    const left = productPrice(a)
+    const right = productPrice(b)
+    if (left == null && right == null) return 0
+    if (left == null) return 1
+    if (right == null) return -1
+    return (left - right) * direction
+  })
 }
 
 /**

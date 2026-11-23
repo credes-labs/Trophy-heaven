@@ -4,6 +4,7 @@ import Link from "next/link"
 import { getCategoryByHandle, listProducts } from "@/lib/data/catalog"
 import { ProductCard } from "@/components/features/catalog/product-card"
 import { categoryKeyFromHandle, CATEGORY_CONFIG } from "@/lib/category-config"
+import { sortProducts } from "@/lib/product-filters"
 
 export const revalidate = 300
 
@@ -63,12 +64,20 @@ export default async function CategoryCatchAllPage({ params, searchParams }: Pro
     category.id,
     ...(category.category_children?.map((c) => c.id) ?? []),
   ]
-  const { products, count } = await listProducts({
+  // Calculated price is not a store column; ordering by it 500s and empties the page.
+  const priceSort =
+    order === "variants.calculated_price"
+      ? "price_asc"
+      : order === "-variants.calculated_price"
+        ? "price_desc"
+        : null
+  const { products: listed, count } = await listProducts({
     categoryIds,
     limit: PAGE_SIZE,
     offset: (currentPage - 1) * PAGE_SIZE,
-    order,
+    order: priceSort ? "-created_at" : order,
   }).catch(() => ({ products: [], count: 0 }))
+  const products = priceSort ? sortProducts(listed, priceSort) : listed
 
   const totalPages = Math.max(1, Math.ceil(count / PAGE_SIZE))
   const accent = categoryKeyFromHandle(category.handle ?? handle)

@@ -20,7 +20,7 @@ import {
   type CategoryConfig,
 } from "@/lib/category-config"
 import { listProductsClient } from "@/lib/data/catalog"
-import { matchesMaterial, productPrice } from "@/lib/product-filters"
+import { matchesMaterial, productPrice, sortProducts } from "@/lib/product-filters"
 import { fadeUp, staggerGrid } from "@/lib/animations"
 import { cn } from "@/lib/utils"
 import { motion } from "motion/react"
@@ -160,8 +160,8 @@ export function CategoryPageClient({
     if (material) {
       out = out.filter((p) => matchesMaterial(p, material))
     }
-    return out
-  }, [products, priceBucket, material])
+    return sortProducts(out, sort)
+  }, [products, priceBucket, material, sort])
 
   const mid = Math.min(12, visibleProducts.length)
   const firstBatch = visibleProducts.slice(0, mid)
@@ -254,9 +254,11 @@ export function CategoryPageClient({
               <Skeleton key={i} className="aspect-[302/374] rounded-none" />
             ))}
           </div>
-        ) : products.length === 0 ? (
+        ) : visibleProducts.length === 0 ? (
           <p className="py-16 text-center font-outfit text-[#6B635C] text-pretty">
-            No products in this category yet.
+            {products.length === 0
+              ? "No products in this category yet."
+              : "No products match these filters."}
           </p>
         ) : (
           <>

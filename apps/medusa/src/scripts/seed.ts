@@ -545,6 +545,8 @@ export default async function seed({ container }: ExecArgs) {
   const productModule = container.resolve(Modules.PRODUCT)
   const IMAGE_BY_HANDLE: Record<string, string> = {
     "engraved-wooden-plaque": catalogImage("plaque-engraved.webp"),
+    "palace-crystal": catalogImage("palace-crystal.webp"),
+    "ribbon-medallion": catalogImage("ribbon-medallion.webp"),
   }
   const { data: imageryProducts } = await query.graph({
     entity: "product",

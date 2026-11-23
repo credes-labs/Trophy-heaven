@@ -31,6 +31,7 @@ import {
   matchesMaterial,
   productInStock,
   productPrice,
+  sortProducts,
 } from "@/lib/product-filters"
 import { cn } from "@/lib/utils"
 import { LayoutGroup, motion, useReducedMotion } from "motion/react"
@@ -192,10 +193,18 @@ export function ShopClient({
           : f.category
             ? categoryIdMap.get(f.category)
             : undefined
+        const narrowsOnClient =
+          Boolean(f.material) ||
+          f.inStock ||
+          f.customizable ||
+          f.minPrice > PRICE_RANGE.min ||
+          f.maxPrice < PRICE_RANGE.max
         const { products: next, count: total } = await listProductsClient({
           categoryIds,
-          limit: SHOP_PAGE_SIZE,
-          offset: (p - 1) * SHOP_PAGE_SIZE,
+          // Material, price, stock and customizable are applied after the
+          // fetch. Pull the whole result so the count matches the grid.
+          limit: narrowsOnClient ? 100 : SHOP_PAGE_SIZE,
+          offset: narrowsOnClient ? 0 : (p - 1) * SHOP_PAGE_SIZE,
           order: sortOrderFromParam(f.sort),
           regionId,
         })
@@ -216,8 +225,16 @@ export function ShopClient({
         if (f.customizable) {
           filtered = filtered.filter(isCustomizableProduct)
         }
-        setProducts((prev) => (append ? [...prev, ...filtered] : filtered))
-        setCount(total)
+        filtered = sortProducts(filtered, f.sort)
+        if (narrowsOnClient) {
+          const start = (p - 1) * SHOP_PAGE_SIZE
+          const pageItems = filtered.slice(start, start + SHOP_PAGE_SIZE)
+          setProducts((prev) => (append ? [...prev, ...pageItems] : pageItems))
+          setCount(filtered.length)
+        } else {
+          setProducts((prev) => (append ? [...prev, ...filtered] : filtered))
+          setCount(total)
+        }
       } catch {
         if (!append) setProducts([])
       } finally {

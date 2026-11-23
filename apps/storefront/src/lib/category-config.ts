@@ -91,8 +91,10 @@ export const SHOP_MATERIALS = [
 
 export const SHOP_SORT_OPTIONS = [
   { label: "Newest", value: "newest", order: "-created_at" },
-  { label: "Price: Low to High", value: "price_asc", order: "variants.calculated_price" },
-  { label: "Price: High to Low", value: "price_desc", order: "-variants.calculated_price" },
+  // Calculated price is not a store-API column. Ordering by it returns 500,
+  // so price sorts stay client-side (see sortProducts).
+  { label: "Price: Low to High", value: "price_asc", order: "-created_at" },
+  { label: "Price: High to Low", value: "price_desc", order: "-created_at" },
   { label: "Name A–Z", value: "title", order: "title" },
 ] as const
 

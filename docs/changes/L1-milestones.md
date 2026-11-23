@@ -323,5 +323,20 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-23 - Shop filter count matches the grid
+Material and price filters on /shop still said "1–9 of 9" after the grid had shrunk. The count now follows the filtered list. The old category sort no longer empties the page. See L2 WP-105.
+
+## 2026-11-23 - Trophy filters no longer blank the list
+Sorting by price asked Medusa for a column it does not have and the category page showed no products. Price is sorted in the browser, Metal includes brass, and an empty filter says so. See L2 WP-104.
+
+## 2026-11-23 - Palace Crystal and Ribbon Medallion sit in the card
+The wide brand banners were cropped through the wordmark. Both products now use portrait tiles with the award centred and fully in frame. See L2 WP-103.
+
+## 2026-11-23 - Shop catalogue seeded with the photographed awards
+The shop had three products. Six more trophies from the brand photographs (cups, flame, crystal, ribbon) are now in the catalogue, stocked, and listed on /shop. See L2 WP-102.
+
+## 2026-11-23 - Storefront build no longer dies on Google font URLs
+Next.js 16.3.0 Turbopack could not resolve Playfair Display when Google Fonts returned an extensionless `/l/font?kit=` URL. Storefront is on Next.js 16.4.6, which encodes those URLs as a single font query. See L2 WP-101.
+
 ## 2026-11-14 - Client-testing readiness sweep: orders complete, sessions survive reloads, free shipping honoured
 Full site crawl (61 pages, desktop + 390px) and an end-to-end order found and fixed: orders could not be placed with the placeholder Razorpay keys, account pages signed users out on reload, the "free shipping above ₹5,000" promise was not configured, all server-side traffic shared one rate-limit bucket, and blog posts linked to `?category=undefined`. See L2 WP-100.

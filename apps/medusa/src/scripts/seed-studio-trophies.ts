@@ -1,7 +1,7 @@
 import type { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { createInventoryLevelsWorkflow, createProductsWorkflow } from "@medusajs/medusa/core-flows"
-import { trophyCollectionProducts, TROPHY_HANDLES } from "./trophy-collection"
+import { trophyCollectionProducts, STUDIO_HANDLES } from "./trophy-collection"
 
 /** Idempotent addition of the two studio awards to an already seeded local catalogue. */
 export default async function seedStudioTrophies({ container }: ExecArgs) {
@@ -33,7 +33,7 @@ export default async function seedStudioTrophies({ container }: ExecArgs) {
   const { data: awards } = await query.graph({
     entity: "product",
     fields: ["id", "handle", "metadata", "variants.inventory_items.inventory_item_id"],
-    filters: { handle: TROPHY_HANDLES },
+    filters: { handle: STUDIO_HANDLES },
   })
   const productModule = container.resolve(Modules.PRODUCT)
   for (const award of awards)

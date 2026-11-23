@@ -7,6 +7,7 @@ import {
   matchesMaterial,
   productInStock,
   productPrice,
+  sortProducts,
   variantInStock,
 } from "./product-filters"
 
@@ -38,6 +39,29 @@ describe("matchesMaterial", () => {
   it("falls back to a text haystack", () => {
     const p = product({ title: "Walnut Award Plaque", description: "Solid wood" })
     expect(matchesMaterial(p, "walnut")).toBe(true)
+  })
+  it("treats cast brass as Metal and keeps Crystal on crystal", () => {
+    const brass = product({ metadata: { material: "brass" }, title: "Flame Award" })
+    const crystal = product({ metadata: { material: "crystal" }, title: "Palace Crystal" })
+    expect(matchesMaterial(brass, "Metal")).toBe(true)
+    expect(matchesMaterial(brass, "Crystal")).toBe(false)
+    expect(matchesMaterial(crystal, "Crystal")).toBe(true)
+  })
+})
+
+describe("sortProducts", () => {
+  it("orders by calculated price without asking the store API to", () => {
+    const low = product({
+      id: "low",
+      variants: [{ calculated_price: { calculated_amount: 1000 } }] as HttpTypes.StoreProductVariant[],
+    })
+    const high = product({
+      id: "high",
+      variants: [{ calculated_price: { calculated_amount: 9000 } }] as HttpTypes.StoreProductVariant[],
+    })
+    expect(sortProducts([low, high], "price_desc").map((p) => p.id)).toEqual(["high", "low"])
+    expect(sortProducts([high, low], "price_asc").map((p) => p.id)).toEqual(["low", "high"])
+    expect(sortProducts([high, low], "newest").map((p) => p.id)).toEqual(["high", "low"])
   })
 })
 
