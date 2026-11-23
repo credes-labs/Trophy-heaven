@@ -6,7 +6,7 @@ export type OtpRequestResult = {
   destination: string
   expires_in: number
   resend_in: number
-  /** Only returned by a dev backend with OTP_DEV_ECHO=true. */
+  /** Only returned by a dev backend or a client-test site (OTP_TEST_MODE=true). */
   dev_code?: string
 }
 

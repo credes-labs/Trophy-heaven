@@ -177,7 +177,7 @@ export default function OrdersPage() {
                   <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111]">
                     {orderLabel(order)}
                     <span className="ml-[0.75em] font-outfit text-[0.75em] tracking-[-0.02em] text-[#6B635C] uppercase">
-                      {order.fulfillment_status || order.status}
+                      {(order.fulfillment_status || order.status).replaceAll("_", " ")}
                     </span>
                   </p>
                   <p className="mt-[0.35em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">

@@ -14,6 +14,16 @@ export type OtpIdentifier = { kind: "email"; value: string } | { kind: "phone"; 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /**
+ * Whether the sign-in response may include the code. Locally: OTP_DEV_ECHO=true. On a
+ * hosted client-test site: OTP_TEST_MODE=true, which anyone could use to enter any account,
+ * so it is ignored as soon as live Razorpay keys are present.
+ */
+export function otpCodeVisible(env: Record<string, string | undefined> = process.env): boolean {
+  if (env.NODE_ENV !== "production") return env.OTP_DEV_ECHO === "true"
+  return env.OTP_TEST_MODE === "true" && !env.RAZORPAY_KEY_ID?.startsWith("rzp_live_")
+}
+
+/**
  * Accepts an email address or an Indian mobile number in any common shape
  * (`98765 43210`, `+91-98765-43210`, `09876543210`) and returns its canonical
  * form: lower-cased email, or `+91XXXXXXXXXX`.

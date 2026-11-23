@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto"
 import { defineMiddlewares } from "@medusajs/framework/http"
 import type { MedusaRequest, MedusaResponse, MedusaNextFunction } from "@medusajs/framework/http"
 import { requireCapability } from "../lib/rbac"
-import { isJwtBearer } from "../lib/rate-limit-auth"
+import { clientIp, isJwtBearer } from "../lib/rate-limit-auth"
 
 /**
  * Simple in-memory sliding-window rate limiter (NFR-4 / docs/kit/03 §3.7).
@@ -39,7 +39,7 @@ function rateLimit(opts: {
       (opts.trust === "any"
         ? Boolean((req.headers.authorization || req.headers.cookie) as string)
         : isJwtBearer(req.headers.authorization as string | undefined))
-    const key = `${req.ip ?? "anon"}:${authed ? "auth" : "anon"}:${opts.key ?? "global"}`
+    const key = `${clientIp(req)}:${authed ? "auth" : "anon"}:${opts.key ?? "global"}`
     const max = authed && !opts.strict ? opts.max * 10 : opts.max
 
     let bucket = buckets.get(key)

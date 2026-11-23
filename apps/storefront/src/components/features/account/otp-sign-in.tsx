@@ -118,7 +118,7 @@ export function OtpSignIn({
         </p>
         {sent.dev_code ? (
           <p className="mb-[1.5em] m-0 font-outfit text-[0.8125em] text-[#6B635C]" role="note">
-            Dev mode: your code is <span className="font-medium tabular-nums">{sent.dev_code}</span>
+            Test mode: your code is <span className="font-medium tabular-nums">{sent.dev_code}</span>
           </p>
         ) : null}
         <form onSubmit={(e) => void verify(e)} className="space-y-[1.75em]">

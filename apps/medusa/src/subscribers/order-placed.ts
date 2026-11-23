@@ -94,20 +94,23 @@ export default async function orderPlacedHandler({
     return
   }
 
-  await notificationModule.createNotifications({
-    to: order.email,
-    channel: "email",
-    template: "order-placed",
-    data: {
-      order_id: order.display_id ?? order.id,
-      items: order.items?.map((i) => ({ title: i.title, quantity: i.quantity })) ?? [],
-      total: order.total,
-      currency_code: order.currency_code,
-      ...(paymentSummary ?? {}),
-    },
-  })
-
-  logger.info(`order.placed: confirmation queued for order ${order.display_id ?? order.id}`)
+  try {
+    await notificationModule.createNotifications({
+      to: order.email,
+      channel: "email",
+      template: "order-placed",
+      data: {
+        order_id: order.display_id ?? order.id,
+        items: order.items?.map((i) => ({ title: i.title, quantity: i.quantity })) ?? [],
+        total: order.total,
+        currency_code: order.currency_code,
+        ...(paymentSummary ?? {}),
+      },
+    })
+    logger.info(`order.placed: confirmation queued for order ${order.display_id ?? order.id}`)
+  } catch (e) {
+    logger.warn(`order.placed: customer confirmation failed for ${data.id}: ${(e as Error).message}`)
+  }
 }
 
 export const config: SubscriberConfig = {

@@ -121,7 +121,12 @@ services:
       - key: CDN_BASE_URL
         sync: false
 
-      # Email is required for sign-in codes and the owner's order emails.
+      # "true" on a client-test site: shows the sign-in code on the login page, so no email
+      # setup is needed. Anyone could enter any account, so never use it for launch.
+      - key: OTP_TEST_MODE
+        sync: false
+
+      # Optional on a test site. Required for launch: sign-in codes and order emails.
       - key: RESEND_API_KEY
         sync: false
       - key: RESEND_FROM

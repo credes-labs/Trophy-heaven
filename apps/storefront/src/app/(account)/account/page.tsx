@@ -154,7 +154,7 @@ export default function AccountDashboardPage() {
                     </p>
                     <p className="mt-[0.2em] m-0 font-outfit text-[0.875em] tracking-[-0.02em] text-[#6B635C]">
                       {formatDate(order.created_at)} · {order.items?.length ?? 0} items ·{" "}
-                      {order.fulfillment_status || order.status}
+                      {(order.fulfillment_status || order.status).replaceAll("_", " ")}
                     </p>
                   </div>
                   <p className="m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#131111] tabular-nums">

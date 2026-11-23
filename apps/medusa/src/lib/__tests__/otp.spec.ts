@@ -4,9 +4,28 @@ import {
   maskIdentifier,
   normalizeIdentifier,
   otpCacheKey,
+  otpCodeVisible,
   otpMatches,
   phoneVariants,
 } from "../otp"
+
+describe("otpCodeVisible", () => {
+  it("needs an explicit flag in each environment", () => {
+    expect(otpCodeVisible({ NODE_ENV: "development", OTP_DEV_ECHO: "true" })).toBe(true)
+    expect(otpCodeVisible({ NODE_ENV: "development" })).toBe(false)
+    expect(otpCodeVisible({ NODE_ENV: "production", OTP_DEV_ECHO: "true" })).toBe(false)
+    expect(otpCodeVisible({ NODE_ENV: "production", OTP_TEST_MODE: "true" })).toBe(true)
+  })
+
+  it("is off in production once live payments are configured", () => {
+    expect(
+      otpCodeVisible({ NODE_ENV: "production", OTP_TEST_MODE: "true", RAZORPAY_KEY_ID: "rzp_live_x" })
+    ).toBe(false)
+    expect(
+      otpCodeVisible({ NODE_ENV: "production", OTP_TEST_MODE: "true", RAZORPAY_KEY_ID: "rzp_test_x" })
+    ).toBe(true)
+  })
+})
 
 describe("normalizeIdentifier", () => {
   it("lower-cases and validates emails", () => {

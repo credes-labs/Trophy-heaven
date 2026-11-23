@@ -165,7 +165,7 @@ export default function OrderDetailPage() {
           Order {orderLabel(order)}
         </h1>
         <p className="relative mt-[0.75em] m-0 font-outfit text-[1em] tracking-[-0.02em] text-[#6B635C]">
-          Placed {formatDate(order.created_at)} · {order.fulfillment_status || order.status}
+          Placed {formatDate(order.created_at)} · {(order.fulfillment_status || order.status).replaceAll("_", " ")}
         </p>
       </header>
 

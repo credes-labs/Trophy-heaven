@@ -63,6 +63,9 @@ pnpm build                                  # before merging
   notification providers on one channel crash boot, so the local provider only takes channels
   with no real provider. Do not set `STOREFRONT_URL` when seeding: localhost image URLs must
   stay relative.
+- **Client-test site**: `OTP_TEST_MODE=true` shows sign-in codes in production (ignored with
+  `rzp_live_` keys) and `ALLOW_TEST_PAYMENTS=true` places unpaid orders. Clear both for launch.
+  The admin session cookie is Secure, so admin login needs HTTPS or `x-forwarded-proto: https`.
 - **Medusa v2 prices are MAJOR units** (₹, not paise): seeding `899900` means
   ₹8,99,900. Promotions created without a campaign stay `draft` — the seed puts
   them in an active campaign and sets `status: "active"` explicitly.

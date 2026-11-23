@@ -8,6 +8,7 @@ import {
   hashOtp,
   maskIdentifier,
   normalizeIdentifier,
+  otpCodeVisible,
 } from "../../../../lib/otp"
 import { otpPepper, otpStore } from "../../../../lib/otp-store"
 
@@ -16,8 +17,8 @@ const RequestSchema = z.object({ identifier: z.string().min(3).max(254) })
 /**
  * POST /store/otp/request — sends a 6-digit sign-in code to an email address
  * (email channel → Resend) or an Indian mobile number (sms channel → MSG91).
- * Codes are stored hashed for 10 minutes. With `OTP_DEV_ECHO=true` outside
- * production the code is also returned, so local dev works without providers.
+ * Codes are stored hashed for 10 minutes. `otpCodeVisible` decides when the code is
+ * also returned, so local dev and client-test sites work without providers.
  */
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const parsed = RequestSchema.safeParse(req.body)
@@ -68,8 +69,10 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     logger.warn(`OTP delivery failed for ${id.kind}: ${(e as Error).message}`)
   }
 
-  const devEcho = process.env.NODE_ENV !== "production" && process.env.OTP_DEV_ECHO === "true"
-  if (devEcho) logger.info(`[otp] dev code for ${maskIdentifier(id)}: ${code}`)
+  const devEcho = otpCodeVisible()
+  if (devEcho && process.env.NODE_ENV !== "production") {
+    logger.info(`[otp] dev code for ${maskIdentifier(id)}: ${code}`)
+  }
 
   res.status(200).json({
     sent: true,

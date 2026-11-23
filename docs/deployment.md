@@ -32,14 +32,26 @@ city, which keeps storefront-to-API calls short.
 Total is roughly **$85–90 a month**. The Postgres figure is an estimate, so confirm it on
 Render's pricing page when the Blueprint shows its summary.
 
+## Client test site
+
+The steps below deploy a **test site**: everything works except real payment.
+
+- `ALLOW_TEST_PAYMENTS=true`: orders are placed with no money taken.
+- `OTP_TEST_MODE=true`: the login page shows the sign-in code, so no email or SMS setup is
+  needed. Anyone could enter any account this way, so testers must use dummy details.
+- Customer designs and documents appear on each order in the admin, under **Customer files**.
+- Email is optional. To get owner order emails without a domain, create a Resend account, set
+  `RESEND_FROM` to `Trophy Heaven <onboarding@resend.dev>` and `ORDER_NOTIFY_EMAIL` to the
+  address you signed up to Resend with. Resend's test sender only delivers to that address.
+
+**Before real customers:** clear both flags, verify a Resend domain, and follow
+"Turn on payments". Test mode also switches itself off if live Razorpay keys are added.
+
 ## What you need first
 
 - GitHub access to `credes-labs/Trophy-heaven`, for both Render and Vercel.
 - A Cloudflare account, a Render account, a Vercel account.
-- A **Resend** account with the sending domain verified. **Without this nobody can sign
-  in**, because login codes go by email and the dev shortcut is off in production.
-- The final storefront domain, or use the `*.vercel.app` URL to begin with.
-- Optional: MSG91 (phone sign-in codes) and Razorpay keys.
+- The storefront URL, which can be a `*.vercel.app` address.
 
 ## Step 1: Cloudflare R2
 
@@ -67,11 +79,10 @@ Anyone holding a file's link can open it, because the owner's order email uses t
 |----------|-------|
 | `STORE_CORS` | Storefront origin, e.g. `https://trophy-heaven.vercel.app` |
 | `S3_*`, `CDN_BASE_URL` | From Step 1 |
-| `RESEND_API_KEY` | Resend key |
-| `RESEND_FROM` | `Trophy Heaven <orders@yourdomain.com>` on the verified domain |
-| `ORDER_NOTIFY_EMAIL` | The owner's inbox for orders and forms |
-| `ALLOW_TEST_PAYMENTS` | `true` for client testing, otherwise blank |
-| `MSG91_*`, `RAZORPAY_*` | Blank for now |
+| `ALLOW_TEST_PAYMENTS` | `true` |
+| `OTP_TEST_MODE` | `true` |
+| `RESEND_*`, `ORDER_NOTIFY_EMAIL` | Blank, or see "Client test site" |
+| `MSG91_*`, `RAZORPAY_*` | Blank |
 
 3. **Apply** and wait for `trophy-heaven-medusa` to go live. Migrations run automatically
    before each deploy.
@@ -115,11 +126,12 @@ Bootstrap is safe to re-run.
 
 - [ ] Home, `/shop` and a product page show products and images.
 - [ ] Search finds "crystal", and also the typo "crystl".
-- [ ] An email login code arrives and signs you in.
+- [ ] The login page shows a test code, and it signs you in.
 - [ ] Add 2 trophies, upload 3 images: the third is refused.
 - [ ] Upload 2 images and a PDF: the mapping dialog opens for the images only.
-- [ ] Place a test order: it appears in the admin, and the owner email links to the files.
-- [ ] A contact form message reaches `ORDER_NOTIFY_EMAIL`.
+- [ ] Place a test order: it appears in your account and in the admin.
+- [ ] The admin order page lists the uploaded files under **Customer files**.
+- [ ] A contact form submission shows its confirmation.
 
 ## Turn on payments
 
@@ -128,7 +140,7 @@ Do this before real customers. Start with `rzp_test_` keys, then repeat with liv
 1. Razorpay → Webhooks → add `https://<medusa>.onrender.com/webhooks/razorpay` with events
    `payment.captured` and `payment.failed`, and choose a secret.
 2. Render: set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and
-   **clear `ALLOW_TEST_PAYMENTS`**. Wait for the redeploy.
+   **clear `ALLOW_TEST_PAYMENTS` and `OTP_TEST_MODE`**. Wait for the redeploy.
 3. Render Shell:
 
 ```bash
@@ -159,7 +171,8 @@ so the shop cannot take unpaid orders by accident.
 | Migration hangs or fails on SSL | `DATABASE_SSL` must be `false` |
 | Browser shows CORS errors | `STORE_CORS` must match the origin exactly, with no trailing slash |
 | Product pages 404 under load | `STOREFRONT_SERVER_KEY` differs between Render and Vercel |
-| Login code never arrives | Resend key or sending domain not verified |
+| No code on the login page | `OTP_TEST_MODE` is not `true`, or live Razorpay keys are set |
+| Admin login returns to the login page | Open the admin on its `https://` URL |
 | "Online payment is not available yet" at order | Add Razorpay or set `ALLOW_TEST_PAYMENTS=true` |
 | Search is empty | Re-run bootstrap, or `POST /admin/search/reindex` |
 | Uploaded images do not display | `NEXT_PUBLIC_CDN_BASE_URL` missing on Vercel |

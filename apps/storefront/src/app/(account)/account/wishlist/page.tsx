@@ -7,6 +7,7 @@ import { EditorialEyebrow } from "@/components/layout/editorial/editorial-eyebro
 import { EditorialWatermark } from "@/components/layout/editorial/editorial-watermark"
 import { EditorialProductCard } from "@/components/features/shop/editorial-product-card"
 import { medusa } from "@/lib/medusa"
+import { getRegion } from "@/lib/regions"
 import { wishlistApi, type WishlistItemRecord } from "@/lib/wishlist"
 
 const PRODUCT_FIELDS =
@@ -41,9 +42,12 @@ export default function WishlistPage() {
       const ids = [...new Set(items.map((i) => i.product_id))]
       let products: HttpTypes.StoreProduct[] = []
       try {
+        // Medusa rejects calculated prices without a region.
+        const region = await getRegion()
         const res = await medusa.store.product.list({
           id: ids,
           limit: ids.length,
+          region_id: region?.id,
           fields: PRODUCT_FIELDS,
         })
         products = res.products ?? []

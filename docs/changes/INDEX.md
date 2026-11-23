@@ -20,6 +20,7 @@ that matches how much you need to know.
 | 058 | [Trophy Heaven rebrand: trophy-only fork](L3/058-trophy-heaven-rebrand.md) | WP-87 |
 | 059 | [Editorial poster homepage, trophy cut-outs, Urbanist](L3/059-editorial-homepage-urbanist.md) | WP-88 |
 | 060 | [OTP sign-in, cart designs, 10% advance + COD](L3/060-otp-designs-advance-cod.md) | WP-94 |
+| 069 | [Client test site](L3/069-client-test-site.md) | WP-109 |
 | 068 | [Render and Vercel deployment](L3/068-render-vercel-deployment.md) | WP-107 |
 | 067 | [Match designs to trophies](L3/067-design-mapping.md) | WP-106 |
 | 066 | [Shop filter count and category price sort](L3/066-filter-form-search-pass.md) | WP-105 |
