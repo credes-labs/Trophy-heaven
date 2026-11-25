@@ -5,6 +5,9 @@ import { CUTOUTS, HOME_CATEGORIES } from "./constants"
 
 const count = String(HOME_CATEGORIES.length).padStart(2, "0")
 
+/** Warm tints behind the cut-outs, in tile order; the studio tile is maroon. */
+const TILE_TINTS = ["bg-ivory", "bg-rose", "bg-sand"] as const
+
 /** "(04) CATEGORIES" row: grey tiles with cut-out trophies, label underneath. */
 export function HomeCategories() {
   return (
@@ -29,7 +32,7 @@ export function HomeCategories() {
         </div>
 
         <ul className="m-0 grid list-none grid-cols-2 gap-1.5 p-0 lg:grid-cols-4">
-          {HOME_CATEGORIES.map((cat) => {
+          {HOME_CATEGORIES.map((cat, index) => {
             const cut = cat.cutout ? CUTOUTS[cat.cutout] : null
             return (
               <li key={cat.label}>
@@ -37,7 +40,11 @@ export function HomeCategories() {
                   href={cat.href}
                   className="group block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A1A1A]"
                 >
-                  <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[#F3F3F3]">
+                  <div
+                    className={`relative flex aspect-square items-center justify-center overflow-hidden ${
+                      cut ? TILE_TINTS[index % TILE_TINTS.length] : "bg-maroon"
+                    }`}
+                  >
                     {cut ? (
                       <Image
                         src={cut.src}
@@ -49,8 +56,8 @@ export function HomeCategories() {
                       />
                     ) : (
                       <span className="flex flex-col items-center gap-3 text-center">
-                        <Emblem className="w-[clamp(5rem,11vw,10rem)] text-maroon transition-transform duration-500 group-hover:scale-[1.04]" />
-                        <span className="text-[11px] tracking-[0.04em] text-[#1A1A1A]/70 uppercase">
+                        <Emblem className="w-[clamp(5rem,11vw,10rem)] text-gold-soft transition-transform duration-500 group-hover:scale-[1.04]" />
+                        <span className="text-[11px] tracking-[0.04em] text-[#F6EFE4]/85 uppercase">
                           Open the studio →
                         </span>
                       </span>

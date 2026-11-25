@@ -11,6 +11,7 @@ export function SectionShell({
   id,
   "aria-labelledby": ariaLabelledBy,
   ink = false,
+  tone,
 }: {
   children: ReactNode
   className?: string
@@ -18,6 +19,8 @@ export function SectionShell({
   "aria-labelledby"?: string
   /** Dark surface (hero-adjacent bands). Default cream. */
   ink?: boolean
+  /** Coloured band: deep maroon or warm ivory. Overrides `ink`. */
+  tone?: "maroon" | "ivory"
 }) {
   return (
     <section
@@ -25,7 +28,13 @@ export function SectionShell({
       aria-labelledby={ariaLabelledBy}
       className={cn(
         "overflow-x-clip font-outfit lg:[font-size:min(1rem,calc(100vw/90))]",
-        ink ? "bg-[#131111] text-[#F2F1EF]" : "bg-white text-[#131111]",
+        tone === "maroon"
+          ? "bg-maroon-deep text-[#F6EFE4] [--eyebrow-color:var(--color-gold-soft)]"
+          : tone === "ivory"
+            ? "bg-ivory text-[#131111]"
+            : ink
+              ? "bg-[#131111] text-[#F2F1EF] [--eyebrow-color:var(--color-gold-soft)]"
+              : "bg-white text-[#131111]",
         className
       )}
     >

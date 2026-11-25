@@ -116,7 +116,7 @@ function EditionTile({ product, large = false }: { product: EditionProduct; larg
       }`}
     >
       <div
-        className={`relative flex items-center justify-center overflow-hidden bg-[#F3F3F3] ${
+        className={`relative flex items-center justify-center overflow-hidden bg-ivory ${
           large ? "aspect-[4/3]" : "aspect-[3/2] lg:aspect-[11/7]"
         }`}
       >

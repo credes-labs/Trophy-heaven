@@ -5,7 +5,7 @@ const lightOnDark =
   "inline-flex min-h-11 shrink-0 items-center justify-center gap-3 rounded-full bg-white px-6 py-3 font-outfit text-[16px] leading-5 font-normal tracking-wide text-[#131111] uppercase transition-opacity hover:opacity-90 sm:h-[52px] sm:pr-[26px] sm:pl-6"
 
 const darkOnCream =
-  "inline-flex min-h-11 shrink-0 items-center justify-center gap-3 rounded-full bg-[#131111] px-6 py-3 font-outfit text-[16px] leading-5 font-normal tracking-wide text-[#F2F1EF] uppercase transition-opacity hover:opacity-90 sm:h-[52px]"
+  "inline-flex min-h-11 shrink-0 items-center justify-center gap-3 rounded-full bg-maroon px-6 py-3 font-outfit text-[16px] leading-5 font-normal tracking-wide text-[#F6EFE4] uppercase transition-colors hover:bg-[#8A2D25] sm:h-[52px]"
 
 /** Homepage pill CTA — 44px min tap target on mobile. */
 export function PillCta({
@@ -23,7 +23,7 @@ export function PillCta({
   return (
     <Link href={href} className={cn(isLight ? lightOnDark : darkOnCream, "w-full sm:w-auto", className)}>
       <span
-        className={cn("size-2 shrink-0 rounded-full", isLight ? "bg-[#131111]" : "bg-white")}
+        className={cn("size-2 shrink-0 rounded-full", isLight ? "bg-maroon" : "bg-gold-soft")}
         aria-hidden
       />
       {children}

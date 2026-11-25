@@ -152,10 +152,14 @@ pnpm build                                  # before merging
 
 ## Brand contract (do not dilute)
 
-**White `#FFFFFF` is the only page/section surface** (tokens `background`, `paper`,
-`paper-raised`, `champagne`; product image tiles use neutral `#F3F3F3`), walnut `#331207` text, gold
+**White `#FFFFFF` is the base page surface** (tokens `background`, `paper`,
+`paper-raised`, `champagne`; product photo tiles are baked on neutral `#F3F3F3`), walnut `#331207` text, gold
 `#B89E6B` accents, burgundy `#8A2D25` trophy accent, logo maroon `#4A1F1B`
-(`text-maroon`). **Urbanist is the only text typeface** (display, body, UI);
+(`text-maroon`). The owner asked for more colour (2026-11-25), so colour comes only from these
+brand tokens, used sparingly: `maroon-deep` bands (`SectionShell tone="maroon"`, the sign-up),
+`ivory` bands (`tone="ivory"`, materials), `ivory`/`rose`/`sand` behind homepage cut-outs, a maroon
+announcement bar, and maroon primary buttons (hover burgundy). Eyebrows are `gold-dark` on light
+surfaces and `gold-soft` on maroon. Don't add new hues; prefer one coloured band per page area. **Urbanist is the only text typeface** (display, body, UI);
 `font-serif`/`font-display`/`font-outfit` are aliases of it. The TROPHY HEAVEN wordmark is outlines, not live text: `components/brand/wordmark.tsx` (`Wordmark`, stacked or one line), Cinzel capitals fitted to the logo artwork plus the traced A-loop ligature (generated `wordmark-paths.ts`); hero, header lockup and footer use it. The logo is `components/brand/emblem.tsx` (`Emblem`, `BrandLockup`),
 traced from the supplied artwork; favicons are rendered from it. Playfair Display and Inter load unpreloaded solely as plaque-engraving styles in
 the configurator. The homepage top (white poster hero, categories, Selected Editions)

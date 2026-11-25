@@ -85,7 +85,7 @@ export function EditorialProductCard({
         ) : null}
       </div>
       <div className="mt-[1em] flex flex-col gap-[0.35em]">
-        <p className="m-0 font-outfit text-[0.75em] leading-[1.4] font-light tracking-[0.08em] text-[#6B635C] uppercase">
+        <p className="m-0 font-outfit text-[0.75em] leading-[1.4] font-normal tracking-[0.08em] text-gold-dark uppercase">
           {category}
         </p>
         <h3 className="m-0 font-outfit text-[1em] leading-[1.35] font-normal tracking-[0.06em] text-[#131111] text-balance uppercase">

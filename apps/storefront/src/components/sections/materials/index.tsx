@@ -3,7 +3,7 @@ import { MaterialsLoader } from "./materials-loader"
 
 export function MaterialsSection() {
   return (
-    <SectionShell id="materials" aria-labelledby="materials-heading">
+    <SectionShell id="materials" aria-labelledby="materials-heading" tone="ivory">
       <SectionEyebrow>materials</SectionEyebrow>
       <h2
         id="materials-heading"

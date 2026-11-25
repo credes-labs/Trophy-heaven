@@ -315,8 +315,8 @@
 .pdp-atc {
   min-height: 2.75em;
   border-radius: 0.125em !important;
-  background: #131111 !important;
-  color: #f2f1ef !important;
+  background: var(--color-maroon) !important;
+  color: #f6efe4 !important;
   font-family: inherit;
   font-size: 0.875em;
   letter-spacing: 0.12em;
@@ -329,7 +329,7 @@
 }
 
 .pdp-atc:hover:not(:disabled) {
-  opacity: 0.9;
+  background: #8a2d25 !important;
 }
 
 .pdp-wish {

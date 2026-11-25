@@ -19,6 +19,13 @@
   --color-gold: oklch(0.72 0.10 80);
   /* Logo maroon, sampled from the supplied brand artwork. */
   --color-maroon: #4A1F1B;
+  /* Warm accents the owner asked for (2026-11-25): a deeper maroon for full-bleed
+     bands, a softer gold for text on maroon, and three warm tints for tiles. */
+  --color-maroon-deep: #3A1613;
+  --color-gold-soft: #D8C08E;
+  --color-ivory: #F6EFE4;
+  --color-rose: #F3E5DF;
+  --color-sand: #EFE6D5;
   /* Darker gold for text on light surfaces — --color-gold only reaches ~2.4:1
      on champagne; this passes WCAG AA (≥4.5:1) for small text. */
   --color-gold-dark: oklch(0.50 0.09 78);
