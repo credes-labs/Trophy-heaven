@@ -47,11 +47,11 @@ export const HERO_FEATURES = [
 ] as const
 
 /**
- * Cut-outs (backgrounds removed). Heights are % of the stage. The cup and the ribbon
- * award come from the brand photos "trophy heaven 6" and "trophy heaven 10".
+ * Cut-outs (backgrounds removed) of the workshop's own pieces, from the owner's photos
+ * (`public/images/cutouts/collection/`). Heights are % of the stage.
  */
 export const HERO_TROPHIES = [
-  { src: "/images/cutouts/cup.webp", width: 564, intrinsicHeight: 650, height: "66%" },
-  { src: "/images/cutouts/figure-award.webp", width: 590, intrinsicHeight: 1604, height: "100%" },
-  { src: "/images/cutouts/ribbon-award.webp", width: 227, intrinsicHeight: 473, height: "78%" },
+  { src: "/images/cutouts/collection/royal-lidded-cup.webp", width: 514, intrinsicHeight: 1200, height: "72%" },
+  { src: "/images/cutouts/collection/rising-star-award.webp", width: 504, intrinsicHeight: 1200, height: "100%" },
+  { src: "/images/cutouts/collection/grace-figure-award.webp", width: 425, intrinsicHeight: 1200, height: "82%" },
 ] as const

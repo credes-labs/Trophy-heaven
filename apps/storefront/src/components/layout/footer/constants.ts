@@ -51,13 +51,13 @@ export const FOOTER_NAV = [
 
 /**
  * Transparent cutouts on the footer orbit, in ring order: one of each award
- * style, from the same cut-outs as the homepage hero (public/images/cutouts),
+ * style, from the homepage cut-outs (public/images/cutouts, collection/ = the workshop's own pieces),
  * padded onto 451:553 cards with the piece standing on the card floor.
  */
 export const FOOTER_ORBIT = [
-  { src: "/images/footer/ring-cup.webp", alt: "Gold cup trophy on a mahogany base" },
+  { src: "/images/footer/ring-royal-cup.webp", alt: "Lidded gold cup on a rosewood base" },
   { src: "/images/footer/ring-figure-award.webp", alt: "Gilt figure award on an octagonal mahogany base" },
-  { src: "/images/footer/ring-ribbon-award.webp", alt: "Gold and red ribbon award on a maroon base" },
+  { src: "/images/footer/ring-rising-star.webp", alt: "Gilt figure lifting a gold star on a black base" },
   { src: "/images/footer/ring-statuette.webp", alt: "Gilded figure statuette on a black plinth" },
   { src: "/images/footer/ring-plaque.webp", alt: "Engraved wooden plaque" },
 ] as const

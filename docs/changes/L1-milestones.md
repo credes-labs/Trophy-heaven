@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-25 - The shop now sells the owner's own pieces
+The 23 pieces the owner photographed replace the six demo trophies, on matching background-removed tiles, and lead the homepage hero, categories, Selected Editions and footer. Prices are placeholders. See L2 WP-115 · [L3/071](L3/071-owner-catalogue.md)
+
 ## 2026-11-23 - Client test site works without payment or email setup
 A hosted test deployment now supports sign-in, orders, uploads and owner file review with only Razorpay off. Wishlist products no longer show as unavailable. See L2 WP-109.
 

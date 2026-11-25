@@ -65,6 +65,15 @@ export async function reindexProducts(
   }
 
   await ensureProductIndex()
-  const task = await meili.index(PRODUCT_INDEX).addDocuments(docs, { primaryKey: "id" })
+  const index = meili.index(PRODUCT_INDEX)
+  // Products deleted while no subscriber was listening (e.g. by a seed run) stay in the
+  // index otherwise and show up as dead search results.
+  const live = new Set(docs.map((doc) => doc.id))
+  const indexed = await index.getDocuments({ fields: ["id"], limit: 10000 }).catch(() => null)
+  const stale = (indexed?.results ?? [])
+    .map((doc) => String((doc as { id: unknown }).id))
+    .filter((id) => !live.has(id))
+  if (stale.length) await index.deleteDocuments(stale)
+  const task = await index.addDocuments(docs, { primaryKey: "id" })
   return { indexed: docs.length, task_uid: task.taskUid }
 }
