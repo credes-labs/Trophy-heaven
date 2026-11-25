@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-26 - Homepage gains a maroon wooden-collection band
+A scrolling "made to be remembered" line, a ceremony photo and three wooden pieces on ivory tiles now sit after Selected Editions. See L2 WP-120.
+
 ## 2026-11-25 - Wooden price list in the shop, and a warmer palette
 63 wooden mementos and plaques from the owner's spreadsheet joined the shop with every size, price and dimension, and the site gained maroon, gold and ivory accents. See L2 WP-118, WP-119 · [L3/073](L3/073-wooden-price-list-and-colour.md)
 
