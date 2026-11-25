@@ -767,3 +767,15 @@
     min-width: 44px;
   }
 }
+
+/* Wooden collection band: a seamless marquee (two copies, shifted by half). */
+@keyframes marquee-x {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.marquee-track {
+  animation: marquee-x 38s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}

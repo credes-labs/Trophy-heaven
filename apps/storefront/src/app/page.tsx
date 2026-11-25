@@ -6,6 +6,7 @@ import { EDITION_PRODUCTS, type LiveEdition } from "@/components/sections/editio
 import { getProductsByHandles } from "@/lib/data/catalog"
 import { productPrice } from "@/lib/product-filters"
 import { AboutSection } from "@/components/sections/about-section"
+import { WoodenFeatureSection } from "@/components/sections/wooden-feature"
 import { ProductsCategoriesSection } from "@/components/sections/products-categories-section"
 import { RecentWorkSection } from "@/components/sections/recent-work"
 import { MaterialsSection } from "@/components/sections/materials"
@@ -31,6 +32,7 @@ export default async function HomePage() {
       <HeroSection />
       <HomeCategories />
       <SelectedEditions live={live} />
+      <WoodenFeatureSection />
       <Suspense fallback={null}>
         <RecentWorkSection />
       </Suspense>
