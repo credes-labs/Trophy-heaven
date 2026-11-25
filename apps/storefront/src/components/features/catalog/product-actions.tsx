@@ -191,7 +191,7 @@ export function ProductActions({ product }: { product: HttpTypes.StoreProduct })
           disabled={!canAdd || loading}
           loading={loading}
           className="pdp-atc"
-          style={{ backgroundColor: "#131111", color: "#F2F1EF" }}
+          style={{ backgroundColor: "#4A1F1B", color: "#F6EFE4" }}
         >
           {added
             ? "Added"

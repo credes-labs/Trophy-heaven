@@ -21,7 +21,7 @@ export function AboutStats() {
           <div key={stat.value} className="flex items-start">
             {i > 0 ? <StatRule /> : null}
             <div className="flex w-[8.59375em] flex-col items-center gap-[0.375em] text-center">
-              <p className="m-0 font-outfit text-[clamp(2em,4.5vw,4.0625em)] leading-[1.1] font-normal tracking-[-0.03em] text-[#131111]">
+              <p className="m-0 font-outfit text-[clamp(2em,4.5vw,4.0625em)] leading-[1.1] font-normal tracking-[-0.03em] text-maroon">
                 {stat.value}
               </p>
               <p className="m-0 font-outfit text-[0.875em] leading-[1.4] font-normal tracking-[-0.02em] text-[#131111]">

@@ -37,9 +37,9 @@ export function AnnouncementBar() {
   if (dismissed) return null
 
   return (
-    <div className="relative z-50 flex h-9 items-center justify-center border-b border-[#1A1A1A]/10 bg-white px-4">
+    <div className="relative z-50 flex h-9 items-center justify-center bg-maroon px-4">
       <p
-        className={`text-[11px] font-normal uppercase tracking-[0.04em] text-[#1A1A1A] transition-opacity duration-300 ${
+        className={`text-[11px] font-normal uppercase tracking-[0.08em] text-[#F6EFE4] transition-opacity duration-300 ${
           isTransitioning ? "opacity-0" : "opacity-100"
         }`}
       >
@@ -49,7 +49,7 @@ export function AnnouncementBar() {
         type="button"
         onClick={handleDismiss}
         aria-label="Dismiss announcement"
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#1A1A1A]/50 transition-colors hover:text-[#1A1A1A]"
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#F6EFE4]/60 transition-colors hover:text-[#F6EFE4]"
       >
         <X className="h-3.5 w-3.5" aria-hidden />
       </button>

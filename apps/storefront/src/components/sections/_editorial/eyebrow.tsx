@@ -12,7 +12,7 @@ export function SectionEyebrow({
   return (
     <p
       className={cn(
-        "m-0 font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] text-current/70 lowercase",
+        "m-0 font-outfit text-[0.875em] leading-[1.25em] font-normal tracking-[-0.02em] text-[color:var(--eyebrow-color,var(--color-gold-dark))] lowercase",
         className
       )}
     >

@@ -28,7 +28,7 @@ export function SignupSection() {
   }
 
   return (
-    <SectionShell id="stay-close" aria-labelledby="signup-heading">
+    <SectionShell id="stay-close" aria-labelledby="signup-heading" tone="maroon">
       <div className="flex flex-col items-stretch gap-14 lg:flex-row lg:items-stretch lg:justify-between lg:gap-[6em]">
       <div className="w-full max-w-[36em] text-left lg:shrink-0">
         <SectionEyebrow>stay close</SectionEyebrow>
@@ -38,13 +38,13 @@ export function SignupSection() {
         >
           A letter, not a blast.
         </h2>
-        <p className="mt-[1em] m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#6B635C]">
+        <p className="mt-[1em] m-0 font-outfit text-[1.125em] leading-[1.5] tracking-[-0.02em] text-pretty text-[#F6EFE4]/75">
           New pieces, workshop notes, and the occasional honest word about materials. Once or twice
           a month.
         </p>
 
         {submitted ? (
-          <p className="mt-[2em] m-0 font-outfit text-[1.125em] text-pretty text-[#131111]" role="status">
+          <p className="mt-[2em] m-0 font-outfit text-[1.125em] text-pretty text-[#F6EFE4]" role="status">
             Thanks — you&apos;re on the list.
           </p>
         ) : (
@@ -62,23 +62,23 @@ export function SignupSection() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Your email address"
-              className="h-12 w-full flex-1 border-0 border-b border-[#131111]/25 bg-transparent px-0 font-outfit text-[1em] text-[#131111] placeholder:text-[#6B635C] focus:border-[#131111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#131111]"
+              className="h-12 w-full flex-1 border-0 border-b border-[#F6EFE4]/35 bg-transparent px-0 font-outfit text-[1em] text-[#F6EFE4] placeholder:text-[#F6EFE4]/60 focus:border-gold-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-soft"
             />
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-[#131111] px-6 font-outfit text-[16px] uppercase tracking-wide text-[#F2F1EF] transition-opacity hover:opacity-90 disabled:opacity-50 sm:h-12"
+              className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-gold-soft px-6 font-outfit text-[16px] uppercase tracking-wide text-maroon-deep transition-colors hover:bg-[#F6EFE4] disabled:opacity-50 sm:h-12"
             >
               {busy ? "…" : "Subscribe"}
             </button>
           </form>
         )}
         {error ? (
-          <p className="mt-3 m-0 font-outfit text-sm text-pretty text-[#8A2D25]" role="alert">
+          <p className="mt-3 m-0 font-outfit text-sm text-pretty text-gold-soft" role="alert">
             {error}
           </p>
         ) : null}
-        <p className="mt-[1em] m-0 font-outfit text-[0.8125em] text-pretty text-[#6B635C]">
+        <p className="mt-[1em] m-0 font-outfit text-[0.8125em] text-pretty text-[#F6EFE4]/60">
           Unsubscribe anytime.
         </p>
       </div>
@@ -90,7 +90,7 @@ export function SignupSection() {
         {TRUST_POINTS.map((point) => (
           <li
             key={point}
-            className="font-outfit text-[1.0625em] leading-[1.4] font-normal tracking-[-0.03em] text-pretty text-[#6B635C]"
+            className="font-outfit text-[1.0625em] leading-[1.4] font-normal tracking-[-0.03em] text-pretty text-[#F6EFE4]/85"
           >
             {point}
           </li>
