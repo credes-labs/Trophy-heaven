@@ -16,7 +16,7 @@ import {
 import { Modules, ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
 import type { CreateProductWorkflowInputDTO, ExecArgs } from "@medusajs/framework/types"
 import { generateSku } from "../lib/sku"
-import { trophyCollectionProducts } from "./trophy-collection"
+import { RETIRED_DEMO_HANDLES, trophyCollectionProducts } from "./trophy-collection"
 
 // Medusa's default local file provider won't serve the storefront assets, so in
 // dev we point product imagery at the storefront origin (see
@@ -84,6 +84,8 @@ const RETIRED_SAMPLE_HANDLES = new Set([
   "fluted-oval-objet",
   "obsidian-totem-sculpture",
   "verdigris-wreath-sculpture",
+  // Demo trophies that were never the workshop's (owner request, 2026-11-25).
+  ...RETIRED_DEMO_HANDLES,
 ])
 
 /**
@@ -549,8 +551,6 @@ export default async function seed({ container }: ExecArgs) {
   const productModule = container.resolve(Modules.PRODUCT)
   const IMAGE_BY_HANDLE: Record<string, string> = {
     "engraved-wooden-plaque": catalogImage("plaque-engraved.webp"),
-    "palace-crystal": catalogImage("palace-crystal.webp"),
-    "ribbon-medallion": catalogImage("ribbon-medallion.webp"),
   }
   const { data: imageryProducts } = await query.graph({
     entity: "product",

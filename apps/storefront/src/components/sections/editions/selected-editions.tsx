@@ -64,7 +64,7 @@ export function SelectedEditions() {
               </li>
             ))}
           </ul>
-          <label className="relative flex items-center text-[15px] lg:text-[17px]">
+          <label className="relative ml-auto flex items-center text-[15px] lg:text-[17px]">
             <span className="sr-only">Sort pieces</span>
             <select
               value={sort}
