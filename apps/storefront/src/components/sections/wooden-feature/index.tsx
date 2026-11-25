@@ -67,18 +67,10 @@ export function WoodenFeatureSection() {
         </div>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1600px] gap-8 px-4 pt-[clamp(2rem,4vw,3.5rem)] pb-[clamp(3rem,6vw,5.5rem)] lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)] lg:gap-14 lg:px-6">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] max-lg:aspect-[4/3]">
-          <Image
-            src="/images/brand/winner-cup.webp"
-            alt="A winner smiling as he lifts a gold cup on stage"
-            fill
-            sizes="(min-width: 1024px) 34vw, 100vw"
-            className="object-cover object-[28%_center]"
-          />
-        </div>
-
-        <div className="flex flex-col justify-between gap-8">
+      {/* The cut-out runs off the left edge of the page and stands on the band's bottom
+          edge, so the left column has no padding and no bottom padding. */}
+      <div className="grid w-full lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
+        <div className="flex flex-col justify-between gap-8 px-4 pt-[clamp(2rem,4vw,3.5rem)] lg:order-2 lg:max-w-[52rem] lg:pr-6 lg:pb-[clamp(3rem,6vw,5.5rem)] lg:pl-[clamp(2rem,4vw,4.5rem)]">
           <div>
             <h2
               id="wooden-feature-heading"
@@ -93,13 +85,13 @@ export function WoodenFeatureSection() {
             </p>
           </div>
 
-          <ul className="m-0 grid list-none grid-cols-3 gap-3 p-0 sm:gap-5">
+          <ul className="m-0 grid list-none grid-cols-3 items-end gap-4 p-0 sm:gap-8">
             {PIECES.map((piece) => (
               <li key={piece.handle}>
                 <Link
                   href={`/products/${piece.handle}`}
                   aria-label={piece.name}
-                  className="group flex aspect-[5/4] items-center justify-center rounded-[1.25rem] bg-ivory p-[8%] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-soft"
+                  className="group flex aspect-[5/4] items-end justify-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-soft"
                 >
                   <Image
                     src={piece.src}
@@ -107,7 +99,7 @@ export function WoodenFeatureSection() {
                     width={piece.width}
                     height={piece.height}
                     sizes="(min-width: 1024px) 16vw, 30vw"
-                    className="h-full w-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+                    className="h-full w-auto object-contain drop-shadow-[0_14px_18px_rgba(0,0,0,0.45)] transition-transform duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-[1.04]"
                   />
                 </Link>
               </li>
@@ -128,6 +120,17 @@ export function WoodenFeatureSection() {
               </span>
             </Link>
           </div>
+        </div>
+
+        <div className="mt-10 flex items-end lg:order-1 lg:mt-[clamp(2rem,4vw,3.5rem)]">
+          <Image
+            src="/images/brand/winner-cup-cutout.webp"
+            alt="A winner smiling as he lifts a gold cup"
+            width={918}
+            height={874}
+            sizes="(min-width: 1024px) 48vw, 100vw"
+            className="block h-auto w-[min(100%,46rem)] max-lg:w-[92%]"
+          />
         </div>
       </div>
     </section>
