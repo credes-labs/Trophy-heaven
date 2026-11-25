@@ -7,25 +7,37 @@ import { ChevronDown } from "lucide-react"
 import {
   ALL_PIECES,
   CUTOUTS,
-  EDITION_FILTERS,
   EDITION_PRODUCTS,
   EDITION_SORTS,
   EDITIONS_HEADLINE,
+  editionFilters,
+  withLiveDetails,
   type EditionProduct,
   type EditionSortId,
+  type LiveEdition,
 } from "./constants"
 
-/** Large display heading, slash-separated filters, one big tile plus small tiles. */
-export function SelectedEditions() {
+/**
+ * Large display heading, slash-separated filters, one big tile plus small tiles.
+ * `live` carries the admin's current names and prices for the coded tiles.
+ */
+export function SelectedEditions({
+  live,
+}: {
+  live?: Readonly<Record<string, LiveEdition>> | null
+}) {
   const [filter, setFilter] = useState(ALL_PIECES)
   const [sort, setSort] = useState<EditionSortId>("featured")
 
+  const products = useMemo(() => withLiveDetails(EDITION_PRODUCTS, live), [live])
+  const filters = useMemo(() => editionFilters(products), [products])
+
   const items = useMemo(() => {
-    const list = EDITION_PRODUCTS.filter((p) => filter === ALL_PIECES || p.category === filter)
+    const list = products.filter((p) => filter === ALL_PIECES || p.category === filter)
     if (sort === "price-asc") return [...list].sort((a, b) => a.amount - b.amount)
     if (sort === "price-desc") return [...list].sort((a, b) => b.amount - a.amount)
     return list
-  }, [filter, sort])
+  }, [products, filter, sort])
 
   const [lead, ...rest] = items
 
@@ -44,7 +56,7 @@ export function SelectedEditions() {
             aria-label="Filter pieces"
             className="m-0 flex list-none flex-wrap items-center p-0 text-[15px] lg:text-[17px]"
           >
-            {EDITION_FILTERS.map((f, i) => (
+            {filters.map((f, i) => (
               <li key={f} className="flex items-center">
                 {i > 0 ? (
                   <span aria-hidden className="px-1.5 text-[#1A1A1A]/35">

@@ -15,6 +15,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { Modules, ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
 import type { CreateProductWorkflowInputDTO, ExecArgs } from "@medusajs/framework/types"
+import { storefrontImagePath } from "../lib/catalog-images"
 import { generateSku } from "../lib/sku"
 import { RETIRED_DEMO_HANDLES, trophyCollectionProducts } from "./trophy-collection"
 
@@ -547,7 +548,9 @@ export default async function seed({ container }: ExecArgs) {
 
   // ── Refresh imagery that still points at retired sample assets ─────────────
   // Products seeded before the photography change keep their first gallery for
-  // ever otherwise, so the plaque is repointed explicitly on every run.
+  // ever otherwise, so the plaque is repointed while it still shows an old
+  // storefront asset. Once its photos are on file storage (the owner's to edit,
+  // see lib/catalog-images.ts) it is left alone.
   const productModule = container.resolve(Modules.PRODUCT)
   const IMAGE_BY_HANDLE: Record<string, string> = {
     "engraved-wooden-plaque": catalogImage("plaque-engraved.webp"),
@@ -563,6 +566,8 @@ export default async function seed({ container }: ExecArgs) {
   }>) {
     const url = p.handle ? IMAGE_BY_HANDLE[p.handle] : undefined
     if (!url || p.thumbnail === url) continue
+    const current = storefrontImagePath(p.thumbnail)
+    if (!current || current === storefrontImagePath(url)) continue
     await productModule.updateProducts(p.id, { thumbnail: url, images: [{ url }] })
     logger.info(`Updated imagery for product: ${p.handle}`)
   }

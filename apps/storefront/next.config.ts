@@ -38,6 +38,9 @@ const nextConfig: NextConfig = {
   images: {
     // Source files are content-stable; keep optimized variants for 30 days.
     minimumCacheTTL: 60 * 60 * 24 * 30,
+    // Next 16 refuses to optimize images from private IPs. Product photos live on
+    // Medusa's file storage, which is localhost:9000 in development only.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
     // Cloudinary + CDN + Medusa file provider hosts (see docs/kit/03 §3.2 perf).
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },

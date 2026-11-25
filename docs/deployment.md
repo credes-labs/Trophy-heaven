@@ -106,7 +106,16 @@ medusa user -e owner@yourdomain.com -p 'choose-a-strong-password'
 7. Check `https://<medusa>.onrender.com/health` returns `OK`, and sign in to the admin at
    `https://<medusa>.onrender.com/app`.
 
-Bootstrap is safe to re-run.
+Bootstrap is safe to re-run, so it can stay in the pre-deploy command. It seeds once per
+`SEED_VERSION` (in `apps/medusa/src/scripts/bootstrap.ts`, recorded on the store's metadata), so
+products, posts and reviews the owner deletes or edits in the admin are not recreated on the next
+deploy. Bump `SEED_VERSION` only when a catalogue change must reach an already seeded database.
+
+Shop photos: the seed points products at the storefront's `/images/collection/` files, and the
+`import-catalog-images` scheduled job (every 5 minutes, inside the running server) copies them into
+the File module and repoints the products. It runs in the server, not in pre-deploy, because Railway
+mounts volumes only on the running container. It downloads from the storefront origin in
+`STOREFRONT_PUBLIC_URL`, else the non-localhost entries of `STORE_CORS`.
 
 ## Step 3: Vercel
 
