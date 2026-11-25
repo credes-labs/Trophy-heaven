@@ -8,9 +8,17 @@ import seedContent from "./seed-content"
 import seedStudioTrophies from "./seed-studio-trophies"
 
 /**
+ * Bump when the seeded catalogue or content changes and must reach databases that are
+ * already seeded. Each value is applied once: after that the shop belongs to the owner,
+ * and products, posts or reviews deleted in the admin are not recreated on the next deploy.
+ */
+export const SEED_VERSION = "2026-11-25-owner-catalogue"
+
+/**
  * First-deploy setup, in order: catalogue, studio trophies, journal + reviews, the free
- * shipping rule, the search index. Every step is safe to re-run. Prints the publishable
- * key the storefront needs.
+ * shipping rule, the search index. Seeding runs once per SEED_VERSION (recorded on the
+ * store's metadata), so it is safe in a pre-deploy command that runs on every deploy.
+ * The search index is rebuilt every time. Prints the publishable key the storefront needs.
  *
  *   npx medusa exec ./src/scripts/bootstrap.js   (from .medusa/server in production)
  */
@@ -18,10 +26,24 @@ export default async function bootstrap(args: ExecArgs) {
   const { container } = args
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
-  await seed(args)
-  await seedStudioTrophies(args)
-  await seedContent(args)
-  await freeShipping(args)
+  const storeModule = container.resolve(Modules.STORE)
+  const [before] = await storeModule.listStores()
+  if (before?.metadata?.seed_version === SEED_VERSION) {
+    logger.info(`bootstrap: seed ${SEED_VERSION} already applied; leaving the owner's catalogue alone`)
+  } else {
+    await seed(args)
+    await seedStudioTrophies(args)
+    await seedContent(args)
+    await freeShipping(args)
+    // seed() creates the store on an empty database, so look it up again.
+    const [store] = await storeModule.listStores()
+    if (store) {
+      await storeModule.updateStores(store.id, {
+        metadata: { ...(store.metadata ?? {}), seed_version: SEED_VERSION },
+      })
+      logger.info(`bootstrap: recorded seed ${SEED_VERSION}`)
+    }
+  }
 
   if (getMeili()) {
     const { indexed } = await reindexProducts(container)

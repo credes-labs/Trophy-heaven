@@ -62,7 +62,7 @@ const edition = (
   name,
   category,
   amount,
-  price: `₹${amount.toLocaleString("en-IN")}`,
+  price: formatInr(amount),
   alt,
   href: `/products/${id}`,
 })
@@ -79,7 +79,31 @@ export const EDITION_PRODUCTS: EditionProduct[] = [
 
 export const ALL_PIECES = "All Pieces"
 
-export const EDITION_FILTERS: string[] = [
-  ALL_PIECES,
-  ...new Set(EDITION_PRODUCTS.map((p) => p.category)),
-]
+function formatInr(amount: number): string {
+  return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`
+}
+
+/** Name and price the owner set in the admin, keyed by product handle. */
+export type LiveEdition = { title: string; amount: number | null }
+
+/**
+ * Tiles and photos stay where the design puts them; names and prices come from
+ * the admin. `live` null = backend unreachable, so the coded values are kept. A
+ * handle missing from `live` was deleted or unpublished, so its tile is dropped.
+ */
+export function withLiveDetails(
+  products: readonly EditionProduct[],
+  live: Readonly<Record<string, LiveEdition>> | null | undefined
+): EditionProduct[] {
+  if (!live) return [...products]
+  return products.flatMap((p) => {
+    const row = live[p.id]
+    if (!row) return []
+    const amount = row.amount ?? p.amount
+    return [{ ...p, name: row.title || p.name, amount, price: formatInr(amount) }]
+  })
+}
+
+export function editionFilters(products: readonly EditionProduct[]): string[] {
+  return [ALL_PIECES, ...new Set(products.map((p) => p.category))]
+}

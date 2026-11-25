@@ -58,6 +58,30 @@ export async function getProductByHandle(
   }
 }
 
+/**
+ * Published products for a fixed list of handles (homepage tiles placed in code).
+ * Returns null when the backend can't be reached, so callers can tell "deleted in
+ * the admin" (missing from the map) from "no data" (keep the coded fallback).
+ */
+export async function getProductsByHandles(
+  handles: readonly string[],
+  countryCode?: string
+): Promise<Map<string, HttpTypes.StoreProduct> | null> {
+  if (!handles.length) return new Map()
+  try {
+    const region = await getRegion(countryCode)
+    const { products } = await medusa.store.product.list({
+      handle: [...handles],
+      region_id: region?.id,
+      fields: "id,handle,title,*variants.calculated_price",
+      limit: handles.length,
+    } as HttpTypes.StoreProductListParams)
+    return new Map(products.flatMap((p) => (p.handle ? [[p.handle, p] as const] : [])))
+  } catch {
+    return null
+  }
+}
+
 /** Fetch a single product by id (used by the customization engine routes). */
 export async function getProductById(
   id: string,
