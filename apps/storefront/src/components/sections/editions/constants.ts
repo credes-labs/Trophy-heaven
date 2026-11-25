@@ -80,7 +80,8 @@ export const EDITION_PRODUCTS: EditionProduct[] = [
 export const ALL_PIECES = "All Pieces"
 
 function formatInr(amount: number): string {
-  return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`
+  const paise = Number.isInteger(amount) ? 0 : 2
+  return `₹${amount.toLocaleString("en-IN", { minimumFractionDigits: paise, maximumFractionDigits: 2 })}`
 }
 
 /** Name and price the owner set in the admin, keyed by product handle. */

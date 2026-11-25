@@ -29,3 +29,10 @@ describe("editionFilters", () => {
     expect(editionFilters([first])).toEqual([ALL_PIECES, first.category])
   })
 })
+
+describe("edition prices", () => {
+  it("shows paise only when the price has them", () => {
+    const [tile] = withLiveDetails([first], { [first.id]: { title: first.name, amount: 1412.5 } })
+    expect(tile.price).toBe("₹1,412.50")
+  })
+})

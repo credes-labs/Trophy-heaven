@@ -23,6 +23,7 @@ that matches how much you need to know.
 | 070 | [Preview uploads without R2](L3/070-preview-without-r2.md) | WP-110 |
 | 071 | [The owner's own catalogue](L3/071-owner-catalogue.md) | WP-115 |
 | 072 | [Shop photos in Medusa, edits that stick](L3/072-shop-photos-in-medusa.md) | WP-116 |
+| 073 | [Wooden price list and a warmer palette](L3/073-wooden-price-list-and-colour.md) | WP-118, WP-119 |
 | 069 | [Client test site](L3/069-client-test-site.md) | WP-109 |
 | 068 | [Render and Vercel deployment](L3/068-render-vercel-deployment.md) | WP-107 |
 | 067 | [Match designs to trophies](L3/067-design-mapping.md) | WP-106 |
