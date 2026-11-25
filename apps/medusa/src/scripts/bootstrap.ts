@@ -6,6 +6,7 @@ import freeShipping from "./free-shipping"
 import seed from "./seed"
 import seedContent from "./seed-content"
 import seedStudioTrophies from "./seed-studio-trophies"
+import { applyCatalogUpdates } from "./catalog-updates"
 
 /**
  * Bump when the seeded catalogue or content changes and must reach databases that are
@@ -44,6 +45,9 @@ export default async function bootstrap(args: ExecArgs) {
       logger.info(`bootstrap: recorded seed ${SEED_VERSION}`)
     }
   }
+
+  // Owner-approved changes to an existing catalogue (price lists etc.), each applied once.
+  await applyCatalogUpdates(container)
 
   if (getMeili()) {
     const { indexed } = await reindexProducts(container)
