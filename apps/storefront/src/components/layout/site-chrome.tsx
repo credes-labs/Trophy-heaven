@@ -33,6 +33,15 @@ const BARE_ROUTES = new Set(["/customize"])
 /** The 2D layout editor shares the studio's fullscreen shell. */
 const BARE_PATTERN = /^\/customize\/[^/]+\/2d$/
 
+/**
+ * Vercel's background ISR refresh renders the root route as `/index`, while the
+ * browser sees `/`. Treating both as home keeps the server and client headers
+ * identical (otherwise React throws hydration error #418 on the homepage).
+ */
+export function isHomePath(pathname: string | null) {
+  return pathname === "/" || pathname === "/index"
+}
+
 export function isBareRoute(pathname: string | null) {
   return pathname != null && (BARE_ROUTES.has(pathname) || BARE_PATTERN.test(pathname))
 }
@@ -49,7 +58,7 @@ export function SiteChrome({
   header: ReactNode
 }) {
   const pathname = usePathname()
-  const isHome = pathname === "/"
+  const isHome = isHomePath(pathname)
   const hidden = isHome || isBareRoute(pathname)
 
   return (

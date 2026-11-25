@@ -323,6 +323,9 @@ Product page and configurator take an uploaded design (image/PDF) instead of sti
 ## 2026-11-14 - Pre-client-testing pass: direct cart upload, forms reach the owner, /about tightened
 Cart drawer button opens the file picker directly; quote and return forms now actually send, and contact/quote/return messages go to the owner inbox instead of the customer; empty-cart recommendations load; /about hero loses its empty top. See L2 WP-99.
 
+## 2026-11-25 - Homepage hydration error on Vercel fixed
+The live homepage threw React error #418 after each background refresh. See L2 WP-117.
+
 ## 2026-11-25 - The owner edits shop products in the admin
 Shop photos now live in Medusa's file storage, and homepage tile names and prices follow the admin. Deploys no longer recreate products, posts or reviews the owner deleted. See L2 WP-116 · [L3/072](L3/072-shop-photos-in-medusa.md)
 
